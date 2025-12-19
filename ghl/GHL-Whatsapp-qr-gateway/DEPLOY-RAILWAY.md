@@ -79,6 +79,7 @@ PORT=8080
 SESSION_DIR=/tmp/baileys_sessions
 LOG_LEVEL=info
 NODE_ENV=production
+CORS_ORIGIN=https://[seu-app].railway.app,http://localhost:5173
 
 # Rate Limiting
 TEXT_DELAY_MS=3500
