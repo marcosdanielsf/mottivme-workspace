@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/index.ts",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "start:railway": "npm run build && node dist/index.js",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@hapi/boom": "^10.0.1",

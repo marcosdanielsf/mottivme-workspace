@@ -199,7 +199,7 @@ app.listen(PORT, async () => {
   console.log('\n🚀 WhatsApp GHL Gateway');
   console.log(`📡 Servidor corriendo en http://localhost:${PORT}`);
   console.log(`📂 Sesiones guardadas en: ${process.env.SESSION_DIR || './data/sessions'}`);
-  
+
   // Inicializar worker de colas
   try {
     // El worker se inicializa automáticamente al importar
@@ -217,7 +217,7 @@ app.listen(PORT, async () => {
     console.log('⚠️  Advertencia: Redis no disponible. Algunas funciones pueden no estar disponibles.');
     console.log('   Para desarrollo sin Redis, los mensajes se encolarán pero no se procesarán.');
   }
-  
+
   console.log('\n✅ Listo para recibir requests\n');
 });
 
