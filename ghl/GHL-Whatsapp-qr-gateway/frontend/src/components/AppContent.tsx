@@ -5,6 +5,7 @@ import { InstanceControls } from './InstanceControls';
 import { QrPreview } from './QrPreview';
 import { InstanceList } from './InstanceList';
 import { WebhooksView } from './WebhooksView';
+import { SettingsView } from './SettingsView';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { WhatsAppRain } from './WhatsAppRain';
@@ -255,6 +256,12 @@ export function AppContent() {
           {view === 'webhooks' && (
             <div className="webhooks-grid">
               <WebhooksView />
+            </div>
+          )}
+
+          {view === 'settings' && (
+            <div className="full-width-section">
+              <SettingsView />
             </div>
           )}
         </main>
