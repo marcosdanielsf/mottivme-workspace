@@ -71,8 +71,8 @@ GHL_REDIRECT_URI=https://[seu-app].railway.app/api/auth/callback
 GHL_INBOUND_URL=https://[seu-app].railway.app/api/webhook/inbound
 
 # Supabase (se usar)
-SUPABASE_URL=https://kwnkzdyvvlpxqbjabggc.supabase.co
-SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_URL=https://bfumywvwubvernvhjehk.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao
 
 # App Configuration
 PORT=8080
