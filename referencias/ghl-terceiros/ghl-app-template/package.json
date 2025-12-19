@@ -1,0 +1,50 @@
+{
+    "name": "@cbnsndwch/ghl-app",
+    "description": "A base template for full stack HighLevel Marketplace apps",
+    "version": "0.3.6",
+    "license": "MIT",
+    "private": true,
+    "repository": "https://github.com/cbnsndwch/ghl-app",
+    "author": {
+        "name": "Sergio Leon",
+        "url": "https://www.cbnsndwch.io"
+    },
+    "workspaces": {
+        "packages": [
+            "apps/*",
+            "libs/*"
+        ]
+    },
+    "scripts": {
+        "postinstall": "turbo run build",
+        "clean": "turbo run clean",
+        "build": "turbo run build",
+        "format": "turbo run format",
+        "lint": "turbo run lint",
+        "lint:fix": "turbo run lint:fix",
+        "test": "turbo run test",
+        "pub": "turbo run pub",
+        "changeset": "changeset",
+        "changeset:version": "changeset version",
+        "changeset:publish": "changeset publish"
+    },
+    "devDependencies": {
+        "@changesets/cli": "^2.29.7",
+        "@eslint/js": "^9.38.0",
+        "@typescript-eslint/eslint-plugin": "^8.46.2",
+        "@typescript-eslint/parser": "^8.46.2",
+        "change-case": "^5.4.4",
+        "eslint": "^9.38.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-import-resolver-typescript": "^4.4.4",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-prettier": "^5.5.4",
+        "globals": "^16.4.0",
+        "http-server": "^14.1.1",
+        "npm-check-updates": "^19.1.2",
+        "prettier": "^3.6.2",
+        "turbo": "^2.5.8",
+        "typescript-eslint": "^8.46.2"
+    },
+    "packageManager": "pnpm@10.20.0"
+}

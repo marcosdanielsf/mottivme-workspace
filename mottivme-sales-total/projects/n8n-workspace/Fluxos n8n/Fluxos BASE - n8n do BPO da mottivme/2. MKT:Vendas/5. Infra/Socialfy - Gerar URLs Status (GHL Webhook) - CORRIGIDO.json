@@ -1,0 +1,1288 @@
+{
+  "name": "Socialfy - Gerar URLs Status (GHL Webhook) - CORRIGIDO",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atualizar-status",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook - Receber Status",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        5696
+      ],
+      "webhookId": "atualizar-status",
+      "id": "273a3bbe-4be7-439a-8402-7d0d3521765e"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrai os dados do webhook\nconst body = $input.item.json.body;\n\nreturn {\n  lead_id: body.lead_id,\n  candidato: body.candidato,\n  recrutador: body.recrutador,\n  phone: body.phone,\n  status: body.status,\n  timestamp: body.timestamp || new Date().toISOString(),\n  // Mapeamento de status para tags\n  tag: body.status === 'realizada' ? 'Entrevista Realizada' :\n       body.status === 'nao_compareceu' ? 'Não Compareceu' :\n       body.status === 'sem_interesse' ? 'Sem Interesse' : 'Status Desconhecido'\n};"
+      },
+      "name": "Processar Dados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        5696
+      ],
+      "id": "c2113322-3a47-4516-8a6c-c0138bcc3169"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.status }}",
+                    "value2": "realizada"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Entrevista Realizada"
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.status }}",
+                    "value2": "nao_compareceu"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Não Compareceu"
+            },
+            {
+              "conditions": {
+                "string": [
+                  {
+                    "value1": "={{ $json.status }}",
+                    "value2": "sem_interesse"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Sem Interesse"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Switch - Status",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        320,
+        5680
+      ],
+      "id": "9b8d5d1f-d722-4fa1-ab3f-0f5c7e422116"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Status atualizado com sucesso!\", \"lead_id\": $json.lead_id, \"status\": $json.status, \"tag\": $json.tag } }}",
+        "options": {}
+      },
+      "name": "Responder Sucesso",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        5696
+      ],
+      "id": "5ffff110-9d56-4d19-b2f9-b1fbc4a7d5b1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log para debug\nconsole.log('📥 Webhook recebido:', $input.all());\nconsole.log('📋 Lead ID:', $json.lead_id);\nconsole.log('✅ Status:', $json.status);\nconsole.log('🏷️ Tag:', $json.tag);\n\nreturn $input.all();"
+      },
+      "name": "Debug Log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        5696
+      ],
+      "id": "85f3de03-75aa-4816-ba91-c4b99285b8b2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gerar-mensagens-status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        6272
+      ],
+      "id": "abcb7bd4-617f-400a-9eb8-ca5770193415",
+      "name": "Webhook - GHL",
+      "webhookId": "gerar-mensagens-status"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrair Dados do GHL\nconst data = $input.item.json;\n\n// Os dados vêm dentro de body.customData\nconst customData = data.body?.customData || data.customData || data;\n\nreturn {\n  json: {\n    // ⚠️ Note: \"candidate_name \" tem ESPAÇO no final!\n    lead_id: customData.lead_id || '',\n    candidate_name: customData['candidate_name '] || customData.candidate_name || '',\n    candidate_phone: customData.candidate_phone || '',\n    recruiter_name: customData.recruiter_name || customData.user_name || '',\n    tipo: customData.tipo || '',\n    mensagem_original: customData.mensagem || '',\n    received_at: new Date().toISOString()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        6272
+      ],
+      "id": "cb41be1b-73fd-4526-968c-88fd905020b4",
+      "name": "Extrair Dados GHL"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recruiter_name }}",
+                    "rightValue": "Marina Couto",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "marina"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Marina Couto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recruiter_name }}",
+                    "rightValue": "Gustavo Couto",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "gustavo"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Gustavo Couto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recruiter_name }}",
+                    "rightValue": "Fernanda Lappe",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "fernanda"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Fernanda Lappe"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recruiter_name }}",
+                    "rightValue": "André Rosa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "andre"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "André Rosa"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recruiter_name }}",
+                    "rightValue": "Cláudia Fehribach",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "claudia"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Cláudia Fehribach"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recruiter_name }}",
+                    "rightValue": "Milton Abreu",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "milton"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Milton Abreu"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recruiter_name }}",
+                    "rightValue": "Renata Vieira",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "renata"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Renata Vieira"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recruiter_name }}",
+                    "rightValue": "Vivian Osorio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "vivian"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Vivian Osorio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recruiter_name }}",
+                    "rightValue": "Vertex",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "vertex"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Vertex Sales"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        320,
+        6160
+      ],
+      "id": "7eb35ce6-3984-4164-b54a-f1b35f71ec06",
+      "name": "Switch - Recrutador"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "contact_id",
+              "name": "contact_id",
+              "value": "CONTACT_ID_GUSTAVO",
+              "type": "string"
+            },
+            {
+              "id": "api_key",
+              "name": "api key v2",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "telefone",
+              "name": "telefone",
+              "value": "+55119XXXXXXXX",
+              "type": "string"
+            },
+            {
+              "id": "location_id",
+              "name": "location.id",
+              "value": "AP53YUiTaDZqQIlSJBP3",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        6368
+      ],
+      "id": "122d528b-d214-40a8-bb7c-613dba83c08a",
+      "name": "Info Gustavo"
+    },
+    {
+      "parameters": {
+        "jsCode": "const URL_BASE_GHL = 'https://clients.mottivme.com.br/atualizar-status-822274';\n\nconst item = $input.item.json;\n\nconst leadId = item.lead_id;\nconst candidato = item.candidate_name;\nconst recrutador = item.recruiter_name;\nconst phone = item.candidate_phone;\n\nconst recruiterContactId = item.contact_id;\nconst recruiterPhone = item.telefone;\nconst apiKey = item['api key v2'];\nconst locationId = item['location.id'];\n\nconst candidatoEncoded = encodeURIComponent(candidato);\nconst recrutadorEncoded = encodeURIComponent(recrutador);\nconst phoneEncoded = encodeURIComponent(phone);\n\nconst urlCompleta = `${URL_BASE_GHL}?lead_id=${leadId}&candidato=${candidatoEncoded}&recrutador=${recrutadorEncoded}&phone=${phoneEncoded}`;\n\nconst mensagem = `Olá, *${recrutador}*! 👋\n\nComo foi o processo com *${candidato}*?\n\n📋 *Dados do Lead*\n📞 ${phone}\n\n👉 *Atualize o status:*\n${urlCompleta}`;\n\nreturn {\n  json: {\n    contact_id: recruiterContactId,\n    'api key v2': apiKey,\n    telefone: recruiterPhone,\n    message: mensagem,\n    'location.id': locationId,\n    lead_id: leadId,\n    candidate_name: candidato,\n    recruiter_name: recrutador,\n    url_completa: urlCompleta,\n    processed_at: new Date().toISOString()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        6272
+      ],
+      "id": "85171acb-0722-459e-86f3-10046c96fa4a",
+      "name": "Gerar URL e Mensagem"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json['api key v2'] }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "038d7b4e-67b4-4d46-a844-459f3b83a47b",
+      "name": "Enviar WhatsApp (GHL)1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        992,
+        6272
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const dadosAnteriores = $input.item.json;\n\nreturn {\n  json: {\n    // Mantém TUDO que veio antes\n    ...dadosAnteriores,\n    \n    // Adiciona dados da Marina\n    contact_id: \"DeQGrXaZBAPBnsnoqvSM\",\n    \"api key v2\": \"pit-fe627027-b9cb-4ea3-aaa4-149459e66a03\",\n    telefone: \"+1203634024083840\",\n    \"location.id\": \"Bgi2hFMgiLLoRlOO0K5b\"\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        6176
+      ],
+      "id": "c5a50e63-f014-450e-b4b3-dca8d091e4f6",
+      "name": "Info Marina"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cliente-a1.mentorfy.io/webhook/atualizar-status",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "lead_id",
+              "value": "Khvm0kaQBMqZCqPeX9wE"
+            },
+            {
+              "name": "candidato",
+              "value": "Marcos Daniel"
+            },
+            {
+              "name": "recrutador",
+              "value": "Marina Couto"
+            },
+            {
+              "name": "phone",
+              "value": "+55 11 94897-8822"
+            },
+            {
+              "name": "status",
+              "value": "nao_compareceu"
+            },
+            {
+              "name": "tag",
+              "value": "Não Compareceu"
+            },
+            {
+              "name": "timestamp",
+              "value": "2025-10-29T21:45:00Z"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        768,
+        5696
+      ],
+      "id": "ea0f4d0c-aaf6-41b0-b5ae-271df881adf6",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://services.leadconnectorhq.com/contacts/Khvm0kaQBMqZCqPeX9wE",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"tags\": [\n    \"Não Compareceu\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        992,
+        5696
+      ],
+      "id": "7d53383b-cdaa-43a5-96c3-609400167b5b",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Configurações da Marina Couto\nconst dadosAnteriores = $input.item.json;\n\nreturn {\n  json: {\n    ...dadosAnteriores,\n    api_key: 'pit-fe627027-b9cb-4ea3-aaa4-149459e66a03',\n    location_id: 'Bgi2hFMgiLLoRlOO0K5b'\n  }\n};"
+      },
+      "name": "Config Marina",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        5056
+      ],
+      "id": "c181bb92-c3cd-4956-b1d4-79c8c416076a"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Configurações do Gustavo Couto\nconst dadosAnteriores = $input.item.json;\n\nreturn {\n  json: {\n    ...dadosAnteriores,\n    api_key: 'pit-fe627027-b9cb-4ea3-aaa4-149459e66a03',\n    location_id: 'AP53YUiTaDZqQIlSJBP3'\n  }\n};"
+      },
+      "name": "Config Gustavo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        5200
+      ],
+      "id": "2241ea15-f7c1-4117-80ac-7020c84dc757"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Configurações da Fernanda Lappe\nconst dadosAnteriores = $input.item.json;\n\nreturn {\n  json: {\n    ...dadosAnteriores,\n    api_key: 'SUA_API_KEY_FERNANDA',\n    location_id: 'LOCATION_ID_FERNANDA'\n  }\n};"
+      },
+      "name": "Config Fernanda",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        5296
+      ],
+      "id": "b389bc6b-05ba-41c5-9869-f286b30c8677"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Configurações do André Rosa\nconst dadosAnteriores = $input.item.json;\n\nreturn {\n  json: {\n    ...dadosAnteriores,\n    api_key: 'SUA_API_KEY_ANDRE',\n    location_id: 'LOCATION_ID_ANDRE'\n  }\n};"
+      },
+      "name": "Config André",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        5392
+      ],
+      "id": "9e2ae572-8f49-4132-9d37-5257b0d6c054"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.lead_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"tags\": [\n    \"{{ $json.tag }}\"\n  ],\n  \"customFields\": [\n    {\n      \"key\": \"ultimo_status_atualizado\",\n      \"value\": \"{{ $json.status }}\"\n    },\n    {\n      \"key\": \"data_atualizacao_status\",\n      \"value\": \"{{ $json.timestamp }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        5200
+      ],
+      "id": "be2b48d8-8952-4a0c-8852-7a5ff62f9877",
+      "name": "Atualizar Contato GHL"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log de sucesso\nconst response = $input.item.json;\n\nconsole.log('✅ Contato atualizado com sucesso!');\nconsole.log('📊 Response GHL:', response);\n\nreturn $input.all();"
+      },
+      "name": "Log Sucesso",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        5200
+      ],
+      "id": "304cf917-8a40-4164-8910-860aea135e3a"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atualizar-status-822274",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook - Receber Status1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        5200
+      ],
+      "webhookId": "atualizar-status-822274",
+      "id": "995fa038-abbc-483d-8f61-4e0c16603e4a"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrai os dados do webhook\nconst query = $input.item.json.query || {};\nconst body = $input.item.json.body || {};\n\n// Prioriza query params, depois body\nconst lead_id = query.lead_id || body.lead_id;\nconst candidato = query.candidato || body.candidato;\nconst recrutador = query.recrutador || body.recrutador;\nconst phone = query.phone || body.phone;\nconst status = query.status || body.status;\n\nconsole.log('📥 Dados recebidos:', { lead_id, candidato, recrutador, phone, status });\n\nreturn {\n  lead_id: lead_id,\n  candidato: candidato,\n  recrutador: recrutador,\n  phone: phone,\n  status: status,\n  timestamp: new Date().toISOString(),\n  // Mapeamento de status para tags\n  tag: status === 'realizada' ? 'Entrevista Realizada' :\n       status === 'nao_compareceu' ? 'Não Compareceu' :\n       status === 'sem_interesse' ? 'Sem Interesse' : 'Status Desconhecido'\n};"
+      },
+      "name": "Processar Dados1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        5200
+      ],
+      "id": "a30025a9-f2a3-4d44-a990-4fa9719f253b"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recrutador }}",
+                    "rightValue": "Marina Couto",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Marina Couto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recrutador }}",
+                    "rightValue": "Gustavo Couto",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Gustavo Couto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recrutador }}",
+                    "rightValue": "Fernanda Lappe",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Fernanda Lappe"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.recrutador }}",
+                    "rightValue": "André Rosa",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "André Rosa"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "name": "Switch - Recrutador1",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        208,
+        5200
+      ],
+      "id": "77597b92-02d9-4e15-8bb4-4eebed5181b2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log para debug antes da atualização\nconst data = $input.item.json;\n\nconsole.log('🔄 Preparando atualização no GHL:');\nconsole.log('📋 Lead ID:', data.lead_id);\nconsole.log('👤 Candidato:', data.candidato);\nconsole.log('👨‍💼 Recrutador:', data.recrutador);\nconsole.log('✅ Status:', data.status);\nconsole.log('🏷️ Tag:', data.tag);\nconsole.log('🔑 API Key:', data.api_key ? 'Presente' : 'AUSENTE');\nconsole.log('📍 Location ID:', data.location_id);\n\nreturn $input.all();"
+      },
+      "name": "Debug Log1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        5200
+      ],
+      "id": "047d2720-dec8-4141-9b71-e89dbd811bbc"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Status atualizado com sucesso no GoHighLevel!\", \"lead_id\": $json.lead_id, \"candidato\": $json.candidato, \"status\": $json.status, \"tag\": $json.tag, \"timestamp\": $json.timestamp } }}",
+        "options": {}
+      },
+      "name": "Responder Sucesso1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        5200
+      ],
+      "id": "09c94fcc-328e-4657-b2ce-bd41ca53a2d5"
+    }
+  ],
+  "pinData": {
+    "Webhook - GHL": [
+      {
+        "json": {
+          "headers": {
+            "host": "cliente-a1.mentorfy.io",
+            "user-agent": "axios/1.7.7",
+            "content-length": "2008",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "traceparent": "00-46f7f19aa54c83eaeaa7ec12d895e52e-d734d1232d0161ba-00",
+            "x-forwarded-for": "136.112.51.207",
+            "x-forwarded-host": "cliente-a1.mentorfy.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "9e2d5292a02e",
+            "x-real-ip": "136.112.51.207"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "Insured Name": "",
+            "Commision": "",
+            "Policy Issue Date": "",
+            "Policy Information": "",
+            "Estado onde mora": "",
+            "Antecipated Annual Premium": "",
+            "Policy Status": "",
+            "Work Permit": "",
+            "Informações para AI": "",
+            "Resposta IA": "",
+            "FUP_counter": "",
+            "Last Appointment": "Carreira",
+            "Status Appointment": "confirmation-presence",
+            "contact_id": "cVQPKvMQ2JAuqQF8fj4S",
+            "first_name": "Elaine",
+            "last_name": "Pailino",
+            "full_name": "Elaine Pailino",
+            "email": "elainepailino@hotmail.com",
+            "phone": "+12037475871",
+            "tags": "",
+            "country": "US",
+            "date_created": "2025-10-29T21:26:21.849Z",
+            "full_address": "",
+            "contact_type": "lead",
+            "location": {
+              "name": "Marina Couto - ",
+              "address": "Boca Raton",
+              "city": "Boca Raton",
+              "state": "Flórida",
+              "country": "US",
+              "postalCode": "123",
+              "fullAddress": "Boca Raton, Boca Raton Flórida 123",
+              "id": "Bgi2hFMgiLLoRlOO0K5b"
+            },
+            "user": {
+              "firstName": "Marina",
+              "lastName": "Couto",
+              "email": "marina@fiveringsflorida.com"
+            },
+            "calendar": {
+              "title": "Elaine Pailino",
+              "selectedTimezone": "America/New_York",
+              "appointmentId": "w0SqeVcAg3hsjXJt8gXO",
+              "startTime": "2025-10-31T20:00:00",
+              "endTime": "2025-10-31T21:00:00",
+              "status": "booked",
+              "appoinmentStatus": "new",
+              "address": " https://us02web.zoom.us/j/88260482475?pwd=9SRGjNR8jvet9vxzxr6e6ErYbytYRM.1",
+              "date_created": "2025-10-29T21:26:22.833Z",
+              "created_by": "",
+              "created_by_user_id": null,
+              "created_by_meta": {
+                "source": "third_party"
+              },
+              "last_updated_by_meta": {
+                "source": "WORKFLOW_NEW",
+                "channel": "ISTIO_MESH"
+              },
+              "id": "LvZWMISiyYnF8p7TrY7q",
+              "calendarName": "Apresentação da Carreira - Group "
+            },
+            "workflow": {
+              "id": "f9936fcb-4394-429d-bf9f-83e021032e52",
+              "name": "notiifcação interna sobre a atualização da reunião"
+            },
+            "triggerData": {},
+            "customData": {
+              "user_name": "Marina Couto",
+              "mensagem": "Olá! Elaine Como foi o processo de recrutamento com Elaine Pailino?  https://clients.mottivme.com.br/no-show-145835",
+              "tipo": "confirmar-comparecimento",
+              "lead_id": "cVQPKvMQ2JAuqQF8fj4S",
+              "candidate_name ": "Elaine Pailino",
+              "candidate_phone": "(203) 747-5871",
+              "recruiter_name": "Marina Couto",
+              "api_key": "pit-7f333e6f-a839-4f58-b371-778fed9dc2ea"
+            }
+          },
+          "webhookUrl": "https://cliente-a1.mentorfy.io/webhook/gerar-mensagens-status",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Webhook - Receber Status": [
+      {
+        "json": {
+          "headers": {
+            "host": "cliente-a1.mentorfy.io",
+            "user-agent": "axios/1.12.0",
+            "content-length": "203",
+            "accept": "application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, image/*;q=0.8, */*;q=0.7",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "10.0.1.1",
+            "x-forwarded-host": "cliente-a1.mentorfy.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "9e2d5292a02e",
+            "x-real-ip": "10.0.1.1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "lead_id": "Khvm0kaQBMqZCqPeX9wE",
+            "candidato": "Marcos Daniel",
+            "recrutador": "Marina Couto",
+            "phone": "+55 11 94897-8822",
+            "status": "nao_compareceu",
+            "tag": "Não Compareceu",
+            "timestamp": "2025-10-29T21:45:00Z"
+          },
+          "webhookUrl": "https://cliente-a1.mentorfy.io/webhook/atualizar-status",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Processar Dados": [
+      {
+        "json": {
+          "lead_id": "Khvm0kaQBMqZCqPeX9wE",
+          "candidato": "Marcos Daniel",
+          "recrutador": "Marina Couto",
+          "phone": "+55 11 94897-8822",
+          "status": "nao_compareceu",
+          "timestamp": "2025-10-29T21:45:00Z",
+          "tag": "Não Compareceu"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook - Receber Status": {
+      "main": [
+        [
+          {
+            "node": "Processar Dados1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Dados": {
+      "main": [
+        [
+          {
+            "node": "Switch - Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Status": {
+      "main": [
+        [
+          {
+            "node": "Debug Log",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        []
+      ]
+    },
+    "Debug Log": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - GHL": {
+      "main": [
+        [
+          {
+            "node": "Extrair Dados GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Dados GHL": {
+      "main": [
+        [
+          {
+            "node": "Switch - Recrutador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Recrutador": {
+      "main": [
+        [
+          {
+            "node": "Info Marina",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Info Gustavo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info Gustavo": {
+      "main": [
+        [
+          {
+            "node": "Gerar URL e Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar URL e Mensagem": {
+      "main": [
+        []
+      ]
+    },
+    "Info Marina": {
+      "main": [
+        [
+          {
+            "node": "Gerar URL e Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Responder Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config Marina": {
+      "main": [
+        [
+          {
+            "node": "Debug Log1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config Gustavo": {
+      "main": [
+        [
+          {
+            "node": "Debug Log1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config Fernanda": {
+      "main": [
+        [
+          {
+            "node": "Debug Log1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config André": {
+      "main": [
+        [
+          {
+            "node": "Debug Log1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Contato GHL": {
+      "main": [
+        [
+          {
+            "node": "Log Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Sucesso": {
+      "main": [
+        [
+          {
+            "node": "Responder Sucesso1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Receber Status1": {
+      "main": [
+        [
+          {
+            "node": "Processar Dados1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Dados1": {
+      "main": [
+        [
+          {
+            "node": "Switch - Recrutador1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Recrutador1": {
+      "main": [
+        [
+          {
+            "node": "Config Marina",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Config Gustavo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Config Fernanda",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Config André",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Debug Log1": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Contato GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3c832e15-454f-475e-b9e9-d45a1a2a6126",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "fSLEQmfRW2HvzD8l",
+  "tags": [
+    {
+      "updatedAt": "2025-10-26T00:06:22.546Z",
+      "createdAt": "2025-10-26T00:06:22.546Z",
+      "id": "Sds5CWpQF3mc5wIH",
+      "name": "Notification"
+    },
+    {
+      "updatedAt": "2025-11-03T19:28:11.029Z",
+      "createdAt": "2025-11-03T19:28:11.029Z",
+      "id": "aEBjcVaNqJHZAppF",
+      "name": "em revisão"
+    }
+  ]
+}

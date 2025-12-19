@@ -1,0 +1,129 @@
+{
+  "name": "Token Tracker - Via Agent Output",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Token Tracker - Via Agent Output\n\nEsta abordagem captura tokens do OUTPUT do Agent\nem vez de usar callbacks.\n\nO Agent com 'Return Intermediate Steps' = true\nretorna dados de execucao que podem conter tokens.\n\nSe nao tiver tokens, usa estimativa baseada\nno tamanho do texto (chars / 4 = tokens aprox)",
+        "height": 280,
+        "width": 350,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-100, 0],
+      "id": "note-001",
+      "name": "Info"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [100, 200],
+      "id": "trigger-001",
+      "name": "Trigger Manual"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    location_id: 'loc_teste_123',\n    location_name: 'Empresa Teste',\n    contact_id: 'cont_teste_456',\n    contact_name: 'Joao Silva',\n    canal: 'whatsapp',\n    tipo_acao: 'teste_token_tracking',\n    historico_mensagens: 'Lead interessado em consultoria empresarial. Perguntou sobre valores e disponibilidade para reuniao.'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [300, 200],
+      "id": "contexto-001",
+      "name": "Simular Contexto"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Responda de forma curta e amigavel: Oi, tudo bem por ai?",
+        "options": {
+          "systemMessage": "Voce e um assistente amigavel. Responda sempre de forma curta e casual, como se fosse uma conversa de WhatsApp.",
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [500, 200],
+      "id": "agent-001",
+      "name": "Agent com Steps"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [500, 420],
+      "id": "gemini-001",
+      "name": "Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "4ut0CD80SN7lbITM",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ========================================\n// TOKEN TRACKER - VIA AGENT OUTPUT\n// Captura tokens do output do Agent ou estima\n// ========================================\n\nconst SUPABASE_URL = 'https://bfumywvwubvernvhjehk.supabase.co/rest/v1/n8n_custos_execucao';\nconst SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao';\n\n// Precos por modelo (USD por 1M tokens)\nconst PRECOS = {\n  'gemini-2.0-flash': { input: 0.10, output: 0.40 },\n  'gemini-2.5-flash': { input: 0.075, output: 0.30 },\n  'gemini-2.5-pro': { input: 1.25, output: 10.00 },\n  'gemini-1.5-flash': { input: 0.075, output: 0.30 },\n  'gpt-4o': { input: 2.50, output: 10.00 },\n  'gpt-4o-mini': { input: 0.15, output: 0.60 },\n  'llama-3.3-70b-versatile': { input: 0.59, output: 0.79 },\n  'default': { input: 0.10, output: 0.40 }\n};\n\nfunction calcularCusto(modelo, tokensInput, tokensOutput) {\n  const modeloLower = (modelo || '').toLowerCase();\n  let preco = PRECOS['default'];\n  for (const [key, value] of Object.entries(PRECOS)) {\n    if (modeloLower.includes(key)) {\n      preco = value;\n      break;\n    }\n  }\n  return parseFloat(((tokensInput / 1000000) * preco.input + (tokensOutput / 1000000) * preco.output).toFixed(8));\n}\n\n// Estimativa de tokens baseada em caracteres (1 token ~ 4 chars em portugues)\nfunction estimarTokens(texto) {\n  if (!texto) return 0;\n  return Math.ceil(texto.length / 4);\n}\n\n// Pega output do Agent\nconst agentOutput = $input.first().json;\n\n// Debug: mostra estrutura do output\nconst debugInfo = {\n  keys: Object.keys(agentOutput),\n  hasIntermediateSteps: !!agentOutput.intermediateSteps,\n  stepsCount: agentOutput.intermediateSteps?.length || 0,\n  outputPreview: (agentOutput.output || '').substring(0, 100)\n};\n\n// Tenta extrair tokens do output do Agent\nlet tokensInput = 0;\nlet tokensOutput = 0;\nlet tokensSource = 'estimativa';\n\n// Verifica se tem usage no intermediateSteps\nif (agentOutput.intermediateSteps && agentOutput.intermediateSteps.length > 0) {\n  for (const step of agentOutput.intermediateSteps) {\n    // Verifica varios caminhos possiveis para usage\n    const usage = step.observation?.usage_metadata \n      || step.action?.usage_metadata\n      || step.usage_metadata\n      || step.tokenUsage;\n    \n    if (usage) {\n      tokensInput += usage.input_tokens || usage.prompt_tokens || 0;\n      tokensOutput += usage.output_tokens || usage.completion_tokens || 0;\n      tokensSource = 'intermediateSteps';\n    }\n  }\n}\n\n// Se nao encontrou, verifica no output direto\nif (tokensInput === 0 && tokensOutput === 0) {\n  const usage = agentOutput.usage_metadata \n    || agentOutput.tokenUsage \n    || agentOutput.usage;\n  \n  if (usage) {\n    tokensInput = usage.input_tokens || usage.prompt_tokens || 0;\n    tokensOutput = usage.output_tokens || usage.completion_tokens || 0;\n    tokensSource = 'output_direto';\n  }\n}\n\n// Se ainda nao tem, usa estimativa\nif (tokensInput === 0 && tokensOutput === 0) {\n  // Pega contexto para estimar input\n  let inputText = '';\n  try {\n    const ctx = $('Simular Contexto').first()?.json;\n    inputText = JSON.stringify(ctx || {});\n  } catch(e) {}\n  \n  tokensInput = estimarTokens(inputText) + 100; // +100 para system prompt\n  tokensOutput = estimarTokens(agentOutput.output || '');\n  tokensSource = 'estimativa_chars';\n}\n\n// Pega contexto\nlet contextData = {\n  location_id: '',\n  location_name: '',\n  contact_id: '',\n  contact_name: '',\n  canal: 'whatsapp',\n  tipo_acao: 'ia_generica',\n  mensagem_entrada: ''\n};\n\ntry {\n  const ctx = $('Simular Contexto').first()?.json;\n  if (ctx) {\n    contextData.location_id = ctx.location_id || '';\n    contextData.location_name = ctx.location_name || '';\n    contextData.contact_id = ctx.contact_id || '';\n    contextData.contact_name = ctx.contact_name || '';\n    contextData.canal = ctx.canal || 'whatsapp';\n    contextData.tipo_acao = ctx.tipo_acao || 'ia_generica';\n    contextData.mensagem_entrada = ctx.historico_mensagens || '';\n  }\n} catch(e) {}\n\n// Calcula custo\nconst modelo = 'gemini-2.0-flash';\nconst custoUsd = calcularCusto(modelo, tokensInput, tokensOutput);\n\n// Monta payload\nconst payload = {\n  workflow_id: $workflow.id,\n  workflow_name: $workflow.name,\n  execution_id: $execution.id,\n  location_id: contextData.location_id,\n  location_name: contextData.location_name,\n  contact_id: contextData.contact_id,\n  contact_name: contextData.contact_name,\n  canal: contextData.canal,\n  tipo_acao: contextData.tipo_acao,\n  modelo_ia: modelo,\n  tokens_input: tokensInput,\n  tokens_output: tokensOutput,\n  custo_usd: custoUsd,\n  mensagem_entrada: contextData.mensagem_entrada.substring(0, 1000),\n  mensagem_saida: (agentOutput.output || '').substring(0, 1000)\n};\n\n// Envia para Supabase\nlet supabaseResult = 'nao_enviado';\ntry {\n  const response = await fetch(SUPABASE_URL, {\n    method: 'POST',\n    headers: {\n      'apikey': SUPABASE_KEY,\n      'Authorization': `Bearer ${SUPABASE_KEY}`,\n      'Content-Type': 'application/json',\n      'Prefer': 'return=minimal'\n    },\n    body: JSON.stringify(payload)\n  });\n  \n  if (response.ok) {\n    supabaseResult = 'sucesso';\n  } else {\n    supabaseResult = `erro_${response.status}`;\n  }\n} catch(e) {\n  supabaseResult = `erro_${e.message}`;\n}\n\n// Retorna resultado com debug\nreturn {\n  json: {\n    resposta_agent: agentOutput.output,\n    token_tracking: {\n      tokens_input: tokensInput,\n      tokens_output: tokensOutput,\n      tokens_total: tokensInput + tokensOutput,\n      fonte: tokensSource,\n      custo_usd: custoUsd,\n      modelo: modelo\n    },\n    supabase: supabaseResult,\n    debug: debugInfo\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 200],
+      "id": "tracker-001",
+      "name": "Capturar e Registrar Tokens"
+    }
+  ],
+  "connections": {
+    "Trigger Manual": {
+      "main": [
+        [
+          {
+            "node": "Simular Contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simular Contexto": {
+      "main": [
+        [
+          {
+            "node": "Agent com Steps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent com Steps": {
+      "main": [
+        [
+          {
+            "node": "Capturar e Registrar Tokens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent com Steps",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {}
+}

@@ -1,0 +1,470 @@
+{
+  "name": "ORCHESTRATOR - Distribuir Tarefas de Contrato",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "orchestrator/contract-signed",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook - Contrato Assinado",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [220, 300],
+      "webhookId": "orchestrator-contract"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM service_contracts WHERE id = '{{ $json.contrato_id }}'",
+        "options": {}
+      },
+      "id": "get-contract",
+      "name": "Buscar Contrato",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [440, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM contract_tasks_template WHERE produto = '{{ $json.produto }}' AND ativo = TRUE ORDER BY ordem",
+        "options": {}
+      },
+      "id": "get-templates",
+      "name": "Buscar Templates de Tarefas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [660, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem"
+      },
+      "id": "split-templates",
+      "name": "Split Templates",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [880, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM team_members WHERE cargo = '{{ $json.cargo_responsavel }}' AND status = 'ativo' LIMIT 1",
+        "options": {}
+      },
+      "id": "find-team-member",
+      "name": "Encontrar Responsavel",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [1100, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-member-found",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-member",
+      "name": "Membro Encontrado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1320, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Dados do contrato vem do node anterior\nconst contrato = $('Buscar Contrato').first().json;\nconst template = $('Split Templates').first().json;\nconst membro = $input.first().json;\n\n// Substitui variaveis no titulo e descricao\nlet titulo = template.titulo.replace(/{{cliente_nome}}/g, contrato.cliente_nome);\ntitulo = titulo.replace(/{{produto}}/g, contrato.produto);\n\nlet descricao = (template.descricao || '').replace(/{{cliente_nome}}/g, contrato.cliente_nome);\nlet instrucoes = (template.instrucoes_template || '').replace(/{{cliente_nome}}/g, contrato.cliente_nome);\n\n// Calcula datas\nconst dataInicio = new Date(contrato.data_inicio);\nconst dataInicioTarefa = new Date(dataInicio);\ndataInicioTarefa.setDate(dataInicioTarefa.getDate() + template.dias_apos_inicio);\n\nconst dataLimite = new Date(dataInicioTarefa);\ndataLimite.setDate(dataLimite.getDate() + template.prazo_dias);\n\nreturn {\n  contrato_id: contrato.id,\n  cliente_nome: contrato.cliente_nome,\n  cliente_ghl_id: contrato.cliente_ghl_id,\n  membro_id: membro.id,\n  membro_nome: membro.nome,\n  membro_disc: membro.disc_primario,\n  membro_tom: membro.tom_preferido,\n  membro_canal: membro.canal_preferido,\n  membro_telefone: membro.telefone,\n  titulo: titulo,\n  descricao: descricao,\n  instrucoes: instrucoes,\n  categoria: template.categoria,\n  prioridade: template.prioridade,\n  data_inicio: dataInicioTarefa.toISOString().split('T')[0],\n  data_limite: dataLimite.toISOString().split('T')[0],\n  pontos_conclusao: template.pontos,\n  bonus_antecipado: template.bonus_antecipado\n};"
+      },
+      "id": "prepare-task",
+      "name": "Preparar Tarefa",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1540, 200]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO team_tasks (\n  assignee_id, contrato_id, cliente_id, cliente_nome,\n  titulo, descricao, instrucoes,\n  categoria, prioridade,\n  data_inicio, data_limite,\n  pontos_conclusao, bonus_antecipado,\n  origem, status\n) VALUES (\n  '{{ $json.membro_id }}',\n  '{{ $json.contrato_id }}',\n  '{{ $json.cliente_ghl_id }}',\n  '{{ $json.cliente_nome }}',\n  '{{ $json.titulo }}',\n  '{{ $json.descricao }}',\n  '{{ $json.instrucoes }}',\n  '{{ $json.categoria }}',\n  '{{ $json.prioridade }}',\n  '{{ $json.data_inicio }}',\n  '{{ $json.data_limite }}',\n  {{ $json.pontos_conclusao }},\n  {{ $json.bonus_antecipado }},\n  'orchestrator',\n  'pendente'\n) RETURNING id",
+        "options": {}
+      },
+      "id": "insert-task",
+      "name": "Criar Tarefa no DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [1760, 200],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gera mensagem personalizada baseada no perfil DISC\nconst data = $('Preparar Tarefa').first().json;\n\nlet mensagem = '';\n\nswitch(data.membro_disc) {\n  case 'dominante':\n    // Direto, foco em resultado\n    mensagem = `${data.membro_nome}, nova tarefa:\n\n*${data.titulo}*\n\nPrazo: ${data.data_limite}\nPontos: ${data.pontos_conclusao} (+${data.bonus_antecipado} se antes do prazo)\n\nFaz e me avisa quando terminar.`;\n    break;\n    \n  case 'influente':\n    // Entusiasmado, contexto social\n    mensagem = `E aiii ${data.membro_nome}! 🚀\n\nTemos uma missao nova pra ti!\n\n*${data.titulo}*\n\nEsse cliente vai ser top! ${data.cliente_nome} acabou de fechar contrato.\n\nPrazo: ${data.data_limite}\nPontos: ${data.pontos_conclusao} (+${data.bonus_antecipado} de bonus se mandar antes!)\n\nBora fazer acontecer?`;\n    break;\n    \n  case 'estavel':\n    // Calmo, detalhado, seguranca\n    mensagem = `Ola ${data.membro_nome},\n\nTemos uma nova tarefa para voce.\n\n*${data.titulo}*\n\nCliente: ${data.cliente_nome}\n\n${data.instrucoes ? 'Instrucoes:\\n' + data.instrucoes + '\\n\\n' : ''}Prazo: ${data.data_limite} (com calma, no seu ritmo)\nPontos: ${data.pontos_conclusao}\n\nQualquer duvida, estou aqui para ajudar.`;\n    break;\n    \n  case 'conforme':\n    // Detalhado, tecnico, dados\n    mensagem = `${data.membro_nome},\n\nNova tarefa atribuida:\n\n*${data.titulo}*\n\n📋 Detalhes:\n- Cliente: ${data.cliente_nome}\n- Categoria: ${data.categoria}\n- Prioridade: ${data.prioridade}\n- Data inicio: ${data.data_inicio}\n- Prazo final: ${data.data_limite}\n\n${data.instrucoes ? '📝 Instrucoes:\\n' + data.instrucoes + '\\n\\n' : ''}💰 Pontuacao:\n- Conclusao: ${data.pontos_conclusao} pts\n- Bonus antecipado: +${data.bonus_antecipado} pts\n\nPor favor, confirme o recebimento.`;\n    break;\n    \n  default:\n    mensagem = `${data.membro_nome},\n\nNova tarefa: *${data.titulo}*\n\nCliente: ${data.cliente_nome}\nPrazo: ${data.data_limite}\nPontos: ${data.pontos_conclusao}\n\nQualquer duvida, me avisa!`;\n}\n\nreturn {\n  ...data,\n  mensagem_personalizada: mensagem,\n  tarefa_id: $('Criar Tarefa no DB').first().json.id\n};"
+      },
+      "id": "personalize-message",
+      "name": "Personalizar Mensagem DISC",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1980, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-whatsapp",
+              "leftValue": "={{ $json.membro_canal }}",
+              "rightValue": "whatsapp",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-channel",
+      "name": "Canal WhatsApp?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2200, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.GHL_API_KEY }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $json.membro_ghl_contact_id }}\",\n  \"message\": \"{{ $json.mensagem_personalizada }}\"\n}"
+      },
+      "id": "send-whatsapp",
+      "name": "Enviar WhatsApp GHL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2420, 100]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.monday.com/v2",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ $env.MONDAY_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"mutation { create_item (board_id: {{ $env.MONDAY_BOARD_ID }}, item_name: \\\"{{ $json.titulo }}\\\", column_values: \\\"{\\\\\\\"person\\\\\\\":{\\\\\\\"personsAndTeams\\\\\\\":[{\\\\\\\"id\\\\\\\":{{ $json.monday_user_id }},\\\\\\\"kind\\\\\\\":\\\\\\\"person\\\\\\\"}]},\\\\\\\"date\\\\\\\":{\\\\\\\"date\\\\\\\":\\\\\\\"{{ $json.data_limite }}\\\\\\\"},\\\\\\\"status\\\\\\\":{\\\\\\\"label\\\\\\\":\\\\\\\"Pendente\\\\\\\"},\\\\\\\"text\\\\\\\":\\\\\\\"{{ $json.cliente_nome }}\\\\\\\"}\\\") { id } }\"\n}"
+      },
+      "id": "create-monday-task",
+      "name": "Criar Tarefa Monday",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2420, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO orchestrator_logs (evento, contrato_id, tarefa_id, member_id, descricao, status)\nVALUES (\n  'task_distributed',\n  '{{ $json.contrato_id }}',\n  '{{ $json.tarefa_id }}',\n  '{{ $json.membro_id }}',\n  'Tarefa distribuida: {{ $json.titulo }} para {{ $json.membro_nome }}',\n  'success'\n)",
+        "options": {}
+      },
+      "id": "log-distribution",
+      "name": "Registrar Log",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [2640, 200],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Tarefas distribuidas com sucesso\",\n  \"contrato_id\": \"{{ $('Buscar Contrato').first().json.id }}\",\n  \"tarefas_criadas\": {{ $('Split Templates').all().length }}\n}",
+        "options": {}
+      },
+      "id": "response-success",
+      "name": "Resposta Sucesso",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2860, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO orchestrator_logs (evento, contrato_id, descricao, status, error_message)\nVALUES (\n  'task_distribution_skipped',\n  '{{ $('Buscar Contrato').first().json.id }}',\n  'Membro nao encontrado para cargo: {{ $json.cargo_responsavel }}',\n  'warning',\n  'Cargo sem membro ativo'\n)",
+        "options": {}
+      },
+      "id": "log-skip",
+      "name": "Log - Membro Nao Encontrado",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [1540, 400],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook - Contrato Assinado": {
+      "main": [
+        [
+          {
+            "node": "Buscar Contrato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Contrato": {
+      "main": [
+        [
+          {
+            "node": "Buscar Templates de Tarefas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Templates de Tarefas": {
+      "main": [
+        [
+          {
+            "node": "Split Templates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Templates": {
+      "main": [
+        [
+          {
+            "node": "Encontrar Responsavel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encontrar Responsavel": {
+      "main": [
+        [
+          {
+            "node": "Membro Encontrado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Membro Encontrado?": {
+      "main": [
+        [
+          {
+            "node": "Preparar Tarefa",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log - Membro Nao Encontrado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Tarefa": {
+      "main": [
+        [
+          {
+            "node": "Criar Tarefa no DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Tarefa no DB": {
+      "main": [
+        [
+          {
+            "node": "Personalizar Mensagem DISC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personalizar Mensagem DISC": {
+      "main": [
+        [
+          {
+            "node": "Canal WhatsApp?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Canal WhatsApp?": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp GHL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Criar Tarefa Monday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp GHL": {
+      "main": [
+        [
+          {
+            "node": "Criar Tarefa Monday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Tarefa Monday": {
+      "main": [
+        [
+          {
+            "node": "Registrar Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Log": {
+      "main": [
+        [
+          {
+            "node": "Resposta Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log - Membro Nao Encontrado": {
+      "main": [
+        [
+          {
+            "node": "Split Templates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "name": "orchestrator"
+    },
+    {
+      "name": "mottivme"
+    }
+  ]
+}

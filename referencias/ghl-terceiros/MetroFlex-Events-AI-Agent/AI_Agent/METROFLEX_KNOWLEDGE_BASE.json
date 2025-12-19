@@ -1,0 +1,613 @@
+{
+  "knowledge_base_version": "1.0",
+  "last_updated": "2025-11-09",
+  "organization": {
+    "name": "MetroFlex Events",
+    "founded": "1987",
+    "founder": "Brian Dobson",
+    "legacy_years": "38+",
+    "mission": "Premier NPC bodybuilding competition organizer in Texas, home of 8x Mr. Olympia Ronnie Coleman training legacy since 1987",
+    "brand_positioning": "Where Champions Compete",
+    "unique_value_proposition": "Only NPC event organizer with 38+ years of champion-making pedigree and direct Ronnie Coleman legacy connection",
+    "contact": {
+      "email": "brian@metroflexgym.com",
+      "phone": "817-465-9331",
+      "address": "2921 South Cooper Street, #109, Arlington, TX 76015",
+      "website": "https://metroflexevents.com"
+    }
+  },
+
+  "historical_legacy": {
+    "metroflex_gym_founding": {
+      "year": 1987,
+      "founder": "Brian Dobson",
+      "location": "Arlington, Texas",
+      "vision": "Create a champion-making facility focused on heavy iron and real results. No corporate frills. No gimmicks. Just hardcore training.",
+      "significance": "Training ground for 8x Mr. Olympia Ronnie Coleman"
+    },
+    "ronnie_coleman_story": {
+      "first_visit": "1990 (3 years after gym opening)",
+      "profession": "Police officer",
+      "brian_dobson_offer": "Let me train you for Mr. Texas. Win, and you train here free for life.",
+      "mr_texas_outcome": "Won Mr. Texas",
+      "career_achievements": "8x Mr. Olympia (greatest bodybuilder of all time)",
+      "training_location": "MetroFlex Gym, Arlington, TX",
+      "legacy_impact": "Proof of MetroFlex's champion-making methodology"
+    },
+    "pro_cards_earned": {
+      "total": "25+",
+      "timeframe": "Since 1987",
+      "divisions": ["Men's Bodybuilding", "Classic Physique", "Men's Physique", "Women's Bodybuilding", "Figure", "Bikini", "Wellness"]
+    },
+    "annual_competitors": "1,200+",
+    "championship_events_organized": "5 major competitions annually"
+  },
+
+  "events": {
+    "raw_power_wild_game_feast": {
+      "date": "2025-12-05",
+      "day_of_week": "Friday",
+      "venue": "The Original MetroFlex Gym",
+      "location": "Arlington, TX",
+      "type": "Powerlifting + Social Event",
+      "description": "Experience the raw intensity of powerlifting combined with MetroFlex's legendary Wild Game Feast",
+      "registration_url": "https://form.jotform.com/252827580417967",
+      "atmosphere": "Witness elite strength athletes compete in the atmosphere that forged champions for over 38 years",
+      "unique_elements": ["Powerlifting competition", "Wild Game Feast", "Original MetroFlex Gym venue"],
+      "target_audience": "Powerlifters, strength athletes, MetroFlex legacy fans",
+      "status": "Open for registration",
+      "priority": "Next upcoming event"
+    },
+
+    "npc_better_bodies_classic_2026": {
+      "date": "2026-04-04",
+      "day_of_week": "Saturday",
+      "venue": "Dallas Market Hall",
+      "location": "Dallas, TX",
+      "npc_sanction": "#5764",
+      "type": "NPC Bodybuilding & Fitness Show",
+      "description": "Kick off the season with our flagship event. National qualifier status for pro card hopefuls.",
+      "registration_url": "https://metroflexevents.regfox.com/npc-better-bodies-classic-2026",
+      "divisions": ["Men's Bodybuilding", "Classic Physique", "Men's Physique", "Women's Bodybuilding", "Figure", "Bikini", "Wellness", "Women's Physique"],
+      "national_qualifier": true,
+      "pro_card_eligible": true,
+      "sponsorship_packages": {
+        "title": {"price": 25000, "benefits": ["Presenting sponsor status", "Maximum logo placement", "Exclusive vendor booth prime location", "Social media takeover (500K-1M impressions)", "Speaking opportunity at event"]},
+        "presenting": {"price": 15000, "benefits": ["Logo on all marketing materials", "Premium vendor booth", "Social media features", "VIP meet & greet access"]},
+        "diamond": {"price": 5000, "benefits": ["Logo on stage backdrop", "Vendor booth included", "Program ad (full page)", "Social media mentions"]},
+        "gold": {"price": 2000, "benefits": ["Logo on step & repeat", "Vendor booth", "Program ad (half page)"]},
+        "silver": {"price": 900, "benefits": ["Logo on event materials", "Program ad (quarter page)"]},
+        "bronze": {"price": 600, "benefits": ["Logo listing", "Program mention"]},
+        "bronze_to_silver_upgrade": {"price": 300, "description": "Upgrade from Bronze to Silver package"}
+      },
+      "ticketing": {
+        "general_admission": {"price_range": "20-35", "description": "Access to prejudging or finals"},
+        "reserved_seating": {"price_range": "40-75", "description": "Guaranteed seating with better views"},
+        "vip_packages": {"price_range": "100-250", "description": "Meet & greet with athletes, backstage access"},
+        "early_bird_savings": "5-10 dollars per ticket vs door price",
+        "children_under_12": "50% discount"
+      },
+      "schedule": {
+        "check_in": "7:00 AM",
+        "weigh_ins": "7:00-9:00 AM (30-minute window to make weight)",
+        "prejudging_start": "10:00 AM",
+        "finals_start": "7:00 PM",
+        "event_end": "9:00 PM"
+      },
+      "poster": "bb-classic-2026-poster.jpg",
+      "status": "Open for registration",
+      "expected_attendance": "500-1,500+"
+    },
+
+    "npc_ronnie_coleman_classic_30th_anniversary": {
+      "date": "2026-05-16",
+      "day_of_week": "Saturday",
+      "venue": "Round Up Inn",
+      "location": "Fort Worth, TX",
+      "anniversary": "30th",
+      "type": "NPC Bodybuilding Championship",
+      "description": "Celebrating 30 years of championship excellence. Honor the legacy of 8x Mr. Olympia Ronnie Coleman at Texas' most legendary NPC competition.",
+      "significance": "Most prestigious event in MetroFlex Championship Series",
+      "national_qualifier": true,
+      "pro_card_eligible": true,
+      "divisions": ["Men's Bodybuilding", "Classic Physique", "Men's Physique", "Women's Bodybuilding", "Figure", "Bikini", "Wellness", "Women's Physique"],
+      "special_features": ["30th anniversary celebration", "Ronnie Coleman appearance (TBD)", "Historical photo exhibition", "Legacy tribute"],
+      "status": "Registration opening soon",
+      "expected_attendance": "800-2,000+"
+    },
+
+    "npc_branch_warren_classic_colorado": {
+      "date": "2026-05-02",
+      "day_of_week": "Saturday",
+      "venue": "Denver Sport Stable",
+      "location": "Superior, CO",
+      "type": "NPC Bodybuilding Championship",
+      "description": "Championship event honoring 2x Arnold Classic Champion Branch Warren. Compete at one of the premier NPC qualifiers in Colorado.",
+      "branch_warren_achievements": "2x Arnold Classic Champion",
+      "national_qualifier": true,
+      "pro_card_eligible": true,
+      "divisions": ["Men's Bodybuilding", "Classic Physique", "Men's Physique", "Women's Bodybuilding", "Figure", "Bikini", "Wellness"],
+      "status": "Registration opening soon",
+      "expected_attendance": "400-800"
+    },
+
+    "npc_branch_warren_classic_houston": {
+      "date": "2026-06-20",
+      "day_of_week": "Saturday",
+      "venue": "Houston, TX (Location TBD)",
+      "location": "Houston, TX",
+      "type": "NPC Bodybuilding Championship",
+      "description": "Texas' flagship Branch Warren Classic. Championship event honoring 2x Arnold Classic Champion. National qualifier status.",
+      "national_qualifier": true,
+      "pro_card_eligible": true,
+      "divisions": ["Men's Bodybuilding", "Classic Physique", "Men's Physique", "Women's Bodybuilding", "Figure", "Bikini", "Wellness", "Women's Physique"],
+      "status": "Registration opening soon",
+      "expected_attendance": "600-1,200"
+    }
+  },
+
+  "npc_division_rules": {
+    "mens_bodybuilding": {
+      "weight_classes": [
+        {"class": "Bantamweight", "max_weight": 143.25, "unit": "lbs"},
+        {"class": "Lightweight", "max_weight": 154, "unit": "lbs"},
+        {"class": "Middleweight", "max_weight": 176, "unit": "lbs"},
+        {"class": "Light Heavyweight", "max_weight": 198, "unit": "lbs"},
+        {"class": "Heavyweight", "max_weight": 225, "unit": "lbs"},
+        {"class": "Super Heavyweight", "min_weight": 225, "unit": "lbs"},
+        {"class": "Open", "description": "All weights compete together"}
+      ],
+      "judging_criteria": ["Muscularity", "Symmetry", "Conditioning", "Posing", "Stage presence"],
+      "suit_requirements": "V-shaped posing trunks, minimum half rear coverage, no thongs",
+      "tanning": "Allowed (except Dream Tan - BANNED)",
+      "posing_routine": "60 seconds maximum, music required"
+    },
+
+    "classic_physique": {
+      "description": "Golden era aesthetic with height/weight restrictions",
+      "height_weight_classes": [
+        {"height": "up to 5'4\"", "max_weight": 167, "unit": "lbs"},
+        {"height": "5'4\" to 5'5\"", "max_weight": 172, "unit": "lbs"},
+        {"height": "5'5\" to 5'6\"", "max_weight": 177, "unit": "lbs"},
+        {"height": "5'6\" to 5'7\"", "max_weight": 182, "unit": "lbs"},
+        {"height": "5'7\" to 5'8\"", "max_weight": 187, "unit": "lbs"},
+        {"height": "5'8\" to 5'9\"", "max_weight": 192, "unit": "lbs"},
+        {"height": "5'9\" to 5'10\"", "max_weight": 197, "unit": "lbs"},
+        {"height": "5'10\" to 5'11\"", "max_weight": 202, "unit": "lbs"},
+        {"height": "5'11\" to 6'0\"", "max_weight": 207, "unit": "lbs"},
+        {"height": "6'0\" to 6'1\"", "max_weight": 212, "unit": "lbs"},
+        {"height": "6'1\" to 6'2\"", "max_weight": 217, "unit": "lbs"},
+        {"height": "over 6'2\"", "max_weight": 222, "unit": "lbs"}
+      ],
+      "judging_criteria": ["V-taper shape", "Classic aesthetics", "Balance", "Conditioning", "Posing presentation"],
+      "suit_requirements": "Board shorts style (above knee, below hip), solid colors",
+      "posing_routine": "60 seconds maximum, music required"
+    },
+
+    "mens_physique": {
+      "description": "Beach body aesthetic, board shorts presentation",
+      "height_classes": [
+        {"class": "A", "max_height": "5'6\""},
+        {"class": "B", "max_height": "5'7\""},
+        {"class": "C", "max_height": "5'8\""},
+        {"class": "D", "max_height": "5'9\""},
+        {"class": "E", "max_height": "5'10\""},
+        {"class": "F", "max_height": "5'11\""},
+        {"class": "G", "max_height": "6'1\""},
+        {"class": "H", "min_height": "6'1\""}
+      ],
+      "judging_criteria": ["Muscle balance", "Shape", "Conditioning", "Stage presence", "Confidence"],
+      "suit_requirements": "Board shorts (above knee, below hip), solid colors preferred",
+      "no_posing_routine": true,
+      "presentation": "Quarter turns only, hands behind head or on hips"
+    },
+
+    "womens_bodybuilding": {
+      "weight_classes": [
+        {"class": "Lightweight", "max_weight": 125, "unit": "lbs"},
+        {"class": "Middleweight", "max_weight": 140, "unit": "lbs"},
+        {"class": "Light Heavyweight", "max_weight": 159, "unit": "lbs"},
+        {"class": "Heavyweight", "min_weight": 159, "unit": "lbs"},
+        {"class": "Open", "description": "All weights compete together"}
+      ],
+      "judging_criteria": ["Muscularity", "Symmetry", "Conditioning", "Posing", "Femininity maintained"],
+      "suit_requirements": "Two-piece bikini, minimum coverage, solid colors",
+      "posing_routine": "60 seconds maximum, music required"
+    },
+
+    "figure": {
+      "description": "Athletic physique with muscle tone, elegant presentation",
+      "height_classes": [
+        {"class": "A", "max_height": "5'3\""},
+        {"class": "B", "max_height": "5'4\""},
+        {"class": "C", "max_height": "5'5\""},
+        {"class": "D", "max_height": "5'6\""},
+        {"class": "E", "min_height": "5'6\""}
+      ],
+      "judging_criteria": ["Muscle tone", "Balance", "Shape", "Skin tone", "Poise", "Beauty"],
+      "suit_requirements": "Two-piece bikini, solid colors, minimal embellishments",
+      "no_posing_routine": true,
+      "presentation": "Quarter turns with model walk",
+      "heels_required": true
+    },
+
+    "bikini": {
+      "description": "Overall aesthetics, balance, shape with softer muscle tone",
+      "height_classes": [
+        {"class": "A", "max_height": "5'2\""},
+        {"class": "B", "max_height": "5'4\""},
+        {"class": "C", "max_height": "5'6\""},
+        {"class": "D", "min_height": "5'6\""}
+      ],
+      "judging_criteria": ["Balance", "Shape", "Skin tone", "Stage presence", "Overall appearance", "Confidence"],
+      "suit_requirements": "Two-piece bikini, V-shaped bottom, solid colors, minimal embellishments",
+      "no_posing_routine": true,
+      "presentation": "Quarter turns with model walk, graceful posing",
+      "heels_required": true,
+      "muscle_expectation": "Softer than Figure, toned but not muscular"
+    },
+
+    "wellness": {
+      "description": "Athletic lower body development (glutes/hamstrings) with feminine upper body",
+      "added_year": 2021,
+      "height_classes": [
+        {"class": "A", "max_height": "5'2\""},
+        {"class": "B", "max_height": "5'4\""},
+        {"class": "C", "max_height": "5'6\""},
+        {"class": "D", "min_height": "5'6\""}
+      ],
+      "judging_criteria": ["Lower body development", "Glute and hamstring emphasis", "Feminine upper body", "Balance", "Conditioning", "Athletic posing"],
+      "suit_requirements": "Two-piece bikini emphasizing glutes, solid colors",
+      "no_posing_routine": true,
+      "presentation": "Athletic posing (not model walk)",
+      "heels_required": true,
+      "muscle_expectation": "More muscular than Bikini (especially lower body), less than Figure upper body",
+      "key_difference_vs_bikini": "Wellness requires more muscular glutes/hamstrings and athletic (not graceful) presentation"
+    },
+
+    "womens_physique": {
+      "description": "Muscular development between Figure and Bodybuilding",
+      "weight_classes": [
+        {"class": "A", "max_weight": 125, "unit": "lbs"},
+        {"class": "B", "max_weight": 135, "unit": "lbs"},
+        {"class": "C", "max_weight": 145, "unit": "lbs"},
+        {"class": "D", "min_weight": 145, "unit": "lbs"}
+      ],
+      "judging_criteria": ["Muscle development", "Symmetry", "Conditioning", "Posing", "Stage presence"],
+      "suit_requirements": "Two-piece bikini, athletic cut",
+      "posing_routine": "60 seconds maximum, music required",
+      "key_difference": "More muscular than Figure, less extreme than Women's Bodybuilding"
+    }
+  },
+
+  "competition_procedures": {
+    "registration": {
+      "methods": ["Online via RegFox/JotForm", "Day-of registration (late fees apply)"],
+      "required_information": ["Athlete name", "Division", "Class/height/weight", "NPC card number", "Emergency contact", "Photo upload"],
+      "payment": "Entry fee paid at registration",
+      "late_fees": "Additional $25-50 if registering within 7 days of event",
+      "npc_card_required": true,
+      "how_to_get_npc_card": "Visit npcnewsonline.com to purchase annual membership ($150)"
+    },
+
+    "check_in": {
+      "time": "2 hours before your division's prejudging",
+      "required_items": ["NPC card", "Government-issued ID", "Competitor confirmation email"],
+      "process": ["Verify registration", "Receive competitor number", "Confirm division/class", "Get backstage credentials"],
+      "music_submission_deadline": "5 days before event (online upload)",
+      "music_format": ["MP3", "WAV"],
+      "music_max_length": "60 seconds",
+      "backup_music": "Bring USB drive to check-in"
+    },
+
+    "weigh_ins": {
+      "timing": "Morning of prejudging (7:00-9:00 AM typical)",
+      "window": "30-minute window to make weight",
+      "location": "Backstage area",
+      "process": "Athletes weigh in nude or minimal clothing",
+      "consequences_over_weight": "Disqualification or move to next weight class (if available)",
+      "height_measurement": "For divisions with height classes (measured barefoot)"
+    },
+
+    "posing_music": {
+      "required_for": ["Men's Bodybuilding", "Classic Physique", "Women's Bodybuilding", "Women's Physique"],
+      "not_required_for": ["Men's Physique", "Figure", "Bikini", "Wellness"],
+      "max_length": "60 seconds",
+      "submission_deadline": "5 days before event",
+      "format": ["MP3", "WAV"],
+      "upload_method": "Online system (link provided after registration)",
+      "backup": "Bring USB drive to check-in",
+      "consequences_over_time": "Music will be faded out by audio technician"
+    },
+
+    "what_to_bring": {
+      "required": ["NPC card", "Government-issued ID", "Posing suit", "Tanning supplies", "Towels", "Backup music (USB)", "Competitor confirmation email"],
+      "recommended": ["Water (hydration)", "Healthy snacks", "Robe or coverup", "Extra posing suits", "Touch-up makeup", "Hair products", "Phone charger"],
+      "optional": ["Coach/trainer (separate pass required)", "Support crew", "Personal pump-up equipment"],
+      "not_allowed": "Prohibited tanning products (Dream Tan), outside food in competition area"
+    },
+
+    "tanning_rules": {
+      "allowed_products": ["Pro Tan", "Jan Tana", "Liquid Sun Rayz", "Other muscle-specific tanning products"],
+      "banned_products": ["Dream Tan (ABSOLUTELY PROHIBITED)"],
+      "reason_dream_tan_banned": "Leaves residue on stage, damages venue property, stains judging chairs",
+      "application_timing": "Day before or morning of show",
+      "application_location": "Backstage tanning area provided",
+      "cleanup": "Athletes responsible for cleaning tanning areas"
+    },
+
+    "crossovers": {
+      "allowed": true,
+      "max_divisions": 3,
+      "fee_per_division": "Each division requires separate entry fee",
+      "examples": ["Men's Physique + Classic Physique", "Bikini + Wellness", "Figure + Women's Physique"],
+      "scheduling": "Check prejudging times to ensure divisions don't overlap",
+      "strategy": "Common for athletes to test multiple divisions to find best fit"
+    },
+
+    "pro_card_qualification": {
+      "requirement": "Win Overall title at national qualifier event",
+      "national_qualifiers": ["NPC Better Bodies Classic", "NPC Ronnie Coleman Classic", "NPC Branch Warren Classic (both locations)"],
+      "process": ["Win your weight/height class", "Compete in Overall against all class winners", "Overall winner earns IFBB Pro Card"],
+      "eligibility": "Must have NPC card and compete in eligible division",
+      "pro_card_divisions": ["Men's Bodybuilding", "Classic Physique", "Men's Physique", "Women's Bodybuilding", "Figure", "Bikini", "Wellness", "Women's Physique"],
+      "metroflex_pro_cards_awarded": "25+ since 1987"
+    },
+
+    "judging_process": {
+      "prejudging": {
+        "timing": "Morning session (10:00 AM typical)",
+        "purpose": "Judges score all competitors, determine class winners",
+        "rounds": ["Lineup comparisons", "Individual quarter turns", "Mandatory poses (bodybuilding)", "Posing routines (if applicable)"],
+        "scoring": "Judges rank competitors 1st through last",
+        "importance": "70-80% of final score determined in prejudging"
+      },
+      "finals": {
+        "timing": "Evening session (7:00 PM typical)",
+        "purpose": "Showcase top competitors, determine Overall winners",
+        "rounds": ["Top 5 callouts", "Posing routines (finals)", "Overall comparisons"],
+        "scoring": "Final scores combine prejudging + finals performance",
+        "awards": "Class winners + Overall winners announced"
+      },
+      "tie_breakers": {
+        "method": "Head judge's preference",
+        "rare_occurrence": "Most ties resolved by comparing judge scorecards"
+      }
+    }
+  },
+
+  "sponsor_information": {
+    "audience_demographics": {
+      "annual_reach": "5,000+ attendees across all events",
+      "per_event_average": "500-1,500 attendees",
+      "gender_split": {"male": "60%", "female": "40%"},
+      "age_range": "18-45 (primary), 46-65 (secondary)",
+      "income_level": "Middle to upper-middle class",
+      "interests": ["Fitness", "Bodybuilding", "Supplements", "Apparel", "Wellness", "Nutrition", "Gyms/Training"],
+      "psychographics": "Highly motivated, goal-oriented, health-conscious, willing to invest in fitness products/services"
+    },
+
+    "roi_expectations": {
+      "brand_awareness_increase": "15-25%",
+      "leads_per_event": "300-500 qualified leads",
+      "lead_to_customer_conversion": "8-12%",
+      "social_media_impressions": "500K-1M per event",
+      "email_list_growth": "200-400 new contacts per event",
+      "booth_traffic": "50-150 interactions per hour during peak times"
+    },
+
+    "activation_opportunities": {
+      "product_sampling": "Distribute samples to competitors and attendees",
+      "demo_stations": "Set up interactive product demonstrations",
+      "athlete_endorsements": "Connect with competitors for brand partnerships",
+      "content_creation": "Photo/video opportunities with athletes and stage",
+      "lead_capture": "Collect emails/contacts via booth interactions",
+      "exclusive_offers": "Event-only discounts to drive immediate sales"
+    },
+
+    "multi_event_discounts": {
+      "2_events": "15% discount",
+      "3_events": "20% discount",
+      "4_events": "25% discount",
+      "all_5_events": "30% discount",
+      "benefits": "Maximum exposure across entire championship series, consistent branding, relationship building with repeat attendees"
+    },
+
+    "why_metroflex_different": {
+      "legacy": "38+ years of champion-making credibility",
+      "ronnie_coleman_connection": "8x Mr. Olympia trained at MetroFlex - unmatched authority",
+      "professional_production": "Industry-leading event quality",
+      "engaged_audience": "Highly motivated buyers actively seeking fitness solutions",
+      "media_coverage": "Social media reach, influencer partnerships, content distribution"
+    }
+  },
+
+  "first_time_competitor_guide": {
+    "10_steps_to_success": [
+      {
+        "step": 1,
+        "title": "Get Your NPC Card",
+        "description": "Purchase annual NPC membership at npcnewsonline.com ($150). Required to compete.",
+        "timing": "Do this FIRST, at least 2 weeks before registration"
+      },
+      {
+        "step": 2,
+        "title": "Choose Your Division",
+        "description": "Research divisions (see FAQ). Beginners often start with Men's Physique/Bikini (less muscularity required). Consider your body type and goals.",
+        "timing": "2-6 months before event"
+      },
+      {
+        "step": 3,
+        "title": "Hire a Coach (Recommended)",
+        "description": "Experienced coach guides prep diet, training, posing, and peak week. Worth the investment for first show.",
+        "timing": "12-20 weeks before event"
+      },
+      {
+        "step": 4,
+        "title": "Start Your Prep",
+        "description": "12-20 week diet and training program. Focus on fat loss while maintaining muscle. Consistency is key.",
+        "timing": "12-20 weeks out"
+      },
+      {
+        "step": 5,
+        "title": "Learn Posing",
+        "description": "Practice mandatory poses and stage presence. Hire posing coach or watch tutorial videos. Posing can make or break your placement.",
+        "timing": "8-12 weeks out, practice weekly"
+      },
+      {
+        "step": 6,
+        "title": "Register for Event",
+        "description": "Register online 4-8 weeks before show. Early registration avoids late fees.",
+        "timing": "4-8 weeks before event"
+      },
+      {
+        "step": 7,
+        "title": "Order Posing Suit",
+        "description": "Custom suits take 3-6 weeks. Order early. Get multiple suits as backup. Ensure proper fit and coverage.",
+        "timing": "6-8 weeks before event"
+      },
+      {
+        "step": 8,
+        "title": "Create Posing Music",
+        "description": "60-second track that matches your personality. Upload 5 days before event. Bring backup on USB.",
+        "timing": "2-4 weeks before event"
+      },
+      {
+        "step": 9,
+        "title": "Peak Week Preparation",
+        "description": "Final week: water manipulation, carb loading, practice tanning. Trust your coach's protocol.",
+        "timing": "7 days before event"
+      },
+      {
+        "step": 10,
+        "title": "Event Day Execution",
+        "description": "Arrive 2 hours early. Check in, weigh in, tan, pump up, compete. Stay calm and enjoy the experience!",
+        "timing": "Event day"
+      }
+    ],
+    "common_mistakes_to_avoid": [
+      "Competing before you're ready (need at least 12 weeks prep minimum)",
+      "Not practicing posing enough (muscle without posing = lower placement)",
+      "Wrong division choice (research carefully or hire coach)",
+      "Missing music submission deadline (no music = no routine score)",
+      "Over-tanning or using Dream Tan (disqualification risk)",
+      "Not bringing required items (NPC card, ID, backup suit)",
+      "Comparing yourself to others backstage (focus on your best)",
+      "Expecting to win first show (70% of competitors place outside top 5)"
+    ],
+    "expected_costs": {
+      "npc_card": 150,
+      "registration_fee": "75-150 per division",
+      "posing_suit": "100-300",
+      "tanning_products": "50-100",
+      "coach": "500-2000 (12-20 week prep)",
+      "posing_lessons": "200-500",
+      "hair_and_makeup": "75-150 (day-of)",
+      "supplements": "200-400 (during prep)",
+      "hotel": "100-200 per night",
+      "total_estimated": "1500-4000 for first show"
+    }
+  },
+
+  "faq_quick_reference": {
+    "most_common_questions": [
+      "What are the weight classes for men's bodybuilding?",
+      "How do I register to compete?",
+      "What posing music format is required?",
+      "Can I compete in multiple divisions?",
+      "How do I earn my IFBB Pro Card?",
+      "What sponsorship packages are available?",
+      "What is the expected ROI for sponsoring?",
+      "How much do tickets cost?",
+      "What is the difference between Bikini and Wellness?",
+      "What should I bring on competition day?"
+    ],
+    "answers_location": "See detailed answers in FAQ section on website or in NPC division rules above"
+  },
+
+  "social_media_presence": {
+    "platforms": {
+      "instagram": {
+        "handle": "@metroflexevents",
+        "content_strategy": "Event highlights, competitor features, behind-the-scenes, Ronnie Coleman throwbacks, training tips",
+        "posting_frequency": "4-5 times per week",
+        "engagement_tactics": "Contest giveaways, competitor spotlights, transformation features"
+      },
+      "facebook": {
+        "page": "MetroFlex Events",
+        "content_strategy": "Event announcements, photo galleries, live streaming (when available), community building",
+        "posting_frequency": "3-4 times per week"
+      },
+      "youtube": {
+        "content": "Event recaps, posing tutorials, competitor interviews, Ronnie Coleman legacy videos",
+        "posting_frequency": "1-2 times per month"
+      }
+    },
+    "hashtags": ["#MetroFlexEvents", "#NPCBodybuilding", "#RonnieColeman", "#WhereChampionsCompete", "#TexasBodybuilding", "#BetterBodiesClassic", "#RonnieColemanClassic", "#BranchWarrenClassic"],
+    "influencer_partnerships": "Collaborate with Texas-based fitness influencers, NPC athletes, supplement brand ambassadors"
+  },
+
+  "venue_information": {
+    "dallas_market_hall": {
+      "address": "2200 N Stemmons Fwy, Dallas, TX 75207",
+      "parking": "On-site parking garage ($10-15)",
+      "capacity": "1,500+ for events",
+      "amenities": ["Professional stage", "Backstage dressing areas", "Vendor space", "Food concessions", "ADA accessible"],
+      "events_hosted": ["NPC Better Bodies Classic"]
+    },
+    "round_up_inn": {
+      "address": "2800 Roosevelt Ave, Fort Worth, TX 76106",
+      "parking": "Large parking lot (free)",
+      "capacity": "800-1,200 for events",
+      "amenities": ["Professional stage", "Backstage areas", "Vendor booths", "Full-service restaurant/bar", "Hotel rooms available"],
+      "events_hosted": ["NPC Ronnie Coleman Classic"],
+      "special_features": "Historic Fort Worth venue with Western theme"
+    },
+    "denver_sport_stable": {
+      "address": "Superior, CO (exact address TBD)",
+      "parking": "On-site parking",
+      "capacity": "500-800 for events",
+      "amenities": ["Professional stage", "Backstage areas", "Vendor space"],
+      "events_hosted": ["NPC Branch Warren Classic - Colorado"]
+    },
+    "metroflex_gym_arlington": {
+      "address": "2921 South Cooper Street, #109, Arlington, TX 76015",
+      "parking": "Parking lot (free)",
+      "capacity": "150-250 for Raw Power event",
+      "amenities": ["Original equipment from Ronnie Coleman era", "Hardcore training atmosphere", "Limited food/beverage"],
+      "events_hosted": ["Raw Power & Wild Game Feast"],
+      "special_features": "THE original MetroFlex Gym where Ronnie Coleman trained"
+    }
+  },
+
+  "hotel_recommendations": {
+    "dallas_area": [
+      {"name": "Hyatt Regency Dallas", "distance_from_venue": "0.5 miles from Dallas Market Hall", "discount_code": "Contact for competitor rates"},
+      {"name": "Sheraton Dallas Hotel", "distance_from_venue": "1 mile from Dallas Market Hall", "discount_code": "Contact for group rates"}
+    ],
+    "fort_worth_area": [
+      {"name": "Round Up Inn", "distance_from_venue": "On-site", "discount_code": "Mention MetroFlex Events for competitor rate"},
+      {"name": "Hilton Fort Worth", "distance_from_venue": "3 miles", "discount_code": "Contact for group rates"}
+    ],
+    "denver_area": [
+      {"name": "Hotels near Superior, CO", "distance_from_venue": "Various", "discount_code": "TBD - check event page"}
+    ]
+  },
+
+  "metroflex_brand_voice": {
+    "tone": "Confident, authoritative, legacy-driven, no-nonsense, hardcore",
+    "values": ["Champion-making", "38+ years of excellence", "Ronnie Coleman legacy", "Professional standards", "Hardcore training ethics", "Results over hype"],
+    "messaging_pillars": [
+      "Where Champions Compete (brand tagline)",
+      "38+ years of champion-making pedigree",
+      "Home of 8x Mr. Olympia Ronnie Coleman",
+      "Premier NPC competition organizer in Texas",
+      "Professional production, championship atmosphere",
+      "25+ IFBB Pro Cards earned at our events"
+    ],
+    "language_style": {
+      "do_use": ["Champion", "Legacy", "Professional", "Excellence", "Hardcore", "Results", "Premier", "Legendary"],
+      "avoid": ["Fluff", "Corporate speak", "Overhyped claims", "Gimmicks", "Shortcuts"]
+    }
+  }
+}

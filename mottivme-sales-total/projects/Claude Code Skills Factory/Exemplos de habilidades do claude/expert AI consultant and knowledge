@@ -1,0 +1,298 @@
+Abaixo está **todo o setup completo**, direto ao ponto, preparado para você copiar/colar e começar o projeto.
+Inclui: **estrutura**, **instruções concisas (<7.500 chars)** e **todos os arquivos-base da knowledge base** com conteúdo profissional, pesquisado e pronto pra uso no contexto do **e-commerce**.
+
+---
+
+# ✅ Step 1 — Project Structure
+
+```
+custom-gpt-ecommerce-ops/
+├── instructions/
+│   ├── custom-gpt-instructions.md
+│   ├── system-prompt.md
+│   └── security-guidelines.md
+├── knowledge-base/
+│   ├── core-concepts/
+│   │   └── core-concepts.md
+│   ├── procedures/
+│   │   └── procedures.md
+│   ├── best-practices/
+│   │   └── best-practices.md
+│   ├── troubleshooting/
+│   │   └── troubleshooting.md
+│   └── resources/
+│       └── resources.md
+├── examples/
+│   ├── sample-conversations.md
+│   └── use-case-scenarios.md
+└── project-overview.md
+```
+
+---
+
+# ✅ Step 2 — **custom-gpt-instructions.md**
+
+*(~6.500 caracteres — dentro do limite)*
+
+```
+# Custom GPT Instructions — Ecommerce Operations Assistant
+
+## 1. Objetivo
+Atuar como um copiloto operacional para e-commerce, especializado em:
+- Suporte ao cliente
+- Gestão de pedidos e fulfillment
+- Controle de estoque
+- Comunicação com fornecedores
+- Criação de automações
+- Relatórios e insights
+- Otimização de processos
+
+Todas as respostas DEVEM usar a knowledge base.  
+Ex.: “Consultar *core-concepts.md*”, “Ver *procedures.md*”.
+
+## 2. Comportamento
+- Resolver, não filosofar.  
+- Pensamento executivo: clareza, priorização e foco no impacto.  
+- Explicar como fazer, por que fazer, e possíveis riscos.  
+- Quando houver incerteza, indicar onde pesquisar: *resources.md*.  
+- Antes de propor ações, revisar *best-practices.md*.  
+
+## 3. Como responder
+1. Identificar a intenção do usuário.  
+2. Checar se existe conteúdo relevante na knowledge base.  
+3. Referenciar arquivos específicos (ex.: “conferir *troubleshooting.md*”).  
+4. Entregar um plano direto, acionável e com etapas claras.  
+5. Sugerir automações úteis quando fizer sentido.
+
+## 4. Restrições
+- Nunca inventar políticas de devolução, preços, prazos ou garantias: buscar instruções existentes em *procedures.md* ou solicitar dados ao usuário.  
+- Não assumir integrações inexistentes.  
+- Evitar jargão vazio.  
+- Evitar respostas genéricas sem referenciar a knowledge base.  
+
+## 5. Estrutura sugerida das respostas
+- **Diagnóstico**  
+- **Ação recomendada** (citando arquivos)  
+- **Checklist**  
+- **Automação sugerida (opcional)**  
+
+## 6. Casos de uso esperados
+Baseado em [BUSINESS/USE CASE CONTEXT]:
+- Triagem automática de e-mails e tickets  
+- Respostas prontas com personalização contextual  
+- Análise de relatórios de vendas e estoque  
+- Geração de campanhas e calendários de marketing  
+- Gestão de fornecedores e compras  
+- Procedimentos de retorno e trocas  
+- Monitoramento de rupturas e previsão de demanda  
+
+## 7. Como usar a Knowledge Base
+- *core-concepts.md*: princípios gerais de operação de e-commerce.  
+- *procedures.md*: passos detalhados para rotinas críticas.  
+- *best-practices.md*: recomendações otimizadas.  
+- *troubleshooting.md*: resolução rápida de problemas comuns.  
+- *resources.md*: links e fontes externas confiáveis.
+
+## 8. Atualização Contínua
+Ao detectar lacunas, sugerir novos itens para a knowledge base.  
+Sempre indicar o arquivo onde a nova entrada deveria ser criada.
+
+```
+
+---
+
+# ✅ Step 3 — Knowledge Base Files
+
+Conteúdo baseado em práticas de mercado (Shopify, Amazon, Zendesk, Gorgias, Meta Ads, GS1, supply chain standards, lean ops, ISO 9001 principles).
+
+---
+
+## **core-concepts.md**
+
+```
+---
+title: Core Concepts of Ecommerce Operations
+version: 1.0
+---
+
+# Fundamentos
+- Ciclo: tráfego → conversão → pagamento → fulfillment → suporte → recompra.
+- Indicadores-chave: taxa de entrega no prazo, FCR (First Contact Resolution), tempo médio de resposta, ruptura de estoque, margem contrib., LTV, CAC.
+
+# Pilares Operacionais
+1. **Clareza de processos:** padronização reduz erros (ISO 9001).  
+2. **Automação:** priorize tarefas repetitivas (ver *procedures.md*).  
+3. **Gestão de dados:** registros consistentes evitam retrabalho.  
+4. **Comunicação:** clientes respondem melhor a mensagens claras e rápidas.
+
+# Conectar com outros arquivos
+- Para execução prática: ver *procedures.md*.  
+- Para melhoria contínua: ver *best-practices.md*.
+```
+
+---
+
+## **procedures.md**
+
+```
+---
+title: Operational Procedures
+version: 1.0
+---
+
+# Atendimento ao Cliente
+## Resposta a e-mails comuns
+1. Identificar categoria (troca, reembolso, status, atraso).  
+2. Aplicar template correspondente (*sample-conversations.md*).  
+3. Registrar no CRM.  
+4. Consultar pedido → responder com prazo realista.
+
+# Fulfillment e Expedição
+- Conferir pagamentos → picking → packing → despacho.  
+- Para atrasos: consultar *troubleshooting.md*.
+
+# Controle de Estoque
+- Regras: contagem semanal, inventário mensal, baixa automática via OMS.  
+- Acionamento de fornecedores ao atingir ponto de reposição.
+
+# Devoluções e Trocas
+- Validar elegibilidade (ex.: 7 dias arrependimento, 30 dias defeito).  
+- Gerar etiqueta reversa.  
+- Registrar motivo para análise de tendência.
+
+# Marketing e Campanhas
+- Criar briefing rápido: objetivo, público, oferta.  
+- Planejar calendário mensal.  
+- Criar rascunho com base em *best-practices.md*.
+
+# Conectar com outros arquivos
+- Ver *best-practices.md* para otimização.  
+- Ver *troubleshooting.md* para problemas.
+```
+
+---
+
+## **best-practices.md**
+
+```
+---
+title: Best Practices for Ecommerce Ops
+version: 1.0
+---
+
+# Atendimento
+- Resposta em <2h aumenta conversão e satisfação (Zendesk Benchmark).  
+- Usar macros personalizadas + toque humano.
+
+# Fulfillment
+- Regra 80/20: foque em itens de maior giro.  
+- Dupla conferência reduz erros de envio.
+
+# Estoque
+- Evitar ruptura = checar forecast semanal.  
+- Prever demanda usando dados de 90 dias.
+
+# Marketing
+- Criar campanhas sempre com CTA mensurável.  
+- Relatórios semanais: CAC, ROAS, LTV.
+
+# Conectar com outros arquivos
+- Ver *procedures.md* para execução.  
+- Ver *troubleshooting.md* para falhas comuns.
+```
+
+---
+
+## **troubleshooting.md**
+
+```
+---
+title: Troubleshooting Guide
+version: 1.0
+---
+
+# Problema: Atraso no envio
+- Verificar transportadora → registrar SLA → avisar cliente.  
+- Acionar plano alternativo (motoboy, outra transportadora).
+
+# Problema: Estoque negativo
+- Verificar vendas multicanal.  
+- Revisar integradores.  
+- Rodar auditoria rápida de SKU.
+
+# Problema: Reembolso pendente
+- Checar gateway → validar estorno → enviar confirmação.
+
+# Problema: Pico de tickets
+- Ativar respostas automáticas → priorizar reclamações.  
+- Ver modelos em *sample-conversations.md*.
+
+# Conectar com outros arquivos
+- Para rotinas: ver *procedures.md*.  
+- Para prevenção: ver *best-practices.md*.
+```
+
+---
+
+## **resources.md**
+
+```
+---
+title: External Resources
+version: 1.0
+---
+
+# Documentação Oficial
+- Shopify Help Center  
+- Meta Business Help  
+- Google Merchant Center Policies  
+- Amazon Selling Partner Guidelines  
+- GS1 GTIN Standards  
+
+# Ferramentas recomendadas
+- Notion (processos)  
+- Klaviyo (e-mail)  
+- Gorgias / Zendesk (suporte)  
+- Tiny / Bling / Olist Hub (ERP/OMS)
+
+# Conectar com outros arquivos
+- Usar junto com *core-concepts.md* para aprofundamento.
+```
+
+---
+
+# **examples/sample-conversations.md**
+
+```
+# Modelos de Conversa
+
+## Status de Pedido
+Cliente: “Onde está meu pedido?”
+GPT: consultar *procedures.md* → puxar status → responder com prazo.
+
+## Atraso
+Responder com empatia + causa + novo prazo + compensação opcional.
+```
+
+---
+
+# **examples/use-case-scenarios.md**
+
+```
+# Cenários de Uso
+- Resposta automática de suporte.  
+- Previsão de reposição de estoque.  
+- Criação de campanhas semanais.  
+- Análise de indicadores de performance.
+```
+
+---
+
+# **project-overview.md**
+
+```
+# Project Overview
+Este GPT customizado atua como um operador digital de e-commerce, utilizando a knowledge base para executar, otimizar e automatizar tarefas, garantindo padronização, velocidade e eficiência nas operações diárias.
+```
+
+--

@@ -1,0 +1,96 @@
+// ============================================
+// SEPARAR TRILHA POR SEMANA
+// Recebe output do "Juntar Partes" e separa em 4 semanas
+// ============================================
+
+const input = $input.item.json;
+
+console.log('📦 Separando trilha em semanas...');
+
+// ✅ Verificar se tem trilha
+if (!input.trilha_json) {
+  throw new Error('❌ Campo trilha_json não encontrado no input');
+}
+
+// ✅ Parsear trilha
+let trilhaCompleta;
+try {
+  trilhaCompleta = JSON.parse(input.trilha_json);
+} catch (e) {
+  throw new Error(`❌ Erro ao parsear trilha_json: ${e.message}`);
+}
+
+if (!Array.isArray(trilhaCompleta) || trilhaCompleta.length === 0) {
+  throw new Error('❌ trilha_json não é um array válido ou está vazio');
+}
+
+console.log(`✅ Trilha com ${trilhaCompleta.length} dias`);
+
+// ✅ Função para determinar semana pelo dia
+function semanaFromDia(dia) {
+  const n = Number(dia);
+  if (n >= 1 && n <= 7) return 1;
+  if (n >= 8 && n <= 14) return 2;
+  if (n >= 15 && n <= 21) return 3;
+  if (n >= 22 && n <= 30) return 4;
+  return 1;
+}
+
+// ✅ Agrupar por semana
+const semanas = new Map();
+
+for (const dia of trilhaCompleta) {
+  const semana = semanaFromDia(dia.dia);
+
+  if (!semanas.has(semana)) {
+    semanas.set(semana, []);
+  }
+
+  semanas.get(semana).push(dia);
+}
+
+// ✅ Converter para array
+const resultado = Array.from(semanas.entries()).map(([numero, dias]) => {
+  // Calcular stats da semana
+  const reels = dias.filter(d => d.formato_primario === 'Reel').length;
+  const stories = dias.filter(d => d.formato_primario === 'Story').length;
+  const carrosseis = dias.filter(d => d.formato_primario === 'Carrossel').length;
+
+  // Fases predominantes
+  const fases = dias.map(d => d.fase);
+  const faseDominante = fases.sort((a, b) =>
+    fases.filter(f => f === a).length - fases.filter(f => f === b).length
+  ).pop();
+
+  return {
+    json: {
+      semana: numero,
+      dias: dias,
+
+      // Metadata
+      total_dias: dias.length,
+      dia_inicial: dias[0]?.dia,
+      dia_final: dias[dias.length - 1]?.dia,
+
+      // Stats
+      stats: {
+        total_reels: reels,
+        total_stories: stories,
+        total_carrosseis: carrosseis,
+        fase_dominante: faseDominante
+      },
+
+      // Expert data (repassar do input)
+      expert_id: input.expert_id,
+      expert_name: input.expert_name,
+
+      // JSON formatado
+      dias_json: JSON.stringify(dias, null, 2)
+    }
+  };
+});
+
+console.log(`✅ ${resultado.length} semanas criadas`);
+
+// Retornar as 4 semanas como items separados
+return resultado;

@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Foundation Sprint - 8 Entregáveis Completos em 30 Dias">
+    <title>Foundation Sprint - Entregáveis Detalhados | Carol & Luiz</title>
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="design-system.css">
+
+    <style>
+        body {
+            background: var(--bg-primary);
+            scroll-behavior: smooth;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #000 0%, #1a1a2e 100%);
+            padding: var(--space-24) var(--space-8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background: radial-gradient(circle at 30% 50%, var(--gold-500) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.2; }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: var(--space-2) var(--space-6);
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold-500);
+            border-radius: var(--radius-full);
+            color: var(--gold-500);
+            font-size: var(--tipo-2);
+            font-weight: var(--peso-semibold);
+            letter-spacing: 2px;
+            margin-bottom: var(--space-8);
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: var(--tipo-9);
+            font-weight: var(--peso-bold);
+            line-height: var(--altura-titulo);
+            margin-bottom: var(--space-6);
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: var(--tipo-4);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            margin-bottom: var(--space-12);
+        }
+
+        .hero-highlight {
+            font-size: var(--tipo-3);
+            color: var(--text-primary);
+            background: rgba(212, 175, 55, 0.1);
+            padding: var(--space-6);
+            border-left: 4px solid var(--gold-500);
+            border-radius: var(--radius-lg);
+            margin: var(--space-12) auto;
+            max-width: 600px;
+        }
+
+        /* Deliverables Section */
+        .deliverables {
+            padding: var(--space-24) var(--space-8);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-16);
+        }
+
+        .section-title {
+            font-size: var(--tipo-7);
+            font-weight: var(--peso-bold);
+            margin-bottom: var(--space-4);
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+        }
+
+        /* Deliverable Card */
+        .deliverable-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-12);
+            margin-bottom: var(--space-12);
+            transition: all var(--transition-base) ease;
+        }
+
+        .deliverable-card:hover {
+            border-color: var(--gold-500);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-5);
+        }
+
+        .deliverable-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .deliverable-icon {
+            font-size: var(--tipo-8);
+            flex-shrink: 0;
+        }
+
+        .deliverable-title-group {
+            flex: 1;
+        }
+
+        .deliverable-number {
+            font-size: var(--tipo-1);
+            color: var(--gold-500);
+            font-weight: var(--peso-bold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: var(--space-2);
+        }
+
+        .deliverable-title {
+            font-size: var(--tipo-5);
+            font-weight: var(--peso-bold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-3);
+        }
+
+        .deliverable-value {
+            font-size: var(--tipo-3);
+            color: var(--gold-500);
+            font-weight: var(--peso-semibold);
+        }
+
+        .deliverable-description {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            margin-bottom: var(--space-8);
+        }
+
+        .deliverable-items {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: var(--space-4);
+        }
+
+        .deliverable-items li {
+            padding-left: var(--space-8);
+            position: relative;
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+        }
+
+        .deliverable-items li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--gold-500);
+            font-weight: var(--peso-bold);
+            font-size: var(--tipo-4);
+        }
+
+        /* What We DON'T Do Section */
+        .dont-do-section {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            padding: var(--space-24) var(--space-8);
+            margin: var(--space-24) 0;
+        }
+
+        .dont-do-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .dont-do-title {
+            font-size: var(--tipo-6);
+            font-weight: var(--peso-bold);
+            color: var(--red-500);
+            margin-bottom: var(--space-8);
+        }
+
+        .dont-do-intro {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            margin-bottom: var(--space-12);
+        }
+
+        .dont-do-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-8);
+            margin-bottom: var(--space-12);
+        }
+
+        .dont-do-item {
+            background: rgba(248, 81, 73, 0.05);
+            border: 2px solid var(--red-500);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+        }
+
+        .dont-do-item-icon {
+            font-size: var(--tipo-7);
+            margin-bottom: var(--space-4);
+        }
+
+        .dont-do-item-title {
+            font-size: var(--tipo-4);
+            font-weight: var(--peso-semibold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-3);
+        }
+
+        .dont-do-item-text {
+            font-size: var(--tipo-2);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+        }
+
+        .do-instead {
+            background: rgba(63, 185, 80, 0.05);
+            border: 2px solid var(--green-500);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+            margin-top: var(--space-12);
+        }
+
+        .do-instead-title {
+            font-size: var(--tipo-5);
+            font-weight: var(--peso-bold);
+            color: var(--green-500);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            justify-content: center;
+        }
+
+        .do-instead-text {
+            font-size: var(--tipo-3);
+            color: var(--text-primary);
+            line-height: var(--altura-corpo);
+        }
+
+        /* Timeline Section */
+        .timeline-section {
+            padding: var(--space-24) var(--space-8);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: var(--space-8);
+            margin-bottom: var(--space-12);
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 60px;
+            top: 80px;
+            bottom: -48px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--gold-500) 0%, rgba(212, 175, 55, 0.2) 100%);
+        }
+
+        .timeline-week {
+            text-align: right;
+            padding-top: var(--space-4);
+        }
+
+        .timeline-week-number {
+            font-size: var(--tipo-6);
+            font-weight: var(--peso-bold);
+            color: var(--gold-500);
+            line-height: 1;
+        }
+
+        .timeline-week-label {
+            font-size: var(--tipo-1);
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+        }
+
+        .timeline-content h4 {
+            font-size: var(--tipo-4);
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+        }
+
+        .timeline-content ul {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-4) 0;
+        }
+
+        .timeline-content li {
+            padding: var(--space-2) 0 var(--space-2) var(--space-6);
+            position: relative;
+            color: var(--text-secondary);
+            font-size: var(--tipo-2);
+        }
+
+        .timeline-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--gold-500);
+        }
+
+        .timeline-delivery {
+            margin-top: var(--space-4);
+            padding: var(--space-4);
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: var(--radius-base);
+            font-weight: var(--peso-semibold);
+            color: var(--gold-500);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #0a0a0a 0%, #16213e 100%);
+            padding: var(--space-24) var(--space-8);
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: var(--tipo-7);
+            font-weight: var(--peso-bold);
+            margin-bottom: var(--space-6);
+            color: var(--text-primary);
+        }
+
+        .cta-text {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            margin-bottom: var(--space-12);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: var(--space-6) var(--space-16);
+            min-height: 56px;
+            background: var(--gradient-gold);
+            color: var(--text-inverse);
+            font-size: var(--tipo-3);
+            font-weight: var(--peso-bold);
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            transition: all var(--transition-fast) ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .cta-button:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Navigation */
+        .nav-breadcrumb {
+            position: fixed;
+            top: var(--space-4);
+            left: var(--space-4);
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            z-index: 9999;
+            font-size: var(--tipo-1);
+        }
+
+        .nav-breadcrumb a {
+            color: var(--text-tertiary);
+            text-decoration: none;
+            transition: color var(--transition-fast) ease;
+        }
+
+        .nav-breadcrumb a:hover {
+            color: var(--gold-500);
+        }
+
+        .nav-breadcrumb .current {
+            color: var(--gold-500);
+            font-weight: var(--peso-semibold);
+        }
+
+        /* Logo Header */
+        .logo-header {
+            position: fixed;
+            top: var(--space-4);
+            right: var(--space-4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-5);
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            border: 1px solid var(--gold-700);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+        }
+
+        .logo-icon {
+            font-size: var(--tipo-5);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text {
+            font-size: var(--tipo-2);
+            color: var(--neutral-400);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: var(--tipo-7);
+            }
+
+            .deliverable-header {
+                flex-direction: column;
+            }
+
+            .timeline-item {
+                grid-template-columns: 1fr;
+                gap: var(--space-4);
+            }
+
+            .timeline-item::after {
+                display: none;
+            }
+
+            .timeline-week {
+                text-align: left;
+            }
+
+            .dont-do-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Breadcrumb -->
+    <nav class="nav-breadcrumb" aria-label="Navegação">
+        <a href="proposta.html">Visão Geral</a> / <span class="current">Foundation Sprint</span>
+    </nav>
+
+    <!-- Logo Header -->
+    <div class="logo-header">
+        <div class="logo-icon">MOTTIVME</div>
+        <div class="logo-text">Sales</div>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="hero-content">
+            <span class="hero-badge">30 Dias de Estruturação</span>
+            <h1 class="hero-title">Foundation Sprint</h1>
+            <p class="hero-subtitle">
+                8 Entregáveis Completos que Transformam Seu Negócio<br>
+                de CAOS → MÁQUINA COMERCIAL
+            </p>
+            <div class="hero-highlight">
+                <strong>R$ 63.000 em valor entregue</strong><br>
+                Investimento: R$ 53.982 à vista
+            </div>
+        </div>
+    </section>
+
+    <!-- Deliverables -->
+    <section class="deliverables">
+        <div class="section-header">
+            <h2 class="section-title">📦 Os 8 Entregáveis</h2>
+            <p class="section-subtitle">
+                Tudo que você precisa para estruturar sua oferta, funis, scripts e processos
+            </p>
+        </div>
+
+        <!-- Deliverable 1 -->
+        <article class="deliverable-card">
+            <div class="deliverable-header">
+                <div class="deliverable-icon">📘</div>
+                <div class="deliverable-title-group">
+                    <div class="deliverable-number">Entregável 1</div>
+                    <h3 class="deliverable-title">Brand Book (40 páginas)</h3>
+                    <div class="deliverable-value">Valor: R$ 15.000</div>
+                </div>
+            </div>
+            <p class="deliverable-description">
+                Documento completo do seu posicionamento estratégico. Tudo que define QUEM você é, QUEM você serve, e POR QUE você é diferente.
+            </p>
+            <ul class="deliverable-items">
+                <li>ICP detalhado (perfil cristalino do cliente ideal)</li>
+                <li>Avatar 360° (dores profundas, desejos ocultos, objeções reais)</li>
+                <li>Diferenciação competitiva (o que te torna único)</li>
+                <li>Identidade visual + Tom de voz (como você se comunica)</li>
+                <li>Proposta de valor única (sua promessa clara)</li>
+            </ul>
+        </article>
+
+        <!-- Deliverable 2 -->
+        <article class="deliverable-card">
+            <div class="deliverable-header">
+                <div class="deliverable-icon">💰</div>
+                <div class="deliverable-title-group">
+                    <div class="deliverable-number">Entregável 2</div>
+                    <h3 class="deliverable-title">Offer Stack (Método Hormozi)</h3>
+                    <div class="deliverable-value">Valor: R$ 10.000</div>
+                </div>
+            </div>
+            <p class="deliverable-description">
+                Sua oferta irresistível estruturada seguindo o framework de Alex Hormozi. A diferença entre "interessante" e "PRECISO DISSO AGORA".
+            </p>
+            <ul class="deliverable-items">
+                <li>Stack completo (produto principal + bonuses estratégicos)</li>
+                <li>Precificação ancorada (R$ valor percebido vs valor real)</li>
+                <li>Garantias fortes (reverter risco → cliente)</li>
+                <li>Urgência e escassez (gatilhos de ação imediata)</li>
+                <li>Proposta de valor high-ticket (justifica o preço)</li>
+            </ul>
+        </article>
+
+        <!-- Deliverable 3 -->
+        <article class="deliverable-card">
+            <div class="deliverable-header">
+                <div class="deliverable-icon">🎯</div>
+                <div class="deliverable-title-group">
+                    <div class="deliverable-number">Entregável 3</div>
+                    <h3 class="deliverable-title">3 Funis Completos</h3>
+                    <div class="deliverable-value">Valor: R$ 12.000</div>
+                </div>
+            </div>
+            <p class="deliverable-description">
+                Três funis de vendas testados e prontos para rodar. Cada um otimizado para um canal diferente.
+            </p>
+            <ul class="deliverable-items">
+                <li><strong>Funil A - Orgânico:</strong> Post Instagram → DM → Agendamento</li>
+                <li><strong>Funil B - Tráfego Pago:</strong> Anúncio → Landing Page → Lead → Email → Agendamento</li>
+                <li><strong>Funil C - Outbound:</strong> Busca LinkedIn → Cold Message → Agendamento</li>
+                <li>Mapeamento completo de cada etapa</li>
+                <li>Mensagens e copys para cada touchpoint</li>
+            </ul>
+        </article>
+
+        <!-- Deliverable 4 -->
+        <article class="deliverable-card">
+            <div class="deliverable-header">
+                <div class="deliverable-icon">📝</div>
+                <div class="deliverable-title-group">
+                    <div class="deliverable-number">Entregável 4</div>
+                    <h3 class="deliverable-title">20 Scripts Prontos</h3>
+                    <div class="deliverable-value">Valor: R$ 8.000</div>
+                </div>
+            </div>
+            <p class="deliverable-description">
+                Scripts testados e validados. Você nunca mais fica sem saber o que falar ou escrever.
+            </p>
+            <ul class="deliverable-items">
+                <li><strong>5 scripts virais:</strong> Para Reels/TikTok (autoridade + engajamento)</li>
+                <li><strong>5 copys de anúncio:</strong> Para Meta Ads (captura atenção + conversão)</li>
+                <li><strong>5 scripts SDR:</strong> Para agendamento de calls (qualificação + show-rate alto)</li>
+                <li><strong>5 scripts de vendas:</strong> Para fechamento (objeções + ancoragem)</li>
+                <li>Versões A/B para testar performance</li>
+            </ul>
+        </article>
+
+        <!-- Deliverable 5 -->
+        <article class="deliverable-card">
+            <div class="deliverable-header">
+                <div class="deliverable-icon">📅</div>
+                <div class="deliverable-title-group">
+                    <div class="deliverable-number">Entregável 5</div>
+                    <h3 class="deliverable-title">Content Calendar (90 Dias)</h3>
+                    <div class="deliverable-value">Valor: R$ 6.000</div>
+                </div>
+            </div>
+            <p class="deliverable-description">
+                3 meses de conteúdo planejado e estratégico. Você nunca fica travado sem saber o que postar.
+            </p>
+            <ul class="deliverable-items">
+                <li>90 posts prontos (3 posts por dia)</li>
+                <li>Mix balanceado: Autoridade (40%) + Conexão (30%) + Conversão (30%)</li>
+                <li>Calendário semanal organizado por tema</li>
+                <li>Headlines, copys e CTAs já escritos</li>
+                <li>Sugestões de imagens/vídeos para cada post</li>
+            </ul>
+        </article>
+
+        <!-- Deliverable 6 -->
+        <article class="deliverable-card">
+            <div class="deliverable-header">
+                <div class="deliverable-icon">🎁</div>
+                <div class="deliverable-title-group">
+                    <div class="deliverable-number">Entregável 6</div>
+                    <h3 class="deliverable-title">3 Lead Magnets (Iscas Digitais)</h3>
+                    <div class="deliverable-value">Valor: R$ 4.000</div>
+                </div>
+            </div>
+            <p class="deliverable-description">
+                3 iscas digitais de alto valor para capturar leads qualificados em diferentes estágios da jornada.
+            </p>
+            <ul class="deliverable-items">
+                <li><strong>Quiz interativo:</strong> Para segmentar leads automaticamente</li>
+                <li><strong>PDF/Guia prático:</strong> Conteúdo de alto valor (20-30 páginas)</li>
+                <li><strong>Webinar estruturado:</strong> Apresentação de 45-60min com pitch embutido</li>
+                <li>Landing pages para cada isca</li>
+                <li>Sequências de email pós-captura</li>
+            </ul>
+        </article>
+
+        <!-- Deliverable 7 -->
+        <article class="deliverable-card">
+            <div class="deliverable-header">
+                <div class="deliverable-icon">💻</div>
+                <div class="deliverable-title-group">
+                    <div class="deliverable-number">Entregável 7</div>
+                    <h3 class="deliverable-title">CRM Socialfy Configurado</h3>
+                    <div class="deliverable-value">Valor: R$ 5.000</div>
+                </div>
+            </div>
+            <p class="deliverable-description">
+                CRM personalizado, configurado e pronto para usar. GoLive em 7 dias (vs 30-60 dias do mercado).
+            </p>
+            <ul class="deliverable-items">
+                <li>Snapshot personalizado (100% adaptado ao seu negócio)</li>
+                <li>Pipelines estruturados (cada etapa mapeada)</li>
+                <li>Automações criadas (emails, SMS, WhatsApp)</li>
+                <li>Confirmações L-24h e L-2h (reduz no-show)</li>
+                <li>Dashboard com métricas-chave (conversão, show-rate, ticket médio)</li>
+            </ul>
+        </article>
+
+        <!-- Deliverable 8 -->
+        <article class="deliverable-card">
+            <div class="deliverable-header">
+                <div class="deliverable-icon">📊</div>
+                <div class="deliverable-title-group">
+                    <div class="deliverable-number">Entregável 8</div>
+                    <h3 class="deliverable-title">Messaging Matrix</h3>
+                    <div class="deliverable-value">Valor: R$ 3.000</div>
+                </div>
+            </div>
+            <p class="deliverable-description">
+                Arsenal completo de mensagens testadas. Nunca mais fique sem resposta para uma objeção ou situação.
+            </p>
+            <ul class="deliverable-items">
+                <li>Headlines testadas (50+ variações com % de conversão)</li>
+                <li>CTAs de alta conversão (20+ calls-to-action otimizados)</li>
+                <li>Respostas para objeções (10 objeções mais comuns + respostas)</li>
+                <li>FAQs estruturados (20 perguntas frequentes respondidas)</li>
+                <li>Templates de email/WhatsApp para cada etapa do funil</li>
+            </ul>
+        </article>
+    </section>
+
+    <!-- What We DON'T Do -->
+    <section class="dont-do-section">
+        <div class="dont-do-content">
+            <h2 class="dont-do-title">⚠️ O QUE NÃO FAZEMOS</h2>
+            <p class="dont-do-intro">
+                Deixa eu ser <strong>brutalmente honesto</strong> com vocês para não haver expectativas erradas...
+            </p>
+
+            <div class="dont-do-grid">
+                <div class="dont-do-item">
+                    <div class="dont-do-item-icon">❌</div>
+                    <h3 class="dont-do-item-title">Fazer Posts no Instagram</h3>
+                    <p class="dont-do-item-text">
+                        Criamos o calendário, os scripts, as copys. Mas NÃO postamos por você. Isso vem na <strong>Execução</strong>.
+                    </p>
+                </div>
+
+                <div class="dont-do-item">
+                    <div class="dont-do-item-icon">❌</div>
+                    <h3 class="dont-do-item-title">Rodar Tráfego Pago</h3>
+                    <p class="dont-do-item-text">
+                        Criamos os anúncios, landing pages, funis. Mas NÃO rodamos campanhas. Isso vem na <strong>Execução</strong>.
+                    </p>
+                </div>
+
+                <div class="dont-do-item">
+                    <div class="dont-do-item-icon">❌</div>
+                    <h3 class="dont-do-item-title">Prospectar Clientes</h3>
+                    <p class="dont-do-item-text">
+                        Criamos os scripts de prospecção, mensagens, automações. Mas NÃO operamos o SDR. Isso vem na <strong>Execução</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="do-instead">
+                <h3 class="do-instead-title">
+                    <span>✅</span> O QUE FAZEMOS NO FOUNDATION SPRINT
+                </h3>
+                <p class="do-instead-text">
+                    Foundation Sprint é <strong>ESTRUTURA</strong>. É você sair de <strong>CAOS → MÁQUINA COMERCIAL</strong>.<br><br>
+                    Entregamos TUDO pronto: ICP, Oferta, Funis, Scripts, Conteúdo, CRM configurado.<br><br>
+                    <strong>A execução (posts, anúncios, prospecção) vem DEPOIS — nos 6 meses de Demand Stack.</strong>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="timeline-section">
+        <div class="section-header">
+            <h2 class="section-title">⏱️ Timeline de 4 Semanas</h2>
+            <p class="section-subtitle">Como estruturamos TUDO em 30 dias</p>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-week">
+                <div class="timeline-week-number">S1</div>
+                <div class="timeline-week-label">Semana 1</div>
+            </div>
+            <div class="timeline-content">
+                <h4>Diagnóstico + Posicionamento</h4>
+                <ul>
+                    <li>Diagnóstico completo do negócio</li>
+                    <li>Definição cristalina do ICP</li>
+                    <li>Criação do Avatar 360°</li>
+                    <li>Definição de identidade de marca</li>
+                </ul>
+                <div class="timeline-delivery">📘 Entrega: Brand Book v1</div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-week">
+                <div class="timeline-week-number">S2</div>
+                <div class="timeline-week-label">Semana 2</div>
+            </div>
+            <div class="timeline-content">
+                <h4>Oferta + Preço</h4>
+                <ul>
+                    <li>Estruturação da oferta (Método Hormozi)</li>
+                    <li>Definição estratégica de preço</li>
+                    <li>Criação de garantias fortes</li>
+                    <li>Montagem do stack completo</li>
+                </ul>
+                <div class="timeline-delivery">💰 Entrega: Offer Stack completo</div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-week">
+                <div class="timeline-week-number">S3</div>
+                <div class="timeline-week-label">Semana 3</div>
+            </div>
+            <div class="timeline-content">
+                <h4>Funis + Conteúdo</h4>
+                <ul>
+                    <li>Criação dos 3 funis completos</li>
+                    <li>20 scripts prontos (viral, anúncio, SDR, vendas)</li>
+                    <li>Calendário de conteúdo 90 dias</li>
+                    <li>3 lead magnets criados</li>
+                </ul>
+                <div class="timeline-delivery">🎯 Entrega: Funis + Scripts + Conteúdo</div>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-week">
+                <div class="timeline-week-number">S4</div>
+                <div class="timeline-week-label">Semana 4</div>
+            </div>
+            <div class="timeline-content">
+                <h4>CRM + Entrega Final</h4>
+                <ul>
+                    <li>Setup completo do CRM Socialfy</li>
+                    <li>Automações configuradas</li>
+                    <li>Revisão final de todos os entregáveis</li>
+                    <li>Playback e entrega (você recebe TUDO)</li>
+                </ul>
+                <div class="timeline-delivery">✅ Entrega: Tudo pronto para vender</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">Pronto para Estruturar?</h2>
+            <p class="cta-text">
+                Agora que você viu TUDO que está incluído no Foundation Sprint...<br>
+                Quer ver os detalhes da <strong>Execução</strong> (6 meses de Demand Stack)?
+            </p>
+            <a href="entregaveis-execucao.html" class="cta-button">
+                VER ENTREGÁVEIS DA EXECUÇÃO →
+            </a>
+        </div>
+    </section>
+
+    <script>
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Add entrance animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '0';
+                    entry.target.style.transform = 'translateY(20px)';
+                    entry.target.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, 100);
+
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.deliverable-card, .timeline-item').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,594 @@
+{
+  "name": "2. Sistema de Cobrança Automática v2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-400, 300],
+      "id": "schedule-trigger",
+      "name": "A cada 6 horas"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "config-01",
+              "name": "location_id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "config-02",
+              "name": "ghl_api_key",
+              "value": "pit-1513fb68-1b2e-44fc-ab4a-ad4d188b603b",
+              "type": "string"
+            },
+            {
+              "id": "config-03",
+              "name": "admin_contact_id",
+              "value": "EeQAehVFadRPpe8vOYXI",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-180, 300],
+      "id": "config-ghl",
+      "name": "Configurações GHL"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Buscar cobranças com vencimento em 5 dias (lembretes)\nSELECT \n  m.id,\n  m.descricao,\n  m.valor_previsto as valor,\n  TO_CHAR(m.data_vencimento, 'YYYY-MM-DD') as data_vencimento,\n  TO_CHAR(m.data_vencimento, 'DD/MM/YYYY') as data_vencimento_br,\n  c.nome as cliente_nome,\n  c.telefone,\n  c.email,\n  m.observacao,\n  'lembrete' as tipo_notificacao\nFROM fin_movimentacoes m\nLEFT JOIN fin_clientes_fornecedores c ON m.cliente_fornecedor_id = c.id\nWHERE \n  m.tipo = 'receita'\n  AND m.quitado = false\n  AND m.data_vencimento = CURRENT_DATE + INTERVAL '5 days'\n  AND (c.telefone IS NOT NULL OR c.email IS NOT NULL)\n  AND NOT EXISTS (\n    SELECT 1 FROM fin_cobrancas_automaticas ca\n    WHERE ca.movimentacao_id = m.id\n    AND ca.status IN ('lembrete_enviado', 'cobranca_enviada', 'pago')\n  )\nUNION ALL\n-- Buscar cobranças vencendo hoje\nSELECT \n  m.id,\n  m.descricao,\n  m.valor_previsto as valor,\n  TO_CHAR(m.data_vencimento, 'YYYY-MM-DD') as data_vencimento,\n  TO_CHAR(m.data_vencimento, 'DD/MM/YYYY') as data_vencimento_br,\n  c.nome as cliente_nome,\n  c.telefone,\n  c.email,\n  m.observacao,\n  'cobranca' as tipo_notificacao\nFROM fin_movimentacoes m\nLEFT JOIN fin_clientes_fornecedores c ON m.cliente_fornecedor_id = c.id\nWHERE \n  m.tipo = 'receita'\n  AND m.quitado = false\n  AND m.data_vencimento = CURRENT_DATE\n  AND (c.telefone IS NOT NULL OR c.email IS NOT NULL)\n  AND NOT EXISTS (\n    SELECT 1 FROM fin_cobrancas_automaticas ca\n    WHERE ca.movimentacao_id = m.id\n    AND ca.status IN ('cobranca_enviada', 'pago')\n  )\nORDER BY data_vencimento ASC;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [40, 300],
+      "id": "query-cobrancas",
+      "name": "Buscar Cobranças Pendentes",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-bpo",
+          "name": "Supabase - BPO Financeiro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-data",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [260, 300],
+      "id": "check-tem-cobrancas",
+      "name": "Tem Cobranças?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preparar dados para busca de contato\nconst items = $input.all();\nconst config = $('Configurações GHL').item.json;\nconst results = [];\n\nfor (const item of items) {\n  const data = item.json;\n  \n  // Formatar valor em BRL\n  const valorFormatado = new Intl.NumberFormat('pt-BR', {\n    style: 'currency',\n    currency: 'BRL'\n  }).format(data.valor || 0);\n  \n  // Criar mensagem baseada no tipo\n  let mensagem = '';\n  if (data.tipo_notificacao === 'lembrete') {\n    mensagem = `📅 Olá ${data.cliente_nome || 'Cliente'}!\\n\\n🔔 *LEMBRETE DE PAGAMENTO*\\n\\nSua fatura de ${valorFormatado} vence em 5 dias (${data.data_vencimento_br}).\\n\\n📝 Descrição: ${data.descricao || 'Serviço'}\\n\\n💡 Evite multas e juros pagando até o vencimento.\\n\\nQualquer dúvida, estamos à disposição! 😊\\n\\n---\\nMottivme Sales - Gestão Financeira`;\n  } else {\n    mensagem = `⚠️ *COBRANÇA - VENCIMENTO HOJE*\\n\\nOlá ${data.cliente_nome || 'Cliente'},\\n\\nSua fatura de ${valorFormatado} vence *HOJE* (${data.data_vencimento_br})! ⏰\\n\\n📝 Descrição: ${data.descricao || 'Serviço'}\\n\\n💳 Para evitar juros e multas, efetue o pagamento o quanto antes.\\n\\nApós o pagamento, envie o comprovante para confirmarmos o recebimento.\\n\\n---\\nMottivme Sales - Gestão Financeira`;\n  }\n  \n  results.push({\n    json: {\n      ...data,\n      mensagem,\n      valor_formatado: valorFormatado,\n      location_id: config.location_id,\n      ghl_api_key: config.ghl_api_key,\n      admin_contact_id: config.admin_contact_id\n    }\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 200],
+      "id": "preparar-dados",
+      "name": "Preparar Dados e Mensagem"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $json.location_id }}\",\n  \"pageLimit\": 1,\n  \"query\": \"{{ $json.email }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [700, 200],
+      "id": "search-by-email",
+      "name": "Buscar Contato por Email"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "found-by-email",
+              "leftValue": "={{ $json.contacts?.[0]?.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [920, 200],
+      "id": "check-found-email",
+      "name": "Encontrou por Email?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Preparar Dados e Mensagem').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $('Preparar Dados e Mensagem').item.json.location_id }}\",\n  \"pageLimit\": 1,\n  \"query\": \"{{ $('Preparar Dados e Mensagem').item.json.telefone }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [920, 400],
+      "id": "search-by-phone",
+      "name": "Buscar Contato por Telefone"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "found-by-phone",
+              "leftValue": "={{ $json.contacts?.[0]?.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1140, 400],
+      "id": "check-found-phone",
+      "name": "Encontrou por Telefone?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Preparar Dados e Mensagem').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $('Preparar Dados e Mensagem').item.json.location_id }}\",\n  \"email\": \"{{ $('Preparar Dados e Mensagem').item.json.email }}\",\n  \"phone\": \"{{ $('Preparar Dados e Mensagem').item.json.telefone }}\",\n  \"firstName\": \"{{ $('Preparar Dados e Mensagem').item.json.cliente_nome.split(' ')[0] }}\",\n  \"lastName\": \"{{ $('Preparar Dados e Mensagem').item.json.cliente_nome.split(' ').slice(1).join(' ') || '' }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1140, 600],
+      "id": "create-contact",
+      "name": "Criar Contato no GHL"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "contact-id-email",
+              "name": "contact_id",
+              "value": "={{ $json.contacts[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-source",
+              "name": "contact_source",
+              "value": "email",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1140, 100],
+      "id": "set-contact-email",
+      "name": "Usar Contact ID (Email)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "contact-id-phone",
+              "name": "contact_id",
+              "value": "={{ $json.contacts[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-source",
+              "name": "contact_source",
+              "value": "telefone",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1360, 300],
+      "id": "set-contact-phone",
+      "name": "Usar Contact ID (Telefone)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "contact-id-new",
+              "name": "contact_id",
+              "value": "={{ $json.contact.id }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-source",
+              "name": "contact_source",
+              "value": "novo",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1360, 600],
+      "id": "set-contact-new",
+      "name": "Usar Contact ID (Novo)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Preparar Dados e Mensagem').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $json.contact_id }}\",\n  \"message\": {{ JSON.stringify($('Preparar Dados e Mensagem').item.json.mensagem) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1800, 300],
+      "id": "send-whatsapp",
+      "name": "Enviar WhatsApp"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Registrar envio de notificação\nINSERT INTO fin_cobrancas_automaticas (\n  movimentacao_id,\n  telefone,\n  status,\n  lembrete_enviado_em,\n  cobranca_enviada_em\n)\nVALUES (\n  '{{ $('Preparar Dados e Mensagem').item.json.id }}'::uuid,\n  '{{ $('Preparar Dados e Mensagem').item.json.telefone }}',\n  '{{ $('Preparar Dados e Mensagem').item.json.tipo_notificacao === \"lembrete\" ? \"lembrete_enviado\" : \"cobranca_enviada\" }}',\n  {{ $('Preparar Dados e Mensagem').item.json.tipo_notificacao === \"lembrete\" ? \"NOW()\" : \"NULL\" }},\n  {{ $('Preparar Dados e Mensagem').item.json.tipo_notificacao === \"cobranca\" ? \"NOW()\" : \"NULL\" }}\n)\nON CONFLICT (movimentacao_id) DO UPDATE\nSET \n  status = EXCLUDED.status,\n  lembrete_enviado_em = COALESCE(EXCLUDED.lembrete_enviado_em, fin_cobrancas_automaticas.lembrete_enviado_em),\n  cobranca_enviada_em = COALESCE(EXCLUDED.cobranca_enviada_em, fin_cobrancas_automaticas.cobranca_enviada_em)\nRETURNING *;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [2020, 300],
+      "id": "log-envio",
+      "name": "Registrar Envio",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-bpo",
+          "name": "Supabase - BPO Financeiro"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [480, 400],
+      "id": "noop-sem-cobrancas",
+      "name": "Nada a Cobrar"
+    }
+  ],
+  "connections": {
+    "A cada 6 horas": {
+      "main": [
+        [
+          {
+            "node": "Configurações GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configurações GHL": {
+      "main": [
+        [
+          {
+            "node": "Buscar Cobranças Pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Cobranças Pendentes": {
+      "main": [
+        [
+          {
+            "node": "Tem Cobranças?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Cobranças?": {
+      "main": [
+        [
+          {
+            "node": "Preparar Dados e Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Nada a Cobrar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Dados e Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Buscar Contato por Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Contato por Email": {
+      "main": [
+        [
+          {
+            "node": "Encontrou por Email?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encontrou por Email?": {
+      "main": [
+        [
+          {
+            "node": "Usar Contact ID (Email)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar Contato por Telefone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Contato por Telefone": {
+      "main": [
+        [
+          {
+            "node": "Encontrou por Telefone?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encontrou por Telefone?": {
+      "main": [
+        [
+          {
+            "node": "Usar Contact ID (Telefone)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Criar Contato no GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Contato no GHL": {
+      "main": [
+        [
+          {
+            "node": "Usar Contact ID (Novo)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usar Contact ID (Email)": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usar Contact ID (Telefone)": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usar Contact ID (Novo)": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Registrar Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "v2.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "n8n-bpo-financeiro"
+  },
+  "id": "sistema-cobranca-automatica-v2",
+  "tags": []
+}

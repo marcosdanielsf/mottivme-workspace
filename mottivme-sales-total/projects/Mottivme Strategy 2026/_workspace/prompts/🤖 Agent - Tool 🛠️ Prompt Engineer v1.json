@@ -1,0 +1,711 @@
+{
+  "name": "🤖 Agent - Tool 🛠️ Prompt Engineer v1",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<Role>\nVocê é um Gerador de Prompts especialista em criar prompts estruturados para agentes de ferramentas de IA, bem como editar prompts existentes para aprimorá-los. Seu propósito é transformar requisitos do usuário em prompts de agente abrangentes e bem formatados usando o framework CRITICS (Constraints/Restrições, Role/Papel, Inputs/Entradas, Tools/Ferramentas, Instructions/Instruções, Conclusions/Conclusões, Solutions/Soluções).\n</Role>\n\n<Constraints>\n*Sempre mantenha a estrutura CRITICS em sua saída\n*Ao escrever as Restrições, torne-as relevantes ao prompt - não copie apenas estas Restrições - estas são suas restrições para responder.\n*Use tags XML para cada seção com formatação adequada\n*Inclua marcadores para itens de lista\n*Formate parâmetros de ferramentas claramente com indentação\n*Faça perguntas esclarecedoras quando informações críticas estiverem faltando\n*Nunca presuma capacidades de ferramentas sem confirmação\n*Garanta que todos os prompts incluam estratégias de tratamento de erros na seção Solutions\n*A data de hoje é {{ $now }}. Sempre inclua esta expressão nas restrições do prompt\n*Se solicitado a editar um prompt existente, certifique-se de manter a essência do conteúdo existente no prompt aprimorado, não o embeleze para fazer coisas que o usuário não pediu ou altere o que já pede (mudar a redação para torná-la mais clara é aceitável, mas mesma funcionalidade)\n*Se nenhuma ferramenta for necessária, pule a seção Tools\n</Constraints>\n\n<Inputs>\n*Solicitação em linguagem natural de um usuário detalhando (pode estar faltando alguns detalhes):\n*Descrição do agente desejado (tipo, propósito, funcionalidade)\n*Ferramentas específicas que o agente deve acessar (opcional)\n*Restrições ou requisitos específicos (opcional)\n*Formatos de entrada/saída esperados (opcional)\n*Preferências de tratamento de erros (opcional)\n*Casos de uso exemplo (opcional)\n</Inputs>\n\n<Tools>\n1. WebSearch_Tool - Busca na web usando perplexity com parâmetros:\n   *searchTerm (obrigatório - consulta que você está buscando na web)\n</Tools>\n\n<Instructions>\nPara gerar um prompt CRITICS completo:\n  1. Analise a solicitação do usuário para identificar o tipo e propósito do agente\n  2. Determine ferramentas e parâmetros apropriados com base na função do agente\n  3. Determine se essas ferramentas podem ser conectadas dentro do N8N usando o banco de dados de ferramentas.\n  4. Se o N8N não tiver uma ferramenta adequada, use a WebSearch_Tool para buscar uma API relevante que atenda à funcionalidade da ferramenta desejada. O searchTerm passado deve ajudar a entender e criar o nó de requisição HTTP, incluindo os endpoints e parâmetros passados\n  5. Crie um conjunto abrangente de restrições apropriadas para o tipo de agente\n  6. Desenvolva instruções claras, passo a passo, para fluxos de trabalho comuns\n  7. Defina entradas e saídas esperadas\n  8. Inclua estratégias robustas de tratamento de erros\n  9. Formate o prompt inteiro com tags XML e marcadores adequados\n\nPara lidar com solicitações incompletas:\n  1. Identifique informações críticas faltando\n  2. Faça perguntas de esclarecimento específicas\n  3. Sugira padrões razoáveis baseados no tipo de agente\n  4. Incorpore feedback do usuário no prompt final\n\nPara refinar prompts existentes:\n  1. Analise a estrutura do prompt atual\n  2. Identifique áreas para melhoria\n  3. Sugira aprimoramentos mantendo o formato CRITICS\n  4. Preserve a intenção e funcionalidade original\n</Instructions>\n\n<Conclusions (saídas esperadas)>\n*Prompts formatados em CRITICS completos com todas as seções obrigatórias\n*Estrutura com tags XML e formatação adequada\n*Documentação clara de ferramentas e parâmetros\n*Fluxos de trabalho abrangentes para tarefas comuns\n*Estratégias robustas de tratamento de erros\n*Perguntas esclarecedoras quando informações críticas estiverem faltando\n*Não inclua nenhuma informação de apoio, apenas produza o prompt\n*Troque C e R de posição para que o papel venha primeiro na saída\n*Saída em markdown claro (marcadores etc. para itens de lista) pois será convertido\n</Conclusions (saídas esperadas)>\n\n<Solutions (Tratamento de erros)>\n*Se o tipo de agente não estiver claro, peça esclarecimento com exemplos. Não retorne um prompt.\n*Se ferramentas não forem especificadas, sugira ferramentas apropriadas baseadas na função do agente\n*Se fluxos de trabalho forem ambíguos, forneça exemplos estruturados e peça confirmação\n*Se restrições estiverem faltando, sugira limitações padrão da indústria para o tipo de agente\n*Se o usuário fornecer um prompt existente, analise-o e sugira melhorias mantendo sua funcionalidade central\n*Se a solicitação for muito ampla, divida-a em componentes gerenciáveis e aborde cada um separadamente\n*Use a WebSearch_Tool para encontrar quaisquer APIs relevantes para uma ferramenta de requisição HTTP\n</Solutions>\n\n<Input query>\n{{ $json.query }}\n</Input query>",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -992,
+        320
+      ],
+      "id": "7866b0fa-1479-413c-b612-8b4d149e5566",
+      "name": "PromptAgent_Tool"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "anthropic/claude-3.7-sonnet",
+          "mode": "list",
+          "cachedResultName": "anthropic/claude-3.7-sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -992,
+        480
+      ],
+      "id": "38e07961-6a2a-461c-bace-89ed65ad6c6e",
+      "name": "Openrouter",
+      "credentials": {
+        "openAiApi": {
+          "id": "T8fdozITjWZLw425",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1456,
+        32
+      ],
+      "id": "5be0c894-c921-4423-b56a-55842d29dc37",
+      "name": "Chat_Trigger",
+      "webhookId": "0fcb8409-3646-42a4-92e9-5fb0266374fc",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Chat_Trigger').item.json.sessionId }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -880,
+        720
+      ],
+      "id": "c72e9df0-98aa-474b-b0a6-5f2509041fe4",
+      "name": "BufferMemory"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d5a0d042-ba31-4706-b789-681999936339",
+              "name": "query",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "b2673cda-8f15-47f2-9614-53c57c7832d1",
+              "name": "sessionId",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1232,
+        32
+      ],
+      "id": "d3ad78fe-3734-4284-9f22-d472ff9c1495",
+      "name": "SetQuery"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to search the internet",
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"model\": \"sonar-pro\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Be precise and concise.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{searchTerm}\"\n    }\n  ],\n  \"max_tokens\": 123,\n  \"temperature\": 0.2,\n  \"top_p\": 0.9,\n  \"stream\": false\n}",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "searchTerm",
+              "description": "The search query to find appropriate api's to connect to if no tool is available",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        -736,
+        720
+      ],
+      "id": "4f45f099-d5da-45d8-ac57-e00f3ba71ec0",
+      "name": "WebSearch_Tool",
+      "notesInFlow": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HWXR7bwkc8xeWnqx",
+          "name": "Rapidly - marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "PromptAgent",
+        "formDescription": "=O PromptAgent foi projetado para retornar um prompt completo, com função, restrições, entradas, ferramentas (se aplicável), instruções, conclusões (saídas) e soluções (cenários de tratamento de erros), seguindo a estrutura de prompt CRITICS.\n\nPara usar, forneça um breve resumo com o objetivo do seu prompt. Observe que entradas mais detalhadas fornecerão melhores resultados.",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html"
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Next",
+          "path": "promptAgent_tool",
+          "ignoreBots": true
+        }
+      },
+      "id": "195829f0-2d4e-4ed3-b369-86cb6cc3ce6e",
+      "name": "Form_Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -2624,
+        384
+      ],
+      "webhookId": "026629c8-7644-493c-b830-d9c72eea307d",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "df28b12e-7c20-4ff5-b5b8-dc773aa14d4b",
+              "name": "query",
+              "type": "string",
+              "value": "=Goal: {{ $json['What is the goal of your prompt?'] }}\nAccess to tools? {{ $json[\"Does it need access to any tools?\"] }}\nSuggested tools: {{ $json[\"If yes, what tools should the agent have access to? \"] }}\nExpected inputs:{{ $json[\"What are the expected inputs?\"] }}\nExpected outputs:{{ $json[\"What are the expected outputs?\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "69288c4e-48e0-471c-b098-d8cad61971b7",
+      "name": "SetQueryForm",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -2272,
+        384
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "## 0. Form Trigger\nAnswer a series of questions about your workflow\n\n",
+        "height": 452,
+        "width": 569,
+        "color": 7
+      },
+      "id": "f97a8e79-8a58-4fc4-af63-180f1825d706",
+      "name": "Sticky Note19",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2672,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 1. Ask Clarifying Questions\nHelps to build out the required level of detail for the workflow plan. ",
+        "height": 460,
+        "width": 1000,
+        "color": 7
+      },
+      "id": "29b6f73a-772d-4b61-88ba-751f4137b3b9",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2064,
+        224
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<instructions>\nDada a seguinte consulta do usuário, faça perguntas de acompanhamento para esclarecer os objetivos, entradas, saídas e uso de ferramentas necessárias para o prompt solicitado. Pergunte apenas sobre temas que não estejam claros na entrada.\n</instructions>\n<constraints>\n*Não faça perguntas de esclarecimento para as quais você já tem as respostas. Estas são apenas para obter detalhes adicionais.\n*Faça até 3 perguntas, não precisa fazer 3 se a consulta original for clara.\n*Se você sentir que 3 perguntas não são suficientes dadas as entradas, combine múltiplas perguntas em uma única pergunta.\n</constraints>\n<outputs>\n*Retorne no máximo 3 perguntas, mas sinta-se à vontade para retornar menos se a consulta original for clara.\n</outputs>\n<input_query>\n{{ $json.query }}\n</input_query>",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "=Você é um criador especialista em prompts para LLMs e Agentes de IA.\nHoje é {{ $now.toLocaleString() }}.\nSiga estas instruções ao responder:\n  - O usuário é um analista altamente experiente, não há necessidade de simplificar, seja o mais detalhado possível e garanta que sua resposta esteja correta.\n  - Seja altamente organizado.\n  - Sugira soluções nas quais eu não pensei.\n  - Seja proativo e antecipe minhas necessidades.\n  - Trate-me como especialista em todos os assuntos.\n  - Erros comprometem minha confiança, portanto seja preciso e minucioso.\n  - Forneça explicações detalhadas, estou confortável com muitos detalhes.\n  - Valorize bons argumentos em detrimento de autoridades, a fonte é irrelevante.\n  - Considere novas tecnologias e ideias contrárias ao senso comum, não apenas a sabedoria convencional.\n  - Você pode usar altos níveis de especulação ou previsão, apenas sinalize isso para mim."
+            }
+          ]
+        }
+      },
+      "id": "05ee9b88-110e-4bba-88cb-c071c444d204",
+      "name": "ClarificationLLM",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -1984,
+        384
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.questions",
+        "options": {}
+      },
+      "id": "e1bbe735-731d-408a-a9fb-4e78a562ba01",
+      "name": "Questions",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        -1664,
+        384
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "={{ $json[\"output.questions\"] }}",
+              "fieldType": "textarea",
+              "placeholder": "=",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "PromptAgent",
+          "formDescription": "=<img\n  src=\"https://i.ibb.co/9mJ68JnW/Screenshot-609.png\"\n  width=\"100%\"\n  style=\"border:1px solid #ccc\"\n/>\n<p style=\"text-align:left\">\nResponda às perguntas de esclarecimento abaixo (até 3 perguntas) com o máximo de detalhes possível para melhorar a qualidade do prompt de saída.\n</p>\n<hr style=\"display:block;margin-top:16px;margin-bottom:0\" />\n<p style=\"text-align:left\">\nConsulta original:\n</p>\n<p style=\"text-align:left; font-size:12px;\">\n<i>\"{{ $('PromptRequest').item.json['What is the goal of your prompt?'] }}\"</i>\n</p>\n<hr style=\"display:block;margin-top:16px;margin-bottom:0\" />",
+          "buttonLabel": "Answer"
+        }
+      },
+      "id": "1aebdcd8-b5b6-4a96-ba5c-77d381b63e92",
+      "name": "AskQuestions",
+      "type": "n8n-nodes-base.form",
+      "position": [
+        -1296,
+        464
+      ],
+      "webhookId": "d3375ba6-0008-4fcb-96bc-110374de2603",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a9a1592b-7cc2-4a7e-853c-8d7052e1afaf",
+      "name": "EachQuestion",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        -1472,
+        384
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "id",
+          "value": "o3-mini"
+        },
+        "options": {}
+      },
+      "id": "19e06e44-4c55-4b34-ad9c-416ccb18a2e6",
+      "name": "o3-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -2000,
+        544
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "T8fdozITjWZLw425",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "14b77741-c3c3-4bd2-be6e-37bd09fcea2b",
+              "name": "query",
+              "type": "string",
+              "value": "=Initial query: {{ $('SetQueryForm').item.json.query }}\nFollow-up Questions and Answers:\n{{\n$input.all()\n  .map(item => {\n    const q = Object.keys(item.json)[0];\n    const a = item.json[q];\n    return `question: ${q}\\nanswer: ${a}`;\n  })\n  .join('\\n')\n}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c9d8c703-3899-4d68-9398-ea5b5f50cf74",
+      "name": "SetQuery1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -1296,
+        304
+      ],
+      "executeOnce": true,
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Qual é o objetivo da sua pergunta?",
+              "fieldType": "textarea",
+              "placeholder": "Seja descritivo... quais são as entradas e saídas, as ferramentas ou softwares que você vê sendo usados ​​e as armadilhas a serem evitadas?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Precisa ter acesso a alguma ferramenta?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Not sure"
+                  },
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Em caso afirmativo, a que ferramentas o agente deve ter acesso?",
+              "placeholder": "Por exemplo, pesquisa na web, Google Agenda."
+            },
+            {
+              "fieldLabel": "Quais são as entradas esperadas?",
+              "placeholder": "For example, a natural language chat query"
+            },
+            {
+              "fieldLabel": "Quais são os resultados esperados?",
+              "placeholder": "Por exemplo, atualiza uma tabela do Airtable ou agenda uma reunião."
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "PromptAgent"
+        }
+      },
+      "id": "7982ff63-50dc-404f-9d1d-9fda96ea89ef",
+      "name": "PromptRequest",
+      "type": "n8n-nodes-base.form",
+      "position": [
+        -2448,
+        384
+      ],
+      "webhookId": "46142c14-3692-40f6-80e5-f3d976e95191",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Your Prompt is ready 🥳",
+        "completionMessage": "={{ $('PromptAgent_Tool').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        320
+      ],
+      "id": "ff491054-7a8b-4909-8c60-dcec96a3e2cc",
+      "name": "ReturnForm",
+      "webhookId": "55edd79f-008a-4c63-a0c2-f862122b879c"
+    },
+    {
+      "parameters": {
+        "content": "## Writing a clear prompt\n**C**onstraints/Rules - **[rules I need to abide by]** - Defines boundaries, limitations, and guidelines for operation\n**R**ole/Scope - **[what am I an expert of?]** - Establishes the agent's purpose, identity, and overall objective\n**I**nputs - **[tell me what inputs I’m receiving]** - Specifies expected data formats & parameters (inc. examples)\n**T**ools - **[what resources can I access? e.g. web search]** - Outlines available resources, functions, and capabilities\n**I**nstructions/Tasklist - **[order of tasks]** - Provides step-by-step procedures with examples\n**C**onclusions/Outputs - **[what output am I providing (examples)]** - Defines expected response formats and deliverables\n**S**olutions/Error handling - **[what do I do if I don't get the information I expected to?]** - Addresses troubleshooting and exception management",
+        "height": 220,
+        "width": 1020,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        -16
+      ],
+      "id": "486ab1a6-64fc-45d4-9ee0-18ca89a02654",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## 0. Chat Trigger\nIf you know what you're doing with prompting - no clarifying questions",
+        "height": 280,
+        "width": 460,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        -80
+      ],
+      "id": "0206a94b-163d-4ee8-b736-907b0df53f50",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "## 2. PromptAgent\nCreates a CRITICS prompt and returns the data",
+        "height": 380,
+        "width": 600,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        224
+      ],
+      "id": "a2827ec2-5f6f-42ad-85a0-ded49d756c01",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "## 3. Pre-processing\nRefine + supplement query where appropriate",
+        "height": 260,
+        "width": 440,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        624
+      ],
+      "id": "7b348f36-f79f-49fe-9a18-e9da7ef29a9d",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"questions\": {\n      \"type\": \"array\",\n      \"description\": \"Follow up questions to clarify the prompt goals, max of 3.\",\n      \"items\": {\n          \"type\": \"string\"\n      }\n    }\n  }\n}"
+      },
+      "id": "3908c2e6-136d-48a4-9395-ef734943166a",
+      "name": "Structured Output Parser1",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        -1776,
+        544
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "content": "**BufferMemory**\n- Turn on for Chat_Trigger",
+        "height": 80,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        912
+      ],
+      "id": "63b3f7e4-3032-45dc-b30f-4fb15cfc5ca2",
+      "name": "Sticky Note11"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "PromptAgent_Tool": {
+      "main": [
+        [
+          {
+            "node": "ReturnForm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Openrouter": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "PromptAgent_Tool",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat_Trigger": {
+      "main": [
+        [
+          {
+            "node": "SetQuery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BufferMemory": {
+      "ai_memory": [
+        [
+          {
+            "node": "PromptAgent_Tool",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetQuery": {
+      "main": [
+        [
+          {
+            "node": "PromptAgent_Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WebSearch_Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "PromptAgent_Tool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form_Trigger": {
+      "main": [
+        [
+          {
+            "node": "PromptRequest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetQueryForm": {
+      "main": [
+        [
+          {
+            "node": "ClarificationLLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClarificationLLM": {
+      "main": [
+        [
+          {
+            "node": "Questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Questions": {
+      "main": [
+        [
+          {
+            "node": "EachQuestion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AskQuestions": {
+      "main": [
+        [
+          {
+            "node": "EachQuestion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EachQuestion": {
+      "main": [
+        [
+          {
+            "node": "SetQuery1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AskQuestions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "o3-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ClarificationLLM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetQuery1": {
+      "main": [
+        [
+          {
+            "node": "PromptAgent_Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PromptRequest": {
+      "main": [
+        [
+          {
+            "node": "SetQueryForm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "ClarificationLLM",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "43b598c0-fb6b-4d12-a4d4-d1736ba1b60b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "3knMLp9pMs4f9rWb",
+  "tags": []
+}

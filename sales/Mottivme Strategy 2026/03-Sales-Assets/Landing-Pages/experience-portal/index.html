@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal exclusivo de experiência para Carol & Luiz - Uma jornada extraordinária">
+    <title>O Extraordinário Aguarda | Carol & Luiz</title>
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="design-system.css">
+
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <style>
+        /* ====================================
+           CUSTOM STYLES (Beyond Design System)
+           ==================================== */
+
+        body {
+            background: var(--bg-primary);
+            overflow-x: hidden;
+        }
+
+        /* Loading Screen with Skeleton */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity var(--transition-slow) ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-text {
+            font-size: var(--tipo-4);
+            font-weight: var(--peso-light);
+            letter-spacing: 8px;
+            opacity: 0;
+            animation: fadeInOut 3s ease-in-out;
+            color: var(--text-primary);
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(212, 175, 55, 0.1);
+            border-top-color: var(--gold-500);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: var(--space-8) auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* Evolution Section */
+        #evolution-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            opacity: 0;
+            transition: opacity var(--transition-slowest) ease;
+        }
+
+        #evolution-section.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .evolution-container {
+            max-width: 1200px;
+            padding: var(--space-12);
+            text-align: center;
+        }
+
+        .evolution-title {
+            font-size: var(--tipo-8);
+            font-weight: var(--peso-bold);
+            margin-bottom: var(--space-16);
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slideInFromTop 1s ease-out;
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .evolution-timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin: var(--space-16) 0;
+        }
+
+        .evolution-arrow {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-gold);
+            transform: translateY(-50%);
+            animation: growArrow 2s ease-out 0.5s forwards;
+            transform-origin: left;
+            scale: 0 1;
+        }
+
+        @keyframes growArrow {
+            to { scale: 1 1; }
+        }
+
+        .evolution-stage {
+            flex: 1;
+            padding: var(--space-6);
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .evolution-stage.animate {
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        .evolution-stage:nth-child(1) { animation-delay: 0.5s; }
+        .evolution-stage:nth-child(2) { animation-delay: 1.5s; }
+        .evolution-stage:nth-child(3) { animation-delay: 2.5s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stage-icon {
+            font-size: 80px;
+            margin-bottom: var(--space-6);
+            filter: grayscale(1);
+            transition: filter var(--transition-base) ease;
+        }
+
+        .evolution-stage.animate .stage-icon {
+            filter: grayscale(0);
+        }
+
+        .stage-label {
+            font-size: var(--tipo-1);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: var(--space-2);
+        }
+
+        .stage-title {
+            font-size: var(--tipo-4);
+            font-weight: var(--peso-semibold);
+            margin-bottom: var(--space-3);
+            color: var(--text-primary);
+        }
+
+        .stage-value {
+            font-size: var(--tipo-6);
+            font-weight: var(--peso-bold);
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Invitation Section */
+        #invitation-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9997;
+            opacity: 0;
+            transition: opacity var(--transition-slowest) ease;
+            overflow-y: auto;
+        }
+
+        #invitation-section.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .invitation-card {
+            max-width: 700px;
+            padding: var(--space-16) var(--space-12);
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--gold-500);
+            border-radius: var(--radius-2xl);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-5);
+            text-align: center;
+            animation: scaleIn 1s ease-out;
+            margin: var(--space-6);
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .invitation-ornament {
+            font-size: var(--tipo-8);
+            margin-bottom: var(--space-8);
+        }
+
+        .invitation-title {
+            font-size: var(--tipo-6);
+            font-weight: var(--peso-light);
+            letter-spacing: 4px;
+            margin-bottom: var(--space-6);
+            text-transform: uppercase;
+            color: var(--gold-500);
+        }
+
+        .invitation-subtitle {
+            font-size: var(--tipo-3);
+            font-weight: var(--peso-light);
+            margin-bottom: var(--space-12);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+        }
+
+        .invitation-message {
+            font-size: var(--tipo-3);
+            line-height: var(--altura-corpo);
+            margin: var(--space-12) 0;
+            font-weight: var(--peso-light);
+            padding: var(--space-8);
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid var(--gold-500);
+            border-radius: var(--radius-lg);
+        }
+
+        .invitation-message strong {
+            color: var(--gold-500);
+            font-weight: var(--peso-semibold);
+        }
+
+        .invitation-warning {
+            font-size: var(--tipo-2);
+            color: var(--gold-500);
+            margin-top: var(--space-8);
+            font-style: italic;
+        }
+
+        /* Login Form */
+        .login-form {
+            margin-top: var(--space-12);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-6);
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-size: var(--tipo-1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: var(--space-3);
+            color: var(--gold-500);
+            font-weight: var(--peso-semibold);
+        }
+
+        /* Enhanced input with focus states */
+        .form-input {
+            width: 100%;
+            min-height: 48px; /* Touch-friendly */
+            padding: var(--space-4) var(--space-6);
+            font-size: var(--tipo-3);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            transition: all var(--transition-fast) ease;
+            font-family: inherit;
+        }
+
+        .form-input:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold-500);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Visible focus indicator for accessibility */
+        .form-input:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 2px;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        /* Error state */
+        .form-input.error {
+            border-color: var(--red-500);
+            background: rgba(248, 81, 73, 0.05);
+        }
+
+        .form-input.error:focus {
+            box-shadow: 0 0 0 3px rgba(248, 81, 73, 0.2);
+        }
+
+        /* Success state */
+        .form-input.success {
+            border-color: var(--green-500);
+            background: rgba(63, 185, 80, 0.05);
+        }
+
+        /* Error message */
+        .error-message {
+            color: var(--red-500);
+            font-size: var(--tipo-2);
+            margin-top: var(--space-3);
+            display: none;
+            padding: var(--space-3) var(--space-4);
+            background: rgba(248, 81, 73, 0.1);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--red-500);
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Success message */
+        .success-message {
+            color: var(--green-500);
+            font-size: var(--tipo-2);
+            margin-top: var(--space-3);
+            display: none;
+            padding: var(--space-3) var(--space-4);
+            background: rgba(63, 185, 80, 0.1);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--green-500);
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideInFromTop 0.3s ease;
+        }
+
+        /* Enhanced unlock button */
+        .unlock-btn {
+            width: 100%;
+            min-height: 56px; /* Touch-friendly */
+            padding: var(--space-4) var(--space-6);
+            font-size: var(--tipo-3);
+            font-weight: var(--peso-semibold);
+            color: var(--text-inverse);
+            background: var(--gradient-gold);
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            margin-top: var(--space-8);
+            transition: all var(--transition-fast) ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ripple effect on click */
+        .unlock-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .unlock-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .unlock-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .unlock-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .unlock-btn:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 4px;
+        }
+
+        /* Loading state for button */
+        .unlock-btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .unlock-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        /* Continue button */
+        .continue-btn {
+            margin-top: var(--space-16);
+            padding: var(--space-6) var(--space-16);
+            min-height: 56px;
+            font-size: var(--tipo-3);
+            font-weight: var(--peso-semibold);
+            color: var(--text-inverse);
+            background: var(--gradient-gold);
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 3.5s forwards;
+            transition: all var(--transition-fast) ease;
+        }
+
+        .continue-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .continue-btn:active {
+            transform: scale(0.98);
+        }
+
+        .continue-btn:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 4px;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Audio Control (enhanced) */
+        .audio-control {
+            position: fixed;
+            bottom: var(--space-8);
+            right: var(--space-8);
+            width: 64px;
+            height: 64px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 2px solid var(--gold-500);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10000;
+            transition: all var(--transition-fast) ease;
+        }
+
+        .audio-control:hover {
+            background: rgba(212, 175, 55, 0.4);
+            transform: scale(1.1);
+            box-shadow: var(--shadow-3);
+        }
+
+        .audio-control:active {
+            transform: scale(0.95);
+        }
+
+        .audio-control:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 4px;
+        }
+
+        .audio-icon {
+            font-size: var(--tipo-4);
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            bottom: 120%;
+            right: 0;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-base);
+            font-size: var(--tipo-1);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition-fast) ease;
+            box-shadow: var(--shadow-3);
+        }
+
+        .audio-control:hover .tooltip {
+            opacity: 1;
+            transition-delay: 0.3s;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 20px;
+            border: 6px solid transparent;
+            border-top-color: var(--bg-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .evolution-title {
+                font-size: var(--tipo-6);
+            }
+
+            .evolution-timeline {
+                flex-direction: column;
+            }
+
+            .evolution-arrow {
+                width: 2px;
+                height: 100%;
+                left: 50%;
+                top: 0;
+                bottom: 0;
+                transform: translateX(-50%);
+            }
+
+            .stage-icon {
+                font-size: 60px;
+            }
+
+            .stage-value {
+                font-size: var(--tipo-4);
+            }
+
+            .invitation-card {
+                padding: var(--space-12) var(--space-6);
+                margin: var(--space-4);
+            }
+
+            .invitation-title {
+                font-size: var(--tipo-4);
+            }
+
+            .audio-control {
+                width: 56px;
+                height: 56px;
+                bottom: var(--space-4);
+                right: var(--space-4);
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .form-input:focus,
+            .unlock-btn:focus-visible,
+            .continue-btn:focus-visible,
+            .audio-control:focus-visible {
+                outline-width: 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen with Skeleton -->
+    <div id="loading-screen" role="status" aria-live="polite" aria-label="Carregando experiência">
+        <div class="loading-content">
+            <div class="loading-text" aria-label="Preparando sua experiência">PREPARANDO SUA EXPERIÊNCIA...</div>
+            <div class="loading-spinner" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <!-- Evolution Animation -->
+    <div id="evolution-section" role="region" aria-label="Jornada de transformação">
+        <div class="evolution-container">
+            <h1 class="evolution-title">SUA JORNADA DE TRANSFORMAÇÃO</h1>
+
+            <div class="evolution-timeline" role="list" aria-label="Estágios da jornada">
+                <div class="evolution-arrow" aria-hidden="true"></div>
+
+                <div class="evolution-stage" role="listitem" aria-label="Estágio atual">
+                    <div class="stage-icon" aria-hidden="true">🏥</div>
+                    <div class="stage-label">HOJE</div>
+                    <div class="stage-title">Clínica de Sucesso</div>
+                    <div class="stage-value">Estável</div>
+                </div>
+
+                <div class="evolution-stage" role="listitem" aria-label="Jornada de transformação">
+                    <div class="stage-icon" aria-hidden="true">🚀</div>
+                    <div class="stage-label">JORNADA</div>
+                    <div class="stage-title">Transformação</div>
+                    <div class="stage-value">30-210 dias</div>
+                </div>
+
+                <div class="evolution-stage" role="listitem" aria-label="Destino final">
+                    <div class="stage-icon" aria-hidden="true">👑</div>
+                    <div class="stage-label">DESTINO</div>
+                    <div class="stage-title">Mentoria Médica</div>
+                    <div class="stage-value">R$ 150k/mês</div>
+                </div>
+            </div>
+
+            <button
+                class="continue-btn"
+                onclick="showInvitation()"
+                aria-label="Continuar para próxima etapa"
+                tabindex="0"
+            >
+                CONTINUAR JORNADA →
+            </button>
+        </div>
+    </div>
+
+    <!-- Invitation Screen -->
+    <div id="invitation-section" role="main" aria-label="Portal de acesso">
+        <div class="invitation-card">
+            <div class="invitation-ornament" aria-hidden="true">✦</div>
+
+            <h1 class="invitation-title">CONVITE EXCLUSIVO</h1>
+
+            <p class="invitation-subtitle">
+                Para acesso à proposta mais extraordinária<br>que vocês já receberam
+            </p>
+
+            <div class="invitation-message">
+                <strong>Sr. Dr. Luiz Henrique &<br>Sra. Dra. Carol Moreira</strong>,
+                <br><br>
+                A partir do momento em que inserirem suas credenciais abaixo,
+                <strong>suas vidas nunca mais serão as mesmas</strong>.
+                <br><br>
+                Vocês estão prestes a acessar uma proposta que não é apenas
+                um documento comercial, mas sim <strong>uma experiência</strong>
+                projetada exclusivamente para vocês.
+                <br><br>
+                Preparados para o extraordinário?
+            </div>
+
+            <form
+                class="login-form"
+                onsubmit="unlockProposal(event)"
+                aria-label="Formulário de acesso"
+                novalidate
+            >
+                <div class="form-group">
+                    <label class="form-label" for="login-input">
+                        CÓDIGO DE ACESSO
+                    </label>
+                    <input
+                        type="text"
+                        class="form-input"
+                        id="login-input"
+                        name="login"
+                        placeholder="carol-luiz"
+                        autocomplete="username"
+                        required
+                        aria-required="true"
+                        aria-describedby="login-hint"
+                        aria-invalid="false"
+                    >
+                    <span id="login-hint" class="sr-only">Digite o código de acesso fornecido por email</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password-input">
+                        CHAVE EXCLUSIVA
+                    </label>
+                    <input
+                        type="password"
+                        class="form-input"
+                        id="password-input"
+                        name="password"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
+                        required
+                        aria-required="true"
+                        aria-describedby="password-hint"
+                        aria-invalid="false"
+                    >
+                    <span id="password-hint" class="sr-only">Digite a chave exclusiva fornecida por email</span>
+                </div>
+
+                <div
+                    class="error-message"
+                    id="error-message"
+                    role="alert"
+                    aria-live="assertive"
+                >
+                    ❌ Credenciais inválidas. Verifique o email que enviamos.
+                </div>
+
+                <div
+                    class="success-message"
+                    id="success-message"
+                    role="status"
+                    aria-live="polite"
+                >
+                    ✓ Acesso autorizado! Redirecionando...
+                </div>
+
+                <button
+                    type="submit"
+                    class="unlock-btn"
+                    id="unlock-button"
+                    aria-label="Desbloquear acesso à proposta"
+                >
+                    <span id="button-text">🔓 DESBLOQUEAR ACESSO</span>
+                </button>
+            </form>
+
+            <p class="invitation-warning" role="note">
+                ⚠️ Este acesso é válido até 12/12/2025
+            </p>
+        </div>
+    </div>
+
+    <!-- Audio Control with Tooltip -->
+    <button
+        class="audio-control"
+        onclick="toggleAudio()"
+        aria-label="Controlar áudio de fundo"
+        aria-pressed="false"
+        tabindex="0"
+    >
+        <span class="audio-icon" id="audio-icon" aria-hidden="true">🔊</span>
+        <span class="tooltip">Desligar áudio</span>
+    </button>
+
+    <!-- Background Audio -->
+    <audio id="background-audio" loop aria-label="Música ambiente">
+        <!-- Placeholder para arquivo de áudio ambiente -->
+    </audio>
+
+    <!-- Screen reader only content -->
+    <span class="sr-only" role="status" id="sr-status" aria-live="polite" aria-atomic="true"></span>
+
+    <script>
+        // Configuration
+        const CORRECT_LOGIN = "carol-luiz";
+        const CORRECT_PASSWORD = "UltraVertex";
+        const PROPOSAL_URL = "proposta.html";
+
+        // Audio state
+        let audioPlaying = false;
+        const bgAudio = document.getElementById('background-audio');
+        const audioControl = document.querySelector('.audio-control');
+        const tooltip = document.querySelector('.tooltip');
+
+        // Toggle audio with accessibility
+        function toggleAudio() {
+            if (audioPlaying) {
+                bgAudio.pause();
+                document.getElementById('audio-icon').textContent = '🔇';
+                audioControl.setAttribute('aria-pressed', 'false');
+                tooltip.textContent = 'Ligar áudio';
+                updateSRStatus('Áudio desligado');
+            } else {
+                bgAudio.play().catch(e => console.log('Audio play failed:', e));
+                document.getElementById('audio-icon').textContent = '🔊';
+                audioControl.setAttribute('aria-pressed', 'true');
+                tooltip.textContent = 'Desligar áudio';
+                updateSRStatus('Áudio ligado');
+            }
+            audioPlaying = !audioPlaying;
+        }
+
+        // Update screen reader status
+        function updateSRStatus(message) {
+            const srStatus = document.getElementById('sr-status');
+            srStatus.textContent = message;
+        }
+
+        // Intro Sequence
+        window.addEventListener('load', () => {
+            // Play welcome voice
+            setTimeout(() => {
+                playWelcomeVoice();
+            }, 1000);
+
+            // Hide loading and show evolution
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                showEvolution();
+                updateSRStatus('Carregamento completo. Visualizando jornada de transformação.');
+            }, 3000);
+        });
+
+        function playWelcomeVoice() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(
+                    'Bem-vindos... ao extraordinário...'
+                );
+                utterance.lang = 'pt-BR';
+                utterance.rate = 0.8;
+                utterance.pitch = 0.7;
+
+                // Add laugh at the end
+                utterance.onend = () => {
+                    setTimeout(() => {
+                        const laugh = new SpeechSynthesisUtterance('Ha ha ha ha...');
+                        laugh.lang = 'pt-BR';
+                        laugh.rate = 0.6;
+                        laugh.pitch = 0.5;
+                        window.speechSynthesis.speak(laugh);
+                    }, 500);
+                };
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function showEvolution() {
+            const evolutionSection = document.getElementById('evolution-section');
+            evolutionSection.classList.add('active');
+
+            // Animate stages
+            const stages = document.querySelectorAll('.evolution-stage');
+            stages.forEach((stage, index) => {
+                setTimeout(() => {
+                    stage.classList.add('animate');
+                }, index * 1000);
+            });
+        }
+
+        function showInvitation() {
+            document.getElementById('evolution-section').style.opacity = '0';
+            updateSRStatus('Abrindo portal de acesso');
+
+            setTimeout(() => {
+                document.getElementById('evolution-section').style.display = 'none';
+                document.getElementById('invitation-section').classList.add('active');
+
+                // Focus on first input for keyboard navigation
+                setTimeout(() => {
+                    document.getElementById('login-input').focus();
+                }, 500);
+            }, 1500);
+        }
+
+        function unlockProposal(event) {
+            event.preventDefault();
+
+            const loginInput = document.getElementById('login-input');
+            const passwordInput = document.getElementById('password-input');
+            const login = loginInput.value.trim();
+            const password = passwordInput.value.trim();
+            const errorMsg = document.getElementById('error-message');
+            const successMsg = document.getElementById('success-message');
+            const unlockBtn = document.getElementById('unlock-button');
+            const buttonText = document.getElementById('button-text');
+
+            // Clear previous states
+            errorMsg.classList.remove('show');
+            successMsg.classList.remove('show');
+            loginInput.classList.remove('error', 'success');
+            passwordInput.classList.remove('error', 'success');
+            loginInput.setAttribute('aria-invalid', 'false');
+            passwordInput.setAttribute('aria-invalid', 'false');
+
+            // Validation
+            if (!login || !password) {
+                errorMsg.textContent = '❌ Por favor, preencha todos os campos.';
+                errorMsg.classList.add('show');
+
+                if (!login) {
+                    loginInput.classList.add('error');
+                    loginInput.setAttribute('aria-invalid', 'true');
+                    loginInput.focus();
+                } else {
+                    passwordInput.classList.add('error');
+                    passwordInput.setAttribute('aria-invalid', 'true');
+                    passwordInput.focus();
+                }
+
+                updateSRStatus('Erro: Preencha todos os campos');
+                return;
+            }
+
+            // Show loading state
+            unlockBtn.classList.add('loading');
+            buttonText.textContent = 'VERIFICANDO...';
+            unlockBtn.disabled = true;
+
+            // Simulate network delay for better UX
+            setTimeout(() => {
+                if (login === CORRECT_LOGIN && password === CORRECT_PASSWORD) {
+                    // Success!
+                    unlockBtn.classList.remove('loading');
+                    successMsg.classList.add('show');
+                    loginInput.classList.add('success');
+                    passwordInput.classList.add('success');
+                    buttonText.textContent = '✓ ACESSO AUTORIZADO';
+
+                    updateSRStatus('Acesso autorizado! Redirecionando para a proposta.');
+
+                    // Success animation
+                    document.querySelector('.invitation-card').style.transform = 'scale(0.95)';
+                    document.querySelector('.invitation-card').style.opacity = '0.5';
+
+                    setTimeout(() => {
+                        window.location.href = PROPOSAL_URL;
+                    }, 1500);
+                } else {
+                    // Error
+                    unlockBtn.classList.remove('loading');
+                    unlockBtn.disabled = false;
+                    buttonText.textContent = '🔓 DESBLOQUEAR ACESSO';
+                    errorMsg.classList.add('show');
+                    loginInput.classList.add('error');
+                    passwordInput.classList.add('error');
+                    loginInput.setAttribute('aria-invalid', 'true');
+                    passwordInput.setAttribute('aria-invalid', 'true');
+
+                    // Shake animation
+                    const card = document.querySelector('.invitation-card');
+                    card.style.animation = 'none';
+                    setTimeout(() => {
+                        card.style.animation = 'shake 0.5s';
+                    }, 10);
+
+                    // Focus on login for retry
+                    loginInput.focus();
+                    loginInput.select();
+
+                    updateSRStatus('Credenciais inválidas. Verifique o email que enviamos.');
+                }
+            }, 1000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Escape to clear errors
+            if (e.key === 'Escape') {
+                document.getElementById('error-message').classList.remove('show');
+                document.querySelectorAll('.form-input').forEach(input => {
+                    input.classList.remove('error');
+                    input.setAttribute('aria-invalid', 'false');
+                });
+            }
+
+            // Alt+A to toggle audio
+            if (e.altKey && e.key === 'a') {
+                e.preventDefault();
+                toggleAudio();
+            }
+        });
+
+        // Easter egg: Developer console message
+        console.log('%c🎩 Bem-vindo aos bastidores do extraordinário...',
+                    'color: #D4AF37; font-size: 16px; font-weight: bold;');
+        console.log('%cEsta experiência foi criada com atenção aos mínimos detalhes.',
+                    'color: #8B949E; font-size: 12px;');
+        console.log('%cAtalhos de teclado disponíveis:\n- Alt+A: Alternar áudio\n- Escape: Limpar erros',
+                    'color: #58A6FF; font-size: 12px;');
+
+        // Offline detection
+        window.addEventListener('offline', () => {
+            updateSRStatus('Conexão perdida. Verifique sua internet.');
+        });
+
+        window.addEventListener('online', () => {
+            updateSRStatus('Conexão restaurada.');
+        });
+
+        // Auto-save form state (for recovery)
+        const loginInput = document.getElementById('login-input');
+        loginInput.addEventListener('input', () => {
+            sessionStorage.setItem('login-draft', loginInput.value);
+        });
+
+        // Restore draft on page load
+        window.addEventListener('load', () => {
+            const draft = sessionStorage.getItem('login-draft');
+            if (draft) {
+                loginInput.value = draft;
+            }
+        });
+
+        // Clear draft on successful login
+        window.addEventListener('beforeunload', () => {
+            if (document.querySelector('.success-message.show')) {
+                sessionStorage.removeItem('login-draft');
+            }
+        });
+    </script>
+</body>
+</html>

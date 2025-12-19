@@ -1,0 +1,228 @@
+{
+  "meta": {
+    "description": "Nós de substituição para migrar de Airtable para Supabase no workflow Assembly Line APP",
+    "instructions": [
+      "1. Crie uma credencial HTTP Header Auth no n8n chamada 'Supabase API'",
+      "2. Configure: Header Name = 'apikey', Header Value = sua SUPABASE_SERVICE_ROLE_KEY",
+      "3. Substitua [SUPABASE_URL] pelo seu URL do Supabase",
+      "4. Importe estes nós no n8n e conecte-os no lugar dos nós Airtable"
+    ]
+  },
+  "nodes": [
+    {
+      "name": "📖 Get Expert Data (Supabase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-12192, -3576],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/rpc/get_expert_data",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_project_id: $json.query.recordId || $json.project_id }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      },
+      "notes": "Substitui: Get Product1, Get Expert Record. Busca todos os dados do projeto via função RPC."
+    },
+    {
+      "name": "💾 Update Clone - FASE 1A (Supabase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9824, -3576],
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/clone_experts?project_id=eq.{{ $json.project_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  dna_psicologico: $('1. Agent 1: DNA Psicológico1').item.json.output,\n  engenharia_reversa: $('2. Agent 2: Engenheiro Reverso2').item.json.output,\n  configuracao_clone: $('3. Agent 3: Configurador1').item.json.output,\n  system_prompt: $json.output,\n  status: 'ready'\n}) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE. Salva resultados da FASE 1A (Clone)."
+    },
+    {
+      "name": "💾 Update Posicionamento - FASE 1B (Supabase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9824, -3176],
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/clone_experts?project_id=eq.{{ $json.project_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  analise_concorrentes: $('5. Agent 5: Identity Mapper').item.json.text,\n  concorrentes_internacionais: $('6A. Perplexity Internacional').item.json.choices[0].message.content,\n  concorrentes_brasileiros: $('6B. Perplexity Brasil').item.json.choices[0].message.content,\n  sintese_estrategica: $('6C. Synthesis and Strategic Analysis').item.json.text\n}) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE 1B2. Salva resultados da FASE 1B (Posicionamento)."
+    },
+    {
+      "name": "💾 Upsert Offers - FASE 2 (Supabase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-10112, -2688],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/offers",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  project_id: $json.project_id,\n  avatar: $('7. Agent: Avatar Creator').item.json.text,\n  avatar_detalhado: $('7B. Agent: Avatar Detalhado').item.json.text,\n  promessas: $('8. Agent: Promise Generator').item.json.text,\n  big_idea: $('9. Agent: Big Idea Creator').item.json.text,\n  mecanismo_unico: $('9B. Agent: Mecanismo Único').item.json.text,\n  high_ticket: $json['High Ticket Ofertas - IA'],\n  mid_ticket: $json['Back End Ofertas - IA'],\n  frontend: $json['Ofertas Front End - IA'],\n  status: 'ready'\n}) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE 2. Cria/atualiza ofertas."
+    },
+    {
+      "name": "💾 Insert Contents - Marketing (Supabase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9856, -2368],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/contents",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  project_id: $json.project_id,\n  type: 'reel',\n  title: $json.title || 'Reel gerado',\n  body: $json.script || $json.content,\n  hook: $json.hook,\n  cta: $json.cta,\n  generated_by: 'generateMarketingeGeracaodeDemanda',\n  status: 'draft'\n}) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE 3/4/5 e Reels/Carrossel/Stories. Insere conteúdos gerados."
+    },
+    {
+      "name": "📤 Callback App - Fase Completa",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9500, -3576],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.callback_url || $env.APP_CALLBACK_URL }}/api/webhook/n8n",
+        "authentication": "noAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-webhook-secret",
+              "value": "={{$env.N8N_WEBHOOK_SECRET}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  generation_id: $('Webhook').item.json.body.generation_id,\n  project_id: $('Webhook').item.json.body.project_id,\n  agent_name: $('Webhook').item.json.body.action,\n  phase: 'clone',\n  status: 'complete',\n  output: {\n    dna_psicologico: $('1. Agent 1: DNA Psicológico1').item.json.output,\n    engenharia_reversa: $('2. Agent 2: Engenheiro Reverso2').item.json.output,\n    configuracao_clone: $('3. Agent 3: Configurador1').item.json.output,\n    system_prompt: $json.output\n  }\n}) }}",
+        "options": {}
+      },
+      "notes": "NOVO: Callback para o App notificando conclusão da fase. Conecte APÓS cada nó de salvamento no Supabase."
+    }
+  ],
+  "environment_variables": {
+    "SUPABASE_URL": "https://bfumywvwubvernvhjehk.supabase.co",
+    "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTQwMzc5OSwiZXhwIjoyMDY2OTc5Nzk5fQ.fdTsdGlSqemXzrXEU4ov1SUpeDn_3bSjOingqkSAWQE",
+    "APP_CALLBACK_URL": "https://assembly-line-deploy-vercel.vercel.app",
+    "N8N_WEBHOOK_SECRET": "assembly-line-secret-2024"
+  }
+}

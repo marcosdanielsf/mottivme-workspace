@@ -1,0 +1,257 @@
+Você já ouviu falar naquela frase nada
+se cria, tudo se copia? É isso mesmo.
+Existem algumas maneiras de você criar
+soluções, aplicativos que você pode ali
+se inspirar, copiar, mas fazer algumas
+mudanças para ficar algo diferente e
+você colocar algumas coisas a mais para
+fazer aquela diferença entre aplicativos
+e ideias. Só que às vezes pode ser muito
+complicado você fazer tudo do zero, eh,
+criar aquela estrutura. Então eu vou te
+mostrar hoje uma ferramenta que você
+consegue clonar qualquer site, qualquer
+aplicativo. Isso é bem legal. Vou falar
+para você que fica muito parecido e dá
+para você aproveitar ali a estrutura e
+começar a criar a sua solução baseada em
+um modelo que já existe, porque se ele
+já existe, já está vendendo, então ele
+tá validado. Então você criar algo que
+tem alguma coisinha diferente que vai
+chamar atenção, pode ser que ajude mais
+ali na hora de anunciar o seu
+aplicativo, a sua solução. Então, se
+você quer aprender a clonar, eu vou te
+mostrar nesse vídeo. Fica aí até o
+final, dá aquela ajudinha, clica no
+like, se inscreve no canal e clica no
+hype que também ajuda. Galera, eu estou
+aqui na ferramenta
+semi.new. Essa ferramenta parece ser
+muito legal porque você pode pedir para
+ela clonar, você vai ver que
+interessante o que ela faz. E também tem
+aqui algumas opções, olha só, tem o
+research, tem aqui a parte de designer,
+programar, né, standard, tem aqui o low
+cost. E aí tem cada modelo aqui, ó,
+Gemnight, tá vendo, ó? Cloud, né? E você
+pode utilizar esses modelos, né? Tem
+alguns créditos aqui free que você pode
+utilizar e isso é bem interessante. Só
+que o que eu quero aqui eu vou deixar em
+designer e vou colocar um prompt aqui
+que vamos tentar clonar o RBNB. Vamos
+lá. Vou colocar aqui. Faça um clone do
+RBNB. Eu acho que vai dar bom porque eu
+testei algumas vezes aqui, ficou bem
+legal. Então vamos lá. É bem simples. Eu
+vou clicar aqui. Depois eu vou mostrar
+aqui algumas coisas que essa ferramenta
+tem, que ela é bem legal. Aqui ela vai
+começar a criar, né? Vai fazer a
+estrutura, vai planejar e você vai ver
+que bacana que é. Aqui ela tá entrando
+ali no site do Airbnb, você pode ver. E
+aí ela vai estudar como que foi criado o
+site do Airbnb. Era para aparecer aqui a
+imagem, só que eu acho que não carregou
+direito, mas até aí tudo bem. E aí ela
+tá pesquisando aqui como que ele
+funciona. Olha só que legal. E aí ele
+vai fazer aqui o plano para começar a
+implementar a criação. Então vamos lá.
+Ela vai começar a criar aqui e vamos ver
+ela copiar aí o Airbnb. Pode ver que ela
+tá fazendo aqui, executando o plano que
+ela criou ali. Isso é bem maneiro. Ela
+vai explicando tudo aqui o que tá
+fazendo. Você pode ir acompanhando. Isso
+é bem maneiro. Galera, se você não
+entrou ainda na comunidade Vibe Code,
+porque agora mudamos o nome, somos Vibe
+Code, comunidade Vibe Code. Se você
+ainda não entrou, aqui tem a opção de
+você entrar na descrição, é só você
+entrar. Essa comunidade aqui foi criada
+totalmente do zero usando ferramentas de
+vibe code. Ela foi construída em
+loveable e super base. Está perfeita,
+está fantástico. Cada vez que eu coloco
+algo novo aqui, fica melhor ainda. E
+isso é muito bacana porque estamos
+usando a nossa própria ferramenta. Aqui
+eu estou em modo administrador, por isso
+que tá dividido aqui, mas já tem muitos
+recursos, já está funcionando
+perfeitamente. Além disso, temos aqui a
+nossa plataforma onde tem os módulos.
+Ainda eu preciso mudar aqui o nome, né?
+Mas tem aqui a nossa plataforma que tem
+todos os módulos aqui que você pode
+fazer. Tem mais esses aqui que também
+você pode fazer. E aqui estamos gravando
+a trilha do Loverball, onde você vai
+receber uma certificação no final, né?
+Tem bastante coisa, tem framer aqui
+também, tem muita coisa aqui bacana que
+você pode acessar entrando aí na
+comunidade. Você vai poder tirar suas
+dúvidas, dar sugestões aqui, você pode
+fazer o que quiser. Vai ser muito legal
+te ver aqui também na comunidade. E
+também temos no grupo do WhatsApp, assim
+que você entra na comunidade, você
+recebe o acesso. Na comunidade tem eu e
+mais três professores, fora a galera ali
+que vai ajudar bastante aí quando você
+tiver fazendo a aula e desenvolvendo o
+seu projeto. Uma coisa legal que esqueci
+de falar que aqui a sua ideia vale uma
+assinatura. Se sua ideia foi escolhida,
+você vai receber uma assinatura de
+qualquer ferramenta aí, das ferramentas
+de inteligência artificial para
+construir aplicativos. Galera, ela
+acabou de fazer aqui. Vocês podem ver
+que ficou muito parecido. Até o logo ela
+trouxe aqui. E isso é incrível, né? E
+aqui depois ela fala, ó, vamos seguir
+alguns próximos passos para melhorar o
+projeto, ó. Implementar funcionalidade
+de login e registro de usuários,
+adicionar filtros avançados por preço,
+né? Criar página para adicionar novas
+propriedades. Implementar funcionalidade
+de favoritos. Adicionar sistema de
+avaliação e comentários para as
+propriedades. Olha só, meu. É muito
+bacana. Aqui, ó, clone básico do Airbnb
+está pronto. Conseguimos implementar. Aí
+ele fala aqui o que ele colocou. Tá
+vendo, ó? Este é apenas o começo do
+projeto. Podemos continuar melhorando
+com implementar é funcionalidade de
+login. Aí ele vai falar ali de novo.
+Então, mas você olha aqui, meu, já ficou
+bom pra caramba. Olha só isso aqui.
+Nossa, mano. Eu vou abrir aqui numa
+tela. Vamos ver. Olha aí, galera,
+feitinho aqui, ó. Muito bom, né? Ele
+ficou aqui a partezinha aqui do menu,
+né? A gente pode clicar, ó. Ele vai
+abrir aqui, ó.
+Ó, bem legal. Vamos voltar, né? Vamos
+ver se aqui tá funcionando. Pode ser que
+algumas coisas não, né? Porque daí tem
+que implementar. Ele até falou, né, de
+implementar aqui e tal, mas, ó, tem
+muita coisa aqui já
+funcionando. Ele trouxe aqui algumas
+imagens, tal, mas você pode ver que com
+apenas um prompt ele realmente clonou
+ali o Airbnb, né? A página ali ele
+clonou. É claro, né, galera, que aqui as
+funcionalidades você vai ter que ir
+fazendo e claro que você não vai usar
+BMB, né? Eh, aqui é uma maneira de você
+entender como que tá construído e aí
+você pode começar a fazer o seu, fazer
+alterações, né, pedir para ele ir
+mudando, tal. Mas é muito massa essa
+ferramenta, porque com apenas um prompt
+ele realmente foi ali e clonou o Airbnb,
+né, a página do Airbnb e já tem algumas
+funcionalidades, como clicar aqui e ver
+detalhes, né? Isso já tá funcionando. E
+aí você pode ir aqui, ó, ele até coloca
+uma lista para você é começar a ticar e
+ir fazendo, melhorando. E aí, galera,
+olha só, aqui ele tem MCP, tá vendo? Que
+você vai conectar com o NEO, que é o
+banco de dados, tá? é o mesmo banco de
+dados que o RLT usa. E isso é bem massa,
+porque você pode conectar aqui e já
+conectar com o banco de dados, né? Ele
+vai fazer toda a parte de estrutura ali
+para conectar com o Neon. Isso é bem
+legal. Ele também tem aqui a parte de
+deploy que você pode fazer, tá vendo, ó?
+Tem aqui a opção e aqui também tem a
+parte de conectar com o GitHub, né? você
+fazer o comit ali e deixar preparado ali
+salvo. Isso é muito legal. Tem aqui o
+terminal, né, que é onde ele executa.
+Tem o editor, que é onde você vê aqui os
+arquivos, tá vendo? Você pode você pode
+fazer o upload de arquivos e de pastas.
+Olha só que interessante, né? E aí aqui,
+ó, foi o que ele pegou, ó, o clone. Tá
+vendo, ó? Que massa. E aqui foi que ele
+iria implementar, né? O que ele iria
+fazer. Tá vendo, ó? E aí ele vai ticando
+aqui, né? Vai fazendo e vai ticando.
+Isso é muito massa. Olha aqui, tem a
+parte de
+configurações, né, que você pode
+colocar. Olha só, você clicando aqui na
+engrenagem, tem aqui a parte de
+histórico e tem aqui novo chat, né? Se
+você clicar aqui do lado, ó, ele vem
+aqui alguns projetinhos, né? Aonde você
+pode ir criando seus projetos, tal. E
+aqui são as redes sociais, né, onde você
+pode, é, mexer ali, interagir. E aqui a
+parte de é planos, que isso também é bem
+legal. E aí, ó, olha só, aqui é 2, você
+tem 5 milhões de tokens que você pode
+usar aqui no outro plano que é o de 50,
+né? Olha, já é, nossa, 10 milhões. Tá
+vendo? Aqui no ultra já é 20 milhões que
+você pode usar. Essa ferramenta aqui eu
+achei muito bacana que além de clonar
+ela também cria ali do zero, tá? Os
+aplicativos. Você pode trazer uma imagem
+aqui também. E aí você tem essas opções
+aqui, ó, que eu vou falar para você que
+eu não testei todas, mas aqui deve ser
+uma para você fazer pesquisa, uma para
+programar ali, outra, sabe? Então você
+tem que ir testando aqui, tem de
+pensamento, tal, você pode ir testando.
+Eu usei aqui a de designer, né, que é a
+cloud 3.7 Sonet. Então eu achei muito
+interessante. Tem aqui essa parte que
+você vai ver aqui os arquivos, tá vendo,
+ó? Que ele criou, que você pode
+mencionar aqui no chat, né, para fazer
+algumas alterações. E tem aqui a parte
+de você subir uma imagem também. Então
+você pode ver que essa ferramenta aqui
+ela é bem legal. Você pode construir
+algumas coisas aqui bem interessantes.
+Aqui também tem alguns eh projetos, né,
+das pessoas que foram criando aqui no
+modo free. Então você pode olhar todos
+os projetos aqui, ó. Tem alguns bem
+interessantes. Você pode vir aqui
+olhando, ó. Eu vou escolher esse aqui,
+ó. Ó, parece bem legal. Tá vendo, ó? Ó a
+estrutura muito bonita ficou. Você pode
+fazer o remix aqui, tá vendo? abrir o
+projeto. Você pode escolher aqui alguns
+para você olhar. Se você gostou dessa
+ferramenta, coloca aí nos comentários.
+Se você quer que eu explore ela mais,
+conecte com um banco de dados, crie
+alguma coisa, né, pra gente poder
+conectar ali, fazer um login, fazer um
+cadastro, né, interagir com um banco de
+dados ali que ela dá a opção de
+integração. Então, coloca aí nos
+comentários que eu faço esse vídeo e
+posto aqui no YouTube, beleza? Então, se
+você ainda não é inscrito, se inscreve
+no canal, deixa o seu like, clica no
+hype e é isso aí.

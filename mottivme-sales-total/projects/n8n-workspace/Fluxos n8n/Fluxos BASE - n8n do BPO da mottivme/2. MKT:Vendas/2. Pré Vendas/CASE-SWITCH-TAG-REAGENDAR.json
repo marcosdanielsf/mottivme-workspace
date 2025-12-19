@@ -1,0 +1,34 @@
+{
+  "_instrucoes": "COMO ADICIONAR ESTE CASE NO SWITCH1:",
+  "_passo1": "1. Abra o workflow GHL - Mottivme -EUA no n8n",
+  "_passo2": "2. Clique no node 'Switch1'",
+  "_passo3": "3. Va em 'Rules' e clique em 'Add Rule'",
+  "_passo4": "4. Configure conforme abaixo OU cole o JSON no modo de edicao",
+
+  "case_para_adicionar": {
+    "conditions": {
+      "options": {
+        "caseSensitive": false,
+        "leftValue": "",
+        "typeValidation": "loose",
+        "version": 2
+      },
+      "conditions": [
+        {
+          "id": "tag-reagendar-trigger-001",
+          "leftValue": "={{ $('Info').item.json.tags }}",
+          "rightValue": "reagendar",
+          "operator": {
+            "type": "string",
+            "operation": "contains"
+          }
+        }
+      ],
+      "combinator": "and"
+    },
+    "renameOutput": true,
+    "outputKey": "IA - REAGENDAMENTO TAG"
+  },
+
+  "_nota": "Este case verifica se o lead tem a TAG 'reagendar' e direciona para o fluxo de recuperacao de no-show"
+}

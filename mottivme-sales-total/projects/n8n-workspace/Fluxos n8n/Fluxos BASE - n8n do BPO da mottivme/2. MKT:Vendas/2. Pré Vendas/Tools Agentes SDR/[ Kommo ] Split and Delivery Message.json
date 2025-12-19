@@ -1,0 +1,218 @@
+{
+  "name": "[ Kommo ] Split and Delivery Message",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "leads",
+        "operation": "updateLeads",
+        "json": true,
+        "jsonString": "= [{\n  \"id\": {{ $('Start').last().json.lead_id }},\n  \"custom_fields_values\": [{\n    \"field_id\": 2796185,\n    \"values\": [{\n      \"value\": \"{{ $json.output }}\"\n    }]\n  }]\n}]"
+      },
+      "type": "n8n-nodes-kommo.kommo",
+      "typeVersion": 1,
+      "position": [
+        4688,
+        832
+      ],
+      "id": "cee1a554-3576-4360-bd42-5ea7cf2820ea",
+      "name": "Update leads",
+      "retryOnFail": true,
+      "executeOnce": false,
+      "credentials": {
+        "kommoOAuth2Api": {
+          "id": "FoQopIcfFleo2ymy",
+          "name": "MottivmeAI - NV1 - Apex Pro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "messages",
+        "options": {
+          "destinationFieldName": "output"
+        }
+      },
+      "id": "e5a443af-a2b1-4959-9e83-4908df5c79d3",
+      "name": "Segmentos1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        4144,
+        816
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "6228c2bf-0ca8-4545-90f2-603f27a81e47",
+      "name": "Loop Over Items3",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4352,
+        816
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "id": "b886c94d-c30a-425c-a4d7-bd27d45e1ad7",
+      "name": "no.op",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4976,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 2.5
+      },
+      "id": "1dfba060-d86d-4fe6-af09-e251ffb63872",
+      "name": "2.5s1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4832,
+        832
+      ],
+      "webhookId": "1e947f65-22e0-4f5b-b495-21ac447d5e6e"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "messages",
+              "type": "any"
+            },
+            {
+              "name": "lead_id"
+            }
+          ]
+        }
+      },
+      "id": "77d69b52-a1e8-4c7c-a69d-de954ee8c2a9",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        3936,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 0.5
+      },
+      "id": "c7ae125d-ee63-475a-a3a7-2c146c789588",
+      "name": "0.5s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4224,
+        1088
+      ],
+      "webhookId": "1e947f65-22e0-4f5b-b495-21ac447d5e6e"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "messages": [
+            "Maria, conseguiu ver minha msg anterior?"
+          ]
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Update leads": {
+      "main": [
+        [
+          {
+            "node": "2.5s1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Segmentos1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items3": {
+      "main": [
+        [
+          {
+            "node": "0.5s",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "no.op": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2.5s1": {
+      "main": [
+        [
+          {
+            "node": "no.op",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Segmentos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6186ab73-719f-428e-92e7-24c02fb35d69",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "O6GLUDJqywz2UWy1",
+  "tags": []
+}

@@ -1,0 +1,1159 @@
+{
+  "name": "fluxos",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto}}",
+        "options": {
+          "systemMessage": "=Você é um assistente especializado em vendas B2B de outsourcing de pré-vendas.\n\nTAREFA: Extrair dados estruturados de uma transcrição de call de diagnóstico.\n\n## DADOS A EXTRAIR:\n\n### 1. DADOS BÁSICOS\n- Nome completo do cliente\n- Nome da empresa\n- Faturamento mensal atual (em R$)\n- Ticket médio de venda (em R$)\n- Meta ou objetivo principal\n\n### 2. SITUAÇÃO ATUAL\n- Número de reuniões comerciais por mês (HOJE)\n- Percentual de reuniões qualificadas (HOJE)\n- Taxa de fechamento/conversão atual (em %)\n- Número de vendas fechadas por mês (HOJE)\n- Tempo semanal gasto em prospecção (em horas)\n\n### 3. DORES IDENTIFICADAS (3 principais)\nPara cada dor, extraia:\n- Descrição usando palavras EXATAS do cliente\n- Intensidade (Alta/Média/Baixa)\n- Contexto ou exemplo mencionado\n\n**Dor #1:** Principal frustração ou problema\n**Dor #2:** O que trava/bloqueia o crescimento\n**Dor #3:** Se pudesse resolver 1 coisa, seria o quê\n\n### 4. RECOMENDAÇÃO DE PLANO\nBaseado nos dados coletados, recomende UM dos planos:\n\n- **ESSENCIAL** (R$7.997/mês): Faturamento R$50-150k/mês, Ticket R$2-5k, Meta: 12 reuniões/mês\n- **PROFESSIONAL** (R$9.997/mês): Faturamento R$150-500k/mês, Ticket R$5-15k, Meta: 18 reuniões/mês\n- **ENTERPRISE** (R$14.997/mês): Faturamento >R$500k/mês, Ticket >R$15k, Meta: 30 reuniões/mês\n\nJustifique a escolha em 1-2 frases.\n\n## FORMATO DE OUTPUT:\n\nRetorne APENAS um JSON válido no seguinte formato:\n\n```json\n{\n  \"dados_cliente\": {\n    \"nome_completo\": \"string\",\n    \"empresa\": \"string\",\n    \"faturamento_mensal\": 0,\n    \"ticket_medio\": 0,\n    \"meta_objetivo\": \"string\"\n  },\n  \"situacao_atual\": {\n    \"reunioes_mes_hoje\": 0,\n    \"percentual_qualificadas_hoje\": 0,\n    \"taxa_fechamento_atual\": 0,\n    \"vendas_mes_hoje\": 0,\n    \"tempo_prospeccao_semanal\": 0\n  },\n  \"dores\": {\n    \"problema_1\": {\n      \"descricao\": \"string (palavras exatas)\",\n      \"intensidade\": \"Alta|Média|Baixa\",\n      \"contexto\": \"string\"\n    },\n    \"problema_2\": {\n      \"descricao\": \"string (palavras exatas)\",\n      \"intensidade\": \"Alta|Média|Baixa\",\n      \"contexto\": \"string\"\n    },\n    \"problema_3\": {\n      \"descricao\": \"string (palavras exatas)\",\n      \"intensidade\": \"Alta|Média|Baixa\",\n      \"contexto\": \"string\"\n    }\n  },\n  \"plano_recomendado\": {\n    \"nome\": \"ESSENCIAL|PROFESSIONAL|ENTERPRISE\",\n    \"valor_mensal\": 0,\n    \"meta_reunioes\": 0,\n    \"justificativa\": \"string\"\n  }\n}\n```\n\n## REGRAS IMPORTANTES:\n1. Use APENAS informações presentes na transcrição\n2. Se um dado não foi mencionado, use null\n3. Para dores, priorize trechos onde o cliente demonstra emoção/frustração\n4. Seja conservador nas estimativas numéricas\n5. Retorne APENAS o JSON válido, sem texto adicional antes ou depois\n6. Não use markdown code blocks (```), retorne o JSON puro"
+        }
+      },
+      "id": "c84fd535-fbff-4401-b258-5b6012900342",
+      "name": "AI Agent - Extração",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -1312,
+        696
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse resposta do AI Agent\nlet dados;\ntry {\n  const output = $input.first().json.output;\n  // Tenta fazer parse direto\n  dados = typeof output === 'string' ? JSON.parse(output) : output;\n} catch (e) {\n  // Se falhar, tenta extrair JSON do texto\n  const text = $input.first().json.output || $input.first().json.text;\n  const jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\n  dados = JSON.parse(jsonMatch[0]);\n}\n\n// ===== CENÁRIO ATUAL =====\nconst reunioes_mes = dados.situacao_atual.reunioes_mes_hoje || 0;\nconst perc_qual_atual = (dados.situacao_atual.percentual_qualificadas_hoje || 0) / 100;\nconst taxa_fech_atual = (dados.situacao_atual.taxa_fechamento_atual || 0) / 100;\nconst ticket_medio = dados.dados_cliente.ticket_medio || 0;\n\nconst reunioes_qual_atual = Math.round(reunioes_mes * perc_qual_atual);\nconst vendas_mes_atual = Math.round(reunioes_qual_atual * taxa_fech_atual);\nconst receita_atual_mes = vendas_mes_atual * ticket_medio;\n\n// ===== CENÁRIO BPOSS =====\nconst metas_plano = {\n  \"ESSENCIAL\": 12,\n  \"PROFESSIONAL\": 18,\n  \"ENTERPRISE\": 30\n};\n\nconst plano_nome = dados.plano_recomendado?.nome || \"PROFESSIONAL\";\nconst meta_reunioes = metas_plano[plano_nome] || 18;\nconst taxa_qual_bposs = 0.85; // 85% fixo\n\n// Estima melhora na taxa de fechamento\nlet taxa_fech_bposs;\nif (taxa_fech_atual < 0.15) {\n  taxa_fech_bposs = 0.25;\n} else if (taxa_fech_atual < 0.20) {\n  taxa_fech_bposs = 0.30;\n} else {\n  taxa_fech_bposs = 0.40;\n}\n\nconst reunioes_qual_bposs = Math.round(meta_reunioes * taxa_qual_bposs);\nconst vendas_mes_bposs = Math.round(reunioes_qual_bposs * taxa_fech_bposs);\nconst receita_nova_mes = vendas_mes_bposs * ticket_medio;\n\n// ===== ROI =====\nconst receita_incremental = receita_nova_mes - receita_atual_mes;\nconst investimento_bposs = dados.plano_recomendado?.valor_mensal || 9997;\nconst lucro_liquido = receita_incremental - investimento_bposs;\nconst roi = receita_incremental > 0 ? (receita_incremental / investimento_bposs).toFixed(1) : \"0.0\";\nconst projecao_12_meses = lucro_liquido * 12;\n\n// ===== PROJEÇÃO POR MÊS =====\n\n// Mês 1: 50% da meta\nconst mes1_reunioes = Math.round(meta_reunioes * 0.5);\nconst mes1_vendas = Math.round(mes1_reunioes * taxa_qual_bposs * taxa_fech_bposs);\nconst mes1_receita = mes1_vendas * ticket_medio;\nconst mes1_extra = mes1_receita - receita_atual_mes;\n\n// Mês 2-3: 75% da meta\nconst mes2_reunioes = Math.round(meta_reunioes * 0.75);\nconst mes2_vendas = Math.round(mes2_reunioes * taxa_qual_bposs * taxa_fech_bposs);\nconst mes2_receita = mes2_vendas * ticket_medio;\nconst mes2_extra = mes2_receita - receita_atual_mes;\n\n// Mês 4+: 100% da meta\nconst mes4_reunioes = meta_reunioes;\nconst mes4_vendas = vendas_mes_bposs;\nconst mes4_receita = receita_nova_mes;\nconst mes4_extra = receita_incremental;\n\n// Helper para formatar moeda\nconst formatMoeda = (valor) => {\n  return `R$ ${Math.round(valor).toLocaleString('pt-BR')}`;\n};\n\n// ===== OUTPUT FINAL =====\nreturn {\n  json: {\n    dados_cliente: dados.dados_cliente,\n    situacao_atual: dados.situacao_atual,\n    dores: dados.dores,\n    plano_recomendado: dados.plano_recomendado,\n    cenario_atual: {\n      reunioes_mes: reunioes_mes,\n      reunioes_qualificadas: reunioes_qual_atual,\n      taxa_qualificacao: Math.round(perc_qual_atual * 100),\n      taxa_fechamento: Math.round(taxa_fech_atual * 100),\n      vendas_mes: vendas_mes_atual,\n      receita_mes: receita_atual_mes,\n      receita_mes_formatada: formatMoeda(receita_atual_mes)\n    },\n    cenario_bposs: {\n      reunioes_meta: meta_reunioes,\n      reunioes_qualificadas: reunioes_qual_bposs,\n      taxa_qualificacao: 85,\n      taxa_fechamento: Math.round(taxa_fech_bposs * 100),\n      vendas_mes: vendas_mes_bposs,\n      receita_mes: receita_nova_mes,\n      receita_mes_formatada: formatMoeda(receita_nova_mes)\n    },\n    roi: {\n      receita_incremental: receita_incremental,\n      receita_incremental_formatada: formatMoeda(receita_incremental),\n      investimento_bposs: investimento_bposs,\n      investimento_bposs_formatado: formatMoeda(investimento_bposs),\n      lucro_liquido: lucro_liquido,\n      lucro_liquido_formatado: formatMoeda(lucro_liquido),\n      roi_multiplo: roi,\n      projecao_12_meses: projecao_12_meses,\n      projecao_12_meses_formatada: formatMoeda(projecao_12_meses)\n    },\n    projecao_meses: {\n      mes_1: {\n        reunioes: mes1_reunioes,\n        vendas: mes1_vendas,\n        receita_extra: mes1_extra,\n        receita_extra_formatada: formatMoeda(mes1_extra)\n      },\n      mes_2_3: {\n        reunioes: mes2_reunioes,\n        vendas: mes2_vendas,\n        receita_extra: mes2_extra,\n        receita_extra_formatada: formatMoeda(mes2_extra)\n      },\n      mes_4_mais: {\n        reunioes: mes4_reunioes,\n        vendas: mes4_vendas,\n        receita_extra: mes4_extra,\n        receita_extra_formatada: formatMoeda(mes4_extra)\n      }\n    },\n    metadata: {\n      data_calculo: new Date().toISOString(),\n      versao_calculo: \"2.0\"\n    }\n  }\n};"
+      },
+      "id": "57f0027d-3de9-4e65-a6f6-e58f7d00bf55",
+      "name": "Code - Calcular ROI",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        696
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Gere uma proposta comercial COMPLETA em Markdown usando estes dados:\n\n{{ JSON.stringify($json, null, 2) }}",
+        "options": {
+          "systemMessage": "=Você é um consultor comercial especializado em outsourcing de pré-vendas.\n\nTAREFA: Gerar proposta comercial COMPLETA e personalizada em Markdown.\n\nVocê receberá um JSON com todos os dados do cliente, situação atual, dores, plano recomendado e projeções de ROI.\n\nESTRUTURA DA PROPOSTA:\n\n```markdown\n# PROPOSTA COMERCIAL\n## Outsourcing de Pré-Vendas - BPOSS\n\n**Cliente:** [nome_completo do JSON]\n**Empresa:** [empresa do JSON]\n**Data:** [data de hoje formatada]\n**Proposta:** #[número baseado em timestamp]\n**Validade:** [hoje + 7 dias]\n\n---\n\n## 📊 RESUMO EXECUTIVO\n\n**Situação Atual:**\n- Faturamento: [dados_cliente.faturamento_mensal formatado]\n- Ticket Médio: [dados_cliente.ticket_medio formatado]\n- Reuniões/mês: [cenario_atual.reunioes_mes]\n- Taxa de Fechamento: [cenario_atual.taxa_fechamento]%\n\n**Resultado Esperado em 90 Dias:**\n- [cenario_bposs.reunioes_meta] reuniões qualificadas/mês (vs [cenario_atual.reunioes_mes] hoje)\n- +[roi.receita_incremental_formatada] em receita incremental mensal\n- ROI de [roi.roi_multiplo]x sobre o investimento\n\n---\n\n## 🎯 DESAFIOS IDENTIFICADOS\n\n### 1. [Criar título impactante para dores.problema_1.descricao]\n\n> \"[dores.problema_1.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_1.intensidade]\n\n### 2. [Criar título impactante para dores.problema_2.descricao]\n\n> \"[dores.problema_2.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_2.intensidade]\n\n### 3. [Criar título impactante para dores.problema_3.descricao]\n\n> \"[dores.problema_3.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_3.intensidade]\n\n---\n\n## ✅ SOLUÇÃO PROPOSTA\n\n### BPOSS - Business Process Outsourcing Sales\n\n**O que faremos por você:**\n\n1. **Prospecção Ativa Qualificada**\n   - Identificação e qualificação de leads no seu ICP\n   - Abordagem multicanal (LinkedIn, Email, WhatsApp)\n   - Nutrição até estar pronto para reunião\n\n2. **Agendamento de Reuniões Qualificadas**\n   - Apenas leads que passaram por BANT completo\n   - Taxa de show-up de 73% (vs 40% do mercado)\n   - Briefing completo antes de cada reunião\n\n3. **CRM & Gestão Completa**\n   - Plataforma Socialfy inclusa (R$997/mês grátis)\n   - Dashboard em tempo real\n   - Relatórios semanais de performance\n\n4. **SDR Dedicado + IA**\n   - Profissional sênior 100% focado na sua conta\n   - Apoio de IA para escala e qualidade\n   - Treinamento contínuo no seu produto\n\n---\n\n## 💰 INVESTIMENTO & PLANOS\n\n[Apresentar os 3 planos, mas destacar o recomendado com ⭐]\n\n### Plano ESSENCIAL\n**R$ 7.997/mês**\n\n✅ 12 reuniões qualificadas/mês\n✅ 1 SDR dedicado\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n\n**Ideal para:** Empresas faturando R$50-150k/mês, ticket R$2-5k\n\n---\n\n### ⭐ Plano [plano_recomendado.nome] (RECOMENDADO)\n**[plano_recomendado.valor_mensal formatado]/mês**\n\n✅ **[plano_recomendado.meta_reunioes] reuniões qualificadas/mês**\n✅ SDR(s) dedicado(s)\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n[adicionar benefícios específicos do plano]\n\n**POR QUE RECOMENDAMOS ESTE PLANO PARA [empresa]:**\n\n[plano_recomendado.justificativa]\n\n---\n\n### Plano ENTERPRISE\n**R$ 14.997/mês**\n\n✅ 30 reuniões qualificadas/mês\n✅ Time dedicado (2-3 SDRs)\n✅ Socialfy CRM incluso\n✅ Account Manager exclusivo\n✅ Suporte 24/7\n\n**Ideal para:** Empresas faturando >R$500k/mês, ticket >R$15k\n\n---\n\n## 📈 PROJEÇÃO DE RESULTADOS\n\n### CENÁRIO ATUAL (sem BPOSS):\n\n| Métrica | Valor Atual |\n|---------|-------------|\n| Reuniões/mês | [cenario_atual.reunioes_mes] |\n| % Qualificadas | [cenario_atual.taxa_qualificacao]% |\n| Reuniões qualificadas | [cenario_atual.reunioes_qualificadas] |\n| Taxa de fechamento | [cenario_atual.taxa_fechamento]% |\n| Vendas/mês | [cenario_atual.vendas_mes] |\n| **Receita/mês** | **[cenario_atual.receita_mes_formatada]** |\n\n### CENÁRIO PROJETADO (com BPOSS - Plano [plano_recomendado.nome]):\n\n| Métrica | Valor Projetado |\n|---------|------------------|\n| Reuniões/mês | [cenario_bposs.reunioes_meta] |\n| % Qualificadas | **[cenario_bposs.taxa_qualificacao]%** |\n| Reuniões qualificadas | [cenario_bposs.reunioes_qualificadas] |\n| Taxa de fechamento | [cenario_bposs.taxa_fechamento]% |\n| Vendas/mês | [cenario_bposs.vendas_mes] |\n| **Receita/mês** | **[cenario_bposs.receita_mes_formatada]** |\n\n### 💎 ROI DETALHADO:\n\n```\nRECEITA INCREMENTAL:     [roi.receita_incremental_formatada]/mês\nINVESTIMENTO BPOSS:      [roi.investimento_bposs_formatado]/mês\n─────────────────────────────────────\nLUCRO LÍQUIDO:           [roi.lucro_liquido_formatado]/mês\nROI:                     [roi.roi_multiplo]x\n\nEM 12 MESES:             [roi.projecao_12_meses_formatada] líquido\n```\n\n---\n\n## 📅 PROJEÇÃO POR MÊS (Plano [plano_recomendado.nome]):\n\n### Mês 1 (Ramp-up)\n- **Reuniões:** [projecao_meses.mes_1.reunioes] (50% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_1.vendas]\n- **Receita extra:** [projecao_meses.mes_1.receita_extra_formatada]\n\n### Mês 2-3 (Aceleração)\n- **Reuniões:** [projecao_meses.mes_2_3.reunioes] (75% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_2_3.vendas]\n- **Receita extra:** [projecao_meses.mes_2_3.receita_extra_formatada]/mês\n\n### Mês 4+ (Full Speed)\n- **Reuniões:** [projecao_meses.mes_4_mais.reunioes] (100% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_4_mais.vendas]\n- **Receita extra:** [projecao_meses.mes_4_mais.receita_extra_formatada]/mês\n\n---\n\n## 🎁 BÔNUS EXCLUSIVO\n\n### Se fechar até [hoje + 3 dias formatado]:\n\n✅ **Setup acelerado:** Kickoff em 48h (vs 7 dias)\n✅ **1 mês de Socialfy PRO grátis:** R$ 997 em valor\n✅ **Script de vendas customizado:** Baseado nas suas melhores calls\n✅ **Treinamento da equipe:** 2h de onboarding ao vivo\n\n**Valor total do bônus:** R$ 3.500\n\n---\n\n## ✅ PRÓXIMOS PASSOS\n\n### Se aprovar esta proposta:\n\n**1. Hoje:** Confirmar proposta via WhatsApp/Email\n\n**2. Amanhã:** Assinatura do contrato + Kickoff call\n\n**3. Dia 3-7:** Setup completo\n   - Integração CRM\n   - Treinamento no produto\n   - Definição de ICP\n   - Aprovação de scripts\n\n**4. Dia 8:** Início da prospecção ativa\n\n**5. Semana 3:** Primeiras reuniões agendadas\n\n**Data sugerida para kickoff:** [próxima segunda-feira]\n\n---\n\n## 📋 CONDIÇÕES COMERCIAIS\n\n**Forma de Pagamento:**\n- Cartão de crédito (até 12x)\n- Boleto bancário (à vista ou parcelado)\n- Pix (5% de desconto à vista)\n\n**Faturamento:**\n- Recorrência mensal\n- Reajuste anual (IPCA)\n\n**Contrato:**\n- Vigência mínima: 3 meses\n- Renovação automática mensal após período mínimo\n- Cancelamento com 30 dias de antecedência\n\n**Garantia:**\n- Se não atingirmos 70% da meta de reuniões em 60 dias, devolvemos 50% do investimento do 1º mês\n\n---\n\n## ❓ PERGUNTAS FREQUENTES\n\n**Quanto tempo até as primeiras reuniões?**\nEm média, 15-21 dias após o kickoff.\n\n**E se o lead não comparecer?**\nReagendamos sem custo. Nossa taxa de show-up é 73%.\n\n**Posso cancelar se não funcionar?**\nSim, após 3 meses você pode cancelar com 30 dias de aviso.\n\n**Vocês garantem vendas?**\nGarantimos reuniões qualificadas. A conversão depende do seu produto e fechamento.\n\n**Como é o treinamento do SDR?**\n1 semana intensiva: produto, ICP, objeções, cases. Treinamento contínuo mensal.\n\n---\n\n## 📞 CONTATO\n\n**[SEU NOME]**\nHead of Sales - BPOSS\n\n📧 Email: [seu@email.com]\n📱 WhatsApp: [seu telefone]\n🔗 LinkedIn: [seu linkedin]\n\n**Horário de atendimento:** Seg-Sex, 9h-18h\n\n---\n\n**Validade desta proposta:** [hoje + 7 dias]\n**Validade do bônus:** [hoje + 3 dias]\n\n---\n\n*\"Prospecção é ciência, não arte. A BPOSS domina a ciência.\"*\n\n**Vamos escalar juntos?** 🚀\n```\n\nREGRAS DE GERAÇÃO:\n\n1. **Tom:** Profissional mas friendly. Confiante sem ser arrogante.\n2. **Personalização:** Use dados EXATOS do JSON fornecido.\n3. **Números:** Seja CONSERVADOR (já estão calculados conservadoramente).\n4. **Formatação:** Use Markdown correto (tabelas, listas, destaques).\n5. **Persuasão:** Foque em ROI e redução de risco.\n6. **Datas:** Calcule corretamente (hoje, hoje+3, hoje+7).\n7. **Substituições:** ZERO [COLCHETES] não preenchidos.\n8. **Tamanho:** Completa mas objetiva. 8-12 páginas.\n\nRetorne APENAS o Markdown da proposta, sem mensagens adicionais."
+        }
+      },
+      "id": "66422004-0d90-4d30-8eea-7d1124de8e8a",
+      "name": "AI Agent - Proposta",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -736,
+        696
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Gerar pdf"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1608,
+        368
+      ],
+      "typeVersion": 1,
+      "id": "fb28ef12-c35b-4d72-8a78-be0f0e140b9e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Conversor Profissional de Markdown para HTML\nfor (const item of $input.all()) {\n  const markdown = item.json.output || '';\n  \n  let html = markdown\n    // Remove --- divisores\n    .replace(/^---$/gim, '<hr>')\n    \n    // Headers (ordem importante: do mais específico para o mais genérico)\n    .replace(/^####\\s+(.*)$/gim, '<h4>$1</h4>')\n    .replace(/^###\\s+(.*)$/gim, '<h3>$1</h3>')\n    .replace(/^##\\s+(.*)$/gim, '<h2>$1</h2>')\n    .replace(/^#\\s+(.*)$/gim, '<h1>$1</h1>')\n    \n    // Blockquotes\n    .replace(/^>\\s*(.*)$/gim, '<blockquote>$1</blockquote>')\n    \n    // Bold\n    .replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>')\n    \n    // Italic\n    .replace(/\\*([^*]+)\\*/g, '<em>$1</em>')\n    \n    // Code blocks (```)\n    .replace(/```([\\s\\S]*?)```/g, '<pre><code>$1</code></pre>')\n    \n    // Inline code\n    .replace(/`([^`]+)`/g, '<code>$1</code>')\n    \n    // Listas com checkmark\n    .replace(/^\\s*-\\s*✅\\s*(.+)$/gim, '<li class=\"check\">✅ $1</li>')\n    \n    // Listas normais\n    .replace(/^\\s*-\\s+(.+)$/gim, '<li>$1</li>')\n    \n    // Processa parágrafos\n    .split('\\n\\n')\n    .map(para => {\n      // Se já é uma tag HTML, não envolve em <p>\n      if (para.match(/^<(h[1-6]|blockquote|hr|pre)/)) {\n        return para;\n      }\n      // Se tem <li>, envolve em <ul>\n      if (para.includes('<li')) {\n        return '<ul>' + para + '</ul>';\n      }\n      // Caso contrário, vira parágrafo\n      return '<p>' + para.replace(/\\n/g, '<br>') + '</p>';\n    })\n    .join('\\n');\n  \n  // Template HTML completo\n  const htmlCompleto = `<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Proposta Comercial - BPOSS</title>\n  <style>\n    @page {\n      size: A4;\n      margin: 2cm;\n    }\n    \n    * {\n      margin: 0;\n      padding: 0;\n      box-sizing: border-box;\n    }\n    \n    body {\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n      line-height: 1.8;\n      color: #2c3e50;\n      background: white;\n      padding: 40px;\n      max-width: 900px;\n      margin: 0 auto;\n    }\n    \n    h1 {\n      font-size: 32px;\n      color: #1a1a1a;\n      margin: 30px 0 20px 0;\n      padding-bottom: 15px;\n      border-bottom: 4px solid #3498db;\n      font-weight: 700;\n    }\n    \n    h2 {\n      font-size: 24px;\n      color: #2c3e50;\n      margin: 35px 0 20px 0;\n      padding-left: 15px;\n      border-left: 5px solid #3498db;\n      font-weight: 600;\n    }\n    \n    h3 {\n      font-size: 20px;\n      color: #34495e;\n      margin: 25px 0 15px 0;\n      font-weight: 600;\n    }\n    \n    h4 {\n      font-size: 18px;\n      color: #555;\n      margin: 20px 0 10px 0;\n      font-weight: 600;\n    }\n    \n    p {\n      margin: 15px 0;\n      text-align: justify;\n      font-size: 15px;\n    }\n    \n    blockquote {\n      border-left: 5px solid #3498db;\n      background: #f8f9fa;\n      padding: 15px 25px;\n      margin: 20px 0;\n      font-style: italic;\n      color: #555;\n      border-radius: 4px;\n    }\n    \n    strong {\n      color: #e74c3c;\n      font-weight: 600;\n    }\n    \n    em {\n      font-style: italic;\n      color: #555;\n    }\n    \n    code {\n      background: #f4f4f4;\n      padding: 3px 8px;\n      border-radius: 4px;\n      font-family: 'Courier New', Consolas, monospace;\n      font-size: 14px;\n      color: #c7254e;\n    }\n    \n    pre {\n      background: #2c3e50;\n      color: #ecf0f1;\n      padding: 20px;\n      border-radius: 6px;\n      overflow-x: auto;\n      margin: 20px 0;\n    }\n    \n    pre code {\n      background: none;\n      color: inherit;\n      padding: 0;\n    }\n    \n    ul {\n      margin: 15px 0;\n      padding-left: 30px;\n      list-style: none;\n    }\n    \n    li {\n      margin: 10px 0;\n      padding-left: 10px;\n      position: relative;\n    }\n    \n    li:before {\n      content: \"▸\";\n      position: absolute;\n      left: -15px;\n      color: #3498db;\n      font-weight: bold;\n    }\n    \n    li.check:before {\n      content: \"\";\n    }\n    \n    hr {\n      border: none;\n      border-top: 2px solid #ecf0f1;\n      margin: 30px 0;\n    }\n    \n    @media print {\n      body {\n        padding: 0;\n      }\n      \n      h1, h2 {\n        page-break-after: avoid;\n      }\n      \n      p, blockquote {\n        page-break-inside: avoid;\n      }\n    }\n  </style>\n</head>\n<body>\n${html}\n</body>\n</html>`;\n  \n  item.json.html = htmlCompleto;\n  item.json.pdfReady = true;\n}\n\nreturn $input.all();"
+      },
+      "id": "0ab08f90-9439-41fa-ae85-ab8feda10633",
+      "name": "Code - Markdown → HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1536,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "output_field",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "db6f4b0e-7c6b-460b-a981-dfe70f659273",
+      "name": "AI Agent - Proposta1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -384,
+        696
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "html",
+        "options": {}
+      },
+      "id": "c7a4fab2-1a40-4aec-b7b4-a381f82ccc7d",
+      "name": "Convert to File - PDF1",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1312,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "texto",
+        "formDescription": "teste",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "texto",
+              "placeholder": "teste"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1536,
+        696
+      ],
+      "id": "a280ac6a-4b0b-47f7-8e5f-2f3e1dc16846",
+      "name": "On form submission",
+      "webhookId": "271c9cc3-52d6-44a8-8547-d93f9e598657"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.html }}",
+        "operation": "getPDF",
+        "margin": {
+          "top": "2cm",
+          "bottom": "2cm",
+          "left": "2cm",
+          "right": "2cm"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-puppeteer.puppeteer",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        368
+      ],
+      "id": "a735f99e-553b-427d-82bc-af78e97bafb8",
+      "name": "Puppeteer"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto}}",
+        "options": {
+          "systemMessage": "=Você é o CS Call Analyzer da Mottivme.\n\nSua função é analisar a transcrição de calls de Customer Success e gerar um relatório estruturado.\n\n## CONTEXTO DO CLIENTE\n- Nome: {{ $json.cliente_nome }}\n- Empresa: {{ $json.empresa }}\n- Vertical: {{ $json.vertical }}\n- Plano Atual: {{ $json.plano_atual }}\n- MRR: R${{ $json.mrr }}\n- CS Responsável: {{ $json.cs_responsavel }}\n- Tipo da Call: {{ $json.tipo_call }}\n\n## TRANSCRIÇÃO DA CALL\n{{ $json.transcricao }}\n\n## SUA TAREFA\n\nAnalise a transcrição acima e retorne um JSON com a seguinte estrutura:\n\n{\n  \"resumo_executivo\": {\n    \"health_score\": <0-100>,\n    \"health_status\": \"saudavel|atencao|risco|critico\",\n    \"insight_principal\": \"<uma frase resumindo o estado do cliente>\"\n  },\n  \"analise\": {\n    \"sentimento\": \"positivo|neutro|negativo\",\n    \"uso_plataforma\": \"alto|medio|baixo|nao_mencionado\",\n    \"satisfacao\": \"positiva|neutra|negativa\",\n    \"resultados_mencionados\": <true|false>,\n    \"resultados_detalhes\": \"<o que foi mencionado>\"\n  },\n  \"riscos\": [\n    {\n      \"tipo\": \"churn|insatisfacao|baixo_uso|preco\",\n      \"evidencia\": \"<frase exata ou paráfrase>\",\n      \"timestamp\": \"<se disponível>\",\n      \"severidade\": \"alta|media|baixa\"\n    }\n  ],\n  \"oportunidades\": [\n    {\n      \"tipo\": \"upsell|cross_sell|indicacao|expansao\",\n      \"evidencia\": \"<frase exata ou paráfrase>\",\n      \"produto_sugerido\": \"<se aplicável>\",\n      \"valor_potencial\": <número ou null>\n    }\n  ],\n  \"acoes\": [\n    {\n      \"descricao\": \"<ação necessária>\",\n      \"responsavel\": \"<quem deve fazer>\",\n      \"prazo\": \"<em dias ou data>\",\n      \"prioridade\": \"alta|media|baixa\"\n    }\n  ],\n  \"decisoes_tomadas\": [\"<lista de decisões da call>\"],\n  \"momentos_chave\": [\n    {\n      \"timestamp\": \"<se disponível>\",\n      \"descricao\": \"<o que aconteceu>\",\n      \"importancia\": \"alta|media|baixa\"\n    }\n  ],\n  \"alertas\": [\n    {\n      \"tipo\": \"churn_iminente|oportunidade_urgente|escalacao\",\n      \"mensagem\": \"<descrição do alerta>\",\n      \"destinatario\": \"<quem deve receber>\"\n    }\n  ]\n}\n\n## REGRAS DE ANÁLISE\n\n1. Health Score:\n   - 80-100: Saudável (🟢)\n   - 60-79: Atenção (🟡)\n   - 40-59: Risco (🟠)\n   - 0-39: Crítico (🔴)\n\n2. Sinais de Risco (procurar ativamente):\n   - \"não estou usando\", \"não vi resultado\", \"está caro\"\n   - \"pensando em cancelar\", \"avaliar outras opções\"\n   - Tom frustrado, respostas curtas, desânimo\n\n3. Sinais de Oportunidade:\n   - \"quero aumentar\", \"preciso de mais\", \"funciona muito bem\"\n   - \"meu colega também precisa\", \"vocês fazem X?\"\n   - Entusiasmo, perguntas sobre features premium\n\n4. Seja objetivo e baseado em evidências\n5. Priorize riscos sobre oportunidades\n6. Cite frases exatas quando possível\n\nRetorne APENAS o JSON, sem texto adicional."
+        }
+      },
+      "id": "8bd27ed4-3fea-4f07-94b0-30e975b5f536",
+      "name": "AI Agent - Extração1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -1088,
+        1336
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse resposta do AI Agent\nlet dados;\ntry {\n  const output = $input.first().json.output;\n  // Tenta fazer parse direto\n  dados = typeof output === 'string' ? JSON.parse(output) : output;\n} catch (e) {\n  // Se falhar, tenta extrair JSON do texto\n  const text = $input.first().json.output || $input.first().json.text;\n  const jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\n  dados = JSON.parse(jsonMatch[0]);\n}\n\n// ===== CENÁRIO ATUAL =====\nconst reunioes_mes = dados.situacao_atual.reunioes_mes_hoje || 0;\nconst perc_qual_atual = (dados.situacao_atual.percentual_qualificadas_hoje || 0) / 100;\nconst taxa_fech_atual = (dados.situacao_atual.taxa_fechamento_atual || 0) / 100;\nconst ticket_medio = dados.dados_cliente.ticket_medio || 0;\n\nconst reunioes_qual_atual = Math.round(reunioes_mes * perc_qual_atual);\nconst vendas_mes_atual = Math.round(reunioes_qual_atual * taxa_fech_atual);\nconst receita_atual_mes = vendas_mes_atual * ticket_medio;\n\n// ===== CENÁRIO BPOSS =====\nconst metas_plano = {\n  \"ESSENCIAL\": 12,\n  \"PROFESSIONAL\": 18,\n  \"ENTERPRISE\": 30\n};\n\nconst plano_nome = dados.plano_recomendado?.nome || \"PROFESSIONAL\";\nconst meta_reunioes = metas_plano[plano_nome] || 18;\nconst taxa_qual_bposs = 0.85; // 85% fixo\n\n// Estima melhora na taxa de fechamento\nlet taxa_fech_bposs;\nif (taxa_fech_atual < 0.15) {\n  taxa_fech_bposs = 0.25;\n} else if (taxa_fech_atual < 0.20) {\n  taxa_fech_bposs = 0.30;\n} else {\n  taxa_fech_bposs = 0.40;\n}\n\nconst reunioes_qual_bposs = Math.round(meta_reunioes * taxa_qual_bposs);\nconst vendas_mes_bposs = Math.round(reunioes_qual_bposs * taxa_fech_bposs);\nconst receita_nova_mes = vendas_mes_bposs * ticket_medio;\n\n// ===== ROI =====\nconst receita_incremental = receita_nova_mes - receita_atual_mes;\nconst investimento_bposs = dados.plano_recomendado?.valor_mensal || 9997;\nconst lucro_liquido = receita_incremental - investimento_bposs;\nconst roi = receita_incremental > 0 ? (receita_incremental / investimento_bposs).toFixed(1) : \"0.0\";\nconst projecao_12_meses = lucro_liquido * 12;\n\n// ===== PROJEÇÃO POR MÊS =====\n\n// Mês 1: 50% da meta\nconst mes1_reunioes = Math.round(meta_reunioes * 0.5);\nconst mes1_vendas = Math.round(mes1_reunioes * taxa_qual_bposs * taxa_fech_bposs);\nconst mes1_receita = mes1_vendas * ticket_medio;\nconst mes1_extra = mes1_receita - receita_atual_mes;\n\n// Mês 2-3: 75% da meta\nconst mes2_reunioes = Math.round(meta_reunioes * 0.75);\nconst mes2_vendas = Math.round(mes2_reunioes * taxa_qual_bposs * taxa_fech_bposs);\nconst mes2_receita = mes2_vendas * ticket_medio;\nconst mes2_extra = mes2_receita - receita_atual_mes;\n\n// Mês 4+: 100% da meta\nconst mes4_reunioes = meta_reunioes;\nconst mes4_vendas = vendas_mes_bposs;\nconst mes4_receita = receita_nova_mes;\nconst mes4_extra = receita_incremental;\n\n// Helper para formatar moeda\nconst formatMoeda = (valor) => {\n  return `R$ ${Math.round(valor).toLocaleString('pt-BR')}`;\n};\n\n// ===== OUTPUT FINAL =====\nreturn {\n  json: {\n    dados_cliente: dados.dados_cliente,\n    situacao_atual: dados.situacao_atual,\n    dores: dados.dores,\n    plano_recomendado: dados.plano_recomendado,\n    cenario_atual: {\n      reunioes_mes: reunioes_mes,\n      reunioes_qualificadas: reunioes_qual_atual,\n      taxa_qualificacao: Math.round(perc_qual_atual * 100),\n      taxa_fechamento: Math.round(taxa_fech_atual * 100),\n      vendas_mes: vendas_mes_atual,\n      receita_mes: receita_atual_mes,\n      receita_mes_formatada: formatMoeda(receita_atual_mes)\n    },\n    cenario_bposs: {\n      reunioes_meta: meta_reunioes,\n      reunioes_qualificadas: reunioes_qual_bposs,\n      taxa_qualificacao: 85,\n      taxa_fechamento: Math.round(taxa_fech_bposs * 100),\n      vendas_mes: vendas_mes_bposs,\n      receita_mes: receita_nova_mes,\n      receita_mes_formatada: formatMoeda(receita_nova_mes)\n    },\n    roi: {\n      receita_incremental: receita_incremental,\n      receita_incremental_formatada: formatMoeda(receita_incremental),\n      investimento_bposs: investimento_bposs,\n      investimento_bposs_formatado: formatMoeda(investimento_bposs),\n      lucro_liquido: lucro_liquido,\n      lucro_liquido_formatado: formatMoeda(lucro_liquido),\n      roi_multiplo: roi,\n      projecao_12_meses: projecao_12_meses,\n      projecao_12_meses_formatada: formatMoeda(projecao_12_meses)\n    },\n    projecao_meses: {\n      mes_1: {\n        reunioes: mes1_reunioes,\n        vendas: mes1_vendas,\n        receita_extra: mes1_extra,\n        receita_extra_formatada: formatMoeda(mes1_extra)\n      },\n      mes_2_3: {\n        reunioes: mes2_reunioes,\n        vendas: mes2_vendas,\n        receita_extra: mes2_extra,\n        receita_extra_formatada: formatMoeda(mes2_extra)\n      },\n      mes_4_mais: {\n        reunioes: mes4_reunioes,\n        vendas: mes4_vendas,\n        receita_extra: mes4_extra,\n        receita_extra_formatada: formatMoeda(mes4_extra)\n      }\n    },\n    metadata: {\n      data_calculo: new Date().toISOString(),\n      versao_calculo: \"2.0\"\n    }\n  }\n};"
+      },
+      "id": "194a1341-aa51-4a4f-b845-f578ecea534a",
+      "name": "Code - Calcular ROI1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -736,
+        1336
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Gere uma proposta comercial COMPLETA em Markdown usando estes dados:\n\n{{ JSON.stringify($json, null, 2) }}",
+        "options": {
+          "systemMessage": "=Você é um consultor comercial especializado em outsourcing de pré-vendas.\n\nTAREFA: Gerar proposta comercial COMPLETA e personalizada em Markdown.\n\nVocê receberá um JSON com todos os dados do cliente, situação atual, dores, plano recomendado e projeções de ROI.\n\nESTRUTURA DA PROPOSTA:\n\n```markdown\n# PROPOSTA COMERCIAL\n## Outsourcing de Pré-Vendas - BPOSS\n\n**Cliente:** [nome_completo do JSON]\n**Empresa:** [empresa do JSON]\n**Data:** [data de hoje formatada]\n**Proposta:** #[número baseado em timestamp]\n**Validade:** [hoje + 7 dias]\n\n---\n\n## 📊 RESUMO EXECUTIVO\n\n**Situação Atual:**\n- Faturamento: [dados_cliente.faturamento_mensal formatado]\n- Ticket Médio: [dados_cliente.ticket_medio formatado]\n- Reuniões/mês: [cenario_atual.reunioes_mes]\n- Taxa de Fechamento: [cenario_atual.taxa_fechamento]%\n\n**Resultado Esperado em 90 Dias:**\n- [cenario_bposs.reunioes_meta] reuniões qualificadas/mês (vs [cenario_atual.reunioes_mes] hoje)\n- +[roi.receita_incremental_formatada] em receita incremental mensal\n- ROI de [roi.roi_multiplo]x sobre o investimento\n\n---\n\n## 🎯 DESAFIOS IDENTIFICADOS\n\n### 1. [Criar título impactante para dores.problema_1.descricao]\n\n> \"[dores.problema_1.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_1.intensidade]\n\n### 2. [Criar título impactante para dores.problema_2.descricao]\n\n> \"[dores.problema_2.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_2.intensidade]\n\n### 3. [Criar título impactante para dores.problema_3.descricao]\n\n> \"[dores.problema_3.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_3.intensidade]\n\n---\n\n## ✅ SOLUÇÃO PROPOSTA\n\n### BPOSS - Business Process Outsourcing Sales\n\n**O que faremos por você:**\n\n1. **Prospecção Ativa Qualificada**\n   - Identificação e qualificação de leads no seu ICP\n   - Abordagem multicanal (LinkedIn, Email, WhatsApp)\n   - Nutrição até estar pronto para reunião\n\n2. **Agendamento de Reuniões Qualificadas**\n   - Apenas leads que passaram por BANT completo\n   - Taxa de show-up de 73% (vs 40% do mercado)\n   - Briefing completo antes de cada reunião\n\n3. **CRM & Gestão Completa**\n   - Plataforma Socialfy inclusa (R$997/mês grátis)\n   - Dashboard em tempo real\n   - Relatórios semanais de performance\n\n4. **SDR Dedicado + IA**\n   - Profissional sênior 100% focado na sua conta\n   - Apoio de IA para escala e qualidade\n   - Treinamento contínuo no seu produto\n\n---\n\n## 💰 INVESTIMENTO & PLANOS\n\n[Apresentar os 3 planos, mas destacar o recomendado com ⭐]\n\n### Plano ESSENCIAL\n**R$ 7.997/mês**\n\n✅ 12 reuniões qualificadas/mês\n✅ 1 SDR dedicado\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n\n**Ideal para:** Empresas faturando R$50-150k/mês, ticket R$2-5k\n\n---\n\n### ⭐ Plano [plano_recomendado.nome] (RECOMENDADO)\n**[plano_recomendado.valor_mensal formatado]/mês**\n\n✅ **[plano_recomendado.meta_reunioes] reuniões qualificadas/mês**\n✅ SDR(s) dedicado(s)\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n[adicionar benefícios específicos do plano]\n\n**POR QUE RECOMENDAMOS ESTE PLANO PARA [empresa]:**\n\n[plano_recomendado.justificativa]\n\n---\n\n### Plano ENTERPRISE\n**R$ 14.997/mês**\n\n✅ 30 reuniões qualificadas/mês\n✅ Time dedicado (2-3 SDRs)\n✅ Socialfy CRM incluso\n✅ Account Manager exclusivo\n✅ Suporte 24/7\n\n**Ideal para:** Empresas faturando >R$500k/mês, ticket >R$15k\n\n---\n\n## 📈 PROJEÇÃO DE RESULTADOS\n\n### CENÁRIO ATUAL (sem BPOSS):\n\n| Métrica | Valor Atual |\n|---------|-------------|\n| Reuniões/mês | [cenario_atual.reunioes_mes] |\n| % Qualificadas | [cenario_atual.taxa_qualificacao]% |\n| Reuniões qualificadas | [cenario_atual.reunioes_qualificadas] |\n| Taxa de fechamento | [cenario_atual.taxa_fechamento]% |\n| Vendas/mês | [cenario_atual.vendas_mes] |\n| **Receita/mês** | **[cenario_atual.receita_mes_formatada]** |\n\n### CENÁRIO PROJETADO (com BPOSS - Plano [plano_recomendado.nome]):\n\n| Métrica | Valor Projetado |\n|---------|------------------|\n| Reuniões/mês | [cenario_bposs.reunioes_meta] |\n| % Qualificadas | **[cenario_bposs.taxa_qualificacao]%** |\n| Reuniões qualificadas | [cenario_bposs.reunioes_qualificadas] |\n| Taxa de fechamento | [cenario_bposs.taxa_fechamento]% |\n| Vendas/mês | [cenario_bposs.vendas_mes] |\n| **Receita/mês** | **[cenario_bposs.receita_mes_formatada]** |\n\n### 💎 ROI DETALHADO:\n\n```\nRECEITA INCREMENTAL:     [roi.receita_incremental_formatada]/mês\nINVESTIMENTO BPOSS:      [roi.investimento_bposs_formatado]/mês\n─────────────────────────────────────\nLUCRO LÍQUIDO:           [roi.lucro_liquido_formatado]/mês\nROI:                     [roi.roi_multiplo]x\n\nEM 12 MESES:             [roi.projecao_12_meses_formatada] líquido\n```\n\n---\n\n## 📅 PROJEÇÃO POR MÊS (Plano [plano_recomendado.nome]):\n\n### Mês 1 (Ramp-up)\n- **Reuniões:** [projecao_meses.mes_1.reunioes] (50% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_1.vendas]\n- **Receita extra:** [projecao_meses.mes_1.receita_extra_formatada]\n\n### Mês 2-3 (Aceleração)\n- **Reuniões:** [projecao_meses.mes_2_3.reunioes] (75% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_2_3.vendas]\n- **Receita extra:** [projecao_meses.mes_2_3.receita_extra_formatada]/mês\n\n### Mês 4+ (Full Speed)\n- **Reuniões:** [projecao_meses.mes_4_mais.reunioes] (100% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_4_mais.vendas]\n- **Receita extra:** [projecao_meses.mes_4_mais.receita_extra_formatada]/mês\n\n---\n\n## 🎁 BÔNUS EXCLUSIVO\n\n### Se fechar até [hoje + 3 dias formatado]:\n\n✅ **Setup acelerado:** Kickoff em 48h (vs 7 dias)\n✅ **1 mês de Socialfy PRO grátis:** R$ 997 em valor\n✅ **Script de vendas customizado:** Baseado nas suas melhores calls\n✅ **Treinamento da equipe:** 2h de onboarding ao vivo\n\n**Valor total do bônus:** R$ 3.500\n\n---\n\n## ✅ PRÓXIMOS PASSOS\n\n### Se aprovar esta proposta:\n\n**1. Hoje:** Confirmar proposta via WhatsApp/Email\n\n**2. Amanhã:** Assinatura do contrato + Kickoff call\n\n**3. Dia 3-7:** Setup completo\n   - Integração CRM\n   - Treinamento no produto\n   - Definição de ICP\n   - Aprovação de scripts\n\n**4. Dia 8:** Início da prospecção ativa\n\n**5. Semana 3:** Primeiras reuniões agendadas\n\n**Data sugerida para kickoff:** [próxima segunda-feira]\n\n---\n\n## 📋 CONDIÇÕES COMERCIAIS\n\n**Forma de Pagamento:**\n- Cartão de crédito (até 12x)\n- Boleto bancário (à vista ou parcelado)\n- Pix (5% de desconto à vista)\n\n**Faturamento:**\n- Recorrência mensal\n- Reajuste anual (IPCA)\n\n**Contrato:**\n- Vigência mínima: 3 meses\n- Renovação automática mensal após período mínimo\n- Cancelamento com 30 dias de antecedência\n\n**Garantia:**\n- Se não atingirmos 70% da meta de reuniões em 60 dias, devolvemos 50% do investimento do 1º mês\n\n---\n\n## ❓ PERGUNTAS FREQUENTES\n\n**Quanto tempo até as primeiras reuniões?**\nEm média, 15-21 dias após o kickoff.\n\n**E se o lead não comparecer?**\nReagendamos sem custo. Nossa taxa de show-up é 73%.\n\n**Posso cancelar se não funcionar?**\nSim, após 3 meses você pode cancelar com 30 dias de aviso.\n\n**Vocês garantem vendas?**\nGarantimos reuniões qualificadas. A conversão depende do seu produto e fechamento.\n\n**Como é o treinamento do SDR?**\n1 semana intensiva: produto, ICP, objeções, cases. Treinamento contínuo mensal.\n\n---\n\n## 📞 CONTATO\n\n**[SEU NOME]**\nHead of Sales - BPOSS\n\n📧 Email: [seu@email.com]\n📱 WhatsApp: [seu telefone]\n🔗 LinkedIn: [seu linkedin]\n\n**Horário de atendimento:** Seg-Sex, 9h-18h\n\n---\n\n**Validade desta proposta:** [hoje + 7 dias]\n**Validade do bônus:** [hoje + 3 dias]\n\n---\n\n*\"Prospecção é ciência, não arte. A BPOSS domina a ciência.\"*\n\n**Vamos escalar juntos?** 🚀\n```\n\nREGRAS DE GERAÇÃO:\n\n1. **Tom:** Profissional mas friendly. Confiante sem ser arrogante.\n2. **Personalização:** Use dados EXATOS do JSON fornecido.\n3. **Números:** Seja CONSERVADOR (já estão calculados conservadoramente).\n4. **Formatação:** Use Markdown correto (tabelas, listas, destaques).\n5. **Persuasão:** Foque em ROI e redução de risco.\n6. **Datas:** Calcule corretamente (hoje, hoje+3, hoje+7).\n7. **Substituições:** ZERO [COLCHETES] não preenchidos.\n8. **Tamanho:** Completa mas objetiva. 8-12 páginas.\n\nRetorne APENAS o Markdown da proposta, sem mensagens adicionais."
+        }
+      },
+      "id": "ebdc9bbd-dbca-4179-8ea6-e99e64137c48",
+      "name": "AI Agent - Proposta2",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -512,
+        1336
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -1016,
+        1560
+      ],
+      "id": "7a993aef-ec92-4bee-992e-b7935e22960b",
+      "name": "Anthropic Chat Model2",
+      "credentials": {
+        "anthropicApi": {
+          "id": "nNkFTZpNoiBCbO1I",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Conversor Profissional de Markdown para HTML\nfor (const item of $input.all()) {\n  const markdown = item.json.output || '';\n  \n  let html = markdown\n    // Remove --- divisores\n    .replace(/^---$/gim, '<hr>')\n    \n    // Headers (ordem importante: do mais específico para o mais genérico)\n    .replace(/^####\\s+(.*)$/gim, '<h4>$1</h4>')\n    .replace(/^###\\s+(.*)$/gim, '<h3>$1</h3>')\n    .replace(/^##\\s+(.*)$/gim, '<h2>$1</h2>')\n    .replace(/^#\\s+(.*)$/gim, '<h1>$1</h1>')\n    \n    // Blockquotes\n    .replace(/^>\\s*(.*)$/gim, '<blockquote>$1</blockquote>')\n    \n    // Bold\n    .replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>')\n    \n    // Italic\n    .replace(/\\*([^*]+)\\*/g, '<em>$1</em>')\n    \n    // Code blocks (```)\n    .replace(/```([\\s\\S]*?)```/g, '<pre><code>$1</code></pre>')\n    \n    // Inline code\n    .replace(/`([^`]+)`/g, '<code>$1</code>')\n    \n    // Listas com checkmark\n    .replace(/^\\s*-\\s*✅\\s*(.+)$/gim, '<li class=\"check\">✅ $1</li>')\n    \n    // Listas normais\n    .replace(/^\\s*-\\s+(.+)$/gim, '<li>$1</li>')\n    \n    // Processa parágrafos\n    .split('\\n\\n')\n    .map(para => {\n      // Se já é uma tag HTML, não envolve em <p>\n      if (para.match(/^<(h[1-6]|blockquote|hr|pre)/)) {\n        return para;\n      }\n      // Se tem <li>, envolve em <ul>\n      if (para.includes('<li')) {\n        return '<ul>' + para + '</ul>';\n      }\n      // Caso contrário, vira parágrafo\n      return '<p>' + para.replace(/\\n/g, '<br>') + '</p>';\n    })\n    .join('\\n');\n  \n  // Template HTML completo\n  const htmlCompleto = `<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Proposta Comercial - BPOSS</title>\n  <style>\n    @page {\n      size: A4;\n      margin: 2cm;\n    }\n    \n    * {\n      margin: 0;\n      padding: 0;\n      box-sizing: border-box;\n    }\n    \n    body {\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n      line-height: 1.8;\n      color: #2c3e50;\n      background: white;\n      padding: 40px;\n      max-width: 900px;\n      margin: 0 auto;\n    }\n    \n    h1 {\n      font-size: 32px;\n      color: #1a1a1a;\n      margin: 30px 0 20px 0;\n      padding-bottom: 15px;\n      border-bottom: 4px solid #3498db;\n      font-weight: 700;\n    }\n    \n    h2 {\n      font-size: 24px;\n      color: #2c3e50;\n      margin: 35px 0 20px 0;\n      padding-left: 15px;\n      border-left: 5px solid #3498db;\n      font-weight: 600;\n    }\n    \n    h3 {\n      font-size: 20px;\n      color: #34495e;\n      margin: 25px 0 15px 0;\n      font-weight: 600;\n    }\n    \n    h4 {\n      font-size: 18px;\n      color: #555;\n      margin: 20px 0 10px 0;\n      font-weight: 600;\n    }\n    \n    p {\n      margin: 15px 0;\n      text-align: justify;\n      font-size: 15px;\n    }\n    \n    blockquote {\n      border-left: 5px solid #3498db;\n      background: #f8f9fa;\n      padding: 15px 25px;\n      margin: 20px 0;\n      font-style: italic;\n      color: #555;\n      border-radius: 4px;\n    }\n    \n    strong {\n      color: #e74c3c;\n      font-weight: 600;\n    }\n    \n    em {\n      font-style: italic;\n      color: #555;\n    }\n    \n    code {\n      background: #f4f4f4;\n      padding: 3px 8px;\n      border-radius: 4px;\n      font-family: 'Courier New', Consolas, monospace;\n      font-size: 14px;\n      color: #c7254e;\n    }\n    \n    pre {\n      background: #2c3e50;\n      color: #ecf0f1;\n      padding: 20px;\n      border-radius: 6px;\n      overflow-x: auto;\n      margin: 20px 0;\n    }\n    \n    pre code {\n      background: none;\n      color: inherit;\n      padding: 0;\n    }\n    \n    ul {\n      margin: 15px 0;\n      padding-left: 30px;\n      list-style: none;\n    }\n    \n    li {\n      margin: 10px 0;\n      padding-left: 10px;\n      position: relative;\n    }\n    \n    li:before {\n      content: \"▸\";\n      position: absolute;\n      left: -15px;\n      color: #3498db;\n      font-weight: bold;\n    }\n    \n    li.check:before {\n      content: \"\";\n    }\n    \n    hr {\n      border: none;\n      border-top: 2px solid #ecf0f1;\n      margin: 30px 0;\n    }\n    \n    @media print {\n      body {\n        padding: 0;\n      }\n      \n      h1, h2 {\n        page-break-after: avoid;\n      }\n      \n      p, blockquote {\n        page-break-inside: avoid;\n      }\n    }\n  </style>\n</head>\n<body>\n${html}\n</body>\n</html>`;\n  \n  item.json.html = htmlCompleto;\n  item.json.pdfReady = true;\n}\n\nreturn $input.all();"
+      },
+      "id": "9db77054-7518-4980-9bad-8f373d704100",
+      "name": "Code - Markdown → HTML1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        696
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'proposta_comercial_' + $now.toFormat('yyyy-MM-dd_HH-mm') + '.pdf' }}",
+        "operation": "getPDF",
+        "margin": {
+          "top": "2cm",
+          "bottom": "2cm",
+          "left": "2cm",
+          "right": "2cm"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-puppeteer.puppeteer",
+      "typeVersion": 1,
+      "position": [
+        64,
+        696
+      ],
+      "id": "fd8a7266-c325-46f0-88f9-eabad7da1cee",
+      "name": "Puppeteer1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1240,
+        920
+      ],
+      "id": "023ed567-76f8-4f96-a3a3-9613c6aba065",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -664,
+        920
+      ],
+      "id": "494edf2c-af5f-403e-8985-2942be07d471",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1WTJrbMl8HLppIHIeHT94Qsbog9XpxOx2",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1536,
+        1336
+      ],
+      "id": "b0dd9580-f9de-4561-bbb3-824c1f8b431b",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1312,
+        1336
+      ],
+      "id": "533eb93f-47e6-4995-9716-c1e01d6f7036",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ufivD8NvmVAh2iOk",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "=Você é o CS Call Analyzer da Mottivme.\n\nSua função é analisar a transcrição de calls de Customer Success e gerar um relatório estruturado.\n\n## CONTEXTO DO CLIENTE\n- Nome: {{ $json.cliente_nome }}\n- Empresa: {{ $json.empresa }}\n- Vertical: {{ $json.vertical }}\n- Plano Atual: {{ $json.plano_atual }}\n- MRR: R${{ $json.mrr }}\n- CS Responsável: {{ $json.cs_responsavel }}\n- Tipo da Call: {{ $json.tipo_call }}\n\n## TRANSCRIÇÃO DA CALL\n{{ $json.transcricao }}\n\n## SUA TAREFA\n\nAnalise a transcrição acima e retorne um JSON com a seguinte estrutura:\n\n{\n  \"resumo_executivo\": {\n    \"health_score\": <0-100>,\n    \"health_status\": \"saudavel|atencao|risco|critico\",\n    \"insight_principal\": \"<uma frase resumindo o estado do cliente>\"\n  },\n  \"analise\": {\n    \"sentimento\": \"positivo|neutro|negativo\",\n    \"uso_plataforma\": \"alto|medio|baixo|nao_mencionado\",\n    \"satisfacao\": \"positiva|neutra|negativa\",\n    \"resultados_mencionados\": <true|false>,\n    \"resultados_detalhes\": \"<o que foi mencionado>\"\n  },\n  \"riscos\": [\n    {\n      \"tipo\": \"churn|insatisfacao|baixo_uso|preco\",\n      \"evidencia\": \"<frase exata ou paráfrase>\",\n      \"timestamp\": \"<se disponível>\",\n      \"severidade\": \"alta|media|baixa\"\n    }\n  ],\n  \"oportunidades\": [\n    {\n      \"tipo\": \"upsell|cross_sell|indicacao|expansao\",\n      \"evidencia\": \"<frase exata ou paráfrase>\",\n      \"produto_sugerido\": \"<se aplicável>\",\n      \"valor_potencial\": <número ou null>\n    }\n  ],\n  \"acoes\": [\n    {\n      \"descricao\": \"<ação necessária>\",\n      \"responsavel\": \"<quem deve fazer>\",\n      \"prazo\": \"<em dias ou data>\",\n      \"prioridade\": \"alta|media|baixa\"\n    }\n  ],\n  \"decisoes_tomadas\": [\"<lista de decisões da call>\"],\n  \"momentos_chave\": [\n    {\n      \"timestamp\": \"<se disponível>\",\n      \"descricao\": \"<o que aconteceu>\",\n      \"importancia\": \"alta|media|baixa\"\n    }\n  ],\n  \"alertas\": [\n    {\n      \"tipo\": \"churn_iminente|oportunidade_urgente|escalacao\",\n      \"mensagem\": \"<descrição do alerta>\",\n      \"destinatario\": \"<quem deve receber>\"\n    }\n  ]\n}\n\n## REGRAS DE ANÁLISE\n\n1. Health Score:\n   - 80-100: Saudável (🟢)\n   - 60-79: Atenção (🟡)\n   - 40-59: Risco (🟠)\n   - 0-39: Crítico (🔴)\n\n2. Sinais de Risco (procurar ativamente):\n   - \"não estou usando\", \"não vi resultado\", \"está caro\"\n   - \"pensando em cancelar\", \"avaliar outras opções\"\n   - Tom frustrado, respostas curtas, desânimo\n\n3. Sinais de Oportunidade:\n   - \"quero aumentar\", \"preciso de mais\", \"funciona muito bem\"\n   - \"meu colega também precisa\", \"vocês fazem X?\"\n   - Entusiasmo, perguntas sobre features premium\n\n4. Seja objetivo e baseado em evidências\n5. Priorize riscos sobre oportunidades\n6. Cite frases exatas quando possível\n\nRetorne APENAS o JSON, sem texto adicional.",
+        "options": {}
+      },
+      "id": "5375f985-ea9e-43cf-ba38-935ef1fd460f",
+      "name": "System Prompt CS Analyzer",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1536,
+        1664
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1312,
+        1992
+      ],
+      "id": "790bdd0b-1395-4126-af99-77aac85382fc",
+      "name": "📥 Download Arquivo",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pegar dados do node anterior (Extract From Text File)\nconst item = $input.first();\n\n// Pegar dados originais do Download (antes do Extract)\nconst downloadNode = $('📥 Download Arquivo').first();\n\n// CORREÇÃO: Pegar o fileName do node de download original\nconst fileName = downloadNode.json.name || 'Arquivo sem nome';\n\n// Pegar a transcrição que foi extraída\nlet transcricao = item.json.data || '';\n\n// Limpar HTML se vier com tags (Google Docs às vezes retorna HTML)\nif (transcricao.includes('<html>') || transcricao.includes('<li>')) {\n  // Remover tags HTML básicas\n  transcricao = transcricao\n    .replace(/<style[^>]*>.*?<\\/style>/gs, '')\n    .replace(/<script[^>]*>.*?<\\/script>/gs, '')\n    .replace(/<[^>]+>/g, ' ')\n    .replace(/&nbsp;/g, ' ')\n    .replace(/&amp;/g, '&')\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\n// Extrair informações do nome do arquivo\nconst partes = fileName.split(' - ');\nlet clienteNome = 'Não identificado';\nlet dataCall = new Date().toISOString().split('T')[0];\n\nif (partes.length >= 2) {\n  clienteNome = partes[1].trim();\n}\n\n// Tentar extrair data do nome do arquivo\nconst regexData = /(\\d{4})_(\\d{2})_(\\d{2})/;\nconst matchData = fileName.match(regexData);\nif (matchData) {\n  dataCall = `${matchData[1]}-${matchData[2]}-${matchData[3]}`;\n}\n\n// Log para debug\nconsole.log('=== DEBUG ===');\nconsole.log('Nome do arquivo:', fileName);\nconsole.log('Cliente:', clienteNome);\nconsole.log('Data:', dataCall);\nconsole.log('Tamanho da transcrição:', transcricao.length, 'caracteres');\nconsole.log('Primeiros 200 chars:', transcricao.substring(0, 200));\n\n// Retornar dados estruturados para a IA\nreturn [{\n  json: {\n    // Metadados do arquivo\n    arquivo_id: downloadNode.json.id,\n    arquivo_nome: fileName,\n    arquivo_link: downloadNode.json.webViewLink,\n    data_call: dataCall,\n    \n    // Dados do cliente\n    cliente_nome: clienteNome,\n    empresa: '',\n    vertical: '',\n    plano_atual: '',\n    mrr: '',\n    cs_responsavel: '',\n    tipo_call: 'Customer Success',\n    \n    // Transcrição completa (limpa)\n    transcricao: transcricao,\n    \n    // Timestamp\n    processado_em: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        1992
+      ],
+      "id": "0a9c4a76-2794-4960-9dbe-154605878197",
+      "name": "⚙️ Processar Dados"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json) }}",
+        "options": {
+          "systemMessage": "=Você é o CS Call Analyzer da Mottivme.\n\nSua função é analisar a transcrição de calls de Customer Success e gerar um relatório estruturado.\n\n## CONTEXTO DO CLIENTE\n- Nome: {{ $json.cliente_nome }}\n- Empresa: {{ $json.empresa || 'Não informado' }}\n- Vertical: {{ $json.vertical || 'Não informado' }}\n- Plano Atual: {{ $json.plano_atual || 'Não informado' }}\n- MRR: {{ $json.mrr || 'Não informado' }}\n- CS Responsável: {{ $json.cs_responsavel || 'Não informado' }}\n- Tipo da Call: {{ $json.tipo_call }}\n- Data da Call: {{ $json.data_call }}\n\n## TRANSCRIÇÃO DA CALL\n{{ $json.transcricao }}\n\n## SUA TAREFA\n\nAnalise a transcrição acima e retorne um JSON com a seguinte estrutura:\n\n```json\n{\n  \"resumo_executivo\": {\n    \"health_score\": 0-100,\n    \"health_status\": \"saudavel|atencao|risco|critico\",\n    \"insight_principal\": \"uma frase resumindo o estado do cliente\"\n  },\n  \"analise\": {\n    \"sentimento\": \"positivo|neutro|negativo\",\n    \"uso_plataforma\": \"alto|medio|baixo|nao_mencionado\",\n    \"satisfacao\": \"positiva|neutra|negativa\",\n    \"resultados_mencionados\": true/false,\n    \"resultados_detalhes\": \"o que foi mencionado\",\n    \"principais_topicos\": [\"lista\", \"de\", \"topicos\"]\n  },\n  \"riscos\": [\n    {\n      \"tipo\": \"churn|insatisfacao|baixo_uso|preco|outro\",\n      \"evidencia\": \"frase exata ou paráfrase da transcrição\",\n      \"severidade\": \"alta|media|baixa\",\n      \"acao_sugerida\": \"o que fazer sobre isso\"\n    }\n  ],\n  \"oportunidades\": [\n    {\n      \"tipo\": \"upsell|cross_sell|indicacao|expansao\",\n      \"evidencia\": \"frase exata ou paráfrase\",\n      \"produto_sugerido\": \"se aplicável\",\n      \"valor_potencial_estimado\": \"estimativa em reais ou null\"\n    }\n  ],\n  \"acoes_imediatas\": [\n    {\n      \"descricao\": \"ação necessária\",\n      \"responsavel\": \"CS|Gestor|Comercial|Tech\",\n      \"prazo\": \"24h|3dias|1semana|1mes\",\n      \"prioridade\": \"alta|media|baixa\"\n    }\n  ],\n  \"decisoes_tomadas\": [\n    \"lista de decisões acordadas na call\"\n  ],\n  \"proximos_passos\": [\n    {\n      \"acao\": \"descrição\",\n      \"responsavel\": \"quem\",\n      \"prazo\": \"quando\"\n    }\n  ],\n  \"momentos_chave\": [\n    {\n      \"descricao\": \"o que aconteceu\",\n      \"importancia\": \"alta|media|baixa\",\n      \"citacao\": \"frase relevante se houver\"\n    }\n  ],\n  \"alertas\": [\n    {\n      \"tipo\": \"churn_iminente|oportunidade_urgente|escalacao|suporte_tecnico\",\n      \"mensagem\": \"descrição do alerta\",\n      \"destinatario\": \"CS Manager|CEO|Suporte|Comercial\",\n      \"urgencia\": \"alta|media|baixa\"\n    }\n  ],\n  \"metricas_extraidas\": {\n    \"ticket_medio_mencionado\": null,\n    \"volume_vendas_mencionado\": null,\n    \"roi_mencionado\": null,\n    \"tempo_uso_plataforma\": null,\n    \"nps_percebido\": \"0-10 ou null\"\n  },\n  \"resumo_narrativo\": \"Um parágrafo resumindo a call de forma humanizada e executiva, como se você estivesse contando para o CEO o que rolou.\"\n}\n```\n\n## REGRAS DE ANÁLISE\n\n### Health Score (0-100):\n- **80-100 - Saudável 🟢**: Cliente engajado, usando bem, resultados positivos, sem sinais de risco\n- **60-79 - Atenção 🟡**: Cliente ok mas com alguns pontos de melhoria ou dúvidas\n- **40-59 - Risco 🟠**: Sinais claros de problemas, baixo uso, insatisfação moderada\n- **0-39 - Crítico 🔴**: Risco iminente de churn, frustração alta, não está usando\n\n### Sinais de Risco (procure ativamente):\n- ❌ \"não estou usando\", \"não vi resultado\", \"está caro\", \"não vale a pena\"\n- ❌ \"pensando em cancelar\", \"vou avaliar outras opções\", \"pausar por um tempo\"\n- ❌ Tom frustrado, respostas curtas, evasivas, desânimo\n- ❌ \"não tenho tempo\", \"muito complicado\", \"não entendo\"\n- ❌ Reclamações sobre suporte, bugs, lentidão\n\n### Sinais de Oportunidade (procure ativamente):\n- ✅ \"quero aumentar\", \"preciso de mais\", \"funciona muito bem\", \"adorando\"\n- ✅ \"meu colega/sócio também precisa\", \"vocês fazem X?\", \"tem feature Y?\"\n- ✅ Entusiasmo, perguntas sobre features premium, interesse em novos produtos\n- ✅ Menções de crescimento, expansão, novos projetos\n- ✅ Satisfação com resultados, ROI positivo\n\n### Instruções Importantes:\n1. **Seja objetivo e baseado em evidências** - cite frases quando possível\n2. **Priorize RISCOS sobre oportunidades** - é melhor prevenir churn\n3. **Extraia métricas concretas** quando mencionadas\n4. **Identifique o sentimento geral** da conversa\n5. **Sugira ações práticas e específicas**\n6. **Se não houver informação, use null ou array vazio** - não invente\n\n## FORMATO DE RESPOSTA\n\nRetorne APENAS o JSON válido, sem markdown, sem ```json, sem texto adicional antes ou depois."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -640,
+        1992
+      ],
+      "id": "52a67801-5f89-4e51-a0b6-b4a5eced3725",
+      "name": "🤖 IA - Análise de CS",
+      "notesInFlow": true,
+      "notes": "Analisa a transcrição e gera relatório estruturado"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Processar resposta da IA e preparar para salvar\nconst inputData = $input.first().json;\n\n// Pegar dados originais do processamento\nconst dadosOriginais = $('⚙️ Processar Dados').first().json;\n\n// Tentar fazer parse do JSON retornado pela IA\nlet analiseIA = {};\n\ntry {\n  let jsonString = '';\n  \n  // A IA pode retornar como string ou já como objeto\n  if (typeof inputData.output === 'string') {\n    jsonString = inputData.output;\n  } else if (inputData.output) {\n    analiseIA = inputData.output;\n  } else {\n    jsonString = JSON.stringify(inputData);\n  }\n  \n  // CORREÇÃO: Limpar markdown (```json e ```) da resposta\n  if (jsonString) {\n    jsonString = jsonString\n      .replace(/```json\\n?/g, '')  // Remove ```json\n      .replace(/```\\n?/g, '')       // Remove ```\n      .trim();\n    \n    analiseIA = JSON.parse(jsonString);\n  }\n  \n  console.log('✅ Parse da IA realizado com sucesso!');\n  console.log('Health Score:', analiseIA.resumo_executivo?.health_score);\n  \n} catch (error) {\n  console.error('❌ Erro ao fazer parse do JSON da IA:', error.message);\n  console.log('Resposta original:', inputData.output?.substring(0, 500));\n  \n  analiseIA = {\n    erro: 'Erro ao processar resposta da IA',\n    erro_detalhes: error.message,\n    resposta_original: inputData\n  };\n}\n\n// Montar objeto final para salvar\nconst resultado = {\n  // Metadados\n  id: `cs_${dadosOriginais.arquivo_id}_${Date.now()}`,\n  arquivo_id: dadosOriginais.arquivo_id,\n  arquivo_nome: dadosOriginais.arquivo_nome,\n  arquivo_link: dadosOriginais.arquivo_link,\n  \n  // Dados do cliente\n  cliente_nome: dadosOriginais.cliente_nome,\n  data_call: dadosOriginais.data_call,\n  tipo_call: dadosOriginais.tipo_call,\n  \n  // Análise completa da IA\n  analise: analiseIA,\n  \n  // Status e health\n  health_score: analiseIA.resumo_executivo?.health_score || 0,\n  health_status: analiseIA.resumo_executivo?.health_status || 'nao_analisado',\n  sentimento: analiseIA.analise?.sentimento || 'neutro',\n  \n  // Flags importantes\n  tem_risco_churn: (analiseIA.riscos?.some(r => r.tipo === 'churn') || false),\n  tem_oportunidade: ((analiseIA.oportunidades?.length || 0) > 0),\n  requer_atencao_urgente: (analiseIA.alertas?.some(a => a.urgencia === 'alta') || false),\n  \n  // Resumos\n  insight_principal: analiseIA.resumo_executivo?.insight_principal || '',\n  resumo_narrativo: analiseIA.resumo_narrativo || '',\n  \n  // Contadores\n  qtd_riscos: analiseIA.riscos?.length || 0,\n  qtd_oportunidades: analiseIA.oportunidades?.length || 0,\n  qtd_acoes: analiseIA.acoes_imediatas?.length || 0,\n  qtd_alertas: analiseIA.alertas?.length || 0,\n  \n  // Timestamps\n  processado_em: new Date().toISOString(),\n  criado_em: new Date().toISOString()\n};\n\nconsole.log('📊 Resultado final preparado:');\nconsole.log('- Cliente:', resultado.cliente_nome);\nconsole.log('- Health Score:', resultado.health_score);\nconsole.log('- Status:', resultado.health_status);\nconsole.log('- Riscos:', resultado.qtd_riscos);\nconsole.log('- Oportunidades:', resultado.qtd_oportunidades);\n\nreturn [{ json: resultado }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -288,
+        1992
+      ],
+      "id": "04ab5857-66fc-4d8c-9e67-3feb8ef19252",
+      "name": "📊 Processar Resultado"
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -64,
+        1896
+      ],
+      "id": "12b83318-579b-492c-8dd2-9c2dc78320a2",
+      "name": "💾 Salvar no Drive",
+      "notesInFlow": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      },
+      "notes": "Salva o JSON da análise no Google Drive"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://seu-projeto.supabase.co/rest/v1/cs_analises",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -64,
+        2088
+      ],
+      "id": "086e87d1-9f41-4335-8281-ec01dfda7a43",
+      "name": "💾 Salvar no Supabase",
+      "notesInFlow": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "7FzYAj5WomuhJymg",
+          "name": "Supabase Mottivme Sales"
+        }
+      },
+      "notes": "OPCIONAL: Ative se quiser salvar no Supabase.\nCrie a tabela 'cs_analises' antes."
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        1992
+      ],
+      "id": "d97898c4-4019-4302-97d2-4195bb0b939c",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -568,
+        2216
+      ],
+      "id": "1d2e0a9d-12f2-4c76-846d-29a19cb2f880",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "WVbQ0d3w6cnLwPtX",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1WTJrbMl8HLppIHIeHT94Qsbog9XpxOx2",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1536,
+        1992
+      ],
+      "id": "72e01653-76e4-4a4d-b0ce-418973a0cdcf",
+      "name": "Google Drive Trigger1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Code - Markdown → HTML": [
+      {
+        "json": {
+          "output": "# PROPOSTA COMERCIAL\n## Outsourcing de Pré-Vendas - BPOSS\n\n**Cliente:** Ana Scott\n**Empresa:** Método Boss (Mentoria + Empresa de Limpeza)\n**Data:** 23 de Novembro de 2025\n**Proposta:** #202511232038\n**Validade:** 30 de Novembro de 2025\n\n---\n\n## 📊 RESUMO EXECUTIVO\n\n**Situação Atual:**\n- Faturamento: A definir (variável)\n- Ticket Médio: R$ 5.000,00 (mentoria 3 meses individual)\n- Reuniões/mês: 12 (não qualificadas de forma consistente)\n- Taxa de Fechamento: Inconsistente\n- Operação: EUA + mercados português/espanhol/inglês\n\n**Resultado Esperado em 90 Dias:**\n- 18 reuniões qualificadas/mês (vs 12 não qualificadas hoje)\n- +R$ 20.000,00 em receita incremental mensal\n- ROI de 2.0x sobre o investimento\n- Pipeline previsível e escalável\n\n---\n\n## 🎯 DESAFIOS IDENTIFICADOS\n\n### 1. O Paradoxo da Entrega Real vs. Monetização\n\n> \"Tem gente que tá mentindo que não tem resultado, que não tem metade do que eu tenho e tá fazendo mais dinheiro que eu. Alguma coisa ali tá errada, alguma coisa não tá se encaixando.\"\n\nAna, essa é a frustração de TODOS os mentorias de verdade. Você tem os 8 pilares estruturados, empresa de limpeza lucrativa nos EUA, resultado real de alunos... mas delegou vendas para assessora e não funcionou. O problema não é a sua entrega - é que vendas de mentoria de R$ 5k não podem ser delegadas SEM um processo estruturado de qualificação antes. Você perdeu meses tentando delegar do jeito errado.\n\n**Intensidade:** Alta\n\n### 2. Tentativa de Delegação sem Estrutura de Prospecção\n\n> \"A questão do lead, de responder, de estar ali no acesso com as pessoas é mais uma função. A coisa não estava andando. Não estava andando.\"\n\nVocê tentou contratar seller, mas ela não tinha O QUE vender - porque não havia leads qualificados chegando. Daí voltou a fazer vendas você mesma (2-4 calls/semana), mas isso te prende na operação. O gargalo não é fechar - é QUALIFICAR antes de você entrar. Você precisa receber apenas leads prontos para comprar, não curiosos.\n\n**Intensidade:** Alta\n\n### 3. Paralisia de Posicionamento e Expansão de Mercado\n\n> \"Quando estou comunicando, para quem vou comunicar? Essa parte é muito confusa para mim até hoje. Tem gente que fala, não fica falando com todo mundo.\"\n\nVocê fala 3 idiomas, tem expertise em limpeza E mentoria empresarial, mas não quer ser \"a mentora da limpeza\". Essa confusão de posicionamento está te impedindo de prospectar de forma assertiva. E a expansão para espanhol/inglês está parada porque você não tem TIME para testar essas frentes enquanto toca tudo sozinha.\n\n**Intensidade:** Média\n\n---\n\n## ✅ SOLUÇÃO PROPOSTA\n\n### BPOSS - Business Process Outsourcing Sales\n\n**O que faremos por você:**\n\n1. **Prospecção Ativa Qualificada (Multimercado)**\n   - Identificação de empresárias empreendedoras no seu ICP (limpeza, serviços, varejo físico)\n   - Abordagem multicanal em **português, espanhol E inglês** (LinkedIn, Email, WhatsApp)\n   - Nutrição até BANT completo: Budget R$ 5k+, Authority (donos), Need (faturamento estagnado 50-200k/mês), Timing (próximos 30 dias)\n\n2. **Agendamento de Reuniões 100% Qualificadas**\n   - Apenas leads que confirmaram orçamento, interesse real e disponibilidade\n   - Taxa de show-up de 73% (vs 40% do mercado)\n   - Briefing completo antes de cada call: desafios, faturamento, objeções já trabalhadas\n   - **Você só entra na call para FECHAR, não para qualificar**\n\n3. **CRM & Gestão Completa do Pipeline**\n   - Plataforma Socialfy inclusa (R$ 997/mês grátis)\n   - Dashboard em tempo real com previsão de fechamentos\n   - Relatórios semanais: quantas reuniões, taxa de conversão, objeções recorrentes\n   - Funil visível: você sabe EXATAMENTE quantas vendas virão nos próximos 30 dias\n\n4. **SDR Sênior Dedicado + IA de Escala**\n   - Profissional com experiência em venda consultiva (não é VA nem júnior)\n   - Treinado nos 8 pilares do Método Boss, no seu case de limpeza, na sua jornada\n   - Apoio de IA para escalar abordagem em 3 idiomas simultaneamente\n   - Testes A/B contínuos de posicionamento (mentoria empresarial vs limpeza vs híbrido)\n\n---\n\n## 💰 INVESTIMENTO & PLANOS\n\n### Plano ESSENCIAL\n**R$ 7.997/mês**\n\n✅ 12 reuniões qualificadas/mês\n✅ 1 SDR dedicado (português apenas)\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n\n**Ideal para:** Empresas faturando R$ 50-150k/mês, ticket R$ 2-5k, operação nacional\n\n---\n\n### ⭐ Plano PROFESSIONAL (RECOMENDADO PARA VOCÊ)\n**R$ 9.997/mês**\n\n✅ **18 reuniões qualificadas/mês**\n✅ 1-2 SDRs dedicados (multimercado)\n✅ **Prospecção em português, espanhol E inglês**\n✅ Socialfy CRM incluso\n✅ **Testes de posicionamento (3 abordagens simultâneas)**\n✅ Relatórios semanais + reunião mensal de estratégia\n✅ Suporte prioritário\n\n**POR QUE RECOMENDAMOS ESTE PLANO PARA MÉTODO BOSS:**\n\nAna, você está na transição perfeita para o Professional:\n\n1. **Ticket de R$ 5.000** justifica investimento em qualificação premium (vs Essencial que é para tickets menores)\n\n2. **Operação nos EUA + 3 idiomas** = você PRECISA testar mercados simultaneamente. O Essencial só cobre português. Com Professional, testamos:\n   - Brasileiras empreendedoras nos EUA (português)\n   - Latinas (espanhol - maior mercado de limpeza nos EUA)\n   - Americanas (inglês - ticket pode subir para $5k-7k USD)\n\n3. **Confusão de posicionamento** = Professional permite rodar 3 abordagens em paralelo por 60 dias:\n   - \"Mentora de escala empresarial\" (genérico)\n   - \"Especialista em empresas de limpeza 6-7 dígitos\" (nicho)\n   - \"Case: de Brasil para EUA em 5 anos\" (diferencial geográfico)\n   \n   Em 60 dias você SABE qual converte melhor, sem precisar ficar testando você mesma.\n\n4. **Você já tem demanda reprimida** na base, mas precisa de PROCESSO para não depender só de você. Com 18 reuniões/mês qualificadas, você foca em fechar e entregar (seu forte), não",
+          "html": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Proposta Comercial - BPOSS</title>\n  <style>\n    @page {\n      size: A4;\n      margin: 2cm;\n    }\n    \n    * {\n      margin: 0;\n      padding: 0;\n      box-sizing: border-box;\n    }\n    \n    body {\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n      line-height: 1.8;\n      color: #2c3e50;\n      background: white;\n      padding: 40px;\n      max-width: 900px;\n      margin: 0 auto;\n    }\n    \n    h1 {\n      font-size: 32px;\n      color: #1a1a1a;\n      margin: 30px 0 20px 0;\n      padding-bottom: 15px;\n      border-bottom: 4px solid #3498db;\n      font-weight: 700;\n    }\n    \n    h2 {\n      font-size: 24px;\n      color: #2c3e50;\n      margin: 35px 0 20px 0;\n      padding-left: 15px;\n      border-left: 5px solid #3498db;\n      font-weight: 600;\n    }\n    \n    h3 {\n      font-size: 20px;\n      color: #34495e;\n      margin: 25px 0 15px 0;\n      font-weight: 600;\n    }\n    \n    h4 {\n      font-size: 18px;\n      color: #555;\n      margin: 20px 0 10px 0;\n      font-weight: 600;\n    }\n    \n    p {\n      margin: 15px 0;\n      text-align: justify;\n      font-size: 15px;\n    }\n    \n    blockquote {\n      border-left: 5px solid #3498db;\n      background: #f8f9fa;\n      padding: 15px 25px;\n      margin: 20px 0;\n      font-style: italic;\n      color: #555;\n      border-radius: 4px;\n    }\n    \n    strong {\n      color: #e74c3c;\n      font-weight: 600;\n    }\n    \n    em {\n      font-style: italic;\n      color: #555;\n    }\n    \n    code {\n      background: #f4f4f4;\n      padding: 3px 8px;\n      border-radius: 4px;\n      font-family: 'Courier New', Consolas, monospace;\n      font-size: 14px;\n      color: #c7254e;\n    }\n    \n    pre {\n      background: #2c3e50;\n      color: #ecf0f1;\n      padding: 20px;\n      border-radius: 6px;\n      overflow-x: auto;\n      margin: 20px 0;\n    }\n    \n    pre code {\n      background: none;\n      color: inherit;\n      padding: 0;\n    }\n    \n    ul {\n      margin: 15px 0;\n      padding-left: 30px;\n      list-style: none;\n    }\n    \n    li {\n      margin: 10px 0;\n      padding-left: 10px;\n      position: relative;\n    }\n    \n    li:before {\n      content: \"▸\";\n      position: absolute;\n      left: -15px;\n      color: #3498db;\n      font-weight: bold;\n    }\n    \n    li.check:before {\n      content: \"\";\n    }\n    \n    hr {\n      border: none;\n      border-top: 2px solid #ecf0f1;\n      margin: 30px 0;\n    }\n    \n    @media print {\n      body {\n        padding: 0;\n      }\n      \n      h1, h2 {\n        page-break-after: avoid;\n      }\n      \n      p, blockquote {\n        page-break-inside: avoid;\n      }\n    }\n  </style>\n</head>\n<body>\n<h1>PROPOSTA COMERCIAL</h1>\n<h2>Outsourcing de Pré-Vendas - BPOSS</h2>\n<p><strong>Cliente:</strong> Ana Scott<br><strong>Empresa:</strong> Método Boss (Mentoria + Empresa de Limpeza)<br><strong>Data:</strong> 23 de Novembro de 2025<br><strong>Proposta:</strong> #202511232038<br><strong>Validade:</strong> 30 de Novembro de 2025</p>\n<hr>\n<h2>📊 RESUMO EXECUTIVO</h2>\n<ul><strong>Situação Atual:</strong>\n<li>Faturamento: A definir (variável)</li>\n<li>Ticket Médio: R$ 5.000,00 (mentoria 3 meses individual)</li>\n<li>Reuniões/mês: 12 (não qualificadas de forma consistente)</li>\n<li>Taxa de Fechamento: Inconsistente</li>\n<li>Operação: EUA + mercados português/espanhol/inglês</li></ul>\n<ul><strong>Resultado Esperado em 90 Dias:</strong>\n<li>18 reuniões qualificadas/mês (vs 12 não qualificadas hoje)</li>\n<li>+R$ 20.000,00 em receita incremental mensal</li>\n<li>ROI de 2.0x sobre o investimento</li>\n<li>Pipeline previsível e escalável</li></ul>\n<hr>\n<h2>🎯 DESAFIOS IDENTIFICADOS</h2>\n<h3>1. O Paradoxo da Entrega Real vs. Monetização</h3>\n<blockquote>\"Tem gente que tá mentindo que não tem resultado, que não tem metade do que eu tenho e tá fazendo mais dinheiro que eu. Alguma coisa ali tá errada, alguma coisa não tá se encaixando.\"</blockquote>\n<p>Ana, essa é a frustração de TODOS os mentorias de verdade. Você tem os 8 pilares estruturados, empresa de limpeza lucrativa nos EUA, resultado real de alunos... mas delegou vendas para assessora e não funcionou. O problema não é a sua entrega - é que vendas de mentoria de R$ 5k não podem ser delegadas SEM um processo estruturado de qualificação antes. Você perdeu meses tentando delegar do jeito errado.</p>\n<p><strong>Intensidade:</strong> Alta</p>\n<h3>2. Tentativa de Delegação sem Estrutura de Prospecção</h3>\n<blockquote>\"A questão do lead, de responder, de estar ali no acesso com as pessoas é mais uma função. A coisa não estava andando. Não estava andando.\"</blockquote>\n<p>Você tentou contratar seller, mas ela não tinha O QUE vender - porque não havia leads qualificados chegando. Daí voltou a fazer vendas você mesma (2-4 calls/semana), mas isso te prende na operação. O gargalo não é fechar - é QUALIFICAR antes de você entrar. Você precisa receber apenas leads prontos para comprar, não curiosos.</p>\n<p><strong>Intensidade:</strong> Alta</p>\n<h3>3. Paralisia de Posicionamento e Expansão de Mercado</h3>\n<blockquote>\"Quando estou comunicando, para quem vou comunicar? Essa parte é muito confusa para mim até hoje. Tem gente que fala, não fica falando com todo mundo.\"</blockquote>\n<p>Você fala 3 idiomas, tem expertise em limpeza E mentoria empresarial, mas não quer ser \"a mentora da limpeza\". Essa confusão de posicionamento está te impedindo de prospectar de forma assertiva. E a expansão para espanhol/inglês está parada porque você não tem TIME para testar essas frentes enquanto toca tudo sozinha.</p>\n<p><strong>Intensidade:</strong> Média</p>\n<hr>\n<h2>✅ SOLUÇÃO PROPOSTA</h2>\n<h3>BPOSS - Business Process Outsourcing Sales</h3>\n<p><strong>O que faremos por você:</strong></p>\n<ul>1. <strong>Prospecção Ativa Qualificada (Multimercado)</strong>\n<li>Identificação de empresárias empreendedoras no seu ICP (limpeza, serviços, varejo físico)</li>\n<li>Abordagem multicanal em <strong>português, espanhol E inglês</strong> (LinkedIn, Email, WhatsApp)</li>\n<li>Nutrição até BANT completo: Budget R$ 5k+, Authority (donos), Need (faturamento estagnado 50-200k/mês), Timing (próximos 30 dias)</li></ul>\n<ul>2. <strong>Agendamento de Reuniões 100% Qualificadas</strong>\n<li>Apenas leads que confirmaram orçamento, interesse real e disponibilidade</li>\n<li>Taxa de show-up de 73% (vs 40% do mercado)</li>\n<li>Briefing completo antes de cada call: desafios, faturamento, objeções já trabalhadas</li>\n<li><strong>Você só entra na call para FECHAR, não para qualificar</strong></li></ul>\n<ul>3. <strong>CRM & Gestão Completa do Pipeline</strong>\n<li>Plataforma Socialfy inclusa (R$ 997/mês grátis)</li>\n<li>Dashboard em tempo real com previsão de fechamentos</li>\n<li>Relatórios semanais: quantas reuniões, taxa de conversão, objeções recorrentes</li>\n<li>Funil visível: você sabe EXATAMENTE quantas vendas virão nos próximos 30 dias</li></ul>\n<ul>4. <strong>SDR Sênior Dedicado + IA de Escala</strong>\n<li>Profissional com experiência em venda consultiva (não é VA nem júnior)</li>\n<li>Treinado nos 8 pilares do Método Boss, no seu case de limpeza, na sua jornada</li>\n<li>Apoio de IA para escalar abordagem em 3 idiomas simultaneamente</li>\n<li>Testes A/B contínuos de posicionamento (mentoria empresarial vs limpeza vs híbrido)</li></ul>\n<hr>\n<h2>💰 INVESTIMENTO & PLANOS</h2>\n<h3>Plano ESSENCIAL</h3>\n<strong>R$ 7.997/mês</strong>\n<p>✅ 12 reuniões qualificadas/mês<br>✅ 1 SDR dedicado (português apenas)<br>✅ Socialfy CRM incluso<br>✅ Relatórios semanais<br>✅ Suporte prioritário</p>\n<p><strong>Ideal para:</strong> Empresas faturando R$ 50-150k/mês, ticket R$ 2-5k, operação nacional</p>\n<hr>\n<h3>⭐ Plano PROFESSIONAL (RECOMENDADO PARA VOCÊ)</h3>\n<strong>R$ 9.997/mês</strong>\n<p>✅ <strong>18 reuniões qualificadas/mês</strong><br>✅ 1-2 SDRs dedicados (multimercado)<br>✅ <strong>Prospecção em português, espanhol E inglês</strong><br>✅ Socialfy CRM incluso<br>✅ <strong>Testes de posicionamento (3 abordagens simultâneas)</strong><br>✅ Relatórios semanais + reunião mensal de estratégia<br>✅ Suporte prioritário</p>\n<p><strong>POR QUE RECOMENDAMOS ESTE PLANO PARA MÉTODO BOSS:</strong></p>\n<p>Ana, você está na transição perfeita para o Professional:</p>\n<p>1. <strong>Ticket de R$ 5.000</strong> justifica investimento em qualificação premium (vs Essencial que é para tickets menores)</p>\n<ul>2. <strong>Operação nos EUA + 3 idiomas</strong> = você PRECISA testar mercados simultaneamente. O Essencial só cobre português. Com Professional, testamos:\n<li>Brasileiras empreendedoras nos EUA (português)</li>\n<li>Latinas (espanhol - maior mercado de limpeza nos EUA)</li>\n<li>Americanas (inglês - ticket pode subir para $5k-7k USD)</li></ul>\n<ul>3. <strong>Confusão de posicionamento</strong> = Professional permite rodar 3 abordagens em paralelo por 60 dias:\n<li>\"Mentora de escala empresarial\" (genérico)</li>\n<li>\"Especialista em empresas de limpeza 6-7 dígitos\" (nicho)</li>\n<li>\"Case: de Brasil para EUA em 5 anos\" (diferencial geográfico)</li>\n   \n   Em 60 dias você SABE qual converte melhor, sem precisar ficar testando você mesma.</ul>\n<p>4. <strong>Você já tem demanda reprimida</strong> na base, mas precisa de PROCESSO para não depender só de você. Com 18 reuniões/mês qualificadas, você foca em fechar e entregar (seu forte), não</p>\n</body>\n</html>",
+          "pdfReady": true
+        }
+      }
+    ],
+    "Google Drive Trigger": [
+      {
+        "json": {
+          "exportLinks": {
+            "application/rtf": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=rtf",
+            "application/vnd.oasis.opendocument.text": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=odt",
+            "text/html": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=html",
+            "application/pdf": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=pdf",
+            "text/x-markdown": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=markdown",
+            "text/markdown": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=markdown",
+            "application/epub+zip": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=epub",
+            "application/zip": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=zip",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=docx",
+            "text/plain": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=txt"
+          },
+          "parents": [
+            "1WTJrbMl8HLppIHIeHT94Qsbog9XpxOx2"
+          ],
+          "lastModifyingUser": {
+            "displayName": "Marcos Daniel",
+            "kind": "drive#user",
+            "me": true,
+            "permissionId": "17593624161997979916",
+            "emailAddress": "ceo@marcosdaniels.com",
+            "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64"
+          },
+          "owners": [
+            {
+              "displayName": "Marcos Daniel",
+              "kind": "drive#user",
+              "me": true,
+              "permissionId": "17593624161997979916",
+              "emailAddress": "ceo@marcosdaniels.com",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64"
+            }
+          ],
+          "permissions": [
+            {
+              "kind": "drive#permission",
+              "id": "04781390080190356985",
+              "type": "user",
+              "emailAddress": "hallennaiane@gmail.com",
+              "role": "writer",
+              "displayName": "hallennaiane",
+              "photoLink": "https://lh3.googleusercontent.com/a-/ALV-UjUrOu8WKyR8TMCIzVsXhnK7_ZWphq8_wP3HGGvwf4KVlozrn1c=s64",
+              "deleted": false,
+              "pendingOwner": false
+            },
+            {
+              "kind": "drive#permission",
+              "id": "17593624161997979916",
+              "type": "user",
+              "emailAddress": "ceo@marcosdaniels.com",
+              "role": "owner",
+              "displayName": "Marcos Daniel",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64",
+              "deleted": false,
+              "pendingOwner": false
+            }
+          ],
+          "spaces": [
+            "drive"
+          ],
+          "capabilities": {
+            "canAcceptOwnership": false,
+            "canAddChildren": false,
+            "canAddMyDriveParent": false,
+            "canChangeCopyRequiresWriterPermission": true,
+            "canChangeItemDownloadRestriction": true,
+            "canChangeSecurityUpdateEnabled": false,
+            "canChangeViewersCanCopyContent": true,
+            "canComment": true,
+            "canCopy": true,
+            "canDelete": true,
+            "canDisableInheritedPermissions": false,
+            "canDownload": true,
+            "canEdit": true,
+            "canEnableInheritedPermissions": true,
+            "canListChildren": false,
+            "canModifyContent": true,
+            "canModifyContentRestriction": true,
+            "canModifyEditorContentRestriction": true,
+            "canModifyOwnerContentRestriction": true,
+            "canModifyLabels": false,
+            "canMoveChildrenWithinDrive": false,
+            "canMoveItemIntoTeamDrive": true,
+            "canMoveItemOutOfDrive": true,
+            "canMoveItemWithinDrive": true,
+            "canReadLabels": false,
+            "canReadRevisions": true,
+            "canRemoveChildren": false,
+            "canRemoveContentRestriction": false,
+            "canRemoveMyDriveParent": true,
+            "canRename": true,
+            "canShare": true,
+            "canTrash": true,
+            "canUntrash": true
+          },
+          "permissionIds": [
+            "04781390080190356985",
+            "17593624161997979916"
+          ],
+          "linkShareMetadata": {
+            "securityUpdateEligible": false,
+            "securityUpdateEnabled": true
+          },
+          "downloadRestrictions": {
+            "itemDownloadRestriction": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            },
+            "effectiveDownloadRestrictionWithContext": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            }
+          },
+          "kind": "drive#file",
+          "id": "1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A",
+          "name": "Custommer Success - Milton de Abreu - 2025_11_28 17_00 GMT-03_00 - Anotações do Gemini (1)",
+          "mimeType": "application/vnd.google-apps.document",
+          "starred": false,
+          "trashed": false,
+          "explicitlyTrashed": false,
+          "version": "6",
+          "webViewLink": "https://docs.google.com/document/d/1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A/edit?usp=drivesdk",
+          "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.document",
+          "hasThumbnail": true,
+          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBNTFush_4up9eAiq9ct_K84lrzpRMLZ7m5S1Rt_4XkELlhnKEY1qdarfo7pZYiEpgD3LbGfdFOCEaOyDclyHwwFJaczL3DKi1Cfz40JNqmCvapD-NrCCEoS_fiVFQ=s220",
+          "thumbnailVersion": "2",
+          "viewedByMe": true,
+          "viewedByMeTime": "2025-11-29T17:42:32.409Z",
+          "createdTime": "2025-11-29T17:42:32.409Z",
+          "modifiedTime": "2025-11-29T17:42:32.645Z",
+          "modifiedByMeTime": "2025-11-29T17:42:32.645Z",
+          "modifiedByMe": true,
+          "shared": true,
+          "ownedByMe": true,
+          "viewersCanCopyContent": true,
+          "copyRequiresWriterPermission": false,
+          "writersCanShare": true,
+          "size": "45000",
+          "quotaBytesUsed": "45000",
+          "isAppAuthorized": false,
+          "inheritedPermissionsDisabled": false
+        }
+      }
+    ],
+    "Google Drive Trigger1": [
+      {
+        "json": {
+          "exportLinks": {
+            "application/rtf": "https://docs.google.com/feeds/download/documents/export/Export?id=1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s&exportFormat=rtf",
+            "application/vnd.oasis.opendocument.text": "https://docs.google.com/feeds/download/documents/export/Export?id=1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s&exportFormat=odt",
+            "text/html": "https://docs.google.com/feeds/download/documents/export/Export?id=1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s&exportFormat=html",
+            "application/pdf": "https://docs.google.com/feeds/download/documents/export/Export?id=1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s&exportFormat=pdf",
+            "text/x-markdown": "https://docs.google.com/feeds/download/documents/export/Export?id=1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s&exportFormat=markdown",
+            "text/markdown": "https://docs.google.com/feeds/download/documents/export/Export?id=1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s&exportFormat=markdown",
+            "application/epub+zip": "https://docs.google.com/feeds/download/documents/export/Export?id=1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s&exportFormat=epub",
+            "application/zip": "https://docs.google.com/feeds/download/documents/export/Export?id=1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s&exportFormat=zip",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "https://docs.google.com/feeds/download/documents/export/Export?id=1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s&exportFormat=docx",
+            "text/plain": "https://docs.google.com/feeds/download/documents/export/Export?id=1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s&exportFormat=txt"
+          },
+          "parents": [
+            "1WTJrbMl8HLppIHIeHT94Qsbog9XpxOx2"
+          ],
+          "lastModifyingUser": {
+            "displayName": "Marcos Daniel",
+            "kind": "drive#user",
+            "me": true,
+            "permissionId": "17593624161997979916",
+            "emailAddress": "ceo@marcosdaniels.com",
+            "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64"
+          },
+          "owners": [
+            {
+              "displayName": "Marcos Daniel",
+              "kind": "drive#user",
+              "me": true,
+              "permissionId": "17593624161997979916",
+              "emailAddress": "ceo@marcosdaniels.com",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64"
+            }
+          ],
+          "permissions": [
+            {
+              "kind": "drive#permission",
+              "id": "04781390080190356985",
+              "type": "user",
+              "emailAddress": "hallennaiane@gmail.com",
+              "role": "writer",
+              "displayName": "hallennaiane",
+              "photoLink": "https://lh3.googleusercontent.com/a-/ALV-UjUJy1Jg57ERAE0s3uZv_8WfKrvWh1P_eNTu6SQEH0wcyaXzegY=s64",
+              "deleted": false,
+              "pendingOwner": false
+            },
+            {
+              "kind": "drive#permission",
+              "id": "17593624161997979916",
+              "type": "user",
+              "emailAddress": "ceo@marcosdaniels.com",
+              "role": "owner",
+              "displayName": "Marcos Daniel",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64",
+              "deleted": false,
+              "pendingOwner": false
+            }
+          ],
+          "spaces": [
+            "drive"
+          ],
+          "capabilities": {
+            "canAcceptOwnership": false,
+            "canAddChildren": false,
+            "canAddMyDriveParent": false,
+            "canChangeCopyRequiresWriterPermission": true,
+            "canChangeItemDownloadRestriction": true,
+            "canChangeSecurityUpdateEnabled": false,
+            "canChangeViewersCanCopyContent": true,
+            "canComment": true,
+            "canCopy": true,
+            "canDelete": true,
+            "canDisableInheritedPermissions": false,
+            "canDownload": true,
+            "canEdit": true,
+            "canEnableInheritedPermissions": true,
+            "canListChildren": false,
+            "canModifyContent": true,
+            "canModifyContentRestriction": true,
+            "canModifyEditorContentRestriction": true,
+            "canModifyOwnerContentRestriction": true,
+            "canModifyLabels": false,
+            "canMoveChildrenWithinDrive": false,
+            "canMoveItemIntoTeamDrive": true,
+            "canMoveItemOutOfDrive": true,
+            "canMoveItemWithinDrive": true,
+            "canReadLabels": false,
+            "canReadRevisions": true,
+            "canRemoveChildren": false,
+            "canRemoveContentRestriction": false,
+            "canRemoveMyDriveParent": true,
+            "canRename": true,
+            "canShare": true,
+            "canTrash": true,
+            "canUntrash": true
+          },
+          "permissionIds": [
+            "04781390080190356985",
+            "17593624161997979916"
+          ],
+          "linkShareMetadata": {
+            "securityUpdateEligible": false,
+            "securityUpdateEnabled": true
+          },
+          "downloadRestrictions": {
+            "itemDownloadRestriction": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            },
+            "effectiveDownloadRestrictionWithContext": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            }
+          },
+          "kind": "drive#file",
+          "id": "1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s",
+          "name": "Diagnostico - Meneplast e Renan Porto - (21) 96480-6709 - cd1uyzpJox6XPt4Vct8Y  - 2025/12/17 17:00 GMT-03:00 - Anotações do Gemini",
+          "mimeType": "application/vnd.google-apps.document",
+          "starred": false,
+          "trashed": false,
+          "explicitlyTrashed": false,
+          "version": "4",
+          "webViewLink": "https://docs.google.com/document/d/1HjaVzo8xaymH5CjQ6oiG2TLddHUDuVeyH46CnBljh2s/edit?usp=drivesdk",
+          "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.document",
+          "hasThumbnail": true,
+          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBPQncm2VdYCdqL1zRC0bswNZC2LodbBUR_RB9-33pWJkyF_8YXlQ6N5VbepfzJMSUfYgT9Zrf8y0gHiO0HleszYb4PfS6zjn0Ku0-FvJz1HMTqEt13-kYnnI14lBQ=s220",
+          "thumbnailVersion": "1",
+          "viewedByMe": true,
+          "viewedByMeTime": "2025-12-17T20:34:19.137Z",
+          "createdTime": "2025-12-17T20:34:18.364Z",
+          "modifiedTime": "2025-12-17T20:34:19.137Z",
+          "modifiedByMeTime": "2025-12-17T20:34:19.137Z",
+          "modifiedByMe": true,
+          "shared": true,
+          "ownedByMe": true,
+          "viewersCanCopyContent": true,
+          "copyRequiresWriterPermission": false,
+          "writersCanShare": true,
+          "size": "1024",
+          "quotaBytesUsed": "1024",
+          "isAppAuthorized": false,
+          "inheritedPermissionsDisabled": false
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "AI Agent - Extração": {
+      "main": [
+        [
+          {
+            "node": "Code - Calcular ROI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Calcular ROI": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Proposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Proposta": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Proposta1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Markdown → HTML": {
+      "main": [
+        [
+          {
+            "node": "Convert to File - PDF1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Proposta1": {
+      "main": [
+        [
+          {
+            "node": "Code - Markdown → HTML1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Extração",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File - PDF1": {
+      "main": [
+        [
+          {
+            "node": "Puppeteer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Extração1": {
+      "main": [
+        [
+          {
+            "node": "Code - Calcular ROI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Calcular ROI1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Proposta2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Proposta2": {
+      "main": [
+        []
+      ]
+    },
+    "Anthropic Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Extração1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent - Proposta2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Markdown → HTML1": {
+      "main": [
+        [
+          {
+            "node": "Puppeteer1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Extração",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Proposta",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Extração1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Download Arquivo": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Processar Dados": {
+      "main": [
+        [
+          {
+            "node": "🤖 IA - Análise de CS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🤖 IA - Análise de CS": {
+      "main": [
+        [
+          {
+            "node": "📊 Processar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Processar Resultado": {
+      "main": [
+        [
+          {
+            "node": "💾 Salvar no Drive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "💾 Salvar no Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Processar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "🤖 IA - Análise de CS",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger1": {
+      "main": [
+        [
+          {
+            "node": "📥 Download Arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "60773672-75f4-4398-9b23-86a075f8acac",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "iwc6Jx2zaHTszkLs",
+  "tags": []
+}

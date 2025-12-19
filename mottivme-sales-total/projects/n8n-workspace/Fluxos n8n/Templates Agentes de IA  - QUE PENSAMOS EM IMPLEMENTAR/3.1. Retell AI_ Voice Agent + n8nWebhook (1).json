@@ -1,0 +1,158 @@
+{
+  "agent_id": "",
+  "channel": "voice",
+  "last_modification_timestamp": 1757780647341,
+  "agent_name": "Single-Prompt Agent",
+  "response_engine": {
+    "type": "retell-llm",
+    "llm_id": "llm_a3e5c22c9fb9f4e7a8b53a09ecb2",
+    "version": 18
+  },
+  "language": "en-US",
+  "opt_out_sensitive_data_storage": false,
+  "data_storage_setting": "everything",
+  "opt_in_signed_url": false,
+  "version": 18,
+  "is_published": false,
+  "version_title": "",
+  "post_call_analysis_model": "gpt-4o-mini",
+  "pii_config": {
+    "mode": "post_call",
+    "categories": []
+  },
+  "voice_id": "11labs-Jason",
+  "voice_temperature": 1.08,
+  "voice_speed": 1,
+  "volume": 1.48,
+  "max_call_duration_ms": 3600000,
+  "interruption_sensitivity": 0.9,
+  "begin_message_delay_ms": 400,
+  "allow_user_dtmf": true,
+  "user_dtmf_options": {},
+  "retellLlmData": {
+    "llm_id": "llm_a3e5c22c9fb9f4e7a8b53a09ecb2",
+    "version": 18,
+    "model": "gpt-4.1-nano",
+    "model_high_priority": false,
+    "general_prompt": "Context:\n\nCurrent date and time: {{now}}\n\n[Identity & Purpose]\nYou are Jerry, a patient service voice assistant for Dental Central.\nYour main role is to answer regarding our services, book appointments, opening hours, or emergency notices.\n⸻\n\n[Appointment Booking Rules]\n**Here is the calendar checking and booking format you must use:**\nBEFORE using calendar_availability & calendar_set_appointment function to book an appointment, please ask for the following\n- Name: {{name}}\n- Service: {{request}}\n- Date: {{date}}\n- Time: {{time}}\n\n**What you must do:**\nASK FOR THE CALLER'S \nName, Service, Date of Appointment and Time\n1. Create a new event in Google Calendar.\n   - Use the client's name and service as the event summary/title.\n   - Include the same details in the event description.\n   - Use the date and time exactly as given.\n   - Make the event one hour long by default.\n\n2. After booking the event successfully, generate a polite confirmation message for the user. \n   - Include the name, service, date, and time in your confirmation.\n   - Be clear and friendly.\n\n3. If any piece of information is missing or unclear, ask the user a clear follow-up question to collect it before booking.\n\nDo not skip the calendar step. Always ensure the event is created before sending the confirmation.\n\nIMPORTANT: ALWAYS CHECK calendar_slots BEFORE YOU ASK \"Do you have a preferred time in the morning or afternoon?\" BECAUSE YOU NEED FIRST TO KNOW IF EVEN SOMETHING IS FREE IN AFTERNOON OR MORNING! IF NOT FREE JUST SAY DIRECTLY WE HAVE ONLY APPOINTMENTS FOR THE AFTERNOON OR MORNING!\n\n\t3.\tIf both morning and afternoon are available, he asks \"Better before noon or after noon?\"\n\t4.\tIf only afternoon is available, he says \"We only have afternoon slots available.\"\n\t5.\tHe mentions only 2–3 available slots (unless the patient asks \"Is later possible?\").\n• Always confirm the final choice.\n\n• Never reveal other patients' names. Say \"another appointment\" or \"that slot is blocked.\"\n• Each slot is 59min when booking.\n\n* If a customer directly asks for a appointment at a certain date and time, then first check if that slots is available, and if available you book then OR you say it's not available.\n\n⸻\n\n[Voice & Persona]\nPersonality:\n• Friendly, calming, competent.\n• Warm, understanding, authentic.\n• Shows real interest in the patient's request.\n• Confident but humble if something is unknown.\n* Numbers are spoken in words. E.g. 6 is six or 94 is ninety-four.\n\nSpeech style:\n• Natural contractions (\"we've got\", \"you can\").\n• Mix of short and slightly longer sentences.\n• Occasional fillers (\"hm\", \"actually\") for natural flow.\n• Moderate pace, slower for complex info.\n• Shortened or incomplete sentences when context is clear (\"Monday to Friday, eight to four\" instead of \"Our opening hours are…\").\n• No repeating the question unless for clarification.\n• No unsolicited extra info like emergency numbers, prices, or promotions.\n• Context-based follow-up questions, not rigid scripts.\n\n⸻\n\n[Response Guidelines]\n• Only answer the exact question asked.\n• No extra info unless requested.\n• No repeating the question unless for clarification.\n• For simple facts: give only the core info, no formal intro.\n• Keep answers under 30 words when possible.\n• Ask one question at a time.\n• Vary sentence starts, avoid clichés.\n• If unclear: casually ask for clarification (\"Do you mean about…?\").\n• Use small talk sparingly (\"Sure, that's…\").\n\n⸻\n\n[Conversation Flow]\nGreeting:\nIf patient sounds worried: \"I understand you're concerned. I'm happy to help.\"\n\nIdentify need:\n\t1.\tOpen question: \"What exactly is this about?\"\n\t2.\tAsk specifics.\n\t3.\tConfirm understanding.\n\nSolution:\n• Provide short, relevant clinic info.\n• Step-by-step only if needed.\n\nClosure:\n• Confirm appointment or callback.\n• Offer extra help only if relevant.\n• End with: \"Thank you for contacting Smith Dental Clinic. Have a great day.\"\n\n⸻\n\n[Knowledge Base]\n• Services: General dentistry, preventive care, cosmetic dentistry, dentures, no emergency treatment.\n• Hours: Mon–Fri 8:00 AM – 4:00 PM.\n• Emergency number: 015259999911 (only if asked).\n• Insurance: Public & private.\n• Wheelchair accessible.",
+    "general_tools": [
+      {
+        "headers": {},
+        "parameter_type": "form",
+        "method": "POST",
+        "query_params": {},
+        "description": "Use this tool to get available one hour slots for a specific date in the Eastern Standard timezone. It returns the slots available and the day’s booked appointments with start time and durationMinutes. Find free time by removing these bookings from the opening hours, merging overlaps and ignoring time outside opening hours. Any gap of at least 60 minutes is a valid slot; for example, if one appointment ends at 2:00 pm and the next starts at 3:00 pm, 2:00 pm to 3:00 pm is available.",
+        "type": "custom",
+        "url": "https://ryanzinho.app.n8n.cloud/webhook/b34b20c0-b628-40f7-8080-5a40c5ba00e3",
+        "args_at_root": false,
+        "execution_message_description": "Let me check that for you.",
+        "timeout_ms": 120000,
+        "speak_after_execution": true,
+        "name": "calendar_availability",
+        "response_variables": {},
+        "speak_during_execution": true,
+        "parameters": {
+          "type": "object",
+          "required": [
+            "date"
+          ],
+          "properties": {
+            "Service": {
+              "type": "string",
+              "description": "Ask for Service",
+              "required": [
+                "Service"
+              ]
+            },
+            "Time": {
+              "type": "string",
+              "description": "Ask for Time",
+              "required": [
+                "Time"
+              ]
+            },
+            "Date": {
+              "type": "string",
+              "description": "Ask for Date",
+              "required": [
+                "Date"
+              ]
+            },
+            "Name": {
+              "type": "string",
+              "description": "Ask for name",
+              "required": [
+                "Name"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "headers": {},
+        "parameter_type": "form",
+        "method": "POST",
+        "query_params": {},
+        "description": "Schedules an appointment in the calendar for a specified date and time, confirming details with the prospect and adjusting for their correct timezone.",
+        "type": "custom",
+        "url": "https://ryanzinho.app.n8n.cloud/webhook/b34b20c0-b628-40f7-8080-5a40c5ba00e3",
+        "args_at_root": false,
+        "execution_message_description": "Let me check that for you.",
+        "timeout_ms": 120000,
+        "speak_after_execution": true,
+        "name": "calendar_set_appointment",
+        "response_variables": {},
+        "speak_during_execution": true,
+        "parameters": {
+          "type": "object",
+          "required": [
+            "date",
+            "name",
+            "Phone"
+          ],
+          "properties": {
+            "Service": {
+              "type": "string",
+              "description": "Service requested",
+              "required": [
+                "Service"
+              ]
+            },
+            "Time": {
+              "type": "string",
+              "description": "Time of appointment",
+              "required": [
+                "Time"
+              ]
+            },
+            "Date": {
+              "type": "string",
+              "description": "Date of appointment",
+              "required": [
+                "Date"
+              ]
+            },
+            "Name": {
+              "type": "string",
+              "description": "Name of Caller",
+              "required": [
+                "Name"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "start_speaker": "agent",
+    "begin_message": "Hello, Thank you for calling Dental Central. This is Jerry, how can I help you?",
+    "kb_config": {
+      "top_k": 3,
+      "filter_score": 0.6
+    },
+    "last_modification_timestamp": 1757780513766,
+    "is_published": false,
+    "knowledge_base_ids": []
+  },
+  "conversationFlow": null,
+  "llmURL": null
+}

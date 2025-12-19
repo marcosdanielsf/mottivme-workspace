@@ -1,0 +1,668 @@
+{
+  "name": "Error Handler - Com Location Name e Contato",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "73291c61-d3e6-4a5f-a643-5a5950dc091e",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "exec-id",
+              "name": "execution_id",
+              "value": "={{ $json.execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "exec-url",
+              "name": "execution_url",
+              "value": "={{ $json.execution.url }}",
+              "type": "string"
+            },
+            {
+              "id": "link-direto",
+              "name": "link_execucao",
+              "value": "=https://cliente-a1.mentorfy.io/workflow/{{ $json.workflow.id }}/executions/{{ $json.execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "data-hora",
+              "name": "data_hora",
+              "value": "={{ $now.setZone('America/Sao_Paulo').toFormat('dd/MM/yyyy HH:mm:ss') }}",
+              "type": "string"
+            },
+            {
+              "id": "workflow-id",
+              "name": "workflow_id",
+              "value": "={{ $json.workflow.id }}",
+              "type": "string"
+            },
+            {
+              "id": "workflow-name",
+              "name": "workflow_name",
+              "value": "={{ $json.workflow.name }}",
+              "type": "string"
+            },
+            {
+              "id": "node-erro",
+              "name": "node_name",
+              "value": "={{ $json.execution.error.node.name }}",
+              "type": "string"
+            },
+            {
+              "id": "mensagem-erro",
+              "name": "error_message",
+              "value": "={{ $json.execution.error.message }}",
+              "type": "string"
+            },
+            {
+              "id": "stack-erro",
+              "name": "error_stack",
+              "value": "={{ JSON.stringify($json.execution.error) }}",
+              "type": "string"
+            },
+            {
+              "id": "location-id",
+              "name": "location_id",
+              "value": "={{ $json.execution.error.context?.request?.body?.locationId || $json.execution.error.context?.request?.headers?.locationId || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-id",
+              "name": "contact_id",
+              "value": "={{ $json.execution.error.context?.request?.body?.contactId || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "link-contato",
+              "name": "link_contato",
+              "value": "={{ ($json.execution.error.context?.request?.body?.locationId && $json.execution.error.context?.request?.body?.contactId) ? 'https://app.socialfy.me/v2/location/' + $json.execution.error.context.request.body.locationId + '/contacts/detail/' + $json.execution.error.context.request.body.contactId : '' }}",
+              "type": "string"
+            },
+            {
+              "id": "prompt-ia",
+              "name": "prompt_para_ia",
+              "value": "=Estou com esse erro no N8N:\n\nWorkflow: {{ $json.workflow.name }}\nNode: {{ $json.execution.error.node.name }}\nMensagem de erro: {{ $json.execution.error.message }}\n\nStack completo:\n{{ JSON.stringify($json.execution.error, null, 2) }}\n\nPor favor, busque na base de conhecimento do n8n e me de uma solucao clara e objetiva para resolver esse erro.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a5acc9fc-f0aa-4ec5-9b3f-7eba2fc4e7e9",
+      "name": "1. Formatar Dados do Erro",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-location",
+              "leftValue": "={{ $json.location_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-location-exists",
+      "name": "2. Tem Location ID?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.location_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-43abf775-9c0e-4440-a73e-4a568e5257ba"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-location-info",
+      "name": "3a. Buscar Location Name",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        192,
+        -400
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "location-name",
+              "name": "location_name",
+              "value": "={{ $json.location?.name || $json.name || 'Conta nao identificada' }}",
+              "type": "string"
+            },
+            {
+              "id": "keep-data",
+              "name": "dados_erro",
+              "value": "={{ $('1. Formatar Dados do Erro').item.json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-location-name",
+      "name": "4a. Extrair Nome da Conta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "location-name-empty",
+              "name": "location_name",
+              "value": "Conta nao identificada",
+              "type": "string"
+            },
+            {
+              "id": "keep-data",
+              "name": "dados_erro",
+              "value": "={{ $('1. Formatar Dados do Erro').item.json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-no-location",
+      "name": "3b. Sem Location",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -192
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "merge-location-data",
+      "name": "5. Merge Dados",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        640,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.dados_erro.prompt_para_ia }}",
+        "options": {
+          "systemMessage": "Voce e um especialista em resolucao de problemas e erros do N8N.\n\nSua funcao e:\n1. Analisar o erro recebido\n2. Buscar na base de conhecimento (documentacao oficial do n8n) usando a ferramenta disponivel\n3. Fornecer uma solucao clara, objetiva e passo a passo\n\nSempre responda em portugues brasileiro.\n\nFormato da resposta:\nDIAGNOSTICO: [breve explicacao do que causou o erro]\n\nSOLUCAO:\n1. [passo 1]\n2. [passo 2]\n...\n\nDICA: [dica adicional se houver]"
+        }
+      },
+      "id": "4d738953-db0e-4a8d-bb90-7c200a7e0703",
+      "name": "6. AI Agent - Buscar Solucao",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        864,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "fdd43cd1-b164-433b-8099-90b5bbfc8c5b",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        912,
+        -80
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "buscar_documentacao_n8n",
+        "description": "Busca informacoes na documentacao oficial do n8n para resolver erros e problemas. Use sempre que precisar encontrar como resolver um erro especifico do n8n.",
+        "topK": 5
+      },
+      "id": "0b4d159a-a432-4ad2-8922-8ce66fdcc792",
+      "name": "n8n Knowledge Base",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "ae4ac0d9-42e4-4cef-9642-403020b3868f",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        128
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "n8n_docs",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        128
+      ],
+      "id": "a56739f1-f067-4546-8406-27a60ce9e5d7",
+      "name": "Postgres PGVector Store",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels."
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "solucao",
+              "name": "suggested_solution",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "msg-whatsapp",
+              "name": "mensagem_whatsapp",
+              "value": "=*ERRO NO N8N*\n\n*CONTA:* {{ $('5. Merge Dados').item.json.location_name }}\n\n*Workflow:* {{ $('5. Merge Dados').item.json.dados_erro.workflow_name }}\n*Node:* {{ $('5. Merge Dados').item.json.dados_erro.node_name }}\n*Erro:* {{ $('5. Merge Dados').item.json.dados_erro.error_message }}\n*Data:* {{ $('5. Merge Dados').item.json.dados_erro.data_hora }}\n\n*Ver execucao:*\n{{ $('5. Merge Dados').item.json.dados_erro.link_execucao }}{{ $('5. Merge Dados').item.json.dados_erro.link_contato ? '\\n\\n*Ver contato no GHL:*\\n' + $('5. Merge Dados').item.json.dados_erro.link_contato : '' }}\n\n━━━━━━━━━━━━━━━━\n*SUGESTAO DA IA:*\n{{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "109b8050-51fa-4236-a45a-ebcf9f151103",
+      "name": "7. Preparar Envio",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1184,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-43abf775-9c0e-4440-a73e-4a568e5257ba"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"skfa6JP6lLlAXkc8FfIp\",\n  \"message\": {{ JSON.stringify($json.mensagem_whatsapp) }}\n}",
+        "options": {}
+      },
+      "id": "1205510d-9151-4e54-81ae-ba89bd88faf7",
+      "name": "8. Notificar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1408,
+        -304
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO ops_error_logs (\n  workflow_id,\n  workflow_name,\n  execution_id,\n  execution_url,\n  node_name,\n  error_message,\n  suggested_solution,\n  location_name,\n  contact_id,\n  conversation_link,\n  status\n) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'pending')\nRETURNING id;",
+        "options": {
+          "queryReplacement": "={{ $('5. Merge Dados').item.json.dados_erro.workflow_id }}\n{{ $('5. Merge Dados').item.json.dados_erro.workflow_name }}\n{{ $('5. Merge Dados').item.json.dados_erro.execution_id }}\n{{ $('5. Merge Dados').item.json.dados_erro.link_execucao }}\n{{ $('5. Merge Dados').item.json.dados_erro.node_name }}\n{{ $('5. Merge Dados').item.json.dados_erro.error_message }}\n{{ $('7. Preparar Envio').item.json.suggested_solution }}\n{{ $('5. Merge Dados').item.json.location_name }}\n{{ $('5. Merge Dados').item.json.dados_erro.contact_id }}\n{{ $('5. Merge Dados').item.json.dados_erro.link_contato }}"
+        }
+      },
+      "id": "ecd84530-f027-4e25-8a00-fd126672d721",
+      "name": "9. Salvar no Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1632,
+        -304
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels."
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "status-final",
+              "name": "status",
+              "value": "success",
+              "type": "string"
+            },
+            {
+              "id": "msg-final",
+              "name": "message",
+              "value": "Erro registrado, solucao buscada e notificacao enviada com sucesso!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "768cd42a-b463-4cf1-8fdf-6666f101e661",
+      "name": "10. Concluido",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1856,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## FLUXO DO ERROR HANDLER V2 (Simplificado)\n\n**Funcionalidades:**\n1. Extrai `locationId` e `contactId` do contexto do erro\n2. Busca o **nome da conta** (Location Name) via API do GHL\n3. Monta link direto para o contato no GHL\n4. Envia notificacao com todas as informacoes\n\n**Link do contato:**\n`https://app.socialfy.me/v2/location/{LOCATION_ID}/contacts/detail/{CONTACT_ID}`\n\n**APIs utilizadas:**\n- GET /locations/{id} - Buscar nome da conta",
+        "height": 300,
+        "width": 400,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        -680
+      ],
+      "typeVersion": 1,
+      "id": "doc-fluxo"
+    },
+    {
+      "parameters": {
+        "content": "## EXEMPLO DE MENSAGEM ENVIADA\n\n```\n*ERRO NO N8N*\n\n*CONTA:* Fernanda Lappe\n\n*Workflow:* Agendar pelo GHL\n*Node:* Agendar_reuniao\n*Erro:* Bad request\n*Data:* 15/12/2025 10:30:00\n\n*Ver execucao:*\nhttps://cliente-a1.mentorfy.io/...\n\n*Ver contato no GHL:*\nhttps://app.socialfy.me/v2/location/.../contacts/detail/...\n\n━━━━━━━━━━━━━━━━\n*SUGESTAO DA IA:*\nDIAGNOSTICO: O slot selecionado...\n```",
+        "height": 420,
+        "width": 360,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -40,
+        -680
+      ],
+      "typeVersion": 1,
+      "id": "doc-mensagem"
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "1. Formatar Dados do Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Formatar Dados do Erro": {
+      "main": [
+        [
+          {
+            "node": "2. Tem Location ID?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Tem Location ID?": {
+      "main": [
+        [
+          {
+            "node": "3a. Buscar Location Name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "3b. Sem Location",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3a. Buscar Location Name": {
+      "main": [
+        [
+          {
+            "node": "4a. Extrair Nome da Conta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4a. Extrair Nome da Conta": {
+      "main": [
+        [
+          {
+            "node": "5. Merge Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3b. Sem Location": {
+      "main": [
+        [
+          {
+            "node": "5. Merge Dados",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "5. Merge Dados": {
+      "main": [
+        [
+          {
+            "node": "6. AI Agent - Buscar Solucao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. AI Agent - Buscar Solucao": {
+      "main": [
+        [
+          {
+            "node": "7. Preparar Envio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "6. AI Agent - Buscar Solucao",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "n8n Knowledge Base",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n Knowledge Base": {
+      "ai_tool": [
+        [
+          {
+            "node": "6. AI Agent - Buscar Solucao",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "n8n Knowledge Base",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7. Preparar Envio": {
+      "main": [
+        [
+          {
+            "node": "8. Notificar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8. Notificar WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "9. Salvar no Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9. Salvar no Postgres": {
+      "main": [
+        [
+          {
+            "node": "10. Concluido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  }
+}

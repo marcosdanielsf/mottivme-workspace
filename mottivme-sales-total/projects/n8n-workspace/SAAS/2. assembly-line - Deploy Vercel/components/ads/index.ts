@@ -1,0 +1,1 @@
+export { AdsIntelContent } from './AdsIntelContent';

@@ -1,0 +1,394 @@
+{
+  "name": "Customer Service AI Bot - Complete",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8,
+              "triggerAtMinute": null
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        32
+      ],
+      "id": "ac20987f-5312-4ef0-ab9a-47e286f3fd3e",
+      "name": "8"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 13
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        224
+      ],
+      "id": "4b3f45d0-6dfb-46ac-86f4-33260585d9ef",
+      "name": "13"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 18,
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        416
+      ],
+      "id": "1c9a51fb-aaa1-4a8c-a1dd-7aa5e417ee21",
+      "name": "18"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "base": {
+          "__rl": true,
+          "value": "appwQQ5zpPLd9SEjQ",
+          "mode": "list",
+          "cachedResultName": "Agencia de Bolso",
+          "cachedResultUrl": "https://airtable.com/appwQQ5zpPLd9SEjQ"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblBdy6DvqtxPnHcM",
+          "mode": "list",
+          "cachedResultName": "Projects",
+          "cachedResultUrl": "https://airtable.com/appwQQ5zpPLd9SEjQ/tblBdy6DvqtxPnHcM"
+        },
+        "id": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        160,
+        128
+      ],
+      "id": "d60f2525-8583-4aa7-a329-9139070a75fa",
+      "name": "Buscar Grupos",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "context-1",
+              "name": "context",
+              "value": "=Gerar mensagem motivacional para o grupo: Mottivme Sales . Tipo de audiência: Equipe de BDR/ SDR/ CS. Tom: {{ $json.tom_mensagem || 'motivacional e positivo' }}",
+              "type": "string"
+            },
+            {
+              "id": "chat-id",
+              "name": "chat_id",
+              "value": "=WIQ6loCfdBeqnP90e7pI",
+              "type": "string"
+            },
+            {
+              "id": "group-name",
+              "name": "group_name",
+              "value": "={{ $json.nome_grupo }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        128
+      ],
+      "id": "4b28f0de-6eee-430d-b579-491864b494ed",
+      "name": "Preparar Contexto"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.context }}",
+        "options": {
+          "systemMessage": "=HORA ATUAL: {{ $now.format('FFFF') }} horas (use esse número para decidir o tipo de mensagem)\n\n==========================================\nVOCÊ É O DONO DA MOTTIVME\n==========================================\nVocê vai mandar UMA mensagem pro grupo do time de SDRs no WhatsApp.\nSeja natural, direto, mas COMPLETO.\n\n==========================================\nREGRAS DE TAMANHO\n==========================================\n- MÍNIMO: 50 caracteres\n- MÁXIMO: 150 caracteres\n- Contagem ideal: 60-100 caracteres\n- Exemplo de tamanho BOM: \"Boa noite galera! Valeu demais por mais um dia de trabalho! Descansem bem! 🙏\" (85 caracteres)\n\n==========================================\nREGRAS DE FORMATO\n==========================================\n1. UMA LINHA SÓ - sem quebras (\\n)\n2. Máximo 2 emojis\n3. Sem CAPS excessivo (máx 1-2 palavras)\n4. Sem títulos: \"NOITE DE SUCESSO!\", \"BOM DIA TIME!\"\n5. Tom: casual WhatsApp, como você falaria\n6. Proibido: guerra, batalha, luta, esforço, sacrifício, tentar, obstáculo\n\n==========================================\nESTRUTURA OBRIGATÓRIA\n==========================================\n[SAUDAÇÃO] + [CONTEÚDO/CONTEXTO] + [FECHAMENTO/AÇÃO]\n\nExemplos de ESTRUTURA BOA:\n- \"Boa noite! + Valeu por mais um dia! + Descansem bem! 🙏\"\n- \"Bom dia galera! + Café tomado? + Bora começar forte! 💪\"\n- \"E aí time! + Como tá o dia? + Vamo continuar!\"\n\n==========================================\nPOR HORÁRIO - SIGA EXATAMENTE\n==========================================\n\n🌅 SE HORA = 6 até 11 → MANHÃ\nEstrutura: Saudação + Energia/Motivação + Chamada pra ação\nTamanho: 60-100 caracteres\n\nEXEMPLOS CORRETOS:\n✅ \"Bom dia galera! Mais um dia pra gente crescer! Bora começar forte! 💪\" (69 chars)\n✅ \"E aí time! Café tomado? Vamo fazer esse dia valer a pena!\" (59 chars)\n✅ \"Bom dia pessoal! Prontos pra hoje? Vamo lá! 🚀\" (49 chars)\n\nEXEMPLOS ERRADOS:\n❌ \"Bom dia! 💪\" (12 chars - MUITO CURTO)\n❌ \"MANHÃ DE OPORTUNIDADES!\" (título)\n\n---\n\n☀️ SE HORA = 12 até 17 → TARDE\nEstrutura: Saudação + Checagem/Reconhecimento + Incentivo\nTamanho: 50-100 caracteres\n\nEXEMPLOS CORRETOS:\n✅ \"E aí galera! Como tá indo o dia? Bora continuar firme! 💪\" (59 chars)\n✅ \"Tarde time! Manhã foi boa? Vamo dobrar na tarde!\" (50 chars)\n✅ \"E aí! Já almoçaram? Bora voltar com energia!\" (47 chars)\n\nEXEMPLOS ERRADOS:\n❌ \"Tarde! Vamo!\" (13 chars - MUITO CURTO)\n❌ \"TARDE PRODUTIVA!\" (título)\n\n---\n\n🌙 SE HORA = 18 até 23 OU 0 até 5 → NOITE\nEstrutura: Saudação + Gratidão/Reconhecimento + Descanso/Amanhã\nTamanho: 60-120 caracteres\n\n**OBRIGATÓRIO NA NOITE:**\n- Agradecer explicitamente\n- Mencionar \"dia\" ou \"hoje\"\n- Reconhecer o time/trabalho\n- Desejar descanso\n\nEXEMPLOS CORRETOS:\n✅ \"Boa noite galera! Valeu demais por mais um dia! Descansem bem! 🙏\" (68 chars)\n✅ \"Boa noite time! Obrigado pelo dia de hoje! Até amanhã! 💪\" (60 chars)\n✅ \"Valeu pelo dia pessoal! Gratidão por cada um! Descansa aí! 🙏\" (64 chars)\n✅ \"Boa noite! Obrigado por mais um dia galera! Bora descansar!\" (62 chars)\n\nEXEMPLOS ERRADOS:\n❌ \"Obrigado galera! 🙏\" (19 chars - MUITO CURTO, sem contexto)\n❌ \"NOITE DE SUCESSO! Obrigado...\" (título)\n❌ \"Boa noite!\" (11 chars - incompleto)\n\n==========================================\nCHECKLIST FINAL\n==========================================\nAntes de responder, confirme:\n[ ] Tem entre 50-150 caracteres?\n[ ] É uma linha só (sem \\n)?\n[ ] Tem estrutura completa (saudação + conteúdo + fechamento)?\n[ ] Se é noite, agradeci explicitamente?\n[ ] Parece WhatsApp natural?\n[ ] Sem palavras proibidas?\n[ ] Sem títulos em CAPS?\n\n==========================================\nTAREFA\n==========================================\nHORA: {{ $now.format('FFFF') }}\n\nEscreva UMA mensagem seguindo:\n1. A estrutura do horário correto\n2. Tamanho ENTRE 50-150 caracteres\n3. Formato natural de WhatsApp\n\nResponda APENAS a mensagem final."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        608,
+        128
+      ],
+      "id": "f01e8554-4bfe-4b12-89e6-89baa478717c",
+      "name": "Agente IA Motivacional"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=motivational_messages_{{ $now.format('YYYY-MM-DD') }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        752,
+        352
+      ],
+      "id": "62c0f192-5df3-4c06-916d-540ee7a33500",
+      "name": "Memória de Contexto"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "=WIQ6loCfdBeqnP90e7pI"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "857c2d52-4c84-457b-a1c7-a795b43f665c",
+      "name": "Send WhatsApp Report4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        624,
+        352
+      ],
+      "id": "1e9ff850-571c-42d7-8c89-1d7c761373a1",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "WVbQ0d3w6cnLwPtX",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const hora = $now.hour();\nconst dia = $now.day();\n\nconst mensagens = {\n  manha: {\n    normal: [\n      \"BOOOOORA TIME!! Mais um dia de OPORTUNIDADES! VAMO CRESCER!!\",\n      \"BOM DIA GALERA!! Vamo agradecer e REALIZAR! O sucesso é nosso!\",\n      \"ACORDAAA TIME!! Hoje é dia de CONQUISTAR! Quem tá comigo??\",\n      \"E AÍ GALERA!! Mais 24h pra fazer HISTÓRIA! BORA CRIAR!\",\n      \"BOM DIAAA!! Deus abençoou com +1 dia de CRESCIMENTO! VAMO!! 🙏\"\n    ],\n    segunda: [\n      \"SEMANA NOVA, OPORTUNIDADES NOVAS!! Vamo mostrar nosso POTENCIAL!\",\n      \"SEGUNDONA!! Foco e disciplina que a PROSPERIDADE vem! VAMO TIME!\",\n      \"BOM DIA TIME!! Semana começou, CONQUISTAS chegaram! BORA!!\"\n    ],\n    sexta: [\n      \"SEXTOOOOU e as METAS estão chamando!! Vamo fechar com EXCELÊNCIA!\",\n      \"SEXTA-FEIRA!! Quem vai REALIZAR a meta antes do fim de semana?? BORA!!\",\n      \"BOM DIA TIME!! Última chance da semana de BRILHAR! VAMO!!\"\n    ]\n  },\n  \n  tarde: [\n    \"E AÍ GALERA!! Como estão as CONQUISTAS de hoje? VAMO QUE VAMO!\",\n    \"Bora time!! Manhã foi produtiva? A tarde é nossa pra DOBRAR! 💪\",\n    \"E AÍ TIME!! Como tá a EVOLUÇÃO? Quem tá nas metas? BORA!!\",\n    \"Energia TOTAL!! A tarde é tempo de OURO pra REALIZAR!\",\n    \"Como tá a jornada aí?? VAMO que ainda dá pra fazer ACONTECER!\"\n  ],\n  \n  noite: [\n    \"Boa noite galera!! GRATIDÃO por mais um dia! Descansem e amanhã seguimos! 🙏\",\n    \"Que jornada time!! Obrigado por MAIS UM DIA de conquistas! Amanhã tem mais!\",\n    \"Valeu galera!! GRATIDÃO por mais um dia de EVOLUÇÃO e CRESCIMENTO! 🙏\",\n    \"BOA NOITE BPOSS!! Obrigado por MAIS UM DIA! Descansa que amanhã PROSPERAMOS! 💪\",\n    \"Dia produtivo!! GRATIDÃO por mais um dia de OPORTUNIDADES! Amanhã seguimos! 🙏\",\n    \"VALEU TIME!! Obrigado a Deus por MAIS UM DIA! Descansem bem! Amanhã vem forte!\",\n    \"Boa noite galera!! GRATIDÃO por mais um dia de REALIZAÇÕES! Bora descansar! 🙏\"\n  ]\n};\n\n// Lógica para escolher array correto\nlet arrayEscolhido;\n\nif (hora >= 6 && hora <= 11) {\n  if (dia === 1) arrayEscolhido = mensagens.manha.segunda;\n  else if (dia === 5) arrayEscolhido = mensagens.manha.sexta;\n  else arrayEscolhido = mensagens.manha.normal;\n  \n} else if (hora >= 12 && hora <= 17) {\n  arrayEscolhido = mensagens.tarde;\n  \n} else {\n  arrayEscolhido = mensagens.noite;\n}\n\n// Randomiza mensagem\nconst indice = Math.floor(Math.random() * arrayEscolhido.length);\nconst mensagemFinal = arrayEscolhido[indice];\n\nconsole.log(`${hora}h | ${mensagemFinal}`);\n\nreturn [{\n  json: {\n    message: mensagemFinal,\n    chatId: \"SEU_CHAT_ID\",\n    hora: hora\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        -160
+      ],
+      "id": "dda4a8de-b11a-47f2-bf9f-adb2956aeb5b",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {
+    "8": [
+      {
+        "json": {
+          "timestamp": "2025-10-29T16:00:15.016-03:00",
+          "Readable date": "October 29th 2025, 4:00:15 pm",
+          "Readable time": "4:00:15 pm",
+          "Day of week": "Wednesday",
+          "Year": "2025",
+          "Month": "October",
+          "Day of month": "29",
+          "Hour": "16",
+          "Minute": "00",
+          "Second": "15",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "8": {
+      "main": [
+        [
+          {
+            "node": "Buscar Grupos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "13": {
+      "main": [
+        [
+          {
+            "node": "Buscar Grupos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "18": {
+      "main": [
+        [
+          {
+            "node": "Buscar Grupos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Grupos": {
+      "main": [
+        [
+          {
+            "node": "Preparar Contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Contexto": {
+      "main": [
+        [
+          {
+            "node": "Agente IA Motivacional",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente IA Motivacional": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Report4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memória de Contexto": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente IA Motivacional",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Report4": {
+      "main": [
+        []
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente IA Motivacional",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Buscar Grupos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "50cb7fcf-e931-4168-a9b8-95d8a930461b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "EpddKu9VMjQMNtFT",
+  "tags": [
+    {
+      "updatedAt": "2025-10-26T00:06:22.546Z",
+      "createdAt": "2025-10-26T00:06:22.546Z",
+      "id": "Sds5CWpQF3mc5wIH",
+      "name": "Notification"
+    }
+  ]
+}

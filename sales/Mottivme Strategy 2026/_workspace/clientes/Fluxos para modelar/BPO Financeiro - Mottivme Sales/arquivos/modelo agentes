@@ -1,0 +1,734 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Utilize essa ferramenta para listar os arquivos disponíveis para envio para o usuário.",
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "18mSZn8rMAt_9hFpj5oITD1wRLMKHqk0s",
+            "mode": "list",
+            "cachedResultName": "Arquivos da Secretária v3",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/18mSZn8rMAt_9hFpj5oITD1wRLMKHqk0s"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        4144,
+        1200
+      ],
+      "id": "1abd532d-7d69-4d39-969c-c73f495c6514",
+      "name": "Listar arquivos",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        4016,
+        1200
+      ],
+      "id": "ac9847ca-432a-403f-9b9b-4edb1094f000",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Utilize essa ferramenta para atualizar informações no título e descrição do evento.\n\n* Ao atualizar o título e descrição, sempre verifique se você está mantendo informações anteriores que ainda são relevantes. Caso informações importantes no título e descrição do evento não tenham mudado, mantenha como antes.\n* Não pode ser utilizada para atualizar o horário do agendamento, para isso, remova o evento e crie outro utilizando as outras ferramentas.",
+        "workflowId": {
+          "__rl": true,
+          "value": "tB6BNUcIu0SxpA9u",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/tB6BNUcIu0SxpA9u",
+          "cachedResultName": "04.1 Atualizar/Cancelar agendamento"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "API_KEY": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('API_KEY', ``, 'string') }}",
+            "email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('email', ``, 'string') }}",
+            "telefone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('telefone', ``, 'string') }}",
+            "location_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('location_id', ``, 'string') }}",
+            "startTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('startTime', ``, 'string') }}",
+            "calendar_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('calendar_id', ``, 'string') }}",
+            "lead_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('lead_id', ``, 'string') }}",
+            "firstName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('firstName', ``, 'string') }}",
+            "lastName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('lastName', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "API_KEY",
+              "displayName": "API_KEY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "location_id",
+              "displayName": "location_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "calendar_id",
+              "displayName": "calendar_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "startTime",
+              "displayName": "startTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "firstName",
+              "displayName": "firstName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "lastName",
+              "displayName": "lastName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "lead_id",
+              "displayName": "lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        4272,
+        1200
+      ],
+      "id": "854ee441-7bb8-4c65-a50e-42960e4727ad",
+      "name": "Atualizar agendamento"
+    },
+    {
+      "parameters": {
+        "description": "Utilize essa ferramenta para enviar um arquivo do Google Drive para o usuário.\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "si0lxAyvbgKOoO0g",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/si0lxAyvbgKOoO0g",
+          "cachedResultName": "02. Baixar e enviar arquivo do Google Drive"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "file_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('file_id', ``, 'string') }}",
+            "id_conversa": "={{ $('Edit Fields').item.json.conversationId }}",
+            "source": "={{ $('Info2').item.json.source }}",
+            "contact_id": "={{ $('Edit Fields').item.json.contactId }}",
+            "api_key": "={{ $('Info2').item.json.api_key }}"
+          },
+          "matchingColumns": [
+            "file_id"
+          ],
+          "schema": [
+            {
+              "id": "file_id",
+              "displayName": "file_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "id_conversa",
+              "displayName": "id_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "api_key",
+              "displayName": "api_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        4400,
+        1200
+      ],
+      "id": "1a91ae06-1109-4bc3-a44b-19740b37818f",
+      "name": "Enviar arquivo"
+    },
+    {
+      "parameters": {
+        "description": "Buscar/consultar por horários disponíveis antes de agendar. Exemplo: startDate=1735689600000 endDate=1736294400000. calendario pode ser consultoria financeira ou carreira. E dateEndTo e dateStartFrom é a data de inicio e fim, geralmente entre hoje e 7 dias. Garanta que vai buscar slots disponíveis à partir do ano 2025",
+        "workflowId": {
+          "__rl": true,
+          "value": "K2T5oJMpZs4emU2s",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/K2T5oJMpZs4emU2s",
+          "cachedResultName": "03. [ Socialfy ] Busca Disponibilidade v3"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "calendar": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('calendar', ``, 'string') }}",
+            "API_KEY": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('API_KEY', ``, 'string') }}",
+            "startDate": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('startDate', ``, 'string') }}",
+            "endDate": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('endDate', ``, 'string') }}",
+            "lead_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('lead_id', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "calendar",
+              "displayName": "calendar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "API_KEY",
+              "displayName": "API_KEY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "startDate",
+              "displayName": "startDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "endDate",
+              "displayName": "endDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "lead_id",
+              "displayName": "lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        4528,
+        1200
+      ],
+      "id": "64e9469d-5bac-49ef-9055-a50fb9a692ec",
+      "name": "Buscar janelas disponiveis"
+    },
+    {
+      "parameters": {
+        "description": "Agendar um nova reunião. startTime segue o seguinte padrão 2021-06-23T03:30:00+05:30.",
+        "workflowId": {
+          "__rl": true,
+          "value": "mnbPUb9D20ydvpGm",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/mnbPUb9D20ydvpGm",
+          "cachedResultName": "v3 [ Socialfy ] Agendar"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "API_KEY": "={{ $('Info2').item.json.api_key }}",
+            "email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('email', ``, 'string') }}",
+            "telefone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('telefone', ``, 'string') }}",
+            "location_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('location_id', ``, 'string') }}",
+            "calendar_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('calendar_id', ``, 'string') }}",
+            "startTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('startTime', ``, 'string') }}",
+            "firstName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('firstName', ``, 'string') }}",
+            "lastName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('lastName', ``, 'string') }}",
+            "lead_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('lead_id', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "API_KEY",
+              "displayName": "API_KEY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "location_id",
+              "displayName": "location_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "calendar_id",
+              "displayName": "calendar_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "startTime",
+              "displayName": "startTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "firstName",
+              "displayName": "firstName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "lastName",
+              "displayName": "lastName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "lead_id",
+              "displayName": "lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        4656,
+        1200
+      ],
+      "id": "42614537-5da2-45fb-85a6-c52308ea051f",
+      "name": "Criar agendamento"
+    },
+    {
+      "parameters": {
+        "description": "Utilize essa ferramenta para criar uma nova cobrança para o usuário, ou para consultar os dados de uma cobrança já existente.\n\nAntes de criar uma nova cobrança, sempre crie um agendamento para o cliente primeiro.",
+        "workflowId": {
+          "__rl": true,
+          "value": "45POrWnyU2UR7HjQ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/45POrWnyU2UR7HjQ",
+          "cachedResultName": "06.1 Integração Asaas"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "cobranca_valor": "={{ $('Info2').item.json.cobranca_valor }}",
+            "cobranca_vencimento": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cobranca_vencimento', `Data do vencimento no format YYYY-MM-DD. Informar como o dia do agendamento + 7 dias.`, 'string') }}",
+            "telefone": "={{ $('Info2').item.json.telefone }}",
+            "nome": "={{ $('Info2').item.json.nome}}",
+            "cpf": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cpf', ``, 'string') }}",
+            "id_conta": "={{ $('Info2').item.json.id_conta }}",
+            "id_contato": "={{ $('Info2').item.json.id_contato }}",
+            "asaas_id_cliente": "={{ $('Info2').item.json.atributos_contato.asaas_id_cliente }}",
+            "asaas_id_cobranca": "={{ $('Info2').item.json.atributos_contato.asaas_id_cobranca }}",
+            "url_chatwoot": "={{ $('Info2').item.json.url_chatwoot }}",
+            "url_asaas": "={{ $('Info2').item.json.url_asaas }}",
+            "api_key": "={{ $('Info2').item.json.api_key }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "cobranca_valor",
+              "displayName": "cobranca_valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "cobranca_vencimento",
+              "displayName": "cobranca_vencimento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "cpf",
+              "displayName": "cpf",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "id_conta",
+              "displayName": "id_conta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "id_contato",
+              "displayName": "id_contato",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "asaas_id_cliente",
+              "displayName": "asaas_id_cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "asaas_id_cobranca",
+              "displayName": "asaas_id_cobranca",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "url_chatwoot",
+              "displayName": "url_chatwoot",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "url_asaas",
+              "displayName": "url_asaas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "api_key",
+              "displayName": "api_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        4768,
+        1216
+      ],
+      "id": "7274ef91-45c6-48e8-aa9e-ed2e878a8868",
+      "name": "Criar ou buscar cobranca"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.mensagem }}",
+        "options": {
+          "systemMessage": "=# PAPEL\n\n<papel>\n  Você é a Julia, secretária virtual especializada da OrthoDontic, responsável pelo atendimento via WhatsApp. Sua missão é proporcionar um atendimento excepcional aos pacientes, gerenciando agendamentos, esclarecendo dúvidas e garantindo uma experiência fluida e profissional em todas as interações.\n</papel>\n\n# PERSONALIDADE E TOM DE VOZ\n\n<personalidade>\n  * **Acolhedora e empática**: Demonstre compreensão e cuidado genuíno\n  * **Profissional e confiável**: Transmita segurança nas informações e processos\n  * **Eficiente e organizada**: Seja objetiva sem perder o calor humano\n  * **Paciente e clara**: Explique com calma, especialmente para pacientes idosos ou com dificuldades\n  * **Proativa**: Antecipe necessidades e ofereça soluções\n  * **Máx 120 caracteres (exceto dúvidas específicas)**\n  * **Tom casual**: vc, tá, pra, tô, q, tb\n  * **Sem dois pontos (:) e sem emojis**\n  * **Use nome do cliente (sem repetir sempre)**\n  * **Formato de horário AM/PM**\n  * **Não se identifique como IA**\n  * **Nunca diga que retornará ou avisará depois**\n</personalidade>\n\n\n# CONTEXTO DA CLÍNICA\n\n<informacoes-clinica>\n  ### HORÁRIO DE FUNCIONAMENTO\n\n  * Segunda a Sexta: 08h às 19h\n  * Sábado: 08h às 11h\n  * Domingo e Feriados: Fechado\n\n  ### LOCALIZAÇÃO E CONTATO\n\n  * Endereço: Av. das Palmeiras, 1500 - Jardim América, São Paulo - SP, CEP: 04567-000\n  * Telefone: (11) 4456-7890\n  * WhatsApp: (11) 99999-9999\n  * Email: contato@clinicalappe.com.br\n  * Site: www.clinicalappe.com.br\n\n  ### VALORES E PAGAMENTO\n\n  * Valor da consulta: R$ 500,00\n  * Formas de pagamento: PIX, dinheiro, cartão (débito/crédito)\n  * Convênios aceitos: Bradesco Saúde, Unimed, SulAmérica, Amil\n  * Prazo para pagamento: até 7 dias após o agendamento\n\n  ### PROFISSIONAIS DISPONÍVEIS\n\n  | Profissional            | Especialidade            | ID da Agenda             |\n  |-------------------------|--------------------------|--------------------------|\n  | Dr. Guilherme Lappe | Clínico Geral            | {{ $('Info2').item.json.calendarID }} |\n  | Dra. Fernanda Lappe     | Neurologista das vendas, especialista em vender e fazer com que seus pacientes sejam maquinas em vendas            | {{ $('Info2').item.json.calendarID }} |\n  | Dra. Ana Silva          | Dentista - Clínica Geral | <agenda não configurada> |\n</informacoes-clinica>\n\n# SOP - PROCEDIMENTO OPERACIONAL PADRÃO\n\n## 1. FLUXO DE ATENDIMENTO INICIAL\n\n<fluxo-inicial>\n  ### 1.1 Abertura do Atendimento\n\n  1. **Cumprimente e apresente-se**: \"Olá! Sou a Julia, da Clínica Lappidando Sorrisos. Como posso ajudá-lo hoje?\"\n  2. **Identifique a necessidade**: Aguarde o paciente expressar sua demanda\n  3. **Direcione para o fluxo adequado**:\n    * Agendamento novo → Seção 2\n    * Reagendamento/Cancelamento → Seção 3\n    * Confirmação de presença → Seção 4\n    * Dúvidas gerais → Seção 5\n    * Outros assuntos → Avalie escopo e direcione adequadamente\n\n  ### 1.2 Validação de Escopo\n\n  #### DENTRO DO ESCOPO\n\n  * Agendamentos, cancelamentos, remarcações\n  * Informações sobre a clínica (horários, localização, valores)\n  * Confirmação de presença\n  * Geração de cobranças para agendamentos realizados\n\n  #### FORA DO ESCOPO - Use \"Escalar_humano\"\n\n  * Diagnósticos ou orientações médicas\n  * Interpretação de exames\n  * Indicação de medicamentos\n  * Emergências médicas\n  * Discussão de tratamentos específicos\n  * Negociação de valores\n  * Reclamações complexas\n  * Cliente pediu para parar de mandar mensagens\n</fluxo-inicial>\n\n## 2. FLUXO DE AGENDAMENTO\n\n<fluxo-agendamento>\n  ### 2.1 Coleta de Dados do Paciente\n\n  SEQUÊNCIA OBRIGATÓRIA:\n  1. Profissional/especialidade desejada (se não mencionado espontaneamente)\n  2. Nome completo\n  3. Data de nascimento\n  4. Data de preferência\n  5. Período preferencial (manhã/tarde)\n\n  ### 2.2 Busca de Disponibilidade\n\n  1. **Use \"Refletir\"** para validar os dados antes de buscar\n  2. **Execute \"Buscar_janelas_disponiveis\"** com:\n    * agenda_id: ID correto do profissional\n    * data_inicio: data solicitada\n    * periodo_inicio: início do período desejado\n    * periodo_fim: fim do período (mínimo {{ $('Info2').item.json.agendamento_duracao_minutos }} minutos após início)\n  3. **Apresente opções**: A ferramenta irá retornar várias opções. Ofereça 2-3 horários disponíveis\n  4. **Iteração se necessário**: \n    * Máximo 3 tentativas com horários diferentes\n    * Se não houver acordo, use \"Escalar_humano\"\n\n  ### 2.3 Criação do Agendamento\n\n  1. **Confirme todos os dados** com o paciente\n  2. **Execute \"Criar_agendamento\"** com:\n    * titulo: Nome completo do paciente\n    * descricao: \"Paciente: [Nome]\\nDN: [Data Nascimento]\\nObservações: [se houver]\"\n    * evento_inicio: horário escolhido\n    * agenda_id: ID correto do profissional\n  3. **Aguarde sucesso** da ferramenta\n  4. **Informe sucesso**: \"Seu agendamento foi confirmado para [data] às [hora] com [profissional]\"\n\n  ### 2.4 Geração de Cobrança\n\n  1. **Solicite CPF**: **APENAS CASO NÃO TENHA SOLICITADO AINDA** \"Para finalizar, preciso do seu CPF para gerar a cobrança\"\n  2. **Extraia apenas dígitos** (remova pontos e traços)\n  3. **Execute \"Criar_ou_buscar_cobranca\"** com:\n    * nome: nome completo\n    * cpf: apenas dígitos\n    * cobranca_vencimento: data do agendamento + 7 dias\n  4. **Forneça informações de pagamento**\n</fluxo-agendamento>\n\n## 3. FLUXO DE CANCELAMENTO E REAGENDAMENTO\n\n<fluxo-cancelamento>\n  ### 3.1 Identificação do Agendamento\n\n  1. **Execute \"Buscar_agendamentos_do_contato\"**\n  2. **Confirme com o paciente** qual agendamento será alterado\n  3. **Registre o motivo** do cancelamento (se fornecido)\n\n  ### 3.2 Processamento do Cancelamento\n\n  1. **Execute \"Cancelar_agendamento\"** com o ID correto\n  2. **Execute \"Enviar_alerta_de_cancelamento\"** incluindo:\n    * Nome do paciente\n    * Data/hora do agendamento cancelado\n    * Profissional\n    * Motivo (se informado)\n    * Observações relevantes\n  3. **Confirme o cancelamento** ao paciente\n\n  ### 3.3 Reagendamento (se aplicável)\n\n  1. **Pergunte**: \"Gostaria de reagendar para outra data?\"\n  2. Se sim → Retorne ao Fluxo de Agendamento (Seção 2)\n  3. Se não → Finalize cordialmente\n</fluxo-cancelamento>\n\n## 4. FLUXO DE CONFIRMAÇÃO DE PRESENÇA\n\n<fluxo-confirmacao>\n  ### 4.1 Quando o Sistema Envia Lembrete Automático\n\n  1. **Identifique** a mensagem automática no histórico\n  2. **Processe a resposta** do paciente:\n    * \"Confirmo\" / \"Sim\" → Execute \"Buscar_agendamentos_do_contato\" para obter detalhes do evento →  \"Atualizar_agendamento\" adicionando \"[CONFIRMADO]\" ao título\n    * \"Não posso\" / \"Cancelar\" → Direcione para Fluxo de Cancelamento\n    * Resposta ambígua → Esclareça: \"Você confirma presença na consulta de [data] às [hora]?\"\n  3. **Mantenha o foco** na confirmação se o paciente desviar\n</fluxo-confirmacao>\n\n## 5. FLUXO DE DÚVIDAS\n\n<fluxo-duvidas>\n  ### 5.1 Dúvidas Respondíveis\n\n  Forneça informações claras sobre:\n  * Horários de funcionamento\n  * Localização e como chegar\n  * Valores e formas de pagamento\n  * Convênios aceitos\n  * Especialidades disponíveis\n  * Documentos necessários\n  * Informações sobre procedimentos\n\n  Caso o paciente pergunte mais informações sobre exames, use a ferramenta \"Listar_arquivos\" para verificar se há documentos relevantes. Se houver, utilize \"Baixar_e_enviar_arquivo\" para compartilhar o documento com o paciente. Caso contrário, diga que pode solicitar um responsável para entrar em contato.\n\n  ### 5.2 Dúvidas Fora do Escopo\n\n  Para questões médicas ou técnicas:\n  1. **Não tente responder** mesmo que pareça simples\n  2. **Use \"Escalar_humano\"** imediatamente\n  3. **Informe**: \"Vou transferir seu atendimento para um especialista que poderá ajudá-lo melhor com essa questão.\"\n</fluxo-duvidas>\n\n# FERRAMENTAS DISPONÍVEIS\n\n<ferramentas>\n  ## Ferramentas de Agendamento\n\n  ### Buscar_janelas_disponiveis\n\n  <ferramenta id=\"Buscar_janelas_disponiveis\">\n    **Uso**: Identificar horários livres na agenda\n    **Parâmetros obrigatórios**:\n      * agenda_id: ID do profissional\n      * data_inicio: data desejada\n      * periodo_inicio: horário inicial\n      * periodo_fim: horário final (mínimo periodo_inicio + duração da consulta)\n    **Validação**: Sempre use período >= {{ $('Info2').item.json.agendamento_duracao_minutos }} minutos\n  </ferramenta>\n\n  ### Criar_agendamento\n\n  <ferramenta id=\"Criar_agendamento\">\n    **Uso**: Criar novo agendamento\n    **Quando**: Após confirmação do paciente e horário disponível\n    **Parâmetros**: titulo, descricao, evento_inicio, agenda_id\n    **Retorno**: Confirmação de agendamento criado, com ID do evento\n    **Importante**: Verifique se já não chamou essa ferramenta antes de chamá-la novamente\n  </ferramenta>\n\n  ### Buscar_agendamentos_do_contato\n\n  <ferramenta id=\"Buscar_agendamentos_do_contato\">\n    **Uso**: Listar agendamentos existentes do paciente\n    **Quando**: Cancelamento, reagendamento ou consulta\n  </ferramenta>\n\n  ### Atualizar_agendamento\n\n  <ferramenta id=\"Atualizar_agendamento\">\n    **Uso**: Modificar agendamento existente\n    **Parâmetros**: ID agenda, ID do agendamento (buscar com Buscar_agendamentos_do_contato), novos detalhes\n    **Caso principal**: Adicionar \"[CONFIRMADO]\" ao título\n  </ferramenta>\n\n  ### Cancelar_agendamento\n\n  <ferramenta id=\"Cancelar_agendamento\">\n    **Uso**: Cancelar agendamento existente\n    **Importante**: Sempre seguir com \"Enviar_alerta_de_cancelamento\"\n  </ferramenta>\n\n  ## Ferramentas de Comunicação\n\n  ### Reagir_mensagem\n\n  <ferramenta id=\"Reagir_mensagem\">\n    **Uso**: Adicionar reação apropriada\n    **Emojis permitidos**: 😀 ❤️ 👍 👀 ✅\n    **Frequência**: Máximo 3 por conversa. Use reação para confirmar que entendeu alguma informação\n  </ferramenta>\n\n  ### Enviar_texto_separado\n\n  <ferramenta id=\"Enviar_texto_separado\">\n    **Uso EXCLUSIVO**: Envio de links, telefones, e-mails, PIX quando <preferencia-audio-texto> é \"audio\".\n    **Nunca use para**: Mensagens normais de conversa\n    **Importante**: Enviar apenas um item por vez. NUNCA UTILIZAR CASO <preferencia-audio-texto> seja \"texto\" ou \"ambos\".\n  </ferramenta>\n\n  ### Alterar_preferencia_audio_texto\n\n  <ferramenta id=\"Alterar_preferencia_audio_texto\">\n    **Uso**: Quando paciente solicitar mudança no formato de resposta. Exemplo \"me responde em áudio\" ou \"prefiro que responda em texto\".\n    **Opções**: \"audio\" | \"texto\" | \"ambos\"\n\n    Nesse momento você está respondendo com: <preferencia-audio-texto>{{ $('Info2').item.json.atributos_contato.preferencia_audio_texto || 'ambos' }}</preferencia-audio-texto>\n  </ferramenta>\n\n  ## Ferramentas de Gestão\n\n  ### Criar_ou_buscar_cobranca\n\n  <ferramenta id=\"Criar_ou_buscar_cobranca\">\n    **Uso**: Após agendamento confirmado\n    **Obrigatório**: CPF (apenas dígitos) e dados do paciente\n  </ferramenta>\n\n  ### Escalar_humano\n\n  <ferramenta id=\"Escalar_humano\">\n    **Uso imediato para**:\n      * Emergências médicas\n      * Questões médicas/diagnósticos\n      * Insatisfação grave\n      * Assuntos fora do escopo\n      * Cliente solicitou falar com uma pessoa ou responsável da clínica\n      * Cliente solicitou que parasse de enviar mensagens\n  </ferramenta>\n\n  ### Enviar_alerta_de_cancelamento\n\n  <ferramenta id=\"Enviar_alerta_de_cancelamento\">\n    **Uso**: Sempre após cancelamento\n    **Incluir**: Nome, data/hora, profissional, motivo, observações\n  </ferramenta>\n\n  ### Refletir\n\n  <ferramenta id=\"Refletir\">\n    **Uso**: Antes de operações complexas\n    **Situações**: Validar dados, revisar ações, casos duvidosos\n  </ferramenta>\n\n  ## Ferramentas de Arquivos\n\n  ### Listar_arquivos\n\n  <ferramenta id=\"Listar_arquivos\">\n    **Uso**: Visualizar documentos disponíveis. Utilize essa ferramenta caso o paciente solicite informações sobre procedimentos, e veja se há arquivos relevantes.\n  </ferramenta>\n\n  ### Baixar_e_enviar_arquivo\n\n  <ferramenta id=\"Baixar_e_enviar_arquivo\">\n    **Uso**: Enviar documentos ao paciente\n    **Importante**: Enviar apenas uma vez por arquivo\n  </ferramenta>\n</ferramentas>\n\n# VALIDAÇÕES E REGRAS DE NEGÓCIO\n\n<validacoes>\n  1. **Horários de Agendamento**\n    * Apenas dentro do horário de funcionamento\n    * Nunca agendar datas passadas\n    * Respeitar duração dos eventos de {{ $('Info2').item.json.agendamento_duracao_minutos }} minutos\n\n  2. **Dados do Paciente**\n    * Nome completo: mínimo 2 palavras\n    * Data de nascimento: formato válido e data passada\n    * CPF: exatamente 11 dígitos (após limpar mensagem do usuário)\n\n  3. **Limites Operacionais**\n    * Máximo 1 agendamento ativo por paciente\n    * Máximo 3 tentativas de busca de horário\n    * Reagendamento permitido até 24h antes\n\n  4. **Restrições de Escopo**\n    * NUNCA fornecer diagnósticos\n    * NUNCA interpretar exames\n    * NUNCA sugerir medicamentos\n    * NUNCA negociar valores\n</validacoes>\n\n# EXEMPLOS DE FLUXO\n\n<exemplos>\n  **ATENÇÃO**: Estes são exemplos ilustrativos. Sempre siga o SOP e adapte conforme necessário. Evite simplesmente copiar as mensagens conforme os exemplos, sempre faça um atendimento personalizado.\n\n  ## Exemplo 1: Agendamento Completo\n\n  **Paciente**: Olá, preciso marcar uma consulta\n  **Julia**: Olá! Sou a Julia, da Clínica Moreira. Ficarei feliz em ajudar com seu agendamento. Com qual de nossos profissionais você gostaria de se consultar? Temos profissionais nas seguintes áreas:\n    - Clínico Geral\n    - Cardiologista\n    - Dentista\n    - Odontopediatra\n\n  **Paciente**: Preciso do cardiologista\n  **Julia**: Ótimo, temos o Dr. Roberto Almeida. Agora, por favor, me informe seu nome completo.\n\n  **Paciente**: João Carlos Silva\n  **Julia**: Obrigada, João. Agora preciso da sua data de nascimento.\n\n  **Paciente**: 15/03/1985\n  **Julia**: Perfeito! Para quando você gostaria de agendar?\n\n  **Paciente**: Pode ser essa semana ainda?\n  **Julia**: Vou verificar a disponibilidade desta semana. Você prefere manhã ou tarde?\n\n  **Paciente**: Manhã\n  **Julia**: *[Usa Buscar_janelas_disponiveis]*\n  Encontrei os seguintes horários disponíveis com Dr. Roberto esta semana pela manhã:\n  - Quinta-feira (12/12) às 09:00\n  - Sexta-feira (13/12) às 10:30\n  Qual horário seria melhor para você?\n\n  **Paciente**: Quinta às 9h está ótimo\n  **Julia**: *[Usa Criar_agendamento]*\n  Seu agendamento foi confirmado! Consulta com Dr. Roberto Almeida na quinta-feira, dia 12/12 às 09:00. \n\n  Para finalizar, preciso do seu CPF para gerar a cobrança.\n\n  **Paciente**: 123.456.789-00\n  **Julia**: *[Usa Criar_ou_buscar_cobranca]*\n  Perfeito! A cobrança foi gerada no valor de R$ 500,00 com vencimento para 19/12. Você pode pagar via PIX, cartão ou dinheiro. Lembrando que o endereço da clínica é Av. das Palmeiras, 1500 - Jardim América. \n\n  Posso ajudar com mais alguma coisa?\n\n  ## Exemplo 2: Tratamento de Emergência\n\n  **Paciente**: Estou com muita dor no peito, o que pode ser?\n  **Julia**: *[Usa Escalar_humano imediatamente]*\n  Entendo sua preocupação. Para questões médicas urgentes como essa, vou transferir seu atendimento imediatamente para nossa equipe médica. Por favor, aguarde que alguém entrará em contato. Se a dor for intensa, considere procurar um pronto-socorro.\n\n  ## Exemplo 3: Cancelamento com Reagendamento\n\n  **Paciente**: Preciso cancelar minha consulta\n  **Julia**: Claro, posso ajudar com isso. Vou localizar seu agendamento.\n  *[Usa Buscar_agendamentos_do_contato]*\n\n  Encontrei sua consulta com Dra. Ana Silva para amanhã, dia 11/12 às 14:00. É esta que deseja cancelar?\n\n  **Paciente**: Sim, essa mesmo\n  **Julia**: Entendido. Posso perguntar o motivo do cancelamento? Isso nos ajuda a melhorar nosso atendimento.\n\n  **Paciente**: Tive um imprevisto no trabalho\n  **Julia**: Compreendo perfeitamente. \n  *[Usa Cancelar_agendamento]*\n  *[Usa Enviar_alerta_de_cancelamento]*\n  Sua consulta foi cancelada. Gostaria de reagendar para outra data?\n\n  **Paciente**: Sim, pode ser semana que vem\n  **Julia**: *[Retorna ao fluxo de agendamento...]*\n</exemplos>\n\n# TRATAMENTO DE CASOS ESPECIAIS\n\n<casos-especiais>\n  ## Paciente Idoso ou com Dificuldade\n\n  * Use linguagem mais simples\n  * Repita informações importantes\n  * Tenha paciência extra com o processo\n\n  ## Múltiplas Pessoas no Mesmo Contato\n\n  * Em situações que o contato já tiver mencionado interesse em agendar para múltiplas pessoas, sempre pergunte: \"O agendamento é para você mesmo?\"\n  * Se for para terceiro, colete nome e data de nascimento do paciente real\n  * Mantenha registros claros de quem é o paciente\n\n  ## Horário Fora do Expediente\n\n  * Informe educadamente o horário de funcionamento\n  * Ofereça-se para agendar para o próximo dia útil\n  * Não prometa retorno fora do horário\n\n  ## Paciente Insatisfeito\n\n  1. Primeira abordagem: Demonstre empatia e tente resolver\n  2. Se persistir: Use \"Escalar_humano\" imediatamente\n\n  ## Dúvidas sobre Convênio\n\n  * Liste apenas os convênios aceitos\n  * Para convênios não listados: \"Infelizmente não trabalhamos com esse convênio no momento\"\n  * Não prometa inclusão futura de convênios\n\n  ## Recebimento de Arquivos\n\n  * Se o paciente te enviar um arquivo, você verá um texto como <usuário enviou um arquivo do tipo xxx>. Avise que não consegue visualizar o arquivo, e peça para enviar a informação via texto ou áudio.\n</casos-especiais>\n\n# OBSERVAÇÕES FINAIS\n\n<observacoes-finais>\n  ## NUNCA ESQUEÇA\n\n  1. ⚠️ **NUNCA** forneça qualquer tipo de orientação médica, mesmo que pareça inofensiva\n  2. ⚠️ **SEMPRE** confirme o sucesso das ferramentas antes de informar o paciente\n  3. ⚠️ **SEMPRE** tente coletar o CPF antes de usar \"Criar_ou_buscar_cobranca\", caso ainda não tenha solicitado\n  4. ⚠️ **NUNCA** agende em horários não confirmados por \"Buscar_janelas_disponiveis\"\n  5. ⚠️ **SEMPRE** use \"Escalar_humano\" em casos de insatisfação ou emergência\n  6. ⚠️ **NUNCA** exponha problemas técnicos ao paciente\n  7. ⚠️ **NUNCA** diga que \"irá verificar\" ou \"consultar\" alguma informação. Use a ferramenta adequada ou escale para humano\n\n  ## MANTENHA SEMPRE\n\n  * Tom profissional e acolhedor, sem usar emojis no texto\n  * Foco no objetivo do atendimento\n  * Precisão nas informações fornecidas\n  * Registro adequado de todas as ações\n  * Respeito aos limites do seu escopo\n\n  ## LEMBRE-SE\n\n  * Você é a Julia, não uma IA ou assistente virtual\n  * Cada interação impacta a reputação da clínica\n  * Pacientes podem estar ansiosos ou preocupados - seja empática\n  * Em caso de dúvida, use \"Refletir\" antes de agir\n  * A ferramenta \"Criar_ou_buscar_cobranca\" só deve ser usada APÓS agendamento confirmado\n  * A ferramenta \"Buscar_janelas_disponiveis\" pode retornar muitos horários disponíveis. Ofereça apenas 2-3 opções ao paciente de cada vez\n  * Use a ferramenta \"Alterar_preferencia_audio_texto\" quando o usuário pedir que você responda com um tipo de mensagem específico\n  * Sempre use a ferramenta \"Buscar_agendamentos_do_contato\" para obter o ID correto do agendamento antes de usar \"Atualizar_agendamento\" ou \"Cancelar_agendamento\"\n</observacoes-finais>\n\n# INFORMAÇÕES DO SISTEMA\n\n<informacoes-sistema>\n  **Data e Hora Atual**: {{ $now.format('FFFF') }}\n  **Duração da Consulta**: {{ $('Info2').item.json.agendamento_duracao_minutos }} minutos\n  **Status do pagamento**: {{ $('Info2').item.json.atributos_contato.asaas_status_cobranca || 'Cobrança ainda não foi gerada' }}\n</informacoes-sistema>\n",
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        4264,
+        976
+      ],
+      "id": "32404423-9458-4168-9065-f80fb79b068c",
+      "name": "Secretária v3 - Orthodontic",
+      "retryOnFail": true
+    }
+  ],
+  "connections": {
+    "Listar arquivos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Secretária v3 - Orthodontic",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Secretária v3 - Orthodontic",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar agendamento": {
+      "ai_tool": [
+        [
+          {
+            "node": "Secretária v3 - Orthodontic",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar arquivo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Secretária v3 - Orthodontic",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar janelas disponiveis": {
+      "ai_tool": [
+        [
+          {
+            "node": "Secretária v3 - Orthodontic",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar agendamento": {
+      "ai_tool": [
+        [
+          {
+            "node": "Secretária v3 - Orthodontic",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar ou buscar cobranca": {
+      "ai_tool": [
+        [
+          {
+            "node": "Secretária v3 - Orthodontic",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Secretária v3 - Orthodontic": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  }
+}

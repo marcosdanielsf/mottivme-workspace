@@ -1,0 +1,169 @@
+{
+  "name": "DEBUG - Token Tracker com Logs",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# DEBUG - Token Tracker\n\nEsta versao inclui logs detalhados\npara identificar onde os tokens estao.\n\nExecute e verifique o console do n8n.",
+        "height": 200,
+        "width": 300,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-100, 0],
+      "id": "note-debug-001",
+      "name": "Debug Info"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [100, 200],
+      "id": "trigger-debug-001",
+      "name": "Trigger Manual"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    location_id: 'loc_debug_123',\n    location_name: 'Debug Test',\n    contact_id: 'cont_debug_456',\n    contact_name: 'Debug User',\n    canal: 'whatsapp',\n    tipo_acao: 'debug_test',\n    historico_mensagens: 'Teste de debug para verificar tokens'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [300, 200],
+      "id": "contexto-debug-001",
+      "name": "Contexto Debug"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Diga apenas: Oi, tudo bem?",
+        "options": {
+          "systemMessage": "Responda de forma muito curta."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [700, 200],
+      "id": "agent-debug-001",
+      "name": "Agent Debug"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [500, 500],
+      "id": "gemini-debug-001",
+      "name": "Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "4ut0CD80SN7lbITM",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "code": {
+          "supplyData": {
+            "code": "// ========================================\n// DEBUG VERSION - TOKEN TRACKER\n// ========================================\n\nconst SUPABASE_URL = 'https://bfumywvwubvernvhjehk.supabase.co/rest/v1/n8n_custos_execucao';\nconst SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao';\n\nconst PRECOS = {\n  'gemini-2.0-flash': { input: 0.10, output: 0.40 },\n  'models/gemini-2.0-flash': { input: 0.10, output: 0.40 },\n  'default': { input: 0.10, output: 0.40 }\n};\n\nfunction calcularCusto(modelo, tokensInput, tokensOutput) {\n  const preco = PRECOS[modelo] || PRECOS['default'];\n  return parseFloat(((tokensInput / 1000000) * preco.input + (tokensOutput / 1000000) * preco.output).toFixed(8));\n}\n\n// Pega LLM\nconst llm = await this.getInputConnectionData('ai_languageModel', 0);\n\nconsole.log('=== DEBUG: LLM Object ===');\nconsole.log('LLM keys:', Object.keys(llm));\nconsole.log('LLM modelName:', llm.modelName);\nconsole.log('LLM model:', llm.model);\n\nconst workflowId = $workflow.id;\nconst workflowName = $workflow.name;\nconst executionId = $execution.id;\n\n// Contexto\nlet contextData = {\n  location_id: '',\n  contact_id: '',\n  contact_name: '',\n  canal: 'whatsapp',\n  tipo_acao: 'debug_test'\n};\n\ntry {\n  const ctx = $('Contexto Debug').first()?.json;\n  if (ctx) {\n    contextData.location_id = ctx.location_id || '';\n    contextData.contact_id = ctx.contact_id || '';\n    contextData.contact_name = ctx.contact_name || '';\n  }\n} catch(e) {}\n\n// Armazena dados para output\nlet capturedData = null;\n\n// Callback\nconst originalCallbacks = llm.callbacks || [];\n\nllm.callbacks = [\n  ...originalCallbacks,\n  {\n    handleLLMStart: async (llmInstance, prompts) => {\n      console.log('=== DEBUG: handleLLMStart ===');\n      console.log('Prompts:', JSON.stringify(prompts).substring(0, 200));\n    },\n    handleLLMEnd: async (output, runId) => {\n      console.log('=== DEBUG: handleLLMEnd CHAMADO ===');\n      console.log('Output keys:', Object.keys(output));\n      console.log('Full output:', JSON.stringify(output).substring(0, 2000));\n      \n      try {\n        const generations = output.generations;\n        console.log('Generations:', JSON.stringify(generations).substring(0, 1000));\n        \n        if (generations && generations[0] && generations[0][0]) {\n          const gen = generations[0][0];\n          console.log('Generation keys:', Object.keys(gen));\n          console.log('Generation.message:', JSON.stringify(gen.message).substring(0, 500));\n          console.log('Generation.generationInfo:', JSON.stringify(gen.generationInfo).substring(0, 500));\n          \n          // Tenta varios caminhos para usage\n          let usage = null;\n          \n          if (gen.message?.usage_metadata) {\n            usage = gen.message.usage_metadata;\n            console.log('Found usage in: message.usage_metadata');\n          } else if (gen.generationInfo?.usage_metadata) {\n            usage = gen.generationInfo.usage_metadata;\n            console.log('Found usage in: generationInfo.usage_metadata');\n          } else if (gen.message?.response_metadata?.usage) {\n            usage = gen.message.response_metadata.usage;\n            console.log('Found usage in: message.response_metadata.usage');\n          } else if (output.llmOutput?.usage) {\n            usage = output.llmOutput.usage;\n            console.log('Found usage in: llmOutput.usage');\n          } else if (output.llmOutput?.tokenUsage) {\n            usage = output.llmOutput.tokenUsage;\n            console.log('Found usage in: llmOutput.tokenUsage');\n          }\n          \n          console.log('Usage found:', JSON.stringify(usage));\n          \n          if (usage) {\n            const tokensInput = usage.input_tokens || usage.prompt_tokens || usage.promptTokens || 0;\n            const tokensOutput = usage.output_tokens || usage.completion_tokens || usage.completionTokens || 0;\n            const modelo = llm.modelName || llm.model || 'unknown';\n            const custoUsd = calcularCusto(modelo, tokensInput, tokensOutput);\n            const mensagemSaida = (gen.text || gen.message?.content || '').substring(0, 500);\n            \n            console.log('Tokens Input:', tokensInput);\n            console.log('Tokens Output:', tokensOutput);\n            console.log('Modelo:', modelo);\n            console.log('Custo USD:', custoUsd);\n            \n            capturedData = {\n              tokens_input: tokensInput,\n              tokens_output: tokensOutput,\n              modelo: modelo,\n              custo_usd: custoUsd\n            };\n            \n            // Envia para Supabase\n            const payload = {\n              workflow_id: workflowId,\n              workflow_name: workflowName,\n              execution_id: executionId,\n              location_id: contextData.location_id,\n              location_name: '',\n              contact_id: contextData.contact_id,\n              contact_name: contextData.contact_name,\n              canal: contextData.canal,\n              tipo_acao: contextData.tipo_acao,\n              modelo_ia: modelo,\n              tokens_input: tokensInput,\n              tokens_output: tokensOutput,\n              custo_usd: custoUsd,\n              mensagem_entrada: 'debug test',\n              mensagem_saida: mensagemSaida\n            };\n            \n            console.log('Payload para Supabase:', JSON.stringify(payload));\n            \n            const response = await fetch(SUPABASE_URL, {\n              method: 'POST',\n              headers: {\n                'apikey': SUPABASE_KEY,\n                'Authorization': `Bearer ${SUPABASE_KEY}`,\n                'Content-Type': 'application/json',\n                'Prefer': 'return=minimal'\n              },\n              body: JSON.stringify(payload)\n            });\n            \n            console.log('Supabase response status:', response.status);\n            if (!response.ok) {\n              const errorText = await response.text();\n              console.log('Supabase error:', errorText);\n            } else {\n              console.log('=== SUCESSO: Dados enviados ao Supabase ===');\n            }\n          } else {\n            console.log('=== ERRO: Nenhum usage encontrado ===');\n          }\n        }\n      } catch (err) {\n        console.log('=== ERRO no callback ===');\n        console.log('Error:', err.message);\n        console.log('Stack:', err.stack);\n      }\n    },\n    handleLLMError: async (err) => {\n      console.log('=== DEBUG: handleLLMError ===');\n      console.log('Error:', err.message);\n    }\n  }\n];\n\nconsole.log('=== DEBUG: Callbacks configurados, retornando LLM ===');\nreturn llm;"
+          }
+        },
+        "inputs": {
+          "input": [
+            {
+              "type": "ai_languageModel",
+              "required": true,
+              "maxConnections": 1
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "type": "ai_languageModel"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.code",
+      "typeVersion": 1,
+      "position": [500, 350],
+      "id": "tracker-debug-001",
+      "name": "Token Tracker DEBUG"
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentOutput = $input.first().json;\n\nreturn {\n  json: {\n    resposta: agentOutput.output || agentOutput.text || 'Sem resposta',\n    instrucao: 'Verifique os LOGS do n8n (container logs ou painel de execucao) para ver os debugs'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 200],
+      "id": "resultado-debug-001",
+      "name": "Ver Resultado"
+    }
+  ],
+  "connections": {
+    "Trigger Manual": {
+      "main": [
+        [
+          {
+            "node": "Contexto Debug",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contexto Debug": {
+      "main": [
+        [
+          {
+            "node": "Agent Debug",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent Debug": {
+      "main": [
+        [
+          {
+            "node": "Ver Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Token Tracker DEBUG",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Tracker DEBUG": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent Debug",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {}
+}

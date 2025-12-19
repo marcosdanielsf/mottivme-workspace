@@ -1,0 +1,26 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🏢 SUBCONTA CENTRAL MOTTIVME (GHL)\n\n### CREDENCIAIS GHL:\n```\nlocation_id: cd1uyzpJox6XPt4Vct8Y\nghl_api_key: pit-fe627027-b9cb-4ea3-aaa4-149459e66a03\n```\n\n### URL PATTERN (ACESSO DIRETO AO CONTATO):\n```\nhttps://app.socialfy.me/v2/location/cd1uyzpJox6XPt4Vct8Y/contacts/detail/{CONTACT_ID}\n```\n\n---\n\n### 📍 CONTACT IDs IMPORTANTES:\n\n| Grupo | Contact ID | Uso |\n|-------|------------|-----|\n| **Marcos Daniel (Admin Master)** | `oaVXSzAd30bm5Mf2nMDW` | Notificações URGENTES/extremas |\n| **Financeiro BPOSS** | `vUejYndMsxxnyGKO77JC` | Contratos, ADM/Financeiro, Agente Financeiro IA |\n| **Gestão SDR** | `skfa6JP6lLlAXkc8FfIp` | Erros da IA SDR |\n| **Agendamentos** | `XdsVZ9Fx0dzToMPinO2r` | Notificações de reuniões agendadas |\n| **Automações/IA** | `Ql1qBRN8GTemuG0BlM0F` | Erros de automações |\n\n---\n\n### 🔗 LINKS DIRETOS GHL:\n- **Marcos:** https://app.socialfy.me/v2/location/cd1uyzpJox6XPt4Vct8Y/contacts/detail/oaVXSzAd30bm5Mf2nMDW\n- **Financeiro:** https://app.socialfy.me/v2/location/cd1uyzpJox6XPt4Vct8Y/contacts/detail/vUejYndMsxxnyGKO77JC\n- **Gestão SDR:** https://app.socialfy.me/v2/location/cd1uyzpJox6XPt4Vct8Y/contacts/detail/skfa6JP6lLlAXkc8FfIp\n- **Agendamentos:** https://app.socialfy.me/v2/location/cd1uyzpJox6XPt4Vct8Y/contacts/detail/XdsVZ9Fx0dzToMPinO2r\n- **Automações:** https://app.socialfy.me/v2/location/cd1uyzpJox6XPt4Vct8Y/contacts/detail/Ql1qBRN8GTemuG0BlM0F\n\n---\n\n### 📞 ADMIN:\n```\nTelefone Marcos: (11) 93618-0422\n```\n\n---\n\n## 🗄️ SUPABASE - FINANCEIRO (financeiro@mottivme.com.br)\n\n**Project:** xbqxivqzetaoptuyykmx\n**URL:** https://xbqxivqzetaoptuyykmx.supabase.co\n**Dashboard:** https://supabase.com/dashboard/project/xbqxivqzetaoptuyykmx/editor\n\n```\nanon_public: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhicXhpdnF6ZXRhb3B0dXl5a214Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1MjYxMTgsImV4cCI6MjA4MDEwMjExOH0.Hj7FdicrzoouNSQ0sZwdnSsNIzUGvfuNG8ZYmlKhTNY\n\nservice_role: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhicXhpdnF6ZXRhb3B0dXl5a214Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDUyNjExOCwiZXhwIjoyMDgwMTAyMTE4fQ.ayQwT-p5L84AXaKYWe_bHUjmwSRjdKsFfKohlLEVmVU\n\npublishable_key: sb_publishable_l_yrn6_Eh9gMOjc_1uU6hw_aZ7aC5yn\n```\n\n---\n\n## 🗄️ SUPABASE - CEO (ceo@marcosdaniels.com)\n\n**Project:** bfumywvwubvernvhjehk\n**URL:** https://bfumywvwubvernvhjehk.supabase.co\n\n```\nanon_public: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao\n\nservice_role: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTQwMzc5OSwiZXhwIjoyMDY2OTc5Nzk5fQ.fdTsdGlSqemXzrXEU4ov1SUpeDn_3bSjOingqkSAWQE\n\npublishable_key: sb_publishable_ylzvo1zjCGKWEvuT9DQpfQ_CxpndhLP\nsecret_key: sb_secret_riE3tdH9MO67Q2yasXMdYQ_XAd5y4kS\n```\n\n---\n\n### ⚠️ USO EM FLUXOS DE ERRO:\nLink direto da conversa do lead:\n```\nhttps://app.socialfy.me/v2/location/cd1uyzpJox6XPt4Vct8Y/contacts/detail/{{ $json.contactId }}\n```",
+        "height": 1912,
+        "width": 750,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        -3024
+      ],
+      "typeVersion": 1,
+      "id": "83405849-0d45-46ff-aded-be9c488cdae5",
+      "name": "📌 Subconta Central MOTTIVME + Supabase"
+    }
+  ],
+  "connections": {},
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  }
+}

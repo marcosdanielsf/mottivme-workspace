@@ -1,0 +1,511 @@
+{
+  "name": "COPILOT - WhatsApp CEO Interface",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "copilot/message",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-message",
+      "name": "Webhook - Mensagem Recebida",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [220, 300],
+      "webhookId": "copilot-message"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrai dados da mensagem do GHL\nconst body = $input.first().json.body || $input.first().json;\n\nconst contactId = body.contactId || body.contact_id;\nconst message = body.message || body.body || '';\nconst contactName = body.contactName || body.contact_name || 'CEO';\nconst contactPhone = body.phone || body.contactPhone;\n\n// Detecta comando\nlet comando = 'copilot'; // default\nlet conteudo = message;\n\nconst comandos = ['copilot', 'spec', 'ideia', 'priorizar', 'status', 'bug', 'delegar', 'brainstorm'];\n\nfor (const cmd of comandos) {\n  if (message.toLowerCase().startsWith('/' + cmd)) {\n    comando = cmd;\n    conteudo = message.substring(cmd.length + 2).trim(); // remove /comando \n    break;\n  }\n}\n\n// Verifica se e o CEO (Marcos)\nconst isCEO = contactPhone?.includes('NUMERO_MARCOS') || \n              contactName?.toLowerCase().includes('marcos') ||\n              contactId === 'CEO_CONTACT_ID';\n\nreturn {\n  contact_id: contactId,\n  contact_name: contactName,\n  contact_phone: contactPhone,\n  message_original: message,\n  comando: comando,\n  conteudo: conteudo,\n  is_ceo: isCEO,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "parse-message",
+      "name": "Parsear Mensagem",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-ceo",
+              "leftValue": "={{ $json.is_ceo }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-authorization",
+      "name": "E o CEO?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM copilot_memory WHERE tipo IN ('conversa', 'decisao', 'contexto') ORDER BY created_at DESC LIMIT 10",
+        "options": {}
+      },
+      "id": "get-memory",
+      "name": "Buscar Memoria Recente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [880, 200],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT br.codigo, br.titulo, br.severidade, br.status \nFROM bug_reports br \nWHERE br.status NOT IN ('resolvido', 'nao_reproduzivel', 'wont_fix') \nORDER BY \n  CASE br.severidade \n    WHEN 'critica' THEN 1 \n    WHEN 'alta' THEN 2 \n    WHEN 'media' THEN 3 \n    WHEN 'baixa' THEN 4 \n  END \nLIMIT 5",
+        "options": {}
+      },
+      "id": "get-bugs",
+      "name": "Buscar Bugs Pendentes",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [880, 350],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COUNT(*) as total, \n       SUM(CASE WHEN status IN ('pendente', 'em_andamento') AND data_limite < CURRENT_DATE THEN 1 ELSE 0 END) as atrasadas\nFROM team_tasks",
+        "options": {}
+      },
+      "id": "get-tasks-summary",
+      "name": "Resumo Tarefas Time",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [880, 500],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Junta contexto para o LLM\nconst messageData = $('Parsear Mensagem').first().json;\nconst memoria = $('Buscar Memoria Recente').all().map(m => m.json);\nconst bugs = $('Buscar Bugs Pendentes').all().map(b => b.json);\nconst tasksSummary = $('Resumo Tarefas Time').first().json;\n\n// Formata alertas\nlet alertas = [];\n\nif (bugs.length > 0) {\n  const bugsCriticos = bugs.filter(b => b.severidade === 'critica');\n  if (bugsCriticos.length > 0) {\n    alertas.push(`⚠️ ${bugsCriticos.length} bug(s) CRITICO(s) aberto(s)`);\n  }\n  alertas.push(`🐛 ${bugs.length} bug(s) pendente(s) no total`);\n}\n\nif (tasksSummary.atrasadas > 0) {\n  alertas.push(`⏰ ${tasksSummary.atrasadas} tarefa(s) atrasada(s) do time`);\n}\n\n// Formata memoria para contexto\nconst memoriaFormatada = memoria.map(m => \n  `[${m.tipo}] ${m.topico || ''}: ${m.conteudo?.substring(0, 200) || ''}`\n).join('\\n');\n\nreturn {\n  ...messageData,\n  contexto: {\n    alertas: alertas,\n    bugs_pendentes: bugs,\n    tarefas_atrasadas: tasksSummary.atrasadas,\n    memoria_recente: memoriaFormatada\n  }\n};"
+      },
+      "id": "build-context",
+      "name": "Montar Contexto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 350]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-bug",
+              "leftValue": "={{ $json.comando }}",
+              "rightValue": "bug",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "route-bug",
+      "name": "Comando /bug?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1320, 350]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO bug_reports (titulo, descricao, sistema_afetado, reportado_por, severidade, status)\nVALUES (\n  '{{ $json.conteudo.split(\" \").slice(0, 5).join(\" \") }}...',\n  '{{ $json.conteudo }}',\n  'A identificar',\n  'Marcos (via Copilot)',\n  'media',\n  'novo'\n) RETURNING codigo",
+        "options": {}
+      },
+      "id": "create-bug",
+      "name": "Criar Bug Report",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [1540, 200],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const bugCode = $input.first().json.codigo;\nconst originalData = $('Montar Contexto').first().json;\n\nreturn {\n  resposta: `Bug registrado!\\n\\nID: ${bugCode}\\nDescricao: ${originalData.conteudo}\\nSeveridade: Media (ajuste se necessario)\\nStatus: Novo\\n\\nEncaminhado para Context Engineer analisar.`,\n  tipo: 'bug_registered'\n};"
+      },
+      "id": "format-bug-response",
+      "name": "Formatar Resposta Bug",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1760, 200]
+    },
+    {
+      "parameters": {
+        "model": "claude-3-5-sonnet-20241022",
+        "options": {
+          "systemMessage": "={{ $('Montar Contexto').first().json.contexto.alertas.length > 0 ? 'ALERTAS: ' + $('Montar Contexto').first().json.contexto.alertas.join(', ') + '\\n\\n' : '' }}Voce e o Copilot Mottivme - assistente pessoal do Marcos Daniels, CEO da Mottivme Sales.\n\nSeu perfil: Dominante + Influente. Prefere comunicacao DIRETA, sem enrolacao.\n\nCOMANDO RECEBIDO: /{{ $json.comando }}\n\nCONTEXTO ATUAL:\n- Bugs pendentes: {{ $('Montar Contexto').first().json.contexto.bugs_pendentes.length }}\n- Tarefas atrasadas: {{ $('Montar Contexto').first().json.contexto.tarefas_atrasadas }}\n\nMEMORIA RECENTE:\n{{ $('Montar Contexto').first().json.contexto.memoria_recente }}\n\nREGRAS:\n1. Seja DIRETO - nada de \"certamente\", \"com prazer\"\n2. Use listas e bullet points\n3. Sempre termine com proxima acao\n4. Se ideia for ruim, diga\n5. Foque em resultado\n\nPRODUTOS MOTTIVME:\n- Foundation Sprint: $9.997 (estruturacao 30 dias)\n- Demand Stack: $4.997/mes (trafego + SDR + conteudo)\n- Show-Rate Machine: $1.997/mes (garantia 70%+ show-rate)\n- Creative Engine: $2.997/mes (conteudo)\n- Revenue Partner: $12.997/mes (full service)\n\nTIME:\n- Allesson: BDR Supervisor (Influente)\n- Isabella: SDR (Estavel)\n- Arthur: Gestor Trafego (Conforme)\n- Maria: Social Media (Influente)\n- Hallen: Admin/Financeiro (Estavel)\n- Lucas: BDR (Dominante)\n\nResponda de forma concisa e acionavel.",
+          "maxTokensToSample": 1500,
+          "temperature": 0.3
+        }
+      },
+      "id": "llm-copilot",
+      "name": "Copilot LLM",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.2,
+      "position": [1540, 500],
+      "credentials": {
+        "anthropicApi": {
+          "id": "anthropic-credentials",
+          "name": "Anthropic API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Montar Contexto').first().json.conteudo }}"
+      },
+      "id": "ai-agent",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [1540, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Junta resposta do LLM ou do bug\nconst messageData = $('Montar Contexto').first().json;\nlet resposta;\n\n// Verifica se veio do bug ou do LLM\nif ($('Formatar Resposta Bug').first()?.json?.resposta) {\n  resposta = $('Formatar Resposta Bug').first().json.resposta;\n} else {\n  resposta = $input.first().json.text || $input.first().json.output || 'Erro ao processar';\n}\n\nreturn {\n  contact_id: messageData.contact_id,\n  resposta: resposta,\n  comando: messageData.comando,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "prepare-response",
+      "name": "Preparar Resposta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1980, 350]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO copilot_memory (tipo, topico, conteudo, tags)\nVALUES (\n  'conversa',\n  '{{ $json.comando }}',\n  '{{ $('Montar Contexto').first().json.conteudo }}',\n  ARRAY['{{ $json.comando }}', 'whatsapp']\n)",
+        "options": {}
+      },
+      "id": "save-memory",
+      "name": "Salvar na Memoria",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.3,
+      "position": [2200, 350],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-credentials",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.GHL_API_KEY }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $json.contact_id }}\",\n  \"message\": \"{{ $json.resposta }}\"\n}"
+      },
+      "id": "send-response-ghl",
+      "name": "Enviar Resposta GHL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2420, 350]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Resposta enviada\"\n}",
+        "options": {}
+      },
+      "id": "response-success",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [2640, 350]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.GHL_API_KEY }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $json.contact_id }}\",\n  \"message\": \"Acesso nao autorizado. Este Copilot e exclusivo do CEO.\"\n}"
+      },
+      "id": "unauthorized-response",
+      "name": "Resposta Nao Autorizado",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [880, 500]
+    }
+  ],
+  "connections": {
+    "Webhook - Mensagem Recebida": {
+      "main": [
+        [
+          {
+            "node": "Parsear Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Mensagem": {
+      "main": [
+        [
+          {
+            "node": "E o CEO?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "E o CEO?": {
+      "main": [
+        [
+          {
+            "node": "Buscar Memoria Recente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Buscar Bugs Pendentes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Resumo Tarefas Time",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resposta Nao Autorizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Memoria Recente": {
+      "main": [
+        [
+          {
+            "node": "Montar Contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Bugs Pendentes": {
+      "main": [
+        [
+          {
+            "node": "Montar Contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resumo Tarefas Time": {
+      "main": [
+        [
+          {
+            "node": "Montar Contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Contexto": {
+      "main": [
+        [
+          {
+            "node": "Comando /bug?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comando /bug?": {
+      "main": [
+        [
+          {
+            "node": "Criar Bug Report",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Bug Report": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta Bug",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Resposta Bug": {
+      "main": [
+        [
+          {
+            "node": "Preparar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Preparar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Resposta": {
+      "main": [
+        [
+          {
+            "node": "Salvar na Memoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar na Memoria": {
+      "main": [
+        [
+          {
+            "node": "Enviar Resposta GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Resposta GHL": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "name": "copilot"
+    },
+    {
+      "name": "mottivme"
+    },
+    {
+      "name": "ceo"
+    }
+  ]
+}

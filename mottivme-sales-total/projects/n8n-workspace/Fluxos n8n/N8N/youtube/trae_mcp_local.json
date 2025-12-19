@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "monday-api-mcp": {
+      "command": "npx",
+      "args": [
+        "@mondaydotcomorg/monday-api-mcp",
+        "-t",
+        "${MONDAY_API_TOKEN}"
+      ],
+      "env": {
+        "MONDAY_API_TOKEN": "REPLACE_WITH_YOUR_TOKEN"
+      }
+    }
+  }
+}

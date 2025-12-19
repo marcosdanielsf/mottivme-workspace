@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Extraordinário Aguarda</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-void: #000000;
+            --bg-deep: #050508;
+            --bg-surface: #0a0a0f;
+            --gold-dark: #8B7355;
+            --gold: #C9A962;
+            --gold-light: #E8D5A3;
+            --gold-glow: #FFD700;
+            --blue-electric: #4A9EFF;
+            --purple-mystic: #8B5CF6;
+            --red-danger: #EF4444;
+            --green-success: #22C55E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #71717A;
+            --text-muted: #3F3F46;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-void);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+            transition: transform 0.1s ease, border-color 0.3s ease;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+        }
+
+        .cursor.hover {
+            transform: scale(2);
+            border-color: var(--gold-light);
+        }
+
+        /* Noise Overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Phase 0: Initial Black Screen with Typewriter */
+        #phase-0 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-void);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            flex-direction: column;
+        }
+
+        .typewriter-container {
+            text-align: center;
+            max-width: 800px;
+            padding: 40px;
+        }
+
+        .typewriter {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            color: var(--gold);
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .typewriter-line {
+            display: block;
+            margin: 8px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid var(--gold);
+            animation: typing 2s steps(40) forwards, blink 0.7s infinite;
+        }
+
+        .typewriter-line:nth-child(1) { animation-delay: 0s, 0s; width: 0; animation: typing 1.5s steps(30) 0.5s forwards, blink 0.7s infinite; }
+        .typewriter-line:nth-child(2) { animation-delay: 2s, 0s; opacity: 0; animation: fadeIn 0.5s 2s forwards; }
+        .typewriter-line:nth-child(3) { animation-delay: 3s, 0s; opacity: 0; animation: fadeIn 0.5s 3s forwards; }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .warning-text {
+            font-size: 12px;
+            color: var(--red-danger);
+            margin-top: 40px;
+            opacity: 0;
+            animation: pulse 2s ease-in-out infinite, fadeIn 1s 4s forwards;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .enter-btn {
+            margin-top: 60px;
+            padding: 20px 60px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            opacity: 0;
+            animation: fadeIn 1s 5s forwards;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .enter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .enter-btn:hover::before {
+            left: 100%;
+        }
+
+        .enter-btn:hover {
+            background: var(--gold);
+            color: var(--bg-void);
+            box-shadow: 0 0 40px rgba(201, 169, 98, 0.4);
+        }
+
+        /* Phase 1: Warning Screen */
+        #phase-1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-void);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        .warning-container {
+            text-align: center;
+            max-width: 700px;
+            padding: 40px;
+        }
+
+        .warning-icon {
+            font-size: 80px;
+            margin-bottom: 40px;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
+            92% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
+            94% { transform: translate(2px, -2px); filter: hue-rotate(180deg); }
+            96% { transform: translate(-2px, -2px); filter: hue-rotate(270deg); }
+            98% { transform: translate(2px, 2px); filter: hue-rotate(360deg); }
+        }
+
+        .warning-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            font-weight: 400;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--red-danger) 0%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .warning-message {
+            font-size: 18px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .warning-message strong {
+            color: var(--gold);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            cursor: pointer;
+        }
+
+        .custom-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--gold);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .custom-checkbox.checked {
+            background: var(--gold);
+        }
+
+        .custom-checkbox.checked::after {
+            content: '✓';
+            color: var(--bg-void);
+            font-weight: bold;
+        }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .proceed-btn {
+            padding: 20px 80px;
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+            border: none;
+            color: var(--bg-void);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            opacity: 0.3;
+            pointer-events: none;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .proceed-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .proceed-btn.active:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(201, 169, 98, 0.4);
+        }
+
+        /* Phase 2: Evolution Animation */
+        #phase-2 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-void);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            overflow: hidden;
+        }
+
+        .evolution-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(201, 169, 98, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(74, 158, 255, 0.1) 0%, transparent 50%);
+            animation: breathe 8s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .evolution-container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 1200px;
+            padding: 40px;
+        }
+
+        .evolution-header {
+            margin-bottom: 80px;
+        }
+
+        .evolution-subtitle {
+            font-size: 14px;
+            color: var(--gold);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: slideDown 1s ease forwards;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .evolution-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 56px;
+            font-weight: 400;
+            line-height: 1.2;
+            opacity: 0;
+            animation: slideDown 1s 0.3s ease forwards;
+        }
+
+        .evolution-title span {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin: 80px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--text-muted);
+            transform: translateY(-50%);
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+            animation: progressLine 3s ease-out 1s forwards;
+        }
+
+        @keyframes progressLine {
+            to { width: 100%; }
+        }
+
+        .timeline-stage {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .timeline-stage.animate {
+            animation: stageReveal 0.8s ease forwards;
+        }
+
+        @keyframes stageReveal {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stage-dot {
+            width: 60px;
+            height: 60px;
+            background: var(--bg-void);
+            border: 3px solid var(--text-muted);
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.5s ease;
+        }
+
+        .timeline-stage.active .stage-dot {
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(201, 169, 98, 0.5);
+            transform: scale(1.1);
+        }
+
+        .stage-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .timeline-stage.active .stage-label {
+            color: var(--gold);
+        }
+
+        .stage-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            transition: color 0.5s ease;
+        }
+
+        .timeline-stage.active .stage-title {
+            color: var(--text-primary);
+        }
+
+        .stage-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: color 0.5s ease;
+        }
+
+        .timeline-stage.active .stage-value {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .evolution-cta {
+            margin-top: 80px;
+            opacity: 0;
+            animation: fadeIn 1s 4s forwards;
+        }
+
+        .evolution-btn {
+            padding: 24px 80px;
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .evolution-btn:hover {
+            background: var(--gold);
+            color: var(--bg-void);
+            box-shadow: 0 0 60px rgba(201, 169, 98, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* Phase 3: Invitation */
+        #phase-3 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-void);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9997;
+        }
+
+        .invitation-container {
+            max-width: 800px;
+            padding: 60px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(201, 169, 98, 0.03) 0%, rgba(201, 169, 98, 0.01) 100%);
+            border: 1px solid rgba(201, 169, 98, 0.2);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .invitation-container::before,
+        .invitation-container::after {
+            content: '✦';
+            position: absolute;
+            font-size: 24px;
+            color: var(--gold);
+            opacity: 0.5;
+        }
+
+        .invitation-container::before {
+            top: 20px;
+            left: 20px;
+        }
+
+        .invitation-container::after {
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .invitation-badge {
+            display: inline-block;
+            padding: 8px 24px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .invitation-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 400;
+            margin-bottom: 40px;
+            line-height: 1.3;
+        }
+
+        .invitation-names {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-style: italic;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+        }
+
+        .invitation-message {
+            font-size: 18px;
+            color: var(--text-secondary);
+            line-height: 2;
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .invitation-message strong {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        /* Login Form */
+        .login-section {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border-radius: 4px;
+            margin-top: 40px;
+        }
+
+        .login-title {
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(201, 169, 98, 0.2);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(201, 169, 98, 0.05);
+            box-shadow: 0 0 20px rgba(201, 169, 98, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .unlock-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+            border: none;
+            color: var(--bg-void);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .unlock-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(201, 169, 98, 0.4);
+        }
+
+        .error-message {
+            color: var(--red-danger);
+            font-size: 13px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .expiry-notice {
+            margin-top: 30px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .expiry-notice span {
+            color: var(--red-danger);
+        }
+
+        /* Audio Control */
+        .audio-control {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(201, 169, 98, 0.1);
+            border: 1px solid rgba(201, 169, 98, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10001;
+            transition: all 0.3s ease;
+        }
+
+        .audio-control:hover {
+            background: rgba(201, 169, 98, 0.2);
+            transform: scale(1.1);
+        }
+
+        .audio-icon {
+            font-size: 18px;
+        }
+
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+            50% { transform: translateY(-100px) translateX(50px); opacity: 0.8; }
+        }
+
+        /* Loading overlay for transition */
+        .transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-void);
+            z-index: 99998;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .transition-overlay.active {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .typewriter {
+                font-size: 14px;
+            }
+
+            .warning-title,
+            .evolution-title,
+            .invitation-title {
+                font-size: 32px;
+            }
+
+            .timeline {
+                flex-direction: column;
+                gap: 60px;
+            }
+
+            .timeline-line {
+                display: none;
+            }
+
+            .invitation-container {
+                padding: 40px 20px;
+                margin: 20px;
+            }
+
+            .cursor,
+            .cursor-dot {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+
+    <!-- Noise Overlay -->
+    <div class="noise"></div>
+
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Transition Overlay -->
+    <div class="transition-overlay" id="transition-overlay"></div>
+
+    <!-- Phase 0: Initial Screen -->
+    <div id="phase-0">
+        <div class="typewriter-container">
+            <div class="typewriter">
+                <span class="typewriter-line">INICIANDO PROTOCOLO DE ACESSO...</span>
+                <span class="typewriter-line" style="color: var(--text-muted);">Verificando credenciais...</span>
+                <span class="typewriter-line" style="color: var(--text-muted);">Usuário identificado.</span>
+            </div>
+            <div class="warning-text">⚠️ ESTE CONTEÚDO É CONFIDENCIAL</div>
+            <button class="enter-btn" onclick="goToPhase1()">
+                INICIAR EXPERIÊNCIA
+            </button>
+        </div>
+    </div>
+
+    <!-- Phase 1: Warning Screen -->
+    <div id="phase-1">
+        <div class="warning-container">
+            <div class="warning-icon">⚠️</div>
+            <h1 class="warning-title">ATENÇÃO</h1>
+            <p class="warning-message">
+                O que você está prestes a acessar <strong>NÃO</strong> é uma proposta comercial comum.<br><br>
+                É uma <strong>experiência imersiva</strong> projetada exclusivamente para você.<br><br>
+                Recomendamos:<br>
+                • <strong>Fones de ouvido</strong> (há elementos de áudio)<br>
+                • <strong>10-15 minutos</strong> sem interrupções<br>
+                • <strong>Mente aberta</strong> para o extraordinário
+            </p>
+            <div class="checkbox-container" onclick="toggleCheckbox()">
+                <div class="custom-checkbox" id="checkbox"></div>
+                <span class="checkbox-label">Entendo e estou preparado(a) para continuar</span>
+            </div>
+            <button class="proceed-btn" id="proceed-btn" onclick="goToPhase2()">
+                PROSSEGUIR
+            </button>
+        </div>
+    </div>
+
+    <!-- Phase 2: Evolution Animation -->
+    <div id="phase-2">
+        <div class="evolution-bg"></div>
+        <div class="evolution-container">
+            <div class="evolution-header">
+                <div class="evolution-subtitle">Sua Jornada de Transformação</div>
+                <h1 class="evolution-title">
+                    De onde você está<br>para onde <span>você merece estar</span>
+                </h1>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-line">
+                    <div class="timeline-progress"></div>
+                </div>
+
+                <div class="timeline-stage" id="stage-1">
+                    <div class="stage-dot">🏥</div>
+                    <div class="stage-label">Hoje</div>
+                    <div class="stage-title">Clínica de Sucesso</div>
+                    <div class="stage-value">Estável</div>
+                </div>
+
+                <div class="timeline-stage" id="stage-2">
+                    <div class="stage-dot">🔥</div>
+                    <div class="stage-label">Transformação</div>
+                    <div class="stage-title">30-210 dias</div>
+                    <div class="stage-value">Estruturação</div>
+                </div>
+
+                <div class="timeline-stage" id="stage-3">
+                    <div class="stage-dot">👑</div>
+                    <div class="stage-label">Destino</div>
+                    <div class="stage-title">Mentoria Médica</div>
+                    <div class="stage-value">R$ 150k/mês</div>
+                </div>
+            </div>
+
+            <div class="evolution-cta">
+                <button class="evolution-btn" onclick="goToPhase3()">
+                    REVELAR MEU CAMINHO →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phase 3: Invitation + Login -->
+    <div id="phase-3">
+        <div class="invitation-container">
+            <div class="invitation-badge">Convite Exclusivo</div>
+            
+            <h1 class="invitation-title">
+                Bem-vindos ao<br>Extraordinário
+            </h1>
+
+            <div class="invitation-names">
+                Dr. Luiz Henrique & Dra. Carol Moreira
+            </div>
+
+            <p class="invitation-message">
+                A partir do momento em que inserirem suas credenciais,<br>
+                <strong>suas vidas nunca mais serão as mesmas</strong>.<br><br>
+                Vocês estão prestes a acessar uma proposta que não é<br>
+                apenas um documento — é uma <strong>experiência</strong><br>
+                projetada exclusivamente para vocês.
+            </p>
+
+            <div class="login-section">
+                <div class="login-title">Credenciais de Acesso</div>
+                
+                <form onsubmit="attemptLogin(event)">
+                    <div class="input-group">
+                        <label class="input-label">Código de Acesso</label>
+                        <input 
+                            type="text" 
+                            class="input-field" 
+                            id="login-field"
+                            placeholder="seu-codigo-aqui"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Chave Secreta</label>
+                        <input 
+                            type="password" 
+                            class="input-field" 
+                            id="password-field"
+                            placeholder="••••••••••"
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <div class="error-message" id="error-msg">
+                        ✗ Credenciais inválidas. Verifique o email que enviamos.
+                    </div>
+
+                    <button type="submit" class="unlock-btn">
+                        🔓 DESBLOQUEAR ACESSO
+                    </button>
+                </form>
+
+                <div class="expiry-notice">
+                    Este acesso expira em: <span>12/12/2025 às 23:59</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Control -->
+    <div class="audio-control" onclick="toggleAudio()">
+        <span class="audio-icon" id="audio-icon">🔊</span>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURAÇÕES
+        // ============================================
+        const CONFIG = {
+            login: 'carol-luiz',
+            password: 'UltraVertex',
+            proposalUrl: 'proposta-v2.html',
+            expiryDate: '2025-12-12T23:59:59'
+        };
+
+        // ============================================
+        // CUSTOM CURSOR
+        // ============================================
+        const cursor = document.getElementById('cursor');
+        const cursorDot = document.getElementById('cursor-dot');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX - 10 + 'px';
+            cursor.style.top = e.clientY - 10 + 'px';
+            cursorDot.style.left = e.clientX - 2 + 'px';
+            cursorDot.style.top = e.clientY - 2 + 'px';
+        });
+
+        document.querySelectorAll('button, a, .checkbox-container, .audio-control').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // ============================================
+        // PARTICLES
+        // ============================================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // ============================================
+        // AUDIO
+        // ============================================
+        let audioEnabled = true;
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            document.getElementById('audio-icon').textContent = audioEnabled ? '🔊' : '🔇';
+        }
+
+        function speak(text, rate = 0.8, pitch = 0.8) {
+            if (!audioEnabled || !('speechSynthesis' in window)) return;
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'pt-BR';
+            utterance.rate = rate;
+            utterance.pitch = pitch;
+            utterance.volume = 0.7;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function playSound(freq, duration, type = 'sine') {
+            if (!audioEnabled) return;
+            
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.frequency.value = freq;
+                osc.type = type;
+                
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+                
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        // ============================================
+        // PHASE TRANSITIONS
+        // ============================================
+        function transition(callback) {
+            const overlay = document.getElementById('transition-overlay');
+            overlay.classList.add('active');
+            setTimeout(() => {
+                callback();
+                setTimeout(() => overlay.classList.remove('active'), 100);
+            }, 800);
+        }
+
+        function goToPhase1() {
+            playSound(440, 0.3);
+            transition(() => {
+                document.getElementById('phase-0').style.display = 'none';
+                document.getElementById('phase-1').style.display = 'flex';
+            });
+        }
+
+        function goToPhase2() {
+            playSound(523, 0.3);
+            speak('Preparando sua jornada de transformação...', 0.9, 0.7);
+            
+            transition(() => {
+                document.getElementById('phase-1').style.display = 'none';
+                document.getElementById('phase-2').style.display = 'flex';
+                
+                // Animate stages
+                setTimeout(() => animateStages(), 500);
+            });
+        }
+
+        function goToPhase3() {
+            playSound(659, 0.3);
+            speak('Você foi selecionado para o extraordinário...', 0.8, 0.6);
+            
+            // Risada sarcástica
+            setTimeout(() => {
+                speak('há há há há...', 0.5, 0.4);
+            }, 3000);
+            
+            transition(() => {
+                document.getElementById('phase-2').style.display = 'none';
+                document.getElementById('phase-3').style.display = 'flex';
+            });
+        }
+
+        // ============================================
+        // TIMELINE ANIMATION
+        // ============================================
+        function animateStages() {
+            const stages = document.querySelectorAll('.timeline-stage');
+            
+            stages.forEach((stage, index) => {
+                setTimeout(() => {
+                    stage.classList.add('animate');
+                    playSound(300 + (index * 100), 0.2);
+                    
+                    setTimeout(() => {
+                        stage.classList.add('active');
+                    }, 400);
+                }, index * 1000);
+            });
+        }
+
+        // ============================================
+        // CHECKBOX
+        // ============================================
+        let checkboxChecked = false;
+
+        function toggleCheckbox() {
+            checkboxChecked = !checkboxChecked;
+            const checkbox = document.getElementById('checkbox');
+            const btn = document.getElementById('proceed-btn');
+            
+            checkbox.classList.toggle('checked', checkboxChecked);
+            btn.classList.toggle('active', checkboxChecked);
+            
+            playSound(checkboxChecked ? 600 : 400, 0.15);
+        }
+
+        // ============================================
+        // LOGIN
+        // ============================================
+        function attemptLogin(e) {
+            e.preventDefault();
+            
+            const login = document.getElementById('login-field').value.trim();
+            const password = document.getElementById('password-field').value.trim();
+            const errorMsg = document.getElementById('error-msg');
+            
+            if (login === CONFIG.login && password === CONFIG.password) {
+                errorMsg.classList.remove('show');
+                playSound(880, 0.5);
+                speak('Acesso concedido. Bem-vindos ao extraordinário.', 0.9, 0.8);
+                
+                // Success animation
+                document.querySelector('.invitation-container').style.transform = 'scale(0.95)';
+                document.querySelector('.invitation-container').style.opacity = '0.5';
+                
+                setTimeout(() => {
+                    window.location.href = CONFIG.proposalUrl;
+                }, 2000);
+            } else {
+                errorMsg.classList.add('show');
+                playSound(200, 0.3);
+                
+                // Shake
+                document.querySelector('.login-section').style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    document.querySelector('.login-section').style.animation = '';
+                }, 500);
+            }
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        window.addEventListener('load', () => {
+            // Check expiry
+            if (new Date() > new Date(CONFIG.expiryDate)) {
+                document.body.innerHTML = `
+                    <div style="height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px;">
+                        <div>
+                            <h1 style="color:#EF4444;font-size:48px;margin-bottom:20px;">Acesso Expirado</h1>
+                            <p style="color:#71717A;">Este convite não é mais válido.<br>Entre em contato para solicitar novo acesso.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Initial voice
+            setTimeout(() => {
+                speak('Iniciando protocolo de acesso...', 0.7, 0.5);
+            }, 1000);
+        });
+
+        // Console Easter Egg
+        console.log('%c✦ BEM-VINDO AOS BASTIDORES DO EXTRAORDINÁRIO ✦', 
+            'color: #C9A962; font-size: 20px; font-weight: bold; text-shadow: 0 0 10px #C9A962;');
+        console.log('%cEsta experiência foi projetada com obsessão por cada detalhe.', 
+            'color: #71717A; font-size: 12px;');
+        console.log('%cDica: Há segredos escondidos para quem explorar... 👀', 
+            'color: #C9A962; font-size: 12px;');
+    </script>
+</body>
+</html>

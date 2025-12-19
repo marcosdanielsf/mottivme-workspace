@@ -1,0 +1,91 @@
+{
+  "name": "[TOOL] Buscar Contrato Pendente",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "nome_cliente"
+            },
+            {
+              "name": "contrato_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [-144, -128],
+      "id": "trigger-input",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Buscar contrato pendente por nome ou ID (ou listar todos se nenhum filtro)\nSELECT \n  cp.id,\n  cp.nome,\n  cp.nome_completo_razao_social,\n  cp.email,\n  cp.telefone,\n  cp.nacionalidade,\n  cp.profissao,\n  cp.estado_civil,\n  cp.endereco,\n  cp.cep,\n  cp.documento,\n  cp.data_nascimento,\n  cp.valor_mensal,\n  cp.num_parcelas,\n  cp.valor_entrada,\n  cp.data_inicio,\n  cp.dia_vencimento,\n  cp.produto,\n  cp.pais,\n  cp.nicho,\n  cp.moeda,\n  cp.budget_trafego,\n  cp.dias_onboarding,\n  cp.condicoes_especiais,\n  cp.status,\n  cp.monday_item_id,\n  cp.cliente_id,\n  cp.notificado_em,\n  cp.termos_recebidos_em,\n  cp.contrato_gerado_em,\n  cp.created_at,\n  cf.nome as cliente_nome_sistema\nFROM fin_contratos_pendentes cp\nLEFT JOIN fin_clientes_fornecedores cf ON cp.cliente_id = cf.id\nWHERE \n  cp.status IN ('aguardando_termos', 'termos_informados')\n  AND (\n    NULLIF('{{ $json.contrato_id }}', '') IS NULL AND NULLIF('{{ $json.nome_cliente }}', '') IS NULL\n    OR cp.id::text = NULLIF('{{ $json.contrato_id }}', '')\n    OR LOWER(cp.nome) LIKE LOWER('%' || NULLIF('{{ $json.nome_cliente }}', '') || '%')\n  )\nORDER BY cp.created_at DESC\nLIMIT 10;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [80, -128],
+      "id": "buscar-contrato",
+      "name": "Buscar Contrato Pendente",
+      "credentials": {
+        "postgres": {
+          "id": "WsU3bciJm7aMyAoC",
+          "name": "postgress - financeiro - mottivme sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Formatar resposta dos contratos pendentes\nconst items = $input.all();\n\nif (!items || items.length === 0 || !items[0].json.id) {\n  return {\n    json: {\n      encontrado: false,\n      mensagem: 'Nenhum contrato pendente encontrado com esse nome/ID.',\n      sugestao: 'Verifique o nome do cliente ou aguarde a notificação do formulário.'\n    }\n  };\n}\n\nconst formatarData = (dataStr) => {\n  if (!dataStr) return null;\n  const data = new Date(dataStr);\n  return data.toLocaleDateString('pt-BR');\n};\n\nconst formatarMoeda = (valor) => {\n  if (!valor) return null;\n  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(valor);\n};\n\nconst contratos = items.map(item => {\n  const c = item.json;\n  \n  // Identificar campos faltantes para gerar contrato\n  const camposFaltantes = [];\n  if (!c.valor_mensal) camposFaltantes.push('valor_mensal');\n  if (!c.num_parcelas) camposFaltantes.push('num_parcelas');\n  if (!c.data_inicio) camposFaltantes.push('data_inicio');\n  if (!c.dia_vencimento) camposFaltantes.push('dia_vencimento');\n  \n  return {\n    contrato_id: c.id,\n    cliente: {\n      nome: c.nome,\n      nome_completo: c.nome_completo_razao_social,\n      email: c.email,\n      telefone: c.telefone,\n      documento: c.documento,\n      nacionalidade: c.nacionalidade,\n      profissao: c.profissao,\n      estado_civil: c.estado_civil,\n      data_nascimento: formatarData(c.data_nascimento),\n      endereco: c.endereco,\n      cep: c.cep\n    },\n    termos: {\n      valor_mensal: formatarMoeda(c.valor_mensal),\n      valor_mensal_numero: c.valor_mensal,\n      num_parcelas: c.num_parcelas,\n      valor_entrada: formatarMoeda(c.valor_entrada),\n      data_inicio: formatarData(c.data_inicio),\n      dia_vencimento: c.dia_vencimento\n    },\n    status: c.status,\n    status_descricao: c.status === 'aguardando_termos' ? 'Aguardando você informar os termos da negociação' :\n                      c.status === 'termos_informados' ? 'Termos informados - pronto para gerar contrato' :\n                      c.status === 'contrato_gerado' ? 'Contrato já foi gerado' : c.status,\n    pronto_para_gerar: camposFaltantes.length === 0,\n    campos_faltantes: camposFaltantes,\n    cliente_id: c.cliente_id,\n    monday_item_id: c.monday_item_id,\n    datas: {\n      criado_em: formatarData(c.created_at),\n      notificado_em: formatarData(c.notificado_em),\n      termos_recebidos_em: formatarData(c.termos_recebidos_em),\n      contrato_gerado_em: formatarData(c.contrato_gerado_em)\n    }\n  };\n});\n\nreturn {\n  json: {\n    encontrado: true,\n    total: contratos.length,\n    contratos: contratos,\n    instrucoes: contratos[0].pronto_para_gerar \n      ? 'Contrato pronto para ser gerado! Use a ferramenta de gerar contrato.'\n      : `Para gerar o contrato, informe: ${contratos[0].campos_faltantes.join(', ')}`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [304, -128],
+      "id": "formatar-resposta",
+      "name": "Formatar Resposta"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Buscar Contrato Pendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Contrato Pendente": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "BPO Financeiro"
+    },
+    {
+      "name": "Tools"
+    }
+  ],
+  "triggerCount": 0
+}

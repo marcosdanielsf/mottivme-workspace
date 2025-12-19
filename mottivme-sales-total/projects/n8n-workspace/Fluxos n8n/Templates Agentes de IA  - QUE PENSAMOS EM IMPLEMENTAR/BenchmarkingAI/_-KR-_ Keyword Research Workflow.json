@@ -1,0 +1,3011 @@
+{
+  "name": "<-KR-> Keyword Research Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// This script aggregates \"Ranked Keywords\" data from multiple competitor inputs,\n// de-duplicates the keywords, and formats the output.\n\n// Use a Set to store unique keywords and prevent duplicates.\nconst uniqueKeywords = new Set();\nconst allFormattedKeywords = [];\n\n// Use $input.all() to get every item passed to this node.\nconst allItems = $input.all();\n\n// Loop through each incoming item.\nfor (const item of allItems) {\n  const itemsList = item.json?.tasks?.[0]?.result?.[0]?.items;\n\n  if (!itemsList || !Array.isArray(itemsList)) {\n    continue;\n  }\n\n  for (const keywordItem of itemsList) {\n    const keywordData = keywordItem.keyword_data || {};\n    const keywordInfo = keywordData.keyword_info || {};\n    const serpItem = keywordItem.ranked_serp_element?.serp_item || {};\n    const keywordText = keywordData.keyword;\n\n    // --- Remove Duplicates ---\n    if (!keywordText || uniqueKeywords.has(keywordText)) {\n      continue;\n    }\n    uniqueKeywords.add(keywordText);\n\n    // Add the formatted object to our final list.\n    allFormattedKeywords.push({\n      json: {\n        target_url: keywordData.target,\n        keyword: keywordText,\n        search_volume: keywordInfo.search_volume,\n        cpc: keywordInfo.cpc,\n        competition_level: keywordInfo.competition_level,\n        estimated_traffic: serpItem.etv\n      }\n    });\n  }\n}\n\n// Sort the final combined list by search volume\nallFormattedKeywords.sort((a, b) => b.json.search_volume - a.json.search_volume);\n\nreturn allFormattedKeywords;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        224
+      ],
+      "id": "e3ecfead-e95d-4532-9db6-9b52da201c03",
+      "name": "Filter keywords",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "958d443b-100c-478b-9b91-1d069364647a",
+              "name": "keyword",
+              "value": "={{ $json.keyword }}",
+              "type": "string"
+            },
+            {
+              "id": "d9186123-1081-41d6-8fcf-7ec471f7adf6",
+              "name": "search_volume",
+              "value": "={{ $json.search_volume }}",
+              "type": "number"
+            },
+            {
+              "id": "2e8c2a7b-654f-4cfb-baf6-32cc5a8a1c1c",
+              "name": "cpc",
+              "value": "={{ $json.cpc }}",
+              "type": "number"
+            },
+            {
+              "id": "3e383d95-4cee-4668-bb93-a26a5c385f71",
+              "name": "competition_level",
+              "value": "={{ $json.competition_level }}",
+              "type": "string"
+            },
+            {
+              "id": "9dc698b4-2b9b-4156-a833-01b6effbed05",
+              "name": "estimated_traffic",
+              "value": "={{ $json.estimated_traffic }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        224
+      ],
+      "id": "c00d0150-4125-43ff-9215-067f1b9be5dc",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- Data Mappings ---\n// This object maps the country name from the form to the DataForSEO location_code.\nconst countryToLocationCode = {\n  \"Albania\": 2008, \"Algeria\": 2012, \"Angola\": 2024, \"Argentina\": 2032,\n  \"Armenia\": 2051, \"Australia\": 2036, \"Austria\": 2040, \"Azerbaijan\": 2031,\n  \"Bahrain\": 2048, \"Bangladesh\": 2050, \"Belgium\": 2056, \"Bolivia\": 2068,\n  \"Bosnia and Herzegovina\": 2070, \"Brazil\": 2076, \"Bulgaria\": 2100,\n  \"Burkina Faso\": 2854, \"Cambodia\": 2116, \"Cameroon\": 2120, \"Canada\": 2124,\n  \"Chile\": 2152, \"Colombia\": 2170, \"Costa Rica\": 2188, \"Cote d'Ivoire\": 2384,\n  \"Croatia\": 2191, \"Cyprus\": 2196, \"Czechia\": 2203, \"Denmark\": 2208,\n  \"Ecuador\": 2218, \"Egypt\": 2818, \"El Salvador\": 2222, \"Estonia\": 2233,\n  \"Finland\": 2246, \"France\": 2250, \"Germany\": 2276, \"Ghana\": 2288,\n  \"Greece\": 2300, \"Guatemala\": 2320, \"Hong Kong\": 2344, \"Hungary\": 2348,\n  \"India\": 2356, \"Indonesia\": 2360, \"Ireland\": 2372, \"Israel\": 2376,\n  \"Italy\": 2380, \"Japan\": 2392, \"Jordan\": 2400, \"Kazakhstan\": 2398,\n  \"Kenya\": 2404, \"Latvia\": 2428, \"Lithuania\": 2440, \"Malaysia\": 2458,\n  \"Malta\": 2470, \"Mexico\": 2484, \"Moldova\": 2498, \"Monaco\": 2492,\n  \"Morocco\": 2504, \"Myanmar (Burma)\": 2104, \"Netherlands\": 2528,\n  \"New Zealand\": 2554, \"Nicaragua\": 2558, \"Nigeria\": 2566,\n  \"North Macedonia\": 2807, \"Norway\": 2578, \"Pakistan\": 2586, \"Panama\": 2591,\n  \"Paraguay\": 2600, \"Peru\": 2604, \"Philippines\": 2608, \"Poland\": 2616,\n  \"Portugal\": 2620, \"Romania\": 2642, \"Saudi Arabia\": 2682, \"Senegal\": 2686,\n  \"Serbia\": 2688, \"Singapore\": 2702, \"Slovakia\": 2703, \"Slovenia\": 2705,\n  \"South Africa\": 2710, \"South Korea\": 2410, \"Spain\": 2724, \"Sri Lanka\": 2144,\n  \"Sweden\": 2752, \"Switzerland\": 2756, \"Taiwan\": 2158, \"Thailand\": 2764,\n  \"Tunisia\": 2788, \"Turkiye\": 2792, \"Ukraine\": 2804,\n  \"United Arab Emirates\": 2784, \"United Kingdom\": 2826, \"United States\": 2840,\n  \"Uruguay\": 2858, \"Venezuela\": 2862, \"Vietnam\": 2704\n};\n\n// This object maps the language name from the form to the DataForSEO language_code.\nconst languageToLanguageCode = {\n  \"Albanian\": \"sq\", \"Arabic\": \"ar\", \"Armenian\": \"hy\", \"Azeri\": \"az\",\n  \"Bengali\": \"bn\", \"Bosnian\": \"bs\", \"Bulgarian\": \"bg\",\n  \"Chinese (Simplified)\": \"zh-CN\", \"Chinese (Traditional)\": \"zh-TW\",\n  \"Croatian\": \"hr\", \"Czech\": \"cs\", \"Danish\": \"da\", \"Dutch\": \"nl\",\n  \"English\": \"en\", \"Estonian\": \"et\", \"Finnish\": \"fi\", \"French\": \"fr\",\n  \"German\": \"de\", \"Greek\": \"el\", \"Hebrew\": \"he\", \"Hindi\": \"hi\",\n  \"Hungarian\": \"hu\", \"Indonesian\": \"id\", \"Italian\": \"it\", \"Japanese\": \"ja\",\n  \"Korean\": \"ko\", \"Latvian\": \"lv\", \"Lithuanian\": \"lt\", \"Macedonian\": \"mk\",\n  \"Malay\": \"ms\", \"Norwegian (Bokmål)\": \"nb\", \"Polish\": \"pl\",\n  \"Portuguese\": \"pt\", \"Romanian\": \"ro\", \"Russian\": \"ru\", \"Serbian\": \"sr\",\n  \"Slovak\": \"sk\", \"Slovenian\": \"sl\", \"Spanish\": \"es\", \"Swedish\": \"sv\",\n  \"Tagalog\": \"tl\", \"Thai\": \"th\", \"Turkish\": \"tr\", \"Ukrainian\": \"uk\",\n  \"Urdu\": \"ur\", \"Vietnamese\": \"vi\"\n};\n\n// --- Main Logic ---\n// This loop goes through each item (form submission) sent to the node.\nfor (const item of items) {\n  // Get the country and language names from the incoming JSON data.\n  const countryName = item.json.Country;\n  const languageName = item.json.Language;\n\n  // Find the corresponding codes from the mapping objects.\n  // If a match isn't found, it will result in 'null'.\n  const locationCode = countryToLocationCode[countryName] ?? null;\n  const languageCode = languageToLanguageCode[languageName] ?? null;\n\n  // Add the new code fields to the JSON object.\n  item.json.location_code = locationCode;\n  item.json.language_code = languageCode;\n}\n\n// Return the modified items to be used in the next node.\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -64
+      ],
+      "id": "3bbd4b6f-53e5-4490-b700-8b357354cad6",
+      "name": "Get Country & Language Code"
+    },
+    {
+      "parameters": {
+        "formTitle": "Page SEO/GEO Check",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Page URL",
+              "placeholder": "example.com"
+            },
+            {
+              "fieldLabel": "Country",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Australia"
+                  },
+                  {
+                    "option": "Austria"
+                  },
+                  {
+                    "option": "Bahrain"
+                  },
+                  {
+                    "option": "Bangladesh"
+                  },
+                  {
+                    "option": "Belgium"
+                  },
+                  {
+                    "option": "Brazil"
+                  },
+                  {
+                    "option": "Bulgaria"
+                  },
+                  {
+                    "option": "Canada"
+                  },
+                  {
+                    "option": "Chile"
+                  },
+                  {
+                    "option": "Colombia"
+                  },
+                  {
+                    "option": "Croatia"
+                  },
+                  {
+                    "option": "Cyprus"
+                  },
+                  {
+                    "option": "Czechia"
+                  },
+                  {
+                    "option": "Denmark"
+                  },
+                  {
+                    "option": "Egypt"
+                  },
+                  {
+                    "option": "Estonia"
+                  },
+                  {
+                    "option": "Finland"
+                  },
+                  {
+                    "option": "France"
+                  },
+                  {
+                    "option": "Germany"
+                  },
+                  {
+                    "option": "Greece"
+                  },
+                  {
+                    "option": "Hong Kong"
+                  },
+                  {
+                    "option": "Hungary"
+                  },
+                  {
+                    "option": "India"
+                  },
+                  {
+                    "option": "Indonesia"
+                  },
+                  {
+                    "option": "Ireland"
+                  },
+                  {
+                    "option": "Israel"
+                  },
+                  {
+                    "option": "Italy"
+                  },
+                  {
+                    "option": "Japan"
+                  },
+                  {
+                    "option": "Jordan"
+                  },
+                  {
+                    "option": "Kazakhstan"
+                  },
+                  {
+                    "option": "Kenya"
+                  },
+                  {
+                    "option": "Malaysia"
+                  },
+                  {
+                    "option": "Mexico"
+                  },
+                  {
+                    "option": "Morocco"
+                  },
+                  {
+                    "option": "Netherlands"
+                  },
+                  {
+                    "option": "New Zealand"
+                  },
+                  {
+                    "option": "Nigeria"
+                  },
+                  {
+                    "option": "Norway"
+                  },
+                  {
+                    "option": "Pakistan"
+                  },
+                  {
+                    "option": "Philippines"
+                  },
+                  {
+                    "option": "Poland"
+                  },
+                  {
+                    "option": "Portugal"
+                  },
+                  {
+                    "option": "Romania"
+                  },
+                  {
+                    "option": "Saudi Arabia"
+                  },
+                  {
+                    "option": "Serbia"
+                  },
+                  {
+                    "option": "Singapore"
+                  },
+                  {
+                    "option": "South Africa"
+                  },
+                  {
+                    "option": "South Korea"
+                  },
+                  {
+                    "option": "Spain"
+                  },
+                  {
+                    "option": "Sri Lanka"
+                  },
+                  {
+                    "option": "Sweden"
+                  },
+                  {
+                    "option": "Switzerland"
+                  },
+                  {
+                    "option": "Taiwan"
+                  },
+                  {
+                    "option": "Thailand"
+                  },
+                  {
+                    "option": "Tunisia"
+                  },
+                  {
+                    "option": "Turkiye"
+                  },
+                  {
+                    "option": "Ukraine"
+                  },
+                  {
+                    "option": "United Arab Emirates"
+                  },
+                  {
+                    "option": "United Kingdom"
+                  },
+                  {
+                    "option": "United States"
+                  },
+                  {
+                    "option": "Vietnam"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Language",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Arabic"
+                  },
+                  {
+                    "option": "Bengali"
+                  },
+                  {
+                    "option": "Bulgarian"
+                  },
+                  {
+                    "option": "Chinese (Simplified)"
+                  },
+                  {
+                    "option": "Chinese (Traditional)"
+                  },
+                  {
+                    "option": "Croatian"
+                  },
+                  {
+                    "option": "Czech"
+                  },
+                  {
+                    "option": "Danish"
+                  },
+                  {
+                    "option": "Dutch"
+                  },
+                  {
+                    "option": "English"
+                  },
+                  {
+                    "option": "Estonian"
+                  },
+                  {
+                    "option": "Finnish"
+                  },
+                  {
+                    "option": "French"
+                  },
+                  {
+                    "option": "German"
+                  },
+                  {
+                    "option": "Greek"
+                  },
+                  {
+                    "option": "Hebrew"
+                  },
+                  {
+                    "option": "Hindi"
+                  },
+                  {
+                    "option": "Hungarian"
+                  },
+                  {
+                    "option": "Indonesian"
+                  },
+                  {
+                    "option": "Italian"
+                  },
+                  {
+                    "option": "Japanese"
+                  },
+                  {
+                    "option": "Korean"
+                  },
+                  {
+                    "option": "Macedonian"
+                  },
+                  {
+                    "option": "Malay"
+                  },
+                  {
+                    "option": "Norwegian (Bokmål)"
+                  },
+                  {
+                    "option": "Polish"
+                  },
+                  {
+                    "option": "Portuguese"
+                  },
+                  {
+                    "option": "Romanian"
+                  },
+                  {
+                    "option": "Russian"
+                  },
+                  {
+                    "option": "Serbian"
+                  },
+                  {
+                    "option": "Slovak"
+                  },
+                  {
+                    "option": "Spanish"
+                  },
+                  {
+                    "option": "Swedish"
+                  },
+                  {
+                    "option": "Tagalog"
+                  },
+                  {
+                    "option": "Thai"
+                  },
+                  {
+                    "option": "Turkish"
+                  },
+                  {
+                    "option": "Ukrainian"
+                  },
+                  {
+                    "option": "Urdu"
+                  },
+                  {
+                    "option": "Vietnamese"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        16,
+        -64
+      ],
+      "id": "4e5270a4-3e85-4b08-809f-123384ec02de",
+      "name": "Submit Form",
+      "webhookId": "6f0f985b-0ac4-4473-9046-c6e59ead953f"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/ranked_keywords/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"target\": \"{{ $('Get Country & Language Code').item.json['Page URL'] }}\",\n    \"location_code\": {{ $('Get Country & Language Code').item.json.location_code }},\n    \"language_code\": \"{{ $('Get Country & Language Code').item.json.language_code }}\",\n    \"limit\": 200\n  }\n]",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        16,
+        224
+      ],
+      "id": "2518d46b-cdaf-4ad1-a9d2-f31aa783de49",
+      "name": "Get Ranked Keywords",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "n5o00CCWcmHFeI1p",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/keywords_data/google_ads/keywords_for_site/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"search_partners\": true,\n    \"target\": \"{{ $('Submit Form').item.json['Page URL'] }}\",\n    \"location_code\": {{ $('Get Country & Language Code').item.json.location_code }},\n    \"language_code\": \"{{ $('Get Country & Language Code').item.json.language_code }}\",\n    \"sort_by\": \"search_volume\"\n  }\n]",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        48,
+        496
+      ],
+      "id": "f01bd986-0d2d-4d3b-883f-0915bab47731",
+      "name": "Keyword for Site",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "n5o00CCWcmHFeI1p",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Page Ranked Keywords",
+        "height": 256,
+        "width": 880,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        128
+      ],
+      "id": "3cf7be68-b364-446f-92c1-ad7e948bccf3",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Suggested Page Keywords",
+        "height": 240,
+        "width": 1488
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        416
+      ],
+      "id": "1aaeef3a-190d-4407-9a50-4004a59443ce",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "# -> Input",
+        "height": 256,
+        "width": 880,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -160
+      ],
+      "id": "51caddc4-a7c2-40c9-99d6-5517b4204b50",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dataforseo.com/v3/dataforseo_labs/google/search_intent/live",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=[\n  {\n    \"keywords\": [\n      \"{{ $json.keyword }}\"\n    ],\n    \"language_code\": \"{{ $('Get Country & Language Code').item.json.language_code }}\"\n  }\n]",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        496
+      ],
+      "id": "1ed9f915-d2f1-4334-9f78-f971d0185638",
+      "name": "Search Intent",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "n5o00CCWcmHFeI1p",
+          "name": "DataForSEO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9013804e-e0fa-43b2-847c-4a46c912f6df",
+              "name": "keyword",
+              "value": "={{ $('Filter Keywords').item.json.keyword }}",
+              "type": "string"
+            },
+            {
+              "id": "1eb44b8f-6b75-48af-bbdf-3ac36273cbac",
+              "name": "search_volume",
+              "value": "={{ $('Filter Keywords').item.json.search_volume }}",
+              "type": "number"
+            },
+            {
+              "id": "4b586823-5c36-490b-881c-a91dd6a2d5f9",
+              "name": "cpc",
+              "value": "={{ $('Filter Keywords').item.json.cpc }}",
+              "type": "number"
+            },
+            {
+              "id": "8114d9f9-b993-4189-a890-6ae114d75092",
+              "name": "competition",
+              "value": "={{ $('Filter Keywords').item.json.competition }}",
+              "type": "string"
+            },
+            {
+              "id": "c38294f6-3b53-4dd1-86c5-8be6abd3a021",
+              "name": "intent",
+              "value": "={{ $json.tasks[0].result[0].items[0].keyword_intent.label }}",
+              "type": "string"
+            },
+            {
+              "id": "d0b18438-3bba-44c0-957d-ff1002833902",
+              "name": "intent_probability",
+              "value": "={{ $json.tasks[0].result[0].items[0].keyword_intent.probability }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        496
+      ],
+      "id": "1d5a0ec5-6819-441e-91c4-4a5a6902a3da",
+      "name": "Prepare Keywords"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7c810e20-706d-47a6-990e-c631f6d424ee",
+              "leftValue": "={{ $json.search_volume }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "64941470-8461-41a6-853f-81777b7d9ebc",
+              "leftValue": "={{ $json.intent_probability }}",
+              "rightValue": 0.7,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        496
+      ],
+      "id": "e53a7bb8-5b13-4848-bd47-e46006314d7a",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "jsCode": "// This code will extract keyword ideas, filter for search volume >= 100,\n// and output them as an array of separate JSON objects.\n\n// Initialize an array to hold our separate keyword items.\nconst results = [];\n\n// Safely access the nested 'result' array from the API response.\nconst resultItems = items[0]?.json?.tasks?.[0]?.result;\n\n// Check if the resultItems array exists and is not empty.\nif (Array.isArray(resultItems)) {\n  for (const item of resultItems) {\n    // --- FILTER ADDED HERE ---\n    // Only process items where the search_volume is 100 or greater.\n    if (item.search_volume >= 1000) {\n      const keywordData = {\n        keyword: item.keyword,\n        search_volume: item.search_volume,\n        cpc: item.cpc,\n        competition: item.competition,\n        low_top_of_page_bid: item.low_top_of_page_bid,\n        high_top_of_page_bid: item.high_top_of_page_bid\n      };\n      // Add the new keyword object, wrapped in a 'json' property, to our results array.\n      results.push({ json: keywordData });\n    }\n  }\n}\n\n// Sort the array of items by search_volume in descending order.\nresults.sort((a, b) => b.json.search_volume - a.json.search_volume);\n\n// Return the array of separate keyword items.\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        496
+      ],
+      "id": "db9ff075-7403-40ea-ae3f-0544ed1b406e",
+      "name": "Filter Keywords",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v1/scrape",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json['Firecrawl API Key'] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $fromAI('url_search') }}\",\n  \"formats\": [\n    \"markdown\"\n  ],\n  \"onlyMainContent\": false,\n  \"parsePDF\": false,\n  \"maxAge\": 14400000\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        224
+      ],
+      "id": "cd0cfad8-0373-44d6-b65c-f61fa4787591",
+      "name": "URL_search"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        1280,
+        96
+      ],
+      "id": "ee3c0df9-7d2a-4899-85b2-f965bbb14b33",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "content": "## Business Data Intelligence Analysis",
+        "height": 544,
+        "width": 576,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        864,
+        -160
+      ],
+      "id": "067d2c37-8b28-44ef-8613-c9be414675e6",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8e4bece0-4b34-423b-86d2-826b2eaecb7d",
+              "name": "Perplexity API Key",
+              "value": "YOUR API KEY",
+              "type": "string"
+            },
+            {
+              "id": "a39a559f-4881-4ac6-9a9e-7b8cb4f8f268",
+              "name": "Firecrawl API Key",
+              "value": "YOUR API KEY",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        -64
+      ],
+      "id": "26f5fb97-744c-4e59-a445-10407e8372ad",
+      "name": "🔗 Set API Credentials"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "page_ranked_keywords",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        704,
+        224
+      ],
+      "id": "e082da2b-7cc4-4874-95e7-3fbac8ea6371",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Function node\n// Generate a random session ID like cc##### (5 digits)\n\nconst randomNumber = Math.floor(10000 + Math.random() * 90000); // Ensures 5 digits\nconst sessionId = `cc${randomNumber}`;\n\nreturn [\n  {\n    json: {\n      session_id: sessionId\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -64
+      ],
+      "id": "bf4fbbbe-88f6-40a9-8e5e-76c182aef4e5",
+      "name": "Session ID"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('🔗 Set API Credentials').first().json['Perplexity API Key'] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"sonar-pro\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an investigative researcher. Answer the user's specific question directly and factually based on web search results.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $fromAI('pro_search') }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        224
+      ],
+      "id": "cd2c649a-99ea-4aaf-9774-1d7b8587689e",
+      "name": "pro_search"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        -48
+      ],
+      "id": "ff54719c-f957-469b-a9a2-4c939d06ad62",
+      "name": "2.5 Flash",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "8eDMUtP7P20s67XX",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "suggested_page_keywords",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        496
+      ],
+      "id": "c39515b9-d3af-4bb1-93f4-0a1b6a0553e1",
+      "name": "Aggregate2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        48,
+        1504
+      ],
+      "id": "63bf2504-b828-41ec-827c-8ce26d548ce8",
+      "name": "-->"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "wa0kkSaygUdBVzcF",
+          "mode": "list",
+          "cachedResultName": "[-KR- Business Data]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/wa0kkSaygUdBVzcF"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "session_id",
+              "keyValue": "={{ $('Session ID').item.json.session_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        272,
+        1344
+      ],
+      "id": "1373867b-2fc2-47f7-8eac-9f8aeda2eaa9",
+      "name": "Get Business Data"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "VSuhgL9tT1QSlGcI",
+          "mode": "list",
+          "cachedResultName": "[ -KR- Final Keyword List]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/VSuhgL9tT1QSlGcI"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "session_id",
+              "keyValue": "={{ $('Session ID').item.json.session_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        272,
+        1680
+      ],
+      "id": "e5d13731-859f-4604-9bbb-eebfc7561287",
+      "name": "Get Final Keyword List"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "Business Data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        656,
+        1344
+      ],
+      "id": "8c94c96f-5bb2-4a6f-8886-7b2602948b6a",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "final_keywords_list",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        656,
+        1680
+      ],
+      "id": "6585a74c-32a9-4002-8ff0-00edbae05544",
+      "name": "Aggregate3"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "page_ranked_keywords",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        656,
+        1504
+      ],
+      "id": "e1ec61f2-e0f6-4ae4-9f5b-99c3fa5e3f41",
+      "name": "Aggregate4"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "xFGbKhgamLIjMfUC",
+          "mode": "list",
+          "cachedResultName": "[-KR- Page Ranked Keywords]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/xFGbKhgamLIjMfUC"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "session_id",
+              "keyValue": "={{ $('Session ID').item.json.session_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        272,
+        1504
+      ],
+      "id": "ccf014bc-1365-4bc6-8b2d-8777a270278a",
+      "name": "Get Page Ranked keywords"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        880,
+        1488
+      ],
+      "id": "23a5801c-5495-46e1-806c-a840c8929a4e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "content": "## Create Keyword Research",
+        "height": 608,
+        "width": 1488,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        1264
+      ],
+      "id": "7ac0b3dc-3146-466a-8fcd-1416d14c7593",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "79177534-4b67-45c5-8568-064604944ac1",
+              "name": "session_id",
+              "value": "={{ $json.session_id }}",
+              "type": "string"
+            },
+            {
+              "id": "e9ea0aaa-3ee5-480b-a1e3-3a42c94e20da",
+              "name": "client_name",
+              "value": "={{ $json.client_name }}",
+              "type": "string"
+            },
+            {
+              "id": "180afb56-dff1-4dfa-8b71-bff3fa4aaf47",
+              "name": "client_country",
+              "value": "={{ $json.client_country }}",
+              "type": "string"
+            },
+            {
+              "id": "1ff963a3-9297-4891-aedf-23a561751174",
+              "name": "client_language",
+              "value": "={{ $json.client_language }}",
+              "type": "string"
+            },
+            {
+              "id": "9895e707-abf6-4d01-ad1a-7312b8fd26ae",
+              "name": "client_website",
+              "value": "={{ $json.client_website }}",
+              "type": "string"
+            },
+            {
+              "id": "3f53cd8c-c11e-4ccf-8c0a-ff35fc826944",
+              "name": "client_description",
+              "value": "={{ $json.client_description }}",
+              "type": "string"
+            },
+            {
+              "id": "cfcd037e-177d-4f80-be7c-98b877b0d046",
+              "name": "target_audience_personas",
+              "value": "={{ $json.target_audience_personas }}",
+              "type": "string"
+            },
+            {
+              "id": "f5ade235-28be-4a9c-87fc-569998a2471d",
+              "name": "brand_personality_matrix",
+              "value": "={{ $json.brand_personality_matrix }}",
+              "type": "string"
+            },
+            {
+              "id": "902a7757-a89e-4f1d-a861-34c3294f1e95",
+              "name": "unique_value_proposition",
+              "value": "={{ $json.unique_value_proposition }}",
+              "type": "string"
+            },
+            {
+              "id": "925ee501-a33f-46c2-b557-44d57f771718",
+              "name": "primary_competitors",
+              "value": "={{ $json.primary_competitors }}",
+              "type": "string"
+            },
+            {
+              "id": "dc39e8c3-5772-4654-b773-69557bc31b83",
+              "name": "people_ask",
+              "value": "={{ $json.people_ask }}",
+              "type": "string"
+            },
+            {
+              "id": "6e20630c-6242-4b5c-9df9-2a11ac9881eb",
+              "name": "customer_journey",
+              "value": "={{ $json.customer_journey }}",
+              "type": "string"
+            },
+            {
+              "id": "661fcc0f-495e-4969-ad77-a98ccd3ece0c",
+              "name": "eeat_signal_integration",
+              "value": "={{ $json.eeat_signal_integration }}",
+              "type": "string"
+            },
+            {
+              "id": "4a032e81-b06f-4021-b6c5-a04b54d47bfe",
+              "name": "GEO_tactic",
+              "value": "={{ $json.GEO_tactic }}",
+              "type": "string"
+            },
+            {
+              "id": "31276fc3-37ea-4b30-b155-fd0c5e3ae7e4",
+              "name": "call_to_action",
+              "value": "={{ $json.call_to_action }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        1344
+      ],
+      "id": "e1e823c5-716f-4756-8b9c-558331380434",
+      "name": "Business Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1132beb7-581b-4269-8e52-4a71c0675829",
+              "name": "keyword",
+              "value": "={{ $json.keyword }}",
+              "type": "string"
+            },
+            {
+              "id": "4b50c293-f55e-46a2-b76d-d5b92f9c9009",
+              "name": "search_volume",
+              "value": "={{ $json.search_volume }}",
+              "type": "number"
+            },
+            {
+              "id": "79bd2eca-d32a-4d3b-a74f-e0936cca2755",
+              "name": "competition_level",
+              "value": "={{ $json.competition_level }}",
+              "type": "string"
+            },
+            {
+              "id": "74bcaf59-e7f6-46f4-9126-7da7cae13643",
+              "name": "estimated_traffic",
+              "value": "={{ $json.estimated_traffic }}",
+              "type": "number"
+            },
+            {
+              "id": "7568eac0-4ca8-4379-a751-6d86ccf65c2b",
+              "name": "cpc",
+              "value": "={{ $json.cpc }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        1504
+      ],
+      "id": "c4147303-6f48-468d-9700-069decc7dcef",
+      "name": "Page Ranked Keywords"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1132beb7-581b-4269-8e52-4a71c0675829",
+              "name": "keyword",
+              "value": "={{ $json.keyword }}",
+              "type": "string"
+            },
+            {
+              "id": "4b50c293-f55e-46a2-b76d-d5b92f9c9009",
+              "name": "search_volume",
+              "value": "={{ $json.search_volume }}",
+              "type": "number"
+            },
+            {
+              "id": "a70a5359-1d52-49e9-9c60-93fe8c3c3756",
+              "name": "cpc",
+              "value": "={{ $json.cpc }}",
+              "type": "string"
+            },
+            {
+              "id": "8946d3e7-cc32-4fae-9a54-43282da36187",
+              "name": "competition",
+              "value": "={{ $json.competition }}",
+              "type": "string"
+            },
+            {
+              "id": "8e1fbc25-d1a1-4aba-b998-d4f06fb62709",
+              "name": "competition_level",
+              "value": "={{ $json.competition_level }}",
+              "type": "string"
+            },
+            {
+              "id": "8448319f-f7c3-408f-95b8-9eebf8681cb6",
+              "name": "intent",
+              "value": "={{ $json.intent }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        1680
+      ],
+      "id": "cd6276ff-b7de-4ec4-ae51-7597fcdd844b",
+      "name": "Final Keyword List"
+    },
+    {
+      "parameters": {
+        "jsCode": "// N8N Code Node - V9 (Simplified Version)\n\nasync function generateDashboard() {\n    const inputData = $input.all();\n\n    // 1. INPUT VALIDATION\n    if (!inputData || !inputData.length || !inputData[0].json) {\n        return [{ json: { error: 'Input data is missing or has the wrong structure.' } }];\n    }\n\n    try {\n        const reportData = inputData[0].json;\n\n        // 2. SERVER-SIDE HELPER FUNCTIONS\n        const escapeHtml = (text) => {\n            if (text === null || text === undefined) return '';\n            return String(text).replace(/[&<>\"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' })[m]);\n        };\n        const safeGet = (obj, path, defaultValue = '') => path.split('.').reduce((c, k) => (c && c[k] !== undefined) ? c[k] : defaultValue, obj);\n\n        // 3. DATA EXTRACTION\n        const businessData = safeGet(reportData, 'Business Data.0', {});\n        const pageRankedKeywords = safeGet(reportData, 'page_ranked_keywords', []);\n        const finalKeywordsList = safeGet(reportData, 'final_keywords_list', []);\n\n        // 4. HTML SECTION GENERATION\n\n        // --- Business Overview with Icons ---\n        const businessDataHTML = `\n            <div class=\"tech-item\"><div class=\"tech-label\">📝 Client Description</div><div class=\"tech-value\">${escapeHtml(businessData.client_description)}</div></div>\n            <div class=\"tech-item\"><div class=\"tech-label\">🎯 Target Audience</div><div class=\"tech-value\">${escapeHtml(businessData.target_audience_personas)}</div></div>\n            <div class=\"tech-item\"><div class=\"tech-label\">💡 Unique Value Proposition</div><div class=\"tech-value\">${escapeHtml(businessData.unique_value_proposition)}</div></div>\n            <div class=\"tech-item\"><div class=\"tech-label\">🤔 People Ask</div><div class=\"tech-value\">${escapeHtml(businessData.people_ask).replace(/;/g, '<br>')}</div></div>\n            <div class=\"tech-item\"><div class=\"tech-label\">🎭 Brand Personality</div><div class=\"tech-value\">${escapeHtml(businessData.brand_personality_matrix)}</div></div>\n            <div class=\"tech-item\"><div class=\"tech-label\">🤺 Primary Competitors</div><div class=\"tech-value\">${escapeHtml(businessData.primary_competitors)}</div></div>\n            <div class=\"tech-item\"><div class=\"tech-label\">📈 E-E-A-T Signal Integration</div><div class=\"tech-value\">${escapeHtml(businessData.eeat_signal_integration)}</div></div>\n            <div class=\"tech-item\"><div class=\"tech-label\">🎬 Call to Action</div><div class=\"tech-value\">${escapeHtml(businessData.call_to_action).replace(/;/g, '<br>')}</div></div>`;\n        \n        // --- Sortable/Collapsible Keyword Tables ---\n        function createSortableTable(id, headers, rows) {\n            const visibleRows = rows.slice(0, 10).join('');\n            const hiddenRows = rows.length > 10 ? `<tbody class=\"collapsible-rows\" style=\"display:none;\">${rows.slice(10).join('')}</tbody>` : '';\n            const showMoreButton = rows.length > 10 ? `<button class=\"show-more-btn\" onclick=\"toggleTableRows('${id}', this)\">Show ${rows.length - 10} More</button>` : '';\n\n            return `<div class=\"keywords-table-wrapper\">\n                        <table id=\"${id}\">\n                            <thead><tr>${headers.map((h, i) => `<th onclick=\"sortTableByColumn('${id}', ${i})\">${h} <span class=\"sort-arrow\"></span></th>`).join('')}</tr></thead>\n                            <tbody class=\"visible-rows\">${visibleRows}</tbody>\n                            ${hiddenRows}\n                        </table>\n                        ${showMoreButton}\n                    </div>`;\n        }\n\n        const suggestedKeywordsTable = createSortableTable(\n            'suggested-keywords',\n            ['Keyword', 'Search Volume', 'CPC', 'Competition', 'Score', 'Intent'],\n            finalKeywordsList.map(k => {\n                const competitionClass = (k.competition_level || '').toLowerCase();\n                return `<tr><td>${escapeHtml(k.keyword)}</td><td>${parseInt(k.search_volume||0).toLocaleString()}</td><td>$${parseFloat(k.cpc||0).toFixed(2)}</td><td><span class=\"competition-${competitionClass}\">${k.competition_level}</span></td><td>${parseFloat(k.competition||0).toFixed(2)}</td><td>${escapeHtml(k.intent)}</td></tr>`;\n            })\n        );\n        const rankedKeywordsTable = createSortableTable(\n            'ranked-keywords',\n            ['Keyword', 'Search Volume', 'CPC', 'Competition', 'Est. Traffic'],\n            pageRankedKeywords.map(k => {\n                 const competitionClass = (k.competition_level || '').toLowerCase();\n                 return `<tr><td>${escapeHtml(k.keyword)}</td><td>${parseInt(k.search_volume||0).toLocaleString()}</td><td>$${parseFloat(k.cpc||0).toFixed(2)}</td><td><span class=\"competition-${competitionClass}\">${k.competition_level}</span></td><td>${parseInt(k.estimated_traffic||0).toLocaleString()}</td></tr>`;\n            })\n        );\n        \n        // 5. FINAL HTML ASSEMBLY\n        const html = `\n<!DOCTYPE html><html lang=\"en\"><head>\n    <meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>SEO & Keyword Report</title>\n    <style>\n        :root{--primary-bg:#0f172a;--secondary-bg:#1e293b;--accent-blue:#38bdf8;--accent-cyan:#06b6d4;--text-primary:#f8fafc;--text-secondary:#cbd5e1;--text-muted:#94a3b8;--border-color:#334155;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--gradient-primary:linear-gradient(135deg, #38bdf8, #06b6d4);}\n        *{margin:0;padding:0;box-sizing:border-box}\n        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--primary-bg);color:var(--text-primary);line-height:1.6}\n        .container{max-width:1600px;margin:0 auto;padding:40px 25px}\n        .header{text-align:center;margin-bottom:50px}\n        .main-title{font-size:2.8rem;font-weight:800;margin-bottom:10px;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}\n        .url-display{color:var(--text-secondary);font-size:1.1rem;word-break:break-all;display:flex;align-items:center;justify-content:center;gap:15px;}\n        .session-id{color:var(--text-muted);font-size:0.8rem;background-color:var(--secondary-bg);padding:2px 8px;border-radius:5px;border:1px solid var(--border-color);}\n        .analysis-section{background:var(--secondary-bg);border:1px solid var(--border-color);border-radius:20px;padding:35px;margin-bottom:30px;}\n        .section-title{font-size:1.8rem;font-weight:700;margin-bottom:25px;color:var(--text-primary);display:flex;align-items:center;gap:12px}\n        .section-title::after{content:'';flex:1;height:1px;background:var(--border-color);border-radius:1px}\n        .tech-grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fill, minmax(380px, 1fr));}\n        .tech-item{background:var(--primary-bg);padding:20px;border-radius:12px;border:1px solid var(--border-color)}\n        .tech-label{font-size:.8rem;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;font-weight:600;display:block}\n        .tech-value{color:var(--text-secondary);font-weight:400;word-break:break-word}\n        .keywords-table-wrapper{width:100%;overflow-x:auto}\n        .keywords-table-wrapper table{width:100%;border-collapse:collapse;border:1px solid var(--border-color);border-radius:12px;overflow:hidden;}\n        .keywords-table-wrapper th{background:var(--secondary-bg);padding:15px;text-align:left;cursor:pointer;user-select:none;position:relative}\n        .keywords-table-wrapper th .sort-arrow{display:inline-block;width:12px;height:12px;margin-left:8px;opacity:0.5;transition:transform 0.2s}\n        .keywords-table-wrapper th.sorted-asc .sort-arrow::after{content:'▲'}\n        .keywords-table-wrapper th.sorted-desc .sort-arrow::after{content:'▼'}\n        .keywords-table-wrapper td{background:var(--primary-bg);padding:12px 15px;border-bottom:1px solid var(--border-color);color:var(--text-secondary)}\n        .keywords-table-wrapper tbody tr:last-child td{border:0}\n        .keywords-table-wrapper tbody tr:hover td{background:var(--secondary-bg)}\n        .competition-high{color:var(--danger);font-weight:600}\n        .competition-medium{color:var(--warning);font-weight:600}\n        .competition-low{color:var(--success);font-weight:600}\n        .show-more-btn{display:block;margin:20px auto 0;background:var(--gradient-primary);color:#fff;border:0;padding:10px 20px;border-radius:8px;font-weight:600;cursor:pointer;transition:transform .2s ease}\n        .show-more-btn:hover{transform:scale(1.05)}\n    </style>\n</head><body>\n    <div class=\"container\">\n        <div class=\"header\">\n            <h1 class=\"main-title\">🚀 SEO & Keyword Report</h1>\n            <div class=\"url-display\">\n                <span>${escapeHtml(businessData.client_name)} | ${escapeHtml(businessData.client_website)}</span>\n                <span class=\"session-id\">Session: ${escapeHtml(businessData.session_id)}</span>\n            </div>\n        </div>\n        <div class=\"analysis-section\"><h2 class=\"section-title\">🏢 Business Overview</h2><div class=\"tech-grid\">${businessDataHTML}</div></div>\n        <div class=\"analysis-section\"><h2 class=\"section-title\">📊 Currently Ranked Keywords</h2>${rankedKeywordsTable}</div>\n        <div class=\"analysis-section\"><h2 class=\"section-title\">🎯 Suggested Keywords</h2>${suggestedKeywordsTable}</div>\n    </div>\n    <script>\n        function toggleTableRows(tableId, button) {\n            const table = document.getElementById(tableId);\n            const hiddenBody = table.querySelector('.collapsible-rows');\n            if (!hiddenBody) return;\n            const isHidden = hiddenBody.style.display === 'none';\n            hiddenBody.style.display = isHidden ? '' : 'none';\n            button.textContent = isHidden ? 'Show Less' : \\`Show \\${hiddenBody.rows.length} More\\`;\n        }\n        function sortTableByColumn(tableId, columnIndex) {\n            const table = document.getElementById(tableId);\n            const headers = table.querySelectorAll('th');\n            const th = headers[columnIndex];\n            const currentOrder = th.classList.contains('sorted-asc') ? 'asc' : 'desc';\n            const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';\n\n            headers.forEach(h => h.classList.remove('sorted-asc', 'sorted-desc'));\n            th.classList.add(\\`sorted-\\${newOrder}\\`);\n\n            const allRows = Array.from(table.querySelectorAll('tbody tr'));\n            \n            allRows.sort((a, b) => {\n                let valA = a.children[columnIndex].textContent.trim();\n                let valB = b.children[columnIndex].textContent.trim();\n                const isNumeric = !isNaN(parseFloat(valA.replace(/[$,]/g, ''))) && isFinite(valA.replace(/[$,]/g, '')) && !isNaN(parseFloat(valB.replace(/[$,]/g, ''))) && isFinite(valB.replace(/[$,]/g, ''));\n\n                if (isNumeric) {\n                    valA = parseFloat(valA.replace(/[$,]/g, ''));\n                    valB = parseFloat(valB.replace(/[$,]/g, ''));\n                }\n\n                if (valA < valB) return newOrder === 'asc' ? -1 : 1;\n                if (valA > valB) return newOrder === 'asc' ? 1 : -1;\n                return 0;\n            });\n            \n            const visibleBody = table.querySelector('.visible-rows');\n            const hiddenBody = table.querySelector('.collapsible-rows');\n            \n            while(visibleBody.firstChild) visibleBody.removeChild(visibleBody.firstChild);\n            if(hiddenBody) { while(hiddenBody.firstChild) hiddenBody.removeChild(hiddenBody.firstChild); }\n            \n            allRows.forEach((row, index) => {\n                if(hiddenBody && index >= 10) { hiddenBody.appendChild(row); } \n                else { visibleBody.appendChild(row); }\n            });\n        }\n    </script>\n</body></html>`;\n\n        return [{ json: { html } }];\n    } catch (error) {\n        console.error(error);\n        return [{ json: { error: 'Error generating dashboard: ' + error.message, stack: error.stack } }];\n    }\n}\n\nreturn generateDashboard();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1072,
+        1424
+      ],
+      "id": "b6712827-2fb6-43d1-ae9b-73066885600d",
+      "name": "Create Report"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "n8n",
+        "fileName": "={{ $('Session ID').first().json.session_id }}.html",
+        "binaryData": false,
+        "fileContent": "={{ $json.html }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        1424
+      ],
+      "id": "2fb39e1f-771e-4d00-9359-a55486b8505b",
+      "name": "Cloudflare Upload",
+      "credentials": {
+        "s3": {
+          "id": "NjzyaTf6zrYe92Me",
+          "name": "S3 account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9f83308c-d704-49e0-8de0-e2453644edea",
+              "name": "url",
+              "value": "=https://pub-6e4b77b888bc4422963711caabeb1953.r2.dev/{{ $('Session ID').first().json.session_id }}.html",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        1648
+      ],
+      "id": "6b055f7a-ab61-43c3-b9ce-808005644345",
+      "name": "Get Report URL"
+    },
+    {
+      "parameters": {
+        "sendTo": "youremail@gmail.com",
+        "subject": "=Content Strategy Ready  {{ $('Session ID').first().json.session_id }}",
+        "emailType": "text",
+        "message": "=Hey Daniel,\n\nI just finished researching and prepared the report for you.\n\nHere is the link:\n{{ $json.url }}\n\nHave a look and let me know how it is!\n\nBest,\nArticollo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1264,
+        1648
+      ],
+      "id": "e0d5e991-cc26-423e-b86e-8d626d8fe80c",
+      "name": "Send a message",
+      "webhookId": "436f7f94-1750-4ece-9303-315e15702072",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "aangs07AC0IQryBR",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "wa0kkSaygUdBVzcF",
+          "mode": "list",
+          "cachedResultName": "[-KR- Business Data]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/wa0kkSaygUdBVzcF"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('Session ID').item.json.session_id }}",
+            "client_name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('client_name', ``, 'string') }}",
+            "client_country": "={{ $('Submit Form').item.json.Country }}",
+            "client_language": "={{ $('Submit Form').item.json.Language }}",
+            "client_website": "={{ $('Submit Form').item.json['Page URL'] }}",
+            "client_description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('client_description', ``, 'string') }}",
+            "target_audience_personas": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('target_audience_personas', ``, 'string') }}",
+            "brand_personality_matrix": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('brand_personality_matrix', ``, 'string') }}",
+            "unique_value_proposition": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('unique_value_proposition', ``, 'string') }}",
+            "primary_competitors": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('primary_competitors', ``, 'string') }}",
+            "people_ask": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('people_ask', ``, 'string') }}",
+            "customer_journey": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('customer_journey', ``, 'string') }}",
+            "customer_persona_trait": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('customer_persona_trait', ``, 'string') }}",
+            "eeat_signal_integration": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('eeat_signal_integration', ``, 'string') }}",
+            "GEO_tactic": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('GEO_tactic', ``, 'string') }}",
+            "call_to_action": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('call_to_action', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "client_country",
+              "displayName": "client_country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "client_language",
+              "displayName": "client_language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "client_website",
+              "displayName": "client_website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "client_description",
+              "displayName": "client_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "target_audience_personas",
+              "displayName": "target_audience_personas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "brand_personality_matrix",
+              "displayName": "brand_personality_matrix",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "unique_value_proposition",
+              "displayName": "unique_value_proposition",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "primary_competitors",
+              "displayName": "primary_competitors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "people_ask",
+              "displayName": "people_ask",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "customer_journey",
+              "displayName": "customer_journey",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "customer_persona_trait",
+              "displayName": "customer_persona_trait",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "eeat_signal_integration",
+              "displayName": "eeat_signal_integration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "GEO_tactic",
+              "displayName": "GEO_tactic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "call_to_action",
+              "displayName": "call_to_action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        224
+      ],
+      "id": "20b21883-11d6-4c3f-93b0-191fe04c57ce",
+      "name": "Insert row in Data table"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Page URL: {{ $('Submit Form').item.json['Page URL'] }}\nCountry: {{ $('Submit Form').item.json.Country }}\nLanguage: {{ $('Submit Form').item.json.Language }}",
+        "options": {
+          "systemMessage": "=### **System Prompt: Adaptive Strategic Business Intelligence (A-SBI) Agent**\n\n#### **1.0 Identity & Core Mission**\n\nYou are an **Adaptive Strategic Business Intelligence (A-SBI) Agent**. Your core mission is to analyze the provided business inputs (`Page URL`, `Country`, `Language`) and transform them into a concise, factual, and strategically valuable data profile. You operate as an elite analyst, converting raw web data into a structured executive briefing. Your final output is the result of a rigorous and **resilient** analytical process.\n\n-----\n\n#### **2.0 Personality Matrix & Guiding Principles**\n\nYour behavior is governed by the following non-negotiable principles:\n\n* **Analytical & Data-Driven:** You dissect information logically. Every piece of data you output is directly supported by the findings from your tools.\n* **Factual & Objective:** You report verifiable facts. You do not make assumptions. If data cannot be found, you will explicitly state it after attempting all paths.\n* **Concise & Efficient:** Your goal is to deliver insights, not paragraphs. You follow the workflow with precision to produce a lean, high-impact data summary.\n* **Adaptive Execution:** If a primary tool or path fails to yield clear, usable data, you **must** pivot to a contingency plan using a backup tool to accomplish the objective. You do not halt the process on a single point of failure.\n\n-----\n\n#### **3.0 Tool & Execution Protocols**\n\nYou have a specific set of tools. Their use is strictly governed by the following protocols.\n\n**Available Tools:**\n\n* **`url_search(url)`:** Your primary tool for deep analysis of on-page content.\n* **`pro_search(query)`:** A flexible tool for understanding the external landscape, finding competitors, and validating information.\n* **`AI_mode(query)`:** Your primary tool for analyzing AI's perception of the business and its customers to define audience characteristics.\n* **`serp_search(query)`:** A powerful tool for analyzing search results. **This can serve as a backup for finding competitors or identifying audience questions (via PAA).**\n* **`Think(plan)`:** Your mandatory internal monologue for planning and decision-making.\n* **`insert row in data table(data)`:** Your final execution step.\n\n**CRITICAL: Mandatory Think/Act Cycle**\n\nYou **MUST** use the `Think` tool before every action. Your thought process must structure your plan, including assessing the results of previous steps to decide your next action.\n\n-----\n\n#### **4.0 The Core Adaptive Workflow (Chain of Thought)**\n\nYou will execute the following multi-phase workflow sequentially, adapting your approach as needed.\n\n**Phase 1: Ingestion & Initial Surface Analysis**\n* **Objective:** To understand the business's self-professed identity directly from its primary asset.\n* **Actions:**\n    1.  Acknowledge the input `Page URL`.\n    2.  **(Think)** Formulate a plan to analyze the homepage.\n    3.  **(Act)** Execute `url_search` on the provided `Page URL`.\n    4.  **(Think)** Extract initial data for `client_name`, `client_description`, and `unique_value_proposition` based *only* on the homepage content.\n\n**Phase 2: External Validation & Competitive Landscape (Adaptive)**\n* **Objective:** To verify the initial findings and identify the main competitors, using a backup plan if necessary.\n* **Actions:**\n    1.  **(Think)** Plan to find competitors using the primary tool, `pro_search`.\n    2.  **(Act)** Execute `pro_search` using queries like \"`[client name]` competitors\".\n    3.  **(Think) Critical Decision Point:** Analyze the results.\n        * **If you found 3-5 clear competitors:** Proceed to the next phase.\n        * **If the results are poor or unclear:** Announce you are activating the **Contingency Plan**.\n    4.  **(Act - Contingency Plan)** Execute **`serp_search`** on the core business category (e.g., \"water filtration systems\") to identify the top-ranking domains as competitors.\n    5.  **(Think)** Synthesize the competitor data (from whichever path was successful) to finalize the `primary_competitors` list.\n\n**Phase 3: Audience & Demand Analysis (Adaptive)**\n* **Objective:** To define the target customer and understand their needs, using a backup plan if necessary.\n* **Actions:**\n    1.  **(Think)** Plan to define the audience using the primary tool, `AI_mode`.\n    2.  **(Act)** Execute `AI_mode` with queries like \"what questions do people ask about `[client industry]`?\"\n    3.  **(Think) Critical Decision Point:** Analyze the results.\n        * **If the data is rich and complete (personas, questions):** Proceed to the next phase.\n        * **If the data is missing key information (like country) or is too generic:** Announce you are activating the **Contingency Plan**.\n    4.  **(Act - Contingency Plan)** Execute **`pro_search`** and/or **`serp_search`** to manually build the audience profile. Use queries like \"`[client industry]` forums `[client country]`\" or analyze the \"People Also Ask\" section from `serp_search`.\n    5.  **(Think)** Synthesize the audience data (from whichever path was successful) to define `target_audience_personas`, `people_ask`, and `customer_journey`.\n\n**Phase 4: Deep Strategic Synthesis**\n* **Objective:** To finalize the profile by synthesizing all gathered data into the remaining strategic fields.\n* **Actions:**\n    1.  **(Think)** This is a pure synthesis step. Review all data gathered from the previous phases. Based on the website's tone and content, define the remaining fields (`brand_personality_matrix`, `customer_persona_trait`, `eeat_signal_integration`, `GEO_tactic`, `call_to_action`).\n\n**Phase 5: Final Execution & Delivery**\n* **Objective:** To load the completed, verified data profile into the system.\n* **Actions:**\n    1.  **(Think)** Perform a final review against the Excellence Checklist.\n    2.  **(Act)** Execute `insert row in data table` with the complete, structured data.\n\n-----\n\n#### **5.0 Data Output & Formatting Mandates**\n\nAll data populated in the final table must adhere to these standards:\n\n* **Brevity is Paramount:** Deliver insights, not paragraphs.\n* **`client_description`**: 1-2 sentences maximum.\n* **`target_audience_personas`**: A 1-sentence summary.\n* **`brand_personality_matrix`**: 3-4 descriptive keywords.\n* **`unique_value_proposition`**: A single, powerful sentence.\n* **`primary_competitors`**: A list of the top 3-5 competitor names.\n* **`people_ask`**: A list of the top 3-5 questions.\n* **`GEO_tactic`**: A single, actionable recommendation.\n* **Factual Integrity:** If data for a specific field cannot be reliably determined after trying all paths, you must insert \"Information not available\".\n\n-----\n\n#### **6.0 Excellence Checklist**\n\nBefore executing Phase 5, you must silently verify your complete data profile against this checklist:\n\n* [ ] **Workflow Adherence:** Was the 5-phase workflow followed exactly?\n* [ ] **Adaptability:** If a primary tool failed, was a contingency path successfully executed?\n* [ ] **`Think` Protocol:** Was the `Think` tool used before every single action?\n* [ ] **Data Conciseness:** Is every field populated with short, relevant, and high-impact information?\n* [ ] **Completeness:** Is every required data field in the table populated?",
+          "maxIterations": 22
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        -64
+      ],
+      "id": "57db6b6c-a9bd-4b81-a53b-6e6c1e987c94",
+      "name": "A-SBI Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "content": "## Keyword Research",
+        "height": 544,
+        "width": 1488,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        688
+      ],
+      "id": "743ab831-e48f-4867-9206-44fc7ab0fcb4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool for related keywords.",
+        "workflowId": {
+          "__rl": true,
+          "value": "VZuocpJkKckDvbOP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VZuocpJkKckDvbOP",
+          "cachedResultName": "Laboratory — <-KR-> Keyword Research Tools"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "function": "=related_keywords",
+            "keyword": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('keyword', ``, 'string') }}",
+            "country_code": "={{ $('Get Country & Language Code').first().json.location_code }}",
+            "language_code": "={{ $('Get Country & Language Code').first().json.language_code }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "function",
+              "displayName": "function",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "country_code",
+              "displayName": "country_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        736
+      ],
+      "id": "a5bb7174-ccaa-44a7-afd9-a3e2e669a1d4",
+      "name": "related_keywords"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool for keyword ideas.",
+        "workflowId": {
+          "__rl": true,
+          "value": "VZuocpJkKckDvbOP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VZuocpJkKckDvbOP",
+          "cachedResultName": "Laboratory — <-KR-> Keyword Research Tools"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "function": "=keyword_ideas",
+            "keyword": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('keyword', ``, 'string') }}",
+            "country_code": "={{ $('Get Country & Language Code').first().json.location_code }}",
+            "language_code": "={{ $('Get Country & Language Code').first().json.language_code }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "function",
+              "displayName": "function",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "country_code",
+              "displayName": "country_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        736
+      ],
+      "id": "c72c275b-a1f0-4c99-b6d6-33a05d791c76",
+      "name": "keyword_ideas"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "xFGbKhgamLIjMfUC",
+          "mode": "list",
+          "cachedResultName": "[-KR- Page Ranked Keywords]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/xFGbKhgamLIjMfUC"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "session_id",
+              "keyValue": "={{ $('Session ID').first().json.session_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        512,
+        1040
+      ],
+      "id": "df6ee447-8eb3-4a34-afce-83cf118caa04",
+      "name": "Get_page_ranked_keywords"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "wa0kkSaygUdBVzcF",
+          "mode": "list",
+          "cachedResultName": "[-KR- Business Data]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/wa0kkSaygUdBVzcF"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "session_id",
+              "keyValue": "={{ $('Session ID').first().json.session_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        656,
+        1088
+      ],
+      "id": "37be0fd5-4c3c-4783-97ca-e39171adcdf3",
+      "name": "get_business_data"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "GeEbkFDEdp0djzik",
+          "mode": "list",
+          "cachedResultName": "[-KR- Suggested Page Keywords]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/GeEbkFDEdp0djzik"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "session_id",
+              "keyValue": "={{ $('Session ID').first().json.session_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        432,
+        912
+      ],
+      "id": "4deca23f-706a-4df6-923b-a0f72de7f827",
+      "name": "get_suggested_page_keywords"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        16,
+        1072
+      ],
+      "id": "2d0cb94e-00a0-4c65-8974-339b04b79cdc",
+      "name": "->"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=### **System Prompt: The Accountable Keyword Engine (n8n)**\n\n## (C) Context\n\nYou are The Accountable Keyword Engine. Your mission is to verifiably insert a final list of 100 to 150 high-value keywords. Your success is measured not by your plan, but by the final, audited data in the table. You are meticulous, reliable, and you trust nothing until you have verified it.\n\n---\n## ⚠️ CRITICAL OPERATING MODE\nYou are operating in LIVE EXECUTION mode with real DataForSEO APIs and database connections. You MUST:\n\nActually execute every tool - No simulation, planning, or \"would do\" statements\nUse only real data returned - Never invent or assume example data\nVerify data before proceeding - Confirm you received actual results from each tool\n---\n\n## (R) Role\n\nYou are **The Accountable Keyword Engine**. Your mission is to produce and **verifiably insert** a final list of **100 to 150 high-value keywords**. Your success is measured not by your plan, but by the final, audited data in the table. You are meticulous, reliable, and you trust nothing until you have verified it.\n\n-----\n\n## 📜 Core Directives & Rules\n\nPrimary Objective: Deliver a final, inserted list of 100-150 keywords\n\nSingle-Pass Execution: You will perform one deep-dive expansion and one comprehensive curation phase. No iterative loops\n\nExpansion Mandate: You MUST execute the keyword_ideas and related_keywords tools a combined total of 8 to 12 times\nVerification is Mandatory: You MUST perform a final audit after insertion to confirm that the number of inserted keywords matches the number of approved keywords. \n\nDiscrepancies are a critical failure that you must correct before finishing\n\n-----\n\n## (I) Instructions: The Accountable 5-Phase Workflow\n\n### **Phase 1: Strategic Seed Selection**\n\n  * **Objective:** To select **4-6 diverse, high-potential seed keywords** to fuel a broad and comprehensive expansion.\n  * **Actions:**\n    1.  `<thinking>`I am starting Phase 1. I will gather all initial data to select 4-6 diverse seeds to maximize the breadth of my expansion phase.`</thinking>`\n    2.  Execute `get_business_data()`, `get_suggested_page_keywords()`, and `get_page_ranked_keywords()`.\n    3.  Select 4-6 seeds based on a mix of core business relevance and topic diversity.\n\n### **Phase 2: Intensive Expansion**\n\n  * **Objective:** To execute 8-12 tool calls to generate a `Massive_Raw_List` of several hundred keyword candidates.\n  * **Actions:**\n    1.  `<thinking>`I am starting the Intensive Expansion phase. I will execute 8-12 tool calls using my diverse seeds to generate a large candidate pool.`</thinking>`\n    2.  Systematically use your seeds as inputs for the `keyword_ideas` and `related_keywords` tools to meet the **8 to 12 total call** mandate.\n    3.  Aggregate all results into one `Massive_Raw_List`.\n\n### **Phase 3: Curation & Quality Control**\n\n  * **Objective:** To refine the massive list down to a final, approved list of 100-150 keywords.\n  * **Actions:**\n    1.  `<thinking>`I am starting Curation. I will filter the raw list and then perform the Quality Control check to ensure the final count is between 100 and 150.`</thinking>`\n    2.  De-duplicate the `Massive_Raw_List` and apply the **Competitor** and **Relevance** filters.\n    3.  **Execute Quality Control Check:** Count the keywords in your `Final_Clean_List`. If the count is outside the 100-150 range, you **MUST** adjust your relevance filtering and re-process the list until it complies.\n\n### **Phase 4: Batched Insertion**\n\n  * **Objective:** To reliably insert every keyword from your approved `Final_Clean_List` in manageable batches.\n  * **Actions:**\n    1.  `<thinking>`My approved list has `[final_count]` keywords. I will now begin the insertion process in batches of 20 and keep a running count.`</thinking>`\n    2.  Initialize an `Insertion_Counter` at 0.\n    3.  For each keyword in your `Final_Clean_List`, execute the `Insert_keyword_in_data_table` tool.\n    4.  After **each successful insertion**, you **MUST** increment your `Insertion_Counter`.\n    5.  After every 20 insertions, think `Batch complete. Total inserted so far: [current value of Insertion_Counter].`\n\n### **Phase 5: Final Audit & Finalization**\n\n  * **Objective:** To verify that all work was completed correctly and terminate the operation with an accurate report.\n  * **Actions:**\n    1.  `<thinking>`All insertion batches are complete. I will now perform a final audit to verify the counts before reporting my success.`</thinking>`\n    2.  **Compare Final Counts (CRITICAL):** Compare the final value of your `Insertion_Counter` with the total number of keywords in your `Final_Clean_List`.\n    3.  **If the counts do not match:** You have failed the audit. Announce a \"Discrepancy Detected.\" Immediately identify which keywords were missed and execute the `Insert_keyword_in_data_table` tool for them. Do not finish until the `Insertion_Counter` exactly matches the list total.\n    4.  **If the counts match:** The audit is successful. You will now generate the final termination message. The `keywords_inserted` value in your report **MUST** come from your final, verified `Insertion_Counter`.\n\n-----\n\n## (S) Specifications: Output Formats\n\n1.  **For `Insert_keyword_in_data_table`:**\n    ```\n    {\n      \"keyword\": \"the specific keyword phrase\",\n      \"search_volume\": 12500,\n      \"cpc\": 2.75,\n      \"competition\": 0.85,\n      \"competition_level\": \"High\",\n      \"intent\": \"Commercial\"\n    }\n    ```\n2.  **For Final Termination Message:**\n    ```\n    {\n      \"status\": \"complete\",\n      \"message\": \"Deep-dive acquisition and audit finished. All keywords confirmed inserted.\",\n      \"keywords_inserted\": \"[the final verified number from your Insertion_Counter]\"\n    }\n    ```\n---\n\n## Success Criteria\n\n### Complete Success:\n100-150 keywords inserted with verified audit match\nAll keywords have complete DataForSEO metrics\nAudit formula confirmed: approved = inserted\nNo unresolved discrepancies\n\n### Acceptable Completion:\n90-159 keywords inserted (within 10% tolerance)\n≥90% insertion success rate\nFailed keywords documented with actual error messages\n\nCore Mission: Execute a complete, verified keyword acquisition operation using real DataForSEO data and deliver an audited final report with exact insertion counts. Do not invent data, use the relevant keyword data present by related_keywords and keyword_ideas.",
+        "options": {
+          "maxIterations": 100
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        880
+      ],
+      "id": "cf776ad5-b866-498a-b99d-b51798a3a434",
+      "name": "Keyword Analyst Agent",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "VSuhgL9tT1QSlGcI",
+          "mode": "list",
+          "cachedResultName": "[ -KR- Final Keyword List]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/VSuhgL9tT1QSlGcI"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "session_id",
+              "keyValue": "={{ $('Session ID').first().json.session_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        928,
+        1008
+      ],
+      "id": "3da4d05b-43bb-4577-b654-358184d6a44b",
+      "name": "get_final_keyword_list"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        784
+      ],
+      "id": "a8875728-10bb-42be-acef-722625188557",
+      "name": "ThinK"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "VSuhgL9tT1QSlGcI",
+          "mode": "list",
+          "cachedResultName": "[ -KR- Final Keyword List]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/VSuhgL9tT1QSlGcI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "session_id": "={{ $('Session ID').item.json.session_id }}",
+            "keyword": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('keyword', ``, 'string') }}",
+            "search_volume": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('search_volume', ``, 'string') }}",
+            "cpc": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cpc', ``, 'string') }}",
+            "competition": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('competition', ``, 'string') }}",
+            "competition_level": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('competition_level', ``, 'string') }}",
+            "intent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('intent', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "search_volume",
+              "displayName": "search_volume",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "cpc",
+              "displayName": "cpc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "competition",
+              "displayName": "competition",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "competition_level",
+              "displayName": "competition_level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "intent",
+              "displayName": "intent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1,
+      "position": [
+        800,
+        1056
+      ],
+      "id": "c182838a-af79-4d77-ba96-9827a8d55176",
+      "name": "Insert_keyword_in_data_table"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        480,
+        784
+      ],
+      "id": "05a7ba90-6b3b-48d0-b937-02ceffac621f",
+      "name": "2.5 Pro",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "8eDMUtP7P20s67XX",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        1072
+      ],
+      "id": "374fb868-e02c-496a-bf96-e3c770731558",
+      "name": "--->"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        960,
+        880
+      ],
+      "id": "81ac35c9-7261-4542-a3a9-e8b13f6c2b01",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "content": "## **Keyword Research Workflow Setup Guide** 🚀\nHere’s a simple guide to get your keyword research workflow up and running. Let's go!\n\n## **1. Get Started: Workflows & DataForSEO**\nFirst, upload both workflows into your n8n instance: `<-KR-> Keyword Research Tools` and `<-KR-> Keyword Research Workflow`.\n\nNext, open the `<-KR-> Keyword Research Tools` workflow and connect your **DataForSEO** account. Just find the Basic Auth section in the relevant nodes and plug in your details.\n* **Link**: [DataForSEO](https://dataforseo.com/)\n\n## **2. Set Up Your Data Tables 🗂️**\nThis workflow needs a place to store information. You'll need to create four \"Datatables\" in n8n.\n\nPlease use the separate \"Datatable Setup Guide\"** for the exact table names and columns. Getting this right is super important!\n\n## **3. Connect Your API Keys 🔑**\nAPI keys are like special passwords that let your apps talk to each other.\n\nFind the node named `🔗 Set API Credentials` and add your keys for:\n* **Firecrawl**: [Firecrawl Website](https://www.firecrawl.dev/)\n* **Perplexity**: [Perplexity Docs](https://docs.perplexity.ai/)\n\nYou'll also need to add your **Gemini** API key in the AI agent nodes (like `'A-SBI Agent'`). You can get a free key from [Google AI Studio](https://aistudio.google.com).\n\n\n## **4. Configure the AI Agents 🤖**\nYour workflow has two AI \"agents\" that do the heavy lifting. You'll need to configure both:\n1.  **'A-SBI Agent' (The Researcher)**: Set its model to **Gemini 2.5 Flash**. Connect its `Tools` and `Data Table` to the right workflow and table so it can search and save its findings.\n2.  **'Keyword Analyst Agent' (The Analyst)**: Set its model to **Gemini 2.5 Pro**. Connect its `Tools` and link it to **all four** of your datatables so it can read the data and create the final keyword list.\n\n## **5. Set Up Reports & Uploads 📤**\nAlmost done! Let's get your results ready.\n* **Cloudflare R2**: Connect your Cloudflare account to the `'Cloudflare Upload'` node to store the final report.\n* **Gmail**: Connect your Gmail account to the last node to email the report when it's finished.\n\n\n### **👉 IMPORTANT: Test As You Go!**\nBefore activating the whole workflow, **test each node individually**. Click a node, press the 'Play' button on it, and see if it works. This is the fastest way to find and fix any problems!",
+        "height": 1216,
+        "width": 576,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        416
+      ],
+      "id": "83a0d795-ba0c-45c1-940f-2c2aa1a74cd9",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "description": "Call AI Mode search.",
+        "workflowId": {
+          "__rl": true,
+          "value": "VZuocpJkKckDvbOP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VZuocpJkKckDvbOP",
+          "cachedResultName": "Laboratory — <-KR-> Keyword Research Tools"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "function": "=ai_mode",
+            "keyword": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('keyword', ``, 'string') }}",
+            "country_code": "= {{ $('Get Country & Language Code').item.json.location_code }}",
+            "language_code": "={{ $('Get Country & Language Code').item.json.language_code }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "function",
+              "displayName": "function",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "country_code",
+              "displayName": "country_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        96
+      ],
+      "id": "94cddd5d-8d19-4fdd-bdd4-c906985adc2a",
+      "name": "ai_mode"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool for Serp search.",
+        "workflowId": {
+          "__rl": true,
+          "value": "VZuocpJkKckDvbOP",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VZuocpJkKckDvbOP",
+          "cachedResultName": "Laboratory — <-KR-> Keyword Research Tools"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "function": "serp_search",
+            "keyword": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('keyword', ``, 'string') }}",
+            "country_code": "= {{ $('Get Country & Language Code').item.json.location_code }}",
+            "language_code": "={{ $('Get Country & Language Code').item.json.language_code }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "function",
+              "displayName": "function",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "country_code",
+              "displayName": "country_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "language_code",
+              "displayName": "language_code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        96
+      ],
+      "id": "b0f68fe4-ec1d-4ffa-91d8-fa191b1e46b1",
+      "name": "serp_search"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "xFGbKhgamLIjMfUC",
+          "mode": "list",
+          "cachedResultName": "[-KR- Page Ranked Keywords]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/xFGbKhgamLIjMfUC"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "search_volume": "={{ $json.search_volume }}",
+            "keyword": "={{ $json.keyword }}",
+            "cpc": "={{ $json.cpc }}",
+            "competition_level": "={{ $json.competition_level }}",
+            "estimated_traffic": "={{ $json.estimated_traffic }}",
+            "session_id": "={{ $('Session ID').item.json.session_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "search_volume",
+              "displayName": "search_volume",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "cpc",
+              "displayName": "cpc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "competition_level",
+              "displayName": "competition_level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "estimated_traffic",
+              "displayName": "estimated_traffic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        528,
+        224
+      ],
+      "id": "91dd350b-84b8-4412-b359-97a80129ff2b",
+      "name": "Insert Page Ranked Keywords"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "GeEbkFDEdp0djzik",
+          "mode": "list",
+          "cachedResultName": "[-KR- Suggested Page Keywords]",
+          "cachedResultUrl": "/projects/6s3sOILcGEL9TSZr/datatables/GeEbkFDEdp0djzik"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "keyword": "={{ $json.keyword }}",
+            "search_volume": "={{ $json.search_volume }}",
+            "cpc": "={{ $json.cpc }}",
+            "competition": "={{ $json.competition }}",
+            "intent": "={{ $json.intent }}",
+            "intent_probability": "={{ $json.intent_probability }}",
+            "session_id": "={{ $('Session ID').item.json.session_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "keyword",
+              "displayName": "keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "search_volume",
+              "displayName": "search_volume",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "cpc",
+              "displayName": "cpc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "competition",
+              "displayName": "competition",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "intent",
+              "displayName": "intent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "intent_probability",
+              "displayName": "intent_probability",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1088,
+        496
+      ],
+      "id": "d10a98f3-b81c-45cc-9c6b-b97e3362ec66",
+      "name": "Insert Suggested Page Keywords"
+    },
+    {
+      "parameters": {
+        "content": "\n### **Datatable Setup**\nCreate the following four n8n Datatables with the exact column names and data types specified below.\n\n**1. `[-KR- Business Data]`**\n* `session_id` (string)\n* `client_name` (string)\n* `client_country` (string)\n* `client_language` (string)\n* `client_website` (string)\n* `client_description` (string)\n* `target_audience_personas` (string)\n* `brand_personality_matrix` (string)\n* `unique_value_proposition` (string)\n* `primary_competitors` (string)\n* `people_ask` (string)\n* `customer_journey` (string)\n* `customer_persona_trait` (string)\n* `eeat_signal_integration` (string)\n* `GEO_tactic` (string)\n* `call_to_action` (string)\n\n**2. `[-KR- Page Ranked Keywords]`**\n* `keyword` (string)\n* `search_volume` (number)\n* `cpc` (number)\n* `competition_level` (string)\n* `estimated_traffic` (number)\n* `session_id` (string)\n\n**3. `[-KR- Suggested Page Keywords]`**\n* `keyword` (string)\n* `search_volume` (number)\n* `cpc` (number)\n* `competition` (string)\n* `keyword_intent.label` (string)\n* `keyword_intent.probability` (number)\n* `session_id` (string)\n\n**4. `[ -KR- Final Keyword List]`**\n* `keyword` (string)\n* `search_volume` (string)\n* `cpc` (string)\n* `competition` (string)\n* `competition_level` (string)\n* `intent` (string)\n* `session_id` (string)",
+        "height": 1072,
+        "width": 320,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        416
+      ],
+      "id": "95e71df1-1d6f-421d-b2aa-312fda949836",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "content": "![n8n Creator Profile](https://pub-70c57f6d49284d1da8650039c2add836.r2.dev/AI%20Marketing%20Hub%20(2).png)",
+        "height": 540,
+        "width": 932,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        -160
+      ],
+      "id": "5cb12dae-c0aa-4a4f-87a6-036bae3abf72",
+      "name": "Sticky Note41"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Filter keywords": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Insert Page Ranked Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Country & Language Code": {
+      "main": [
+        [
+          {
+            "node": "Session ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submit Form": {
+      "main": [
+        [
+          {
+            "node": "Get Country & Language Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Ranked Keywords": {
+      "main": [
+        [
+          {
+            "node": "Filter keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keyword for Site": {
+      "main": [
+        [
+          {
+            "node": "Filter Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Intent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Keywords": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Insert Suggested Page Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Keywords": {
+      "main": [
+        [
+          {
+            "node": "Search Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "URL_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "A-SBI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "A-SBI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔗 Set API Credentials": {
+      "main": [
+        [
+          {
+            "node": "A-SBI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Keyword for Site",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session ID": {
+      "main": [
+        [
+          {
+            "node": "🔗 Set API Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pro_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "A-SBI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2.5 Flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "A-SBI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "-->": {
+      "main": [
+        [
+          {
+            "node": "Get Business Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Final Keyword List",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Page Ranked keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Business Data": {
+      "main": [
+        [
+          {
+            "node": "Business Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Final Keyword List": {
+      "main": [
+        [
+          {
+            "node": "Final Keyword List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Aggregate4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Page Ranked keywords": {
+      "main": [
+        [
+          {
+            "node": "Page Ranked Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Create Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Business Data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Page Ranked Keywords": {
+      "main": [
+        [
+          {
+            "node": "Aggregate4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Keyword List": {
+      "main": [
+        [
+          {
+            "node": "Aggregate3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Report": {
+      "main": [
+        [
+          {
+            "node": "Cloudflare Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cloudflare Upload": {
+      "main": [
+        [
+          {
+            "node": "Get Report URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Report URL": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate2": {
+      "main": [
+        [
+          {
+            "node": "->",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row in Data table": {
+      "ai_tool": [
+        [
+          {
+            "node": "A-SBI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A-SBI Agent": {
+      "main": [
+        [
+          {
+            "node": "Get Ranked Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "related_keywords": {
+      "ai_tool": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "keyword_ideas": {
+      "ai_tool": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_page_ranked_keywords": {
+      "ai_tool": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_business_data": {
+      "ai_tool": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_suggested_page_keywords": {
+      "ai_tool": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "->": {
+      "main": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keyword Analyst Agent": {
+      "main": [
+        [
+          {
+            "node": "--->",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_final_keyword_list": {
+      "ai_tool": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ThinK": {
+      "ai_tool": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert_keyword_in_data_table": {
+      "ai_tool": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2.5 Pro": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "--->": {
+      "main": [
+        [
+          {
+            "node": "-->",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Keyword Analyst Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "serp_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "A-SBI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ai_mode": {
+      "ai_tool": [
+        [
+          {
+            "node": "A-SBI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Page Ranked Keywords": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Suggested Page Keywords": {
+      "main": [
+        [
+          {
+            "node": "Aggregate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3ee54cb8-f21c-48d9-93d0-984891522918",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1ee7b11b3a4bb285563e32fdddf3fbac26379ada529b942ee7cda230735046a1"
+  },
+  "id": "C7rBtUIXt8hOcxpe",
+  "tags": []
+}

@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --void: #000000;
+  --black: #050508;
+  --surface: #0a0a0f;
+  --gold-dark: #8B7355;
+  --gold: #C9A962;
+  --gold-light: #E8D5A3;
+  --gold-glow: #FFD700;
+  --electric-blue: #4A9EFF;
+  --purple-mystic: #8B5CF6;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--void);
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--void);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold-dark);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* Selection */
+::selection {
+  background: var(--gold);
+  color: var(--void);
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #C9A962 0%, #E8D5A3 50%, #C9A962 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-electric {
+  background: linear-gradient(135deg, #4A9EFF 0%, #8B5CF6 50%, #4A9EFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass Effect */
+.glass {
+  background: rgba(10, 10, 15, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(201, 169, 98, 0.1);
+}
+
+/* Noise Overlay */
+.noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Glow Effects */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(201, 169, 98, 0.3), 0 0 40px rgba(201, 169, 98, 0.1);
+}
+
+.glow-electric {
+  box-shadow: 0 0 20px rgba(74, 158, 255, 0.3), 0 0 40px rgba(139, 92, 246, 0.1);
+}
+
+/* Button Styles */
+.btn-gold {
+  @apply bg-gold text-black font-semibold px-8 py-4 rounded-xl transition-all duration-300;
+  @apply hover:bg-gold-light hover:scale-105;
+  @apply active:scale-95;
+}
+
+.btn-outline {
+  @apply border border-gold text-gold font-semibold px-8 py-4 rounded-xl transition-all duration-300;
+  @apply hover:bg-gold hover:text-black;
+}
+
+/* Card Styles */
+.card {
+  @apply bg-surface rounded-2xl p-6 border border-gold/10 transition-all duration-300;
+  @apply hover:border-gold/30;
+}
+
+/* Trigger Badge */
+.trigger-badge {
+  @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium;
+  @apply bg-gold/10 text-gold border border-gold/20;
+}
+
+/* Score Indicator */
+.score-ring {
+  @apply relative w-20 h-20 rounded-full;
+  background: conic-gradient(
+    var(--gold) calc(var(--score) * 1%),
+    rgba(201, 169, 98, 0.1) calc(var(--score) * 1%)
+  );
+}
+
+.score-ring::before {
+  content: '';
+  @apply absolute inset-2 bg-surface rounded-full;
+}
+
+/* Textarea */
+.textarea-eletrify {
+  @apply w-full min-h-[200px] p-4 bg-surface border border-gold/20 rounded-xl;
+  @apply text-white placeholder:text-gray-500 font-mono text-sm;
+  @apply focus:outline-none focus:border-gold/50 focus:ring-2 focus:ring-gold/10;
+  @apply transition-all duration-300 resize-none;
+}
+
+/* Loading Animation */
+@keyframes electric-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-electric {
+  animation: electric-pulse 1.5s ease-in-out infinite;
+}

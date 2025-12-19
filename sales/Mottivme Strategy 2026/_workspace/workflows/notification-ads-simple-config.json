@@ -1,0 +1,457 @@
+{
+  "name": "Relatórios Individuais - Config Simples",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{"triggerAtHour": 8}]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Executar Diariamente 8h",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ========================================\n// CONFIGURAÇÃO DE CLIENTES E CONTATOS\n// ========================================\n// Edite este objeto para adicionar/remover clientes\n\nconst clientContacts = {\n  // Nome exato da conta no Facebook: {contactId, telefone}\n  \"Cliente Exemplo 1\": {\n    contactId: \"zW9CbEIUzNXr9XV8q43V\",\n    telefone: \"+5511999999999\",\n    ativo: true\n  },\n  \"Cliente Exemplo 2\": {\n    contactId: \"ABC123DEF456GHI789\",\n    telefone: \"+5511988888888\",\n    ativo: true\n  },\n  \"Cliente Teste\": {\n    contactId: \"TEST123456789\",\n    telefone: \"+5511977777777\",\n    ativo: false  // Não receberá relatórios\n  }\n  // Adicione mais clientes aqui seguindo o mesmo padrão\n};\n\n// ========================================\n// NÃO EDITE ABAIXO DESTA LINHA\n// ========================================\n\nreturn [{\n  json: {\n    clientContacts: clientContacts,\n    totalClients: Object.keys(clientContacts).length,\n    activeClients: Object.values(clientContacts).filter(c => c.ativo).length\n  }\n}];"
+      },
+      "id": "config-contacts",
+      "name": "⚙️ CONFIGURAR CONTATOS AQUI",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "notes": "EDITE ESTE NÓ para adicionar os dados de contato de cada cliente"
+    },
+    {
+      "parameters": {
+        "graphApiVersion": "v23.0",
+        "node": "me",
+        "edge": "adaccounts",
+        "options": {
+          "fields": {
+            "field": [
+              {"name": "id"},
+              {"name": "name"},
+              {"name": "account_status"}
+            ]
+          }
+        }
+      },
+      "id": "get-ad-accounts",
+      "name": "1. Buscar Contas Facebook",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "id": "split-accounts",
+      "name": "2. Separar Contas",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "account-name",
+              "name": "accountName",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "account-id",
+              "name": "accountId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-account-info",
+      "name": "3. Preparar Info da Conta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "graphApiVersion": "v23.0",
+        "node": "={{ $json.accountId }}",
+        "edge": "campaigns",
+        "options": {
+          "fields": {
+            "field": [
+              {"name": "id"},
+              {"name": "name"},
+              {"name": "status"}
+            ]
+          }
+        }
+      },
+      "id": "get-campaigns",
+      "name": "4. Buscar Campanhas",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1.1,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "id": "split-campaigns",
+      "name": "5. Separar Campanhas",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "graphApiVersion": "v23.0",
+        "node": "={{ $json.id }}",
+        "edge": "adsets",
+        "options": {
+          "fields": {
+            "field": [
+              {"name": "id"},
+              {"name": "name"},
+              {"name": "status"}
+            ]
+          }
+        }
+      },
+      "id": "get-adsets",
+      "name": "6. Buscar Ad Sets",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1.1,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "id": "split-adsets",
+      "name": "7. Separar Ad Sets",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "graphApiVersion": "v23.0",
+        "node": "={{ $json.id }}",
+        "edge": "ads",
+        "options": {
+          "fields": {
+            "field": [
+              {"name": "id"},
+              {"name": "name"},
+              {"name": "effective_status"},
+              {"name": "creative{video_id}"}
+            ]
+          },
+          "limit": 100
+        }
+      },
+      "id": "get-ads",
+      "name": "8. Buscar Anúncios",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1.1,
+      "position": [2220, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "id": "split-ads",
+      "name": "9. Separar Anúncios",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [2440, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "filter-active",
+              "leftValue": "={{ $json.effective_status }}",
+              "rightValue": "ACTIVE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-active-ads",
+      "name": "10. Filtrar Apenas Ativos",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2660, 300]
+    },
+    {
+      "parameters": {
+        "graphApiVersion": "v23.0",
+        "node": "={{ $json.id }}",
+        "edge": "insights",
+        "options": {
+          "fields": {
+            "field": [
+              {"name": "impressions"},
+              {"name": "clicks"},
+              {"name": "spend"},
+              {"name": "cpc"},
+              {"name": "cpm"},
+              {"name": "actions"},
+              {"name": "action_values"},
+              {"name": "date_start"},
+              {"name": "date_stop"}
+            ]
+          },
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "time_range",
+                "value": "={{ {\"since\": $now.minus(1, 'day').toFormat('yyyy-MM-dd'), \"until\": $now.minus(1, 'day').toFormat('yyyy-MM-dd')} }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "get-insights",
+      "name": "11. Buscar Métricas",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1.1,
+      "position": [2880, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst formattedItems = items.map(item => {\n  const insights = item.json.insights?.data?.[0] || {};\n  const actions = insights.actions || [];\n  \n  const conversasIniciadas = actions.find(a => a.action_type === 'onsite_conversion.messaging_conversation_started_7d')?.value || 0;\n  const primeiraResposta = actions.find(a => a.action_type === 'onsite_conversion.messaging_first_reply')?.value || 0;\n  const mensagensDepth2 = actions.find(a => a.action_type === 'onsite_conversion.messaging_user_depth_2_message')?.value || 0;\n  \n  const spend = parseFloat(insights.spend || 0);\n  const impressions = parseInt(insights.impressions || 0);\n  const clicks = parseInt(insights.clicks || 0);\n  \n  const custoPorConversa = conversasIniciadas > 0 ? spend / conversasIniciadas : 0;\n  const custoPorPrimeiraResposta = primeiraResposta > 0 ? spend / primeiraResposta : 0;\n  const custoPorMensagemDepth2 = mensagensDepth2 > 0 ? spend / mensagensDepth2 : 0;\n  \n  return {\n    json: {\n      'Account Name': item.json.accountName,\n      'Ad ID': item.json.id,\n      'Ad Name': item.json.name,\n      'Active Status': item.json.effective_status,\n      'Date': insights.date_start || $now.minus(1, 'day').toFormat('yyyy-MM-dd'),\n      'Impressions': impressions,\n      'Clicks': clicks,\n      'Spend': spend,\n      'CPC': parseFloat(insights.cpc || 0),\n      'CPM': parseFloat(insights.cpm || 0),\n      'Conversas Iniciadas': parseInt(conversasIniciadas),\n      'Primeira Resposta': parseInt(primeiraResposta),\n      'Mensagens Depth 2': parseInt(mensagensDepth2),\n      'Custo por Conversa': custoPorConversa,\n      'Custo por Primeira Resposta': custoPorPrimeiraResposta,\n      'Custo por Mensagem Profundidade 2': custoPorMensagemDepth2\n    }\n  };\n});\n\nreturn formattedItems;"
+      },
+      "id": "format-data",
+      "name": "12. Formatar Dados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3100, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Agrupa dados por Account Name (cliente)\nconst items = $input.all();\nconst configItem = $('⚙️ CONFIGURAR CONTATOS AQUI').first();\nconst clientContacts = configItem.json.clientContacts;\n\nif (!items || items.length === 0) {\n  console.log('⚠️ Nenhum dado encontrado');\n  return [];\n}\n\n// Agrupa por cliente\nconst groupedByClient = {};\n\nitems.forEach(item => {\n  const accountName = item.json['Account Name'] || 'Desconhecido';\n  \n  if (!groupedByClient[accountName]) {\n    groupedByClient[accountName] = [];\n  }\n  \n  groupedByClient[accountName].push(item.json);\n});\n\n// Cria relatório para cada cliente\nconst clientReports = Object.entries(groupedByClient).map(([accountName, ads]) => {\n  const totalSpend = ads.reduce((sum, ad) => sum + (parseFloat(ad.Spend) || 0), 0);\n  const totalImpressions = ads.reduce((sum, ad) => sum + (parseInt(ad.Impressions) || 0), 0);\n  const totalClicks = ads.reduce((sum, ad) => sum + (parseInt(ad.Clicks) || 0), 0);\n  const totalConversas = ads.reduce((sum, ad) => sum + (parseInt(ad['Conversas Iniciadas']) || 0), 0);\n  const totalPrimeiraResposta = ads.reduce((sum, ad) => sum + (parseInt(ad['Primeira Resposta']) || 0), 0);\n  const totalMensagensDepth2 = ads.reduce((sum, ad) => sum + (parseInt(ad['Mensagens Depth 2']) || 0), 0);\n  \n  const custoMensagem = totalConversas > 0 ? totalSpend / totalConversas : 0;\n  const cpm = totalImpressions > 0 ? (totalSpend / totalImpressions) * 1000 : 0;\n  const ctr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;\n  const taxaConversao = totalClicks > 0 ? (totalConversas / totalClicks) * 100 : 0;\n  \n  const top3Ads = ads\n    .sort((a, b) => (parseFloat(b.Spend) || 0) - (parseFloat(a.Spend) || 0))\n    .slice(0, 3);\n  \n  // Busca dados de contato\n  const contactInfo = clientContacts[accountName] || null;\n  \n  return {\n    json: {\n      accountName,\n      totalAds: ads.length,\n      totalSpend,\n      totalImpressions,\n      totalClicks,\n      totalConversas,\n      totalPrimeiraResposta,\n      totalMensagensDepth2,\n      custoMensagem,\n      cpm,\n      ctr,\n      taxaConversao,\n      top3Ads,\n      date: ads[0].Date,\n      contactId: contactInfo?.contactId || null,\n      telefone: contactInfo?.telefone || null,\n      ativo: contactInfo?.ativo ?? false,\n      hasContact: !!contactInfo\n    }\n  };\n});\n\nconsole.log(`✅ Processados ${clientReports.length} clientes`);\nreturn clientReports;"
+      },
+      "id": "group-by-client",
+      "name": "13. Agrupar por Cliente + Contatos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3320, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst data = item.json;\n\nif (!data.accountName) {\n  return [{\n    json: {\n      error: 'Cliente sem nome',\n      message: null\n    }\n  }];\n}\n\nlet message = `🚀 *RELATÓRIO DIÁRIO DE TRÁFEGO*\\n`;\nmessage += `━━━━━━━━━━━━━━━━━━━━\\n\\n`;\nmessage += `👤 *Cliente:* ${data.accountName}\\n`;\nmessage += `📅 *Data:* ${data.date}\\n\\n`;\nmessage += `📊 *MÉTRICAS GERAIS*\\n`;\nmessage += `━━━━━━━━━━━━━━━━━━━━\\n`;\nmessage += `💰 Investimento: $ ${data.totalSpend.toFixed(2)}\\n`;\nmessage += `👁️ Impressões: ${data.totalImpressions.toLocaleString('pt-BR')}\\n`;\nmessage += `🖱️ Cliques: ${data.totalClicks.toLocaleString('pt-BR')}\\n`;\nmessage += `💬 Conversas Iniciadas: ${data.totalConversas}\\n`;\nmessage += `📱 Primeira Resposta: ${data.totalPrimeiraResposta}\\n`;\nmessage += `🔄 Mensagens Depth 2: ${data.totalMensagensDepth2}\\n\\n`;\nmessage += `📈 *PERFORMANCE*\\n`;\nmessage += `━━━━━━━━━━━━━━━━━━━━\\n`;\nmessage += `💵 Custo/Conversa: $ ${data.custoMensagem.toFixed(2)}\\n`;\nmessage += `📊 CPM: $ ${data.cpm.toFixed(2)}\\n`;\nmessage += `📍 CTR: ${data.ctr.toFixed(2)}%\\n`;\nmessage += `✅ Taxa Conversão: ${data.taxaConversao.toFixed(2)}%\\n\\n`;\n\nif (data.top3Ads && data.top3Ads.length > 0) {\n  message += `🏆 *TOP 3 ANÚNCIOS*\\n`;\n  message += `━━━━━━━━━━━━━━━━━━━━\\n`;\n  \n  data.top3Ads.forEach((ad, index) => {\n    const adName = ad['Ad Name'] || 'Sem nome';\n    const adSpend = parseFloat(ad.Spend) || 0;\n    const adConversas = parseInt(ad['Conversas Iniciadas']) || 0;\n    const custoPorConv = adConversas > 0 ? adSpend / adConversas : 0;\n    \n    message += `\\n${index + 1}. *${adName}*\\n`;\n    message += `   💰 Gasto: $ ${adSpend.toFixed(2)}\\n`;\n    message += `   💬 Conversões: ${adConversas}\\n`;\n    message += `   📊 Custo/Conv: $ ${custoPorConv.toFixed(2)}\\n`;\n  });\n}\n\nmessage += `\\n━━━━━━━━━━━━━━━━━━━━\\n`;\nmessage += `📅 Gerado em: ${$now.toFormat('dd/MM/yyyy HH:mm')}\\n`;\n\nreturn [{\n  json: {\n    ...data,\n    message: message\n  }\n}];"
+      },
+      "id": "format-message",
+      "name": "14. Formatar Mensagem",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3540, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-contact",
+              "leftValue": "={{ $json.contactId }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "is-active",
+              "leftValue": "={{ $json.ativo }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "validate-send",
+      "name": "15. Validar Envio",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [3760, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.contactId }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 2000
+            }
+          }
+        }
+      },
+      "id": "send-whatsapp",
+      "name": "16. ✅ Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [3980, 100],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "leadconnector-header-auth",
+          "name": "LeadConnector Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst data = item.json;\n\nlet reason = 'Desconhecido';\n\nif (!data.hasContact) {\n  reason = 'Cliente não configurado no nó de contatos';\n} else if (!data.ativo) {\n  reason = 'Cliente marcado como inativo';\n} else if (!data.contactId || !data.telefone) {\n  reason = 'Dados de contato incompletos';\n}\n\nconsole.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━');\nconsole.log('❌ ENVIO IGNORADO');\nconsole.log('Cliente:', data.accountName);\nconsole.log('Motivo:', reason);\nconsole.log('Contact ID:', data.contactId || 'N/A');\nconsole.log('Telefone:', data.telefone || 'N/A');\nconsole.log('Ativo:', data.ativo);\nconsole.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━');\n\nreturn [{\n  json: {\n    accountName: data.accountName,\n    reason: reason,\n    skipped: true,\n    totalSpend: data.totalSpend,\n    totalConversas: data.totalConversas\n  }\n}];"
+      },
+      "id": "log-skipped",
+      "name": "16. ⚠️ Log Ignorado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3980, 300]
+    },
+    {
+      "parameters": {
+        "content": "## 🚀 CONFIGURAÇÃO RÁPIDA\n\n### Passo 1: Editar Contatos\nClique no nó **\"⚙️ CONFIGURAR CONTATOS AQUI\"** e edite o objeto `clientContacts` com seus clientes:\n\n```javascript\nconst clientContacts = {\n  \"Nome Exato da Conta FB\": {\n    contactId: \"ID_DO_LEADCONNECTOR\",\n    telefone: \"+5511999999999\",\n    ativo: true\n  }\n};\n```\n\n### Passo 2: Credenciais\n1. **Facebook Graph API** (nós 1, 4, 6, 8, 11)\n2. **LeadConnector** (nó 16)\n   - Criar credencial \"HTTP Header Auth\"\n   - Header: `Authorization`\n   - Value: `Bearer SEU_TOKEN`\n\n### Passo 3: Testar\n1. Execute manualmente\n2. Verifique logs de clientes ignorados\n3. Ative o schedule\n\n### Diferenças da Versão com Airtable:\n✅ **Mais simples** - sem tabela extra\n✅ **Mais rápido** - menos queries\n❌ **Menos flexível** - precisa editar workflow\n❌ **Sem histórico** - não salva no Airtable",
+        "height": 547.5961538461539,
+        "width": 419.61538461538464,
+        "color": 5
+      },
+      "id": "sticky-config",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, 580]
+    }
+  ],
+  "connections": {
+    "Executar Diariamente 8h": {
+      "main": [[{"node": "⚙️ CONFIGURAR CONTATOS AQUI", "type": "main", "index": 0}]]
+    },
+    "⚙️ CONFIGURAR CONTATOS AQUI": {
+      "main": [[{"node": "1. Buscar Contas Facebook", "type": "main", "index": 0}]]
+    },
+    "1. Buscar Contas Facebook": {
+      "main": [[{"node": "2. Separar Contas", "type": "main", "index": 0}]]
+    },
+    "2. Separar Contas": {
+      "main": [[{"node": "3. Preparar Info da Conta", "type": "main", "index": 0}]]
+    },
+    "3. Preparar Info da Conta": {
+      "main": [[{"node": "4. Buscar Campanhas", "type": "main", "index": 0}]]
+    },
+    "4. Buscar Campanhas": {
+      "main": [[{"node": "5. Separar Campanhas", "type": "main", "index": 0}]]
+    },
+    "5. Separar Campanhas": {
+      "main": [[{"node": "6. Buscar Ad Sets", "type": "main", "index": 0}]]
+    },
+    "6. Buscar Ad Sets": {
+      "main": [[{"node": "7. Separar Ad Sets", "type": "main", "index": 0}]]
+    },
+    "7. Separar Ad Sets": {
+      "main": [[{"node": "8. Buscar Anúncios", "type": "main", "index": 0}]]
+    },
+    "8. Buscar Anúncios": {
+      "main": [[{"node": "9. Separar Anúncios", "type": "main", "index": 0}]]
+    },
+    "9. Separar Anúncios": {
+      "main": [[{"node": "10. Filtrar Apenas Ativos", "type": "main", "index": 0}]]
+    },
+    "10. Filtrar Apenas Ativos": {
+      "main": [[{"node": "11. Buscar Métricas", "type": "main", "index": 0}]]
+    },
+    "11. Buscar Métricas": {
+      "main": [[{"node": "12. Formatar Dados", "type": "main", "index": 0}]]
+    },
+    "12. Formatar Dados": {
+      "main": [[{"node": "13. Agrupar por Cliente + Contatos", "type": "main", "index": 0}]]
+    },
+    "13. Agrupar por Cliente + Contatos": {
+      "main": [[{"node": "14. Formatar Mensagem", "type": "main", "index": 0}]]
+    },
+    "14. Formatar Mensagem": {
+      "main": [[{"node": "15. Validar Envio", "type": "main", "index": 0}]]
+    },
+    "15. Validar Envio": {
+      "main": [
+        [{"node": "16. ✅ Enviar WhatsApp", "type": "main", "index": 0}],
+        [{"node": "16. ⚠️ Log Ignorado", "type": "main", "index": 0}]
+      ]
+    }
+  },
+  "pinData": {}
+}

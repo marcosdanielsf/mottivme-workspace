@@ -1,0 +1,1491 @@
+{
+  "name": "Notification Group",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "notificar-grupo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        160
+      ],
+      "id": "1839aecd-a390-4ee8-ac6d-2dba148538b3",
+      "name": "Webhook",
+      "webhookId": "3d119acb-ba3d-4351-9511-42f4e87af651"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.location.id }}",
+                    "rightValue": "Bgi2hFMgiLLoRlOO0K5b",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "69d1e309-7843-4d5d-b766-8fb92c8dc9fb"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Marina Couto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9756d7f2-64ee-4fa7-a120-371d25999024",
+                    "leftValue": "={{ $json.location.id }}",
+                    "rightValue": "AP53YUiTaDZqQIlSJBP3",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Gustavo Couto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "591ed4c3-1c97-4b60-bd06-7c24e7ba7af4",
+                    "leftValue": "={{ $json.location.id }}",
+                    "rightValue": "EKHxHl3KLPN0iRc69GNU",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Fernanda Lappe"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "45faf2fd-9fa1-4fc6-b606-4cd466c48c87",
+                    "leftValue": "={{ $json.location.id }}",
+                    "rightValue": "uEh9LDrdLpKH1oruwxZ4",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "André Rosa"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "198da5e3-016b-4219-8c6c-10fb40b02cc3",
+                    "leftValue": "={{ $json.location.id }}",
+                    "rightValue": "ZwT6vg9vjWxKPMrkRJpZ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Cláudia Fehribach"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1e2b5d8b-7190-420c-afc0-a08187e4c607",
+                    "leftValue": "={{ $json.location.id }}",
+                    "rightValue": "KtMB8IKwmhtnKt7aimzd",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Milton Abreu"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "10161adc-f0fc-4f16-908c-f9b6bcc529bb",
+                    "leftValue": "={{ $json.location.id }}",
+                    "rightValue": "stZe6Dng4I83yRAhGyNu",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Renata Vieira"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b5ba9f6b-5e3d-45da-a91b-ee5bd4108039",
+                    "leftValue": "={{ $json.location.id }}",
+                    "rightValue": "stZe6Dng4I83yRAhGyNu",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Vivian Osorio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4e0a9dd8-13f7-4ebc-b3e1-dd9fc8515ec0",
+                    "leftValue": "={{ $json.location.id }}",
+                    "rightValue": "ehlHgDeJS3sr8rCDcZtA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Vertex Sales "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "90a2d79e-323b-45ad-829a-5d7d7bd7251e",
+                    "leftValue": "={{ $json.location.id }}",
+                    "rightValue": "4poUjboW7OBvtMTqHHIe",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Cliente Socialfy"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        848,
+        32
+      ],
+      "id": "bbdfc99a-6f0d-4b0a-9129-def6e2809234",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json['api key v2'] }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e1942ff4-3190-4f69-985f-387e13699ec1",
+      "name": "Send WhatsApp Report1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1296,
+        -320
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "const mensagemOriginal = $json.message;\n\n// Extrai as partes da mensagem\nconst match = mensagemOriginal.match(/\\[SOCIALFY\\](.*?)Aqui estão os detalhes do agendamento:(.*)/s);\n\nif (match) {\n  const intro = match[1].trim();\n  const detalhes = match[2].trim();\n  \n  // Formata os detalhes com negrito nos campos\n  const detalhesFormatados = detalhes\n    .replace(/Date:/g, '\\n*Date:*')\n    .replace(/Contact:/g, '\\n*Contact:*')\n    .replace(/Email:/g, '\\n*Email:*')\n    .replace(/Phone:/g, '\\n*Phone:*')\n    .replace(/^\\s+/gm, '')\n    .trim();\n  \n  // Monta com [SOCIALFY] em negrito\n  const mensagemFormatada = `*[SOCIALFY]* ${intro}\\n\\nAqui estão os detalhes do agendamento:\\n\\n${detalhesFormatados}`;\n  \n  return {\n    ...$json,\n    message: mensagemFormatada\n  };\n} else {\n  return $json;\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        64
+      ],
+      "id": "1856bd9b-5bf0-47d7-98b5-cd0d1ea2fbbc",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "646a9070-3b92-45be-8fd1-9ea42738d44b",
+      "name": "Send WhatsApp Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1296,
+        64
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2be10433-977e-4474-9e8a-5a1c0d8ec042",
+              "name": "contact_id",
+              "value": "=skfa6JP6lLlAXkc8FfIp",
+              "type": "string"
+            },
+            {
+              "id": "d869c5fb-1179-48ff-89de-fe860e9454cf",
+              "name": "api key v2",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "53c37ac8-beaf-4ee0-8a1c-778ad5995b0e",
+              "name": "telefone",
+              "value": "+1203633587897208",
+              "type": "string"
+            },
+            {
+              "id": "9f564bf5-ea29-4e0e-aae2-b942c47980f0",
+              "name": "=message",
+              "value": "={{ $json.body.customData.mensagem }}",
+              "type": "string"
+            },
+            {
+              "id": "7803be88-99af-4219-973d-aff58a4780fc",
+              "name": "location.id",
+              "value": "={{ $json.body.location.id }}",
+              "type": "string"
+            },
+            {
+              "id": "5d38d42c-275e-45ce-8bd6-4fefb3a6932d",
+              "name": "data.tipo",
+              "value": "={{ $json.body.customData.tipo }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        160
+      ],
+      "id": "b624c85a-d1a0-43a7-a0ea-6974d8e4b0d2",
+      "name": "filtro"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2be10433-977e-4474-9e8a-5a1c0d8ec042",
+              "name": "contact_id",
+              "value": "=DeQGrXaZBAPBnsnoqvSM",
+              "type": "string"
+            },
+            {
+              "id": "d869c5fb-1179-48ff-89de-fe860e9454cf",
+              "name": "api key v2",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "53c37ac8-beaf-4ee0-8a1c-778ad5995b0e",
+              "name": "telefone",
+              "value": "+1203634024083840",
+              "type": "string"
+            },
+            {
+              "id": "9f564bf5-ea29-4e0e-aae2-b942c47980f0",
+              "name": "=message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "7803be88-99af-4219-973d-aff58a4780fc",
+              "name": "location.id",
+              "value": "={{ $json.location.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        -320
+      ],
+      "id": "0ccf65a1-f6aa-43a2-828a-bf7e61313ab0",
+      "name": "Info_marina"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2be10433-977e-4474-9e8a-5a1c0d8ec042",
+              "name": "contact_id",
+              "value": "=2g0UCycwqZKJgXSKjfm1",
+              "type": "string"
+            },
+            {
+              "id": "d869c5fb-1179-48ff-89de-fe860e9454cf",
+              "name": "api key v2",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "53c37ac8-beaf-4ee0-8a1c-778ad5995b0e",
+              "name": "telefone",
+              "value": "+ 1203633394958566",
+              "type": "string"
+            },
+            {
+              "id": "9f564bf5-ea29-4e0e-aae2-b942c47980f0",
+              "name": "=message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "7803be88-99af-4219-973d-aff58a4780fc",
+              "name": "location.id",
+              "value": "={{ $json.location.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        64
+      ],
+      "id": "66fa3e46-6af3-41f5-b56e-9302cac80d5a",
+      "name": "Info_lappe"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "44cf0d2b-5bf2-4b6f-8299-4fcafbdab37f",
+      "name": "Send WhatsApp Report2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1296,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2be10433-977e-4474-9e8a-5a1c0d8ec042",
+              "name": "contact_id",
+              "value": "=DeQGrXaZBAPBnsnoqvSM",
+              "type": "string"
+            },
+            {
+              "id": "d869c5fb-1179-48ff-89de-fe860e9454cf",
+              "name": "api key v2",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "53c37ac8-beaf-4ee0-8a1c-778ad5995b0e",
+              "name": "telefone",
+              "value": "+1203634024083840",
+              "type": "string"
+            },
+            {
+              "id": "9f564bf5-ea29-4e0e-aae2-b942c47980f0",
+              "name": "=message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "7803be88-99af-4219-973d-aff58a4780fc",
+              "name": "location.id",
+              "value": "={{ $json.location.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        -128
+      ],
+      "id": "1f47c037-8a0c-4e5d-b565-95b52c4a247f",
+      "name": "Info_gustavo"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "=XdsVZ9Fx0dzToMPinO2r"
+            },
+            {
+              "name": "message",
+              "value": "={{ $('Switch').item.json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "=+1203634177742526"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "47b90020-b15c-4f82-88ce-ee036ea3236e",
+      "name": "Send WhatsApp Report3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1744,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2be10433-977e-4474-9e8a-5a1c0d8ec042",
+              "name": "contact_id",
+              "value": "=0Bm0WMO7Mvn92EUXQ0W3",
+              "type": "string"
+            },
+            {
+              "id": "d869c5fb-1179-48ff-89de-fe860e9454cf",
+              "name": "api key v2",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "53c37ac8-beaf-4ee0-8a1c-778ad5995b0e",
+              "name": "telefone",
+              "value": "+ 1203633394958566",
+              "type": "string"
+            },
+            {
+              "id": "9f564bf5-ea29-4e0e-aae2-b942c47980f0",
+              "name": "=message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "7803be88-99af-4219-973d-aff58a4780fc",
+              "name": "location.id",
+              "value": "={{ $json.location.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        256
+      ],
+      "id": "9c790a8d-c66b-4e3d-83b9-d20a6ceae6d6",
+      "name": "Info_vertex"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "16642d1c-f472-4c77-8745-5237d882d208",
+      "name": "Send WhatsApp Report4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1296,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.data.tipo }}",
+                    "rightValue": "agendamento-realizado",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notExists",
+                      "singleValue": true
+                    },
+                    "id": "9dd48cf4-b1a9-4e3a-8213-b0dfb5e63c88"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "agendamento-realizado"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f97c6d1e-5bf0-49a8-9f03-3c04c77c4e9b",
+                    "leftValue": "={{ $json.data.tipo }}",
+                    "rightValue": "confirmar-comparecimento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "confirmar-comparecimento"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "deabbcdd-8465-42e4-92ac-a12859c3f4a8",
+                    "leftValue": "={{ $json.data.tipo }}",
+                    "rightValue": "lead-confirmou-comparecimento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "lead-confirmou-comparecimento"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        416,
+        128
+      ],
+      "id": "e0354c21-2b00-4c00-9fb4-aa513f9d620a",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const mensagemOriginal = $json.message;\n\n// Extrai as informações usando regex (aceita campos vazios)\nconst nomeMatch = mensagemOriginal.match(/Olá!\\s+(.*?)\\s*Como foi/);\nconst recruiterMatch = mensagemOriginal.match(/recrutamento com\\s+(.*?)\\s*\\?/);\nconst phoneMatch = mensagemOriginal.match(/Phone:\\s+(.*?)\\s+✅/);\nconst link1Match = mensagemOriginal.match(/✅\\s+Entrevista realizada:\\s+(https?:\\/\\/[^\\s]+)/);\nconst link2Match = mensagemOriginal.match(/🚫\\s+\\*Não compareceu:\\*\\s+(https?:\\/\\/[^\\s]+)/);\nconst link3Match = mensagemOriginal.match(/❌\\s+\\*Sem interesse:\\*\\s+(https?:\\/\\/[^\\s]+)/);\n\nconst nome = nomeMatch && nomeMatch[1].trim() ? nomeMatch[1].trim() : 'Marina';\nconst recruiter = recruiterMatch && recruiterMatch[1].trim() ? recruiterMatch[1].trim() : 'o candidato';\nconst phone = phoneMatch ? phoneMatch[1].trim() : '';\nconst link1 = link1Match ? link1Match[1].trim() : '';\nconst link2 = link2Match ? link2Match[1].trim() : '';\nconst link3 = link3Match ? link3Match[1].trim() : '';\n\nconst mensagemFormatada = `Olá, *${nome}*! 👋\n\nComo foi o processo com *${recruiter}*?\n\n📋 *Dados do Lead*\n📞 ${phone}\n\n*Atualize o status:*\n✅ Entrevista realizada\n${link1}\n\n🚫 Não compareceu\n${link2}\n\n❌ Sem interesse\n${link3}`;\n\nreturn {\n  ...$json,\n  message: mensagemFormatada\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        256
+      ],
+      "id": "583dbd5f-126a-46cb-878c-a0e70673e02a",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json['api key v2'] }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "69838783-2028-4f0f-901a-b2543216f636",
+      "name": "Send WhatsApp Report5",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1296,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2be10433-977e-4474-9e8a-5a1c0d8ec042",
+              "name": "contact_id",
+              "value": "=CJxV7ibaGHY1STWvmyKD",
+              "type": "string"
+            },
+            {
+              "id": "d869c5fb-1179-48ff-89de-fe860e9454cf",
+              "name": "api key v2",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "53c37ac8-beaf-4ee0-8a1c-778ad5995b0e",
+              "name": "telefone",
+              "value": "+1203634024083840",
+              "type": "string"
+            },
+            {
+              "id": "9f564bf5-ea29-4e0e-aae2-b942c47980f0",
+              "name": "=message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "7803be88-99af-4219-973d-aff58a4780fc",
+              "name": "location.id",
+              "value": "={{ $json.location.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        448
+      ],
+      "id": "6cf636d9-8e0c-4c9c-b76e-7540d161cc92",
+      "name": "Info_Gustavo"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json['api key v2'] }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8964ec80-aba0-487f-8034-f6d880eacdec",
+      "name": "Send WhatsApp Report6",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1296,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2be10433-977e-4474-9e8a-5a1c0d8ec042",
+              "name": "contact_id",
+              "value": "=zNQKS8Si21lWMYKeMMky",
+              "type": "string"
+            },
+            {
+              "id": "d869c5fb-1179-48ff-89de-fe860e9454cf",
+              "name": "api key v2",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "53c37ac8-beaf-4ee0-8a1c-778ad5995b0e",
+              "name": "telefone",
+              "value": "+1203634024083840",
+              "type": "string"
+            },
+            {
+              "id": "9f564bf5-ea29-4e0e-aae2-b942c47980f0",
+              "name": "=message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "7803be88-99af-4219-973d-aff58a4780fc",
+              "name": "location.id",
+              "value": "={{ $json.location.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        640
+      ],
+      "id": "928ad551-f340-4e24-98f3-52d04ac2b287",
+      "name": "Info_Milton"
+    },
+    {
+      "parameters": {
+        "amount": 16
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1520,
+        64
+      ],
+      "id": "9feeda38-59ec-4e00-b333-705e7e4255ed",
+      "name": "Wait",
+      "webhookId": "d105d2a3-6f81-4629-ac33-ed8c62a09b83"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tenta encontrar os dados em diferentes estruturas\nconst data = $json.body || $json;\nconst customData = data.customData || {};\nconst user = data.user || {};\nconst location = data.location || {};\n\n// Pega a mensagem original\nconst mensagemOriginal = customData.mensagem || $json.message || '';\n\n// Se não tem mensagem, retorna o que veio\nif (!mensagemOriginal) {\n  return $json;\n}\n\n// Detecta o tipo de mensagem\nfunction detectarTipo(msg) {\n  if (msg.includes('reunião de Carreira')) return 'carreira';\n  if (msg.includes('Consultoria')) return 'consultoria';\n  if (msg.includes('recrutamento com')) return 'recrutamento';\n  return 'desconhecido';\n}\n\nconst tipo = detectarTipo(mensagemOriginal);\n\n// Pega os dados reais\nconst userName = customData.user_name || \n                 `${user.firstName || ''} ${user.lastName || ''}`.trim() || \n                 '';\nconst contactName = data.full_name || '';\nconst email = data.email || '';\nconst phone = data.phone || '';\n\n// Extrai a data da mensagem original\nconst datetimeMatch = mensagemOriginal.match(/dia\\s+(\\d{2}\\/\\d{2})/);\nconst datetime = datetimeMatch ? datetimeMatch[1] : '';\n\n// Formata a mensagem de acordo com o tipo\nlet mensagemFormatada;\n\nif (tipo === 'carreira') {\n  mensagemFormatada = `🎯 *CONFIRMAÇÃO - REUNIÃO DE CARREIRA*\n\n👤 *Consultor:* ${userName}\n✅ *Lead confirmado:* ${contactName}\n📅 *Data/Hora:* ${datetime}\n\n📋 *Dados do Contato:*\n📧 ${email}\n📞 ${phone}`;\n\n} else if (tipo === 'consultoria') {\n  mensagemFormatada = `💼 *CONFIRMAÇÃO - CONSULTORIA*\n\n👤 *Consultor:* ${userName}\n✅ *Lead confirmado:* ${contactName}\n📅 *Data/Hora:* ${datetime}\n\n📋 *Dados do Contato:*\n📧 ${email}\n📞 ${phone}`;\n\n} else {\n  // Mantém original se não identificar\n  mensagemFormatada = mensagemOriginal;\n}\n\nreturn {\n  contact_id: data.contact_id,\n  \"api key v2\": customData.api_key,\n  telefone: phone,\n  message: mensagemFormatada,\n  location: location,\n  tipo_mensagem: tipo\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        432
+      ],
+      "id": "8abbbf1c-231f-4aad-8e70-9fe43db1f5ab",
+      "name": "Code in JavaScript2"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "cliente-a1.mentorfy.io",
+            "user-agent": "axios/1.12.2",
+            "content-length": "1082",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "traceparent": "00-80431af56384a7cfe1372205f635e2e9-6a02e098fe1ef811-00",
+            "x-forwarded-for": "34.171.128.205",
+            "x-forwarded-host": "cliente-a1.mentorfy.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "9e2d5292a02e",
+            "x-real-ip": "34.171.128.205"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "contact_id": "IqytgFPfRxPJa1Gyo873",
+            "first_name": "Marcos",
+            "last_name": "Daniel",
+            "full_name": "Marcos Daniel",
+            "email": "ceo@marcosdaniels.com",
+            "phone": "+5511948978822",
+            "tags": "15619081973",
+            "country": "US",
+            "date_created": "2025-06-26T13:47:22.286Z",
+            "contact_source": "WhatsApp",
+            "full_address": "",
+            "contact_type": "lead",
+            "location": {
+              "name": "Legacy Agency",
+              "address": "481 Lakeview Dr",
+              "city": "Miami",
+              "state": "FL",
+              "country": "US",
+              "postalCode": "33180",
+              "fullAddress": "481 Lakeview Dr, Miami FL 33180",
+              "id": "KtMB8IKwmhtnKt7aimzd"
+            },
+            "user": {
+              "firstName": "Milton",
+              "lastName": "De Abreu",
+              "email": "mcabreu@icloud.com",
+              "phone": "+15618089586"
+            },
+            "workflow": {
+              "id": "58166c98-b56d-438e-a076-011f8a854bfe",
+              "name": "General Booking > Messages"
+            },
+            "triggerData": {},
+            "customData": {
+              "location_id": "KtMB8IKwmhtnKt7aimzd",
+              "api_key": "pit-e32c41fe-3139-4bb8-9653-e53c1087d3cc",
+              "mensagem": "[SOCIALFY] Olá, Marina. Contact: Marcos  acabou de confirmar o comparecimento na Consultoria, dia 19/11  Esses são os dados do contato: Email: ceo@marcosdaniels.com Phone: +5511948978822",
+              "user_name": "Milton De Abreu"
+            }
+          },
+          "webhookUrl": "https://cliente-a1.mentorfy.io/webhook/notificar-grupo",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "filtro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Info_marina",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Info_gustavo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Info_lappe",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "node": "Info_Milton",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "node": "Info_vertex",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Info_Gustavo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filtro": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info_marina": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Report1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info_lappe": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info_gustavo": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Report2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Report1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Report2": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Report": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info_vertex": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Report4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Report4": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info_Gustavo": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Report5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info_Milton": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Report6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Report6": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Report3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4134daab-9447-4e34-acd8-5c75ed56caf5",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "Vq8tDxtspg2ZrXnt",
+  "tags": [
+    {
+      "updatedAt": "2025-11-03T19:28:46.270Z",
+      "createdAt": "2025-11-03T19:28:46.270Z",
+      "id": "3znkt8vlq1yubGAB",
+      "name": "on"
+    },
+    {
+      "updatedAt": "2025-10-26T00:06:22.546Z",
+      "createdAt": "2025-10-26T00:06:22.546Z",
+      "id": "Sds5CWpQF3mc5wIH",
+      "name": "Notification"
+    }
+  ]
+}

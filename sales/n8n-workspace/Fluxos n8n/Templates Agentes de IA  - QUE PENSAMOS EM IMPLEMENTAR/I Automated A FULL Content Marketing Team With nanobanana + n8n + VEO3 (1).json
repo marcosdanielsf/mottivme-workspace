@@ -1,0 +1,122 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Webhook In",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat-webhook",
+        "responseMode": "onReceived"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Extract Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [500, 300],
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            { "name": "userId", "value": "={{$json[\"user\"][\"id\"]}}" },
+            { "name": "message", "value": "={{$json[\"message\"]}}" },
+            { "name": "timestamp", "value": "={{$now}}" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "3",
+      "name": "Find Doc",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [750, 300],
+      "credentials": {
+        "supabaseApi": "Supabase Creds"
+      },
+      "parameters": {
+        "operation": "getAll",
+        "table": "docs_hormozi",
+        "filters": [
+          { "key": "user_id", "operation": "equals", "value": "={{$json[\"userId\"]}}" }
+        ]
+      }
+    },
+    {
+      "id": "4",
+      "name": "If Exists",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1000, 300],
+      "parameters": {
+        "conditions": {
+          "number": [],
+          "string": [
+            { "value1": "={{$json[\"length\"]}}", "operation": "notEqual", "value2": "0" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "5",
+      "name": "Create Doc",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1250, 150],
+      "credentials": {
+        "supabaseApi": "Supabase Creds"
+      },
+      "parameters": {
+        "operation": "insert",
+        "table": "docs_hormozi",
+        "columns": "user_id, conversa, last_updated",
+        "values": "={{$json[\"userId\"]}}, {{ [{\"from\": \"user\", \"message\": $json[\"message\"], \"timestamp\": $json[\"timestamp\"]}] }}, {{$now}}"
+      }
+    },
+    {
+      "id": "6",
+      "name": "Update Doc",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1250, 450],
+      "credentials": {
+        "supabaseApi": "Supabase Creds"
+      },
+      "parameters": {
+        "operation": "update",
+        "table": "docs_hormozi",
+        "updateKey": "user_id",
+        "updateValue": "={{$json[\"userId\"]}}",
+        "columns": "conversa, last_updated",
+        "values": "={{ [...$json[\"0\"][\"conversa\"], {\"from\": \"user\", \"message\": $json[\"message\"], \"timestamp\": $json[\"timestamp\"]}] }}, {{$now}}"
+      }
+    },
+    {
+      "id": "7",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1500, 300],
+      "parameters": {
+        "responseBody": "={ {\"status\": \"ok\", \"userId\": $json[\"userId\"]} }"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook In": { "main": [[{ "node": "Extract Fields", "type": "main", "index": 0 }]] },
+    "Extract Fields": { "main": [[{ "node": "Find Doc", "type": "main", "index": 0 }]] },
+    "Find Doc": { "main": [[{ "node": "If Exists", "type": "main", "index": 0 }]] },
+    "If Exists": { 
+      "main": [
+        [{ "node": "Create Doc", "type": "main", "index": 0 }],
+        [{ "node": "Update Doc", "type": "main", "index": 0 }]
+      ] 
+    },
+    "Create Doc": { "main": [[{ "node": "Webhook Response", "type": "main", "index": 0 }]] },
+    "Update Doc": { "main": [[{ "node": "Webhook Response", "type": "main", "index": 0 }]] }
+  }
+}

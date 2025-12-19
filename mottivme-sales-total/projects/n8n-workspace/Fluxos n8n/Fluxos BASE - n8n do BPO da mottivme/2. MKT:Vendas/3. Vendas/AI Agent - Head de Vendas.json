@@ -1,0 +1,551 @@
+{
+  "name": "AI Agent - Head de Vendas",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{$('Config GHL').item.json.location.id}}/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$('Config GHL').item.json.ghl_api_key}}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "22ee0cc2-ebdb-442a-96d6-942e9a4d149e",
+      "name": "1️⃣ Listar todos os campos2"
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{$('Config GHL').item.json.location.id}}/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$('Config GHL').item.json.ghl_api_key}}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1232,
+        0
+      ],
+      "id": "a7065f71-e645-4875-ab2c-c98bed93a995",
+      "name": "2️⃣ Listar campos (refresh)1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const customFields = $input.first().json.customFields || [];\nfunction find(fieldKey, name){\n  const fk = fieldKey.toLowerCase();\n  const nm = name.toLowerCase();\n  return customFields.find(f => (f.fieldKey && f.fieldKey.toLowerCase() === fk) || (f.name && f.name.toLowerCase() === nm));\n}\nconst mapping = [\n  ['score_total_id','contact.score_total','Score Total'],\n  ['probabilidade_fechamento_id','contact.probabilidade_fechamento','Probabilidade de Fechamento'],\n  ['status_analise_id','contact.status_analise','Status da Análise'],\n  ['tier_call_id','contact.tier_call','Tier da Call'],\n  ['resumo_executivo_id','contact.resumo_executivo','Resumo Executivo'],\n  ['scores_formatado_id','contact.scores_formatado','Scores Formatado'],\n  ['qualificacao_bant_score_id','contact.qualificacao_bant_score','Qualificação (BANT) Score'],\n  ['descoberta_spin_score_id','contact.descoberta_spin_score','Descoberta (SPIN) Score'],\n  ['conducao_score_id','contact.conducao_score','Condução Score'],\n  ['fechamento_score_id','contact.fechamento_score','Fechamento Score']\n];\nconst result = {};\nfor (const [outKey, fk, name] of mapping) {\n  const f = find(fk, name);\n  if (f && f.id) result[outKey] = f.id;\n}\nreturn [{ json: result }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1456,
+        0
+      ],
+      "id": "5898af26-dee5-4a2d-81dd-e53f3873a53b",
+      "name": "Code - Encontrar IDs2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "contactId",
+              "value": "=bdprjo7Kshje42koZTQu",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "API_KEY",
+              "value": "=pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "be246c5e-ca51-47d3-a84e-51ab370c6091",
+              "name": "score_total_id",
+              "value": "={{ $json.score_total_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ab1ab88d-cb4f-4b84-8558-c2aeb5057eda",
+              "name": "probabilidade_fechamento_id",
+              "value": "={{ $json.probabilidade_fechamento_id }}",
+              "type": "string"
+            },
+            {
+              "id": "9562d432-f48a-468f-a673-8610290f30f7",
+              "name": "status_analise_id",
+              "value": "={{ $json.status_analise_id }}",
+              "type": "string"
+            },
+            {
+              "id": "18eb09cd-3474-4a5f-afd1-2dd007cb2cd9",
+              "name": "tier_call_id",
+              "value": "={{ $json.tier_call_id }}",
+              "type": "string"
+            },
+            {
+              "id": "94462803-9271-48c2-8570-12429a42d82d",
+              "name": "resumo_executivo_id",
+              "value": "={{ $json.resumo_executivo_id }}",
+              "type": "string"
+            },
+            {
+              "id": "5d5ca5b2-18b5-4cf2-b7df-7818b5b26a92",
+              "name": "scores_formatado_id",
+              "value": "={{ $json.scores_formatado_id }}",
+              "type": "string"
+            },
+            {
+              "id": "4df30f7d-7896-4d8b-afdd-f0994ec170eb",
+              "name": "qualificacao_bant_score_id",
+              "value": "={{ $json.qualificacao_bant_score_id }}",
+              "type": "string"
+            },
+            {
+              "id": "c03442e0-4b56-4c2c-b0ea-a2b0885b911f",
+              "name": "descoberta_spin_score_id",
+              "value": "={{ $json.descoberta_spin_score_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a89f5751-0d2d-4617-818b-b02bd0ecca73",
+              "name": "conducao_score_id",
+              "value": "={{ $json.conducao_score_id }}",
+              "type": "string"
+            },
+            {
+              "id": "b17badd6-5272-415f-9035-f2137af9e08f",
+              "name": "fechamento_score_id",
+              "value": "={{ $json.fechamento_score_id }}",
+              "type": "string"
+            },
+            {
+              "id": "a7bd4043-9ec8-438e-84d9-e4f807fdb48e",
+              "name": "analise_geral.score_total",
+              "value": "={{ $('Code - Processar Análise').item.json.analise_geral.score_total }}",
+              "type": "number"
+            },
+            {
+              "id": "2e546342-2b12-4531-9e1b-61234b093652",
+              "name": "analise_geral.probabilidade_fechamento",
+              "value": "={{ $('Code - Processar Análise').item.json.analise_geral.probabilidade_fechamento }}",
+              "type": "number"
+            },
+            {
+              "id": "fca5a7c5-fd28-4b2f-9efa-00f8746f18b1",
+              "name": "analise_geral.status",
+              "value": "={{ $('Code - Processar Análise').item.json.analise_geral.status }}",
+              "type": "string"
+            },
+            {
+              "id": "0ca7e745-9c49-4860-ac6b-8e3581f20c47",
+              "name": "analise_geral.resumo_executivo",
+              "value": "={{ $('Code - Processar Análise').item.json.analise_geral.resumo_executivo }}",
+              "type": "string"
+            },
+            {
+              "id": "7d787709-1119-4448-b01d-1022c2e3bb60",
+              "name": "scores_detalhados.qualificacao_bant.score",
+              "value": "={{ $('Code - Processar Análise').item.json.scores_detalhados.qualificacao_bant.score }}",
+              "type": "number"
+            },
+            {
+              "id": "00e7ef44-2c2c-4de6-b678-12d9bf05b78f",
+              "name": "scores_detalhados.descoberta_spin.score",
+              "value": "={{ $('Code - Processar Análise').item.json.scores_detalhados.descoberta_spin.score }}",
+              "type": "number"
+            },
+            {
+              "id": "e8d668fb-8435-411e-9125-bf5ed6c2397d",
+              "name": "scores_detalhados.conducao.score",
+              "value": "={{ $('Code - Processar Análise').item.json.scores_detalhados.conducao.score }}",
+              "type": "number"
+            },
+            {
+              "id": "05d69ce2-5c45-4712-b0b5-b1ccea109ff0",
+              "name": "scores_detalhados.fechamento.score",
+              "value": "={{ $('Code - Processar Análise').item.json.scores_detalhados.fechamento.score }}",
+              "type": "number"
+            },
+            {
+              "id": "8af3b9ec-345c-4343-83e7-0403bea200dc",
+              "name": "metadata.resumo_formatado",
+              "value": "={{ $('Code - Processar Análise').item.json.metadata.resumo_formatado }}",
+              "type": "string"
+            },
+            {
+              "id": "c2eed0fb-336f-4902-b8a5-1703f2b70c04",
+              "name": "metadata.scores_formatado",
+              "value": "={{ $('Code - Processar Análise').item.json.metadata.scores_formatado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        0
+      ],
+      "id": "623e8ffb-35fd-4166-8b0c-26d3dab20b0c",
+      "name": "IDs e Credenciais4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto }}",
+        "options": {
+          "systemMessage": "=Você é um HEAD DE VENDAS B2B com 15 anos de experiência em vendas consultivas de alto ticket.\n\nTAREFA: Analisar a transcrição de uma call de diagnóstico BPOSS e dar feedback BRUTAL mas construtivo.\n\nANALISE OS SEGUINTES ASPECTOS:\n\n## 1. QUALIFICAÇÃO (BANT)\n- **Budget:** Perguntou sobre faturamento, investimento disponível?\n- **Authority:** Confirmou se é o tomador de decisão?\n- **Need:** Identificou DOR real ou só interesse superficial?\n- **Timeline:** Definiu urgência, quando precisa resolver?\n\n**Score:** 0-10\n**Feedback:** O que faltou perguntar?\n\n---\n\n## 2. DESCOBERTA (SPIN Selling)\n- **Situation:** Entendeu contexto atual, números, processos?\n- **Problem:** Explorou DORES profundamente (não superficialmente)?\n- **Implication:** Fez cliente SENTIR o custo de não resolver?\n- **Need-Payoff:** Cliente verbalizou que PRECISA da solução?\n\n**Score:** 0-10\n**Feedback:** Quais perguntas poderosas faltaram?\n\n---\n\n## 3. CONDUÇÃO DA CALL\n- **Rapport:** Criou conexão genuína ou foi robótico?\n- **Escuta Ativa:** Deixou cliente falar 60%+ do tempo?\n- **Controle:** Manteve foco ou desviou do roteiro?\n- **Objeções:** Tratou objeções ou deixou passar?\n\n**Score:** 0-10\n**Feedback:** O que melhorar na condução?\n\n---\n\n## 4. FECHAMENTO/PRÓXIMOS PASSOS\n- **Call to Action:** Definiu próximo passo claro?\n- **Compromisso:** Cliente assumiu compromisso verbal?\n- **Urgência:** Criou senso de urgência (bônus, prazo)?\n- **Entusiasmo:** Cliente terminou ANIMADO ou morno?\n\n**Score:** 0-10\n**Feedback:** Como poderia ter fechado melhor?\n\n---\n\n## 5. RED FLAGS (DESQUALIFICAR)\n- Cliente é tire-kicker (só curioso, sem dor real)?\n- Faturamento/ticket muito baixo para BPOSS?\n- Não tem budget ou autoridade?\n- Expectativas irrealistas?\n- Só quer preço (não valoriza consultoria)?\n\n**Recomendação:** QUALIFICADO ou DESQUALIFICAR\n**Motivo:** Por quê?\n\n---\n\n## 6. OPORTUNIDADES PERDIDAS\nListe 3 momentos onde o vendedor PODERIA ter:\n- Aprofundado uma dor\n- Feito pergunta poderosa\n- Criado mais valor\n- Tratado objeção melhor\n\n---\n\n## 7. HIGHLIGHTS (O QUE FEZ BEM)\nListe 3 coisas que o vendedor fez MUITO BEM.\n\n---\n\n## 8. SCORE GERAL DA CALL\n**0-100 pontos**\n\n- 0-40: Call fraca, pouca chance de fechar\n- 41-60: Call mediana, precisa melhorar\n- 61-80: Call boa, alta chance de fechar\n- 81-100: Call excelente, quase certeza de fechar\n\n---\n\n## 9. PROBABILIDADE DE FECHAMENTO\n**0-100%**\n\nBaseado em:\n- Dor identificada\n- Budget confirmado\n- Autoridade\n- Urgência\n- Entusiasmo do cliente\n\n---\n\n## 10. PLANO DE AÇÃO\n**Para o vendedor:**\n- [ ] Ação 1\n- [ ] Ação 2\n- [ ] Ação 3\n\n**Para o follow-up:**\n- Quando entrar em contato novamente\n- O que mencionar no follow-up\n- Como criar urgência\n\n---\n\n## OUTPUT ESPERADO (JSON):\n\n```json\n{\n  \"analise_geral\": {\n    \"score_total\": 0-100,\n    \"probabilidade_fechamento\": 0-100,\n    \"status\": \"QUALIFICADO|DESQUALIFICAR|NUTRIR\",\n    \"resumo_executivo\": \"2-3 frases sobre a call\"\n  },\n  \"scores_detalhados\": {\n    \"qualificacao_bant\": {\n      \"score\": 0-10,\n      \"budget\": \"sim|não|parcial\",\n      \"authority\": \"sim|não|parcial\",\n      \"need\": \"sim|não|parcial\",\n      \"timeline\": \"sim|não|parcial\",\n      \"feedback\": \"texto\"\n    },\n    \"descoberta_spin\": {\n      \"score\": 0-10,\n      \"situation\": \"bom|regular|fraco\",\n      \"problem\": \"bom|regular|fraco\",\n      \"implication\": \"bom|regular|fraco\",\n      \"need_payoff\": \"bom|regular|fraco\",\n      \"feedback\": \"texto\"\n    },\n    \"conducao\": {\n      \"score\": 0-10,\n      \"rapport\": \"bom|regular|fraco\",\n      \"escuta_ativa\": \"60%+|40-60%|<40%\",\n      \"controle\": \"bom|regular|fraco\",\n      \"objecoes\": \"bem tratadas|parcialmente|ignoradas\",\n      \"feedback\": \"texto\"\n    },\n    \"fechamento\": {\n      \"score\": 0-10,\n      \"call_to_action\": \"sim|não\",\n      \"compromisso\": \"sim|não\",\n      \"urgencia\": \"sim|não\",\n      \"entusiasmo_cliente\": \"alto|médio|baixo\",\n      \"feedback\": \"texto\"\n    }\n  },\n  \"red_flags\": {\n    \"tem_red_flags\": true|false,\n    \"flags\": [\"lista de red flags\"],\n    \"recomendacao\": \"QUALIFICADO|DESQUALIFICAR|NUTRIR\",\n    \"motivo\": \"texto\"\n  },\n  \"oportunidades_perdidas\": [\n    {\n      \"minuto\": \"estimado\",\n      \"contexto\": \"o que estava sendo discutido\",\n      \"oportunidade\": \"o que poderia ter feito\",\n      \"impacto\": \"alto|médio|baixo\"\n    }\n  ],\n  \"highlights\": [\n    \"coisa boa 1\",\n    \"coisa boa 2\",\n    \"coisa boa 3\"\n  ],\n  \"plano_acao\": {\n    \"para_vendedor\": [\n      \"ação 1\",\n      \"ação 2\",\n      \"ação 3\"\n    ],\n    \"follow_up\": {\n      \"quando\": \"24h|48h|1semana\",\n      \"como\": \"whatsapp|email|call\",\n      \"mencionar\": \"texto do que mencionar\",\n      \"criar_urgencia\": \"texto de como criar urgência\"\n    }\n  },\n  \"citacoes_importantes\": [\n    {\n      \"quem\": \"cliente|vendedor\",\n      \"texto\": \"citação exata\",\n      \"tipo\": \"dor|objecao|compromisso|entusiasmo\"\n    }\n  ],\n  \"proximos_passos_recomendados\": [\n    \"passo 1\",\n    \"passo 2\",\n    \"passo 3\"\n  ]\n}\n```\n\n## REGRAS:\n1. Seja HONESTO e DIRETO no feedback\n2. Use exemplos da transcrição (citações)\n3. Dê feedback ACIONÁVEL (não vago)\n4. Pense como Head de Vendas, não como cheerleader\n5. Se a call foi ruim, FALE que foi ruim\n6. Se foi boa, explique POR QUÊ foi boa\n7. Retorne APENAS o JSON válido, sem markdown"
+        }
+      },
+      "id": "4f224137-419f-4b88-b1a2-ea4567c3b79b",
+      "name": "AI Agent - Head de Vendas",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        432,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ghl-location",
+              "name": "location.id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "facb5cc2-63cb-45b5-b538-fb3037e9871b",
+              "name": "texto",
+              "value": "={{ $json.texto }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "2bc8de86-36c7-4c38-b0de-4674cb58f23f",
+      "name": "Config GHL"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega TUDO do nó anterior\nconst dados = $input.item.json;\n\n// Constrói o array customFields com TODOS os valores como STRING\nconst customFields = [\n  { id: dados.score_total_id, value: String(dados.analise_geral.score_total) },\n  { id: dados.probabilidade_fechamento_id, value: String(dados.analise_geral.probabilidade_fechamento) },\n  { id: dados.status_analise_id, value: dados.analise_geral.status },\n  { id: dados.tier_call_id, value: dados.metadata.tier },\n  { id: dados.resumo_executivo_id, value: dados.analise_geral.resumo_executivo },\n  { id: dados.scores_formatado_id, value: dados.metadata.scores_formatado },\n  { id: dados.qualificacao_bant_score_id, value: String(dados.scores_detalhados.qualificacao_bant.score) },\n  { id: dados.descoberta_spin_score_id, value: String(dados.scores_detalhados.descoberta_spin.score) },\n  { id: dados.conducao_score_id, value: String(dados.scores_detalhados.conducao.score) },\n  { id: dados.fechamento_score_id, value: String(dados.scores_detalhados.fechamento.score) }\n];\n\nreturn [{\n  json: {\n    contactId: dados.contactId,\n    apiKey: dados.API_KEY,\n    customFields: customFields\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1904,
+        0
+      ],
+      "id": "33b8a8cd-3603-4220-871e-19614160f71f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nfunction cleanFences(s) {\n  if (typeof s !== 'string') s = String(s ?? '');\n  let r = s.trim();\n  r = r.replace(/^\\s*```[a-z]*\\s*/i, '');\n  r = r.replace(/\\s*```$/, '');\n  return r;\n}\nfunction findBalancedEnd(s, start) {\n  let depth = 0, inStr = false, esc = false;\n  for (let i = start; i < s.length; i++) {\n    const ch = s[i];\n    if (inStr) {\n      if (esc) { esc = false; }\n      else if (ch === '\\\\') { esc = true; }\n      else if (ch === '\"') { inStr = false; }\n    } else {\n      if (ch === '\"') inStr = true;\n      else if (ch === '{') depth++;\n      else if (ch === '}') { depth--; if (depth === 0) return i; }\n    }\n  }\n  return -1;\n}\nfunction tryParse(str) {\n  try { return JSON.parse(str); } catch {}\n  const raw = cleanFences(str);\n  try { return JSON.parse(raw); } catch {}\n  const start = raw.indexOf('{');\n  const end = start >= 0 ? findBalancedEnd(raw, start) : -1;\n  if (start >= 0 && end >= 0) {\n    const jsonStr = raw.slice(start, end + 1);\n    try { return JSON.parse(jsonStr); } catch {}\n  }\n  function getNum(re) {\n    const m = raw.match(re);\n    return m ? Number(m[1]) : undefined;\n  }\n  function getStr(re) {\n    const m = raw.match(re);\n    return m ? m[1] : undefined;\n  }\n  const score_total = getNum(/\"score_total\"\\s*:\\s*(\\d+)/);\n  const probabilidade_fechamento = getNum(/\"probabilidade_fechamento\"\\s*:\\s*(\\d+)/);\n  const status = getStr(/\"status\"\\s*:\\s*\"([^\"]+)\"/);\n  const resumo_executivo = getStr(/\"resumo_executivo\"\\s*:\\s*\"([\\s\\S]*?)\"/);\n  const qScore = getNum(/\"qualificacao_bant\"[\\s\\S]*?\"score\"\\s*:\\s*(\\d+)/);\n  const dScore = getNum(/\"descoberta_spin\"[\\s\\S]*?\"score\"\\s*:\\s*(\\d+)/);\n  const cScore = getNum(/\"conducao\"[\\s\\S]*?\"score\"\\s*:\\s*(\\d+)/);\n  const fScore = getNum(/\"fechamento\"[\\s\\S]*?\"score\"\\s*:\\s*(\\d+)/);\n  if (score_total !== undefined || status !== undefined || resumo_executivo !== undefined) {\n    return {\n      analise_geral: {\n        score_total: score_total ?? 0,\n        probabilidade_fechamento: probabilidade_fechamento ?? 0,\n        status: status ?? '',\n        resumo_executivo: resumo_executivo ?? ''\n      },\n      scores_detalhados: {\n        qualificacao_bant: { score: qScore ?? 0 },\n        descoberta_spin: { score: dScore ?? 0 },\n        conducao: { score: cScore ?? 0 },\n        fechamento: { score: fScore ?? 0 }\n      }\n    };\n  }\n  return null;\n}\nfunction formatItem(analise) {\n  let tier, cor, emoji;\n  const scoreTotal = Number(analise?.analise_geral?.score_total ?? 0);\n  if (scoreTotal >= 81) { tier = 'A+ EXCELENTE'; cor = '#10b981'; emoji = '🏆'; }\n  else if (scoreTotal >= 61) { tier = 'B BOA'; cor = '#3b82f6'; emoji = '✅'; }\n  else if (scoreTotal >= 41) { tier = 'C MEDIANA'; cor = '#f59e0b'; emoji = '⚠️'; }\n  else { tier = 'D FRACA'; cor = '#ef4444'; emoji = '❌'; }\n  const resumoFormatado = `\n${emoji} CALL ${tier}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nScore Total: ${scoreTotal}/100\nProbabilidade Fechamento: ${analise?.analise_geral?.probabilidade_fechamento ?? 0}%\nStatus: ${analise?.analise_geral?.status ?? ''}\n\n${analise?.analise_geral?.resumo_executivo ?? ''}\n`;\n  const scores = `\n📊 BREAKDOWN DE SCORES:\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n• Qualificação (BANT): ${analise?.scores_detalhados?.qualificacao_bant?.score ?? 0}/10\n• Descoberta (SPIN): ${analise?.scores_detalhados?.descoberta_spin?.score ?? 0}/10\n• Condução: ${analise?.scores_detalhados?.conducao?.score ?? 0}/10\n• Fechamento: ${analise?.scores_detalhados?.fechamento?.score ?? 0}/10\n`;\n  return {\n    json: {\n      ...analise,\n      metadata: {\n        tier,\n        cor,\n        emoji,\n        resumo_formatado: resumoFormatado,\n        scores_formatado: scores,\n        timestamp: new Date().toISOString()\n      }\n    }\n  };\n}\nconst results = items.map(item => {\n  const rawVal = item?.json?.output ?? item?.json?.text;\n  const outputStr = typeof rawVal === 'string' ? rawVal : String(rawVal ?? '');\n  const analise = typeof rawVal === 'object' && rawVal ? rawVal : tryParse(outputStr);\n  if (!analise) {\n    return {\n      json: {\n        metadata: {\n          erro_parse: true,\n          motivo: 'Resposta do agente incompleta ou com cercas Markdown. JSON inválido.',\n          raw_snippet: cleanFences(outputStr).slice(0, 1000),\n          timestamp: new Date().toISOString()\n        }\n      }\n    };\n  }\n  return formatItem(analise);\n});\nreturn results;\n"
+      },
+      "id": "2a8c3914-c69f-459e-bc9e-b9b8a57c931b",
+      "name": "Code - Processar Análise",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contactId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.apiKey }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    { \n      \"id\": \"{{ $('IDs e Credenciais4').item.json.score_total_id }}\", \n      \"value\": \"{{ $('Code - Processar Análise').item.json.analise_geral.score_total }}\" \n    },\n    { \n      \"id\": \"{{ $('IDs e Credenciais4').item.json.probabilidade_fechamento_id }}\", \n      \"value\": \"{{ $('Code - Processar Análise').item.json.analise_geral.probabilidade_fechamento }}\" \n    },\n    { \n      \"id\": \"{{ $('IDs e Credenciais4').item.json.status_analise_id }}\", \n      \"value\": \"{{ $('Code - Processar Análise').item.json.analise_geral.status }}\" \n    },\n    { \n      \"id\": \"{{ $('IDs e Credenciais4').item.json.tier_call_id }}\", \n      \"value\": \"{{ $('Code - Processar Análise').item.json.metadata.tier }}\" \n    },\n    { \n      \"id\": \"{{ $('IDs e Credenciais4').item.json.resumo_executivo_id }}\", \n      \"value\": {{ JSON.stringify($('Code - Processar Análise').item.json.analise_geral.resumo_executivo) }} \n    },\n    { \n      \"id\": \"{{ $('IDs e Credenciais4').item.json.scores_formatado_id }}\", \n      \"value\": {{ JSON.stringify($('Code - Processar Análise').item.json.metadata.scores_formatado) }} \n    },\n    { \n      \"id\": \"{{ $('IDs e Credenciais4').item.json.qualificacao_bant_score_id }}\", \n      \"value\": \"{{ $('Code - Processar Análise').item.json.scores_detalhados.qualificacao_bant.score }}\" \n    },\n    { \n      \"id\": \"{{ $('IDs e Credenciais4').item.json.descoberta_spin_score_id }}\", \n      \"value\": \"{{ $('Code - Processar Análise').item.json.scores_detalhados.descoberta_spin.score }}\" \n    },\n    { \n      \"id\": \"{{ $('IDs e Credenciais4').item.json.conducao_score_id }}\", \n      \"value\": \"{{ $('Code - Processar Análise').item.json.scores_detalhados.conducao.score }}\" \n    },\n    { \n      \"id\": \"{{ $('IDs e Credenciais4').item.json.fechamento_score_id }}\", \n      \"value\": \"{{ $('Code - Processar Análise').item.json.scores_detalhados.fechamento.score }}\" \n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2128,
+        0
+      ],
+      "id": "388f6160-67c0-4cf3-b3df-f3ecf31d8aaf",
+      "name": "🔄 Atualizar Campos Análise",
+      "notes": "Atualiza o campo customizado estado_onde_mora no contato"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        336,
+        208
+      ],
+      "id": "a785f5da-15cc-4929-8f27-7981d7788480",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "9cc8cd7b-ab10-48f7-8f1c-cdaeb1115605",
+      "name": "📥 Download Arquivo",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1WTJrbMl8HLppIHIeHT94Qsbog9XpxOx2",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        0
+      ],
+      "id": "50ab3d5d-cdab-4a5f-baf5-b98be492245a",
+      "name": "Google Drive Trigger1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "1️⃣ Listar todos os campos2": {
+      "main": [
+        [
+          {
+            "node": "2️⃣ Listar campos (refresh)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2️⃣ Listar campos (refresh)1": {
+      "main": [
+        [
+          {
+            "node": "Code - Encontrar IDs2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Encontrar IDs2": {
+      "main": [
+        [
+          {
+            "node": "IDs e Credenciais4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IDs e Credenciais4": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Head de Vendas": {
+      "main": [
+        [
+          {
+            "node": "Code - Processar Análise",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config GHL": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Head de Vendas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "🔄 Atualizar Campos Análise",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Processar Análise": {
+      "main": [
+        [
+          {
+            "node": "1️⃣ Listar todos os campos2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Head de Vendas",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger1": {
+      "main": [
+        [
+          {
+            "node": "📥 Download Arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Download Arquivo": {
+      "main": [
+        [
+          {
+            "node": "Config GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7c8b79f6-b14f-4cd2-a542-54d0d843b3bf",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "JiTZQcq7Tt2c5Xol",
+  "tags": []
+}

@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    container_name: pocketbase
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pocketbase_data:/pb_data
+    environment:
+      - TZ=UTC
+
+  pocketpub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pocketpub
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./package_archives:/app/package_archives
+    environment:
+      - POCKETBASE_URL=http://pocketbase:8090
+      - POCKETBASE_ADMIN=admin@example.com
+      - POCKETBASE_PASSWORD=password123
+      - STORAGE_DIR=/app/package_archives
+      - PORT=8080
+    depends_on:
+      - pocketbase 

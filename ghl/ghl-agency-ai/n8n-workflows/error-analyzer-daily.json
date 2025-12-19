@@ -1,0 +1,284 @@
+{
+  "name": "Error Analyzer - Relatorio Diario",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "1. Schedule (1x por dia)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  error_type,\n  error_message,\n  workflow_name,\n  node_name,\n  location_name,\n  SUM(occurrence_count) as total_ocorrencias,\n  COUNT(*) as variantes,\n  MAX(last_occurrence) as ultima_vez,\n  MIN(first_occurrence) as primeira_vez,\n  auto_fix_available\nFROM error_patterns\nWHERE auto_fix_available = false\nGROUP BY error_type, error_message, workflow_name, node_name, location_name, auto_fix_available\nHAVING SUM(occurrence_count) >= 5\nORDER BY total_ocorrencias DESC\nLIMIT 10;",
+        "options": {}
+      },
+      "id": "buscar-erros-frequentes",
+      "name": "2. Buscar Erros Frequentes",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -256,
+        -304
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels."
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-results",
+              "leftValue": "={{ $json.error_type }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-tem-erros",
+      "name": "3. Tem Erros Frequentes?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  COUNT(DISTINCT error_type) as tipos_erro,\n  COUNT(*) as total_registros,\n  SUM(occurrence_count) as total_ocorrencias,\n  COUNT(DISTINCT workflow_name) as workflows_afetados,\n  COUNT(DISTINCT location_name) as contas_afetadas\nFROM error_patterns\nWHERE created_at >= NOW() - INTERVAL '7 days';",
+        "options": {}
+      },
+      "id": "buscar-resumo",
+      "name": "4a. Buscar Resumo Geral",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        192,
+        -400
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels."
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const errosFrequentes = $('3. Tem Erros Frequentes?').all();\nconst resumo = $('4a. Buscar Resumo Geral').first().json;\n\nlet listaErros = '';\nlet contador = 1;\n\nfor (const item of errosFrequentes) {\n  const erro = item.json;\n  listaErros += `${contador}. *${erro.error_type}* (${erro.total_ocorrencias}x)\\n`;\n  listaErros += `   Workflow: ${erro.workflow_name}\\n`;\n  listaErros += `   Node: ${erro.node_name}\\n`;\n  listaErros += `   Conta: ${erro.location_name || 'Varias'}\\n\\n`;\n  contador++;\n}\n\nconst mensagem = `*RELATORIO DE ERROS*\\n\\n` +\n  `*Ultimos 7 dias:*\\n` +\n  `- ${resumo.total_ocorrencias || 0} erros\\n` +\n  `- ${resumo.tipos_erro || 0} tipos\\n` +\n  `- ${resumo.workflows_afetados || 0} workflows\\n` +\n  `- ${resumo.contas_afetadas || 0} contas\\n\\n` +\n  `*ERROS FREQUENTES (sem auto-fix):*\\n\\n` +\n  listaErros +\n  `Considere criar auto-fix.`;\n\nreturn [{ json: { mensagem, total_erros: errosFrequentes.length } }];"
+      },
+      "id": "montar-relatorio",
+      "name": "5. Montar Relatorio",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-43abf775-9c0e-4440-a73e-4a568e5257ba"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"skfa6JP6lLlAXkc8FfIp\",\n  \"message\": {{ JSON.stringify($json.mensagem) }}\n}",
+        "options": {}
+      },
+      "id": "enviar-whatsapp",
+      "name": "6. Enviar Relatorio WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        640,
+        -400
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "status",
+              "name": "status",
+              "value": "no_errors",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "sem-erros",
+      "name": "4b. Sem Erros",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -192
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "status-final",
+              "name": "status",
+              "value": "done",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "concluido",
+      "name": "7. Concluido",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        -304
+      ]
+    }
+  ],
+  "connections": {
+    "1. Schedule (1x por dia)": {
+      "main": [
+        [
+          {
+            "node": "2. Buscar Erros Frequentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Buscar Erros Frequentes": {
+      "main": [
+        [
+          {
+            "node": "3. Tem Erros Frequentes?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Tem Erros Frequentes?": {
+      "main": [
+        [
+          {
+            "node": "4a. Buscar Resumo Geral",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "4b. Sem Erros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4a. Buscar Resumo Geral": {
+      "main": [
+        [
+          {
+            "node": "5. Montar Relatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Montar Relatorio": {
+      "main": [
+        [
+          {
+            "node": "6. Enviar Relatorio WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Enviar Relatorio WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "7. Concluido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4b. Sem Erros": {
+      "main": [
+        [
+          {
+            "node": "7. Concluido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  }
+}

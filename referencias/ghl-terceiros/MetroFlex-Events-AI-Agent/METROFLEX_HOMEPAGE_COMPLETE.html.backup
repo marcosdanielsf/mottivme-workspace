@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Where Champions Compete. Home of the legendary NPC Ronnie Coleman Classic celebrating 30th anniversary in 2026. Premier NPC bodybuilding and powerlifting competitions in Texas.">
+    <meta name="keywords" content="NPC Ronnie Coleman Classic, NPC Branch Warren Classic, NPC Better Bodies Classic, bodybuilding Texas, powerlifting Texas, MetroFlex Events, Raw Power Wild Game Feast">
+    <meta name="author" content="MetroFlex Events - Brian Dobson">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+    <title>MetroFlex Events | Where Champions Compete | Premier NPC Bodybuilding & Powerlifting Texas</title>
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://metroflexevents.com/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://metroflexevents.com/">
+    <meta property="og:title" content="MetroFlex Events - Where Champions Are Made">
+    <meta property="og:description" content="Home of 8x Mr. Olympia Ronnie Coleman. Texas' premier NPC bodybuilding competitions since 1987.">
+    <meta property="og:image" content="https://metroflexevents.com/og-image.jpg">
+    <meta property="og:site_name" content="MetroFlex Events">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://metroflexevents.com/">
+    <meta property="twitter:title" content="MetroFlex Events - Where Champions Are Made">
+    <meta property="twitter:description" content="Home of 8x Mr. Olympia Ronnie Coleman. Texas' premier NPC bodybuilding competitions since 1987.">
+    <meta property="twitter:image" content="https://metroflexevents.com/twitter-image.jpg">
+
+    <!-- Theme color for mobile browsers -->
+    <meta name="theme-color" content="#C41E3A">
+
+    <!-- Apple mobile web app -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="MetroFlex Events">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- Schema.org JSON-LD - Complete Markup for All Events -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://metroflexevents.com/#organization",
+          "name": "MetroFlex Events",
+          "alternateName": "MetroFlex Championship Series",
+          "url": "https://metroflexevents.com",
+          "logo": "https://metroflexevents.com/logo.png",
+          "description": "Premier NPC bodybuilding competition organizer in Texas, home of 8x Mr. Olympia Ronnie Coleman training legacy since 1987",
+          "foundingDate": "1987",
+          "founder": {
+            "@type": "Person",
+            "name": "Brian Dobson",
+            "jobTitle": "Event Director & Founder"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "2921 South Cooper Street, #109",
+            "addressLocality": "Arlington",
+            "addressRegion": "TX",
+            "postalCode": "76015",
+            "addressCountry": "US"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "32.6853",
+            "longitude": "-97.1086"
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+1-817-465-9331",
+            "contactType": "customer service",
+            "email": "brian@metroflexgym.com",
+            "availableLanguage": "English"
+          },
+          "sameAs": [
+            "https://www.facebook.com/OriginalMetroflexGym",
+            "https://www.instagram.com/originalmetroflexgym"
+          ]
+        },
+        {
+          "@type": "LocalBusiness",
+          "@id": "https://metroflexevents.com/#metroflex-gym",
+          "name": "MetroFlex Gym Arlington",
+          "description": "Legendary hardcore bodybuilding gym, home to 8x Mr. Olympia Ronnie Coleman. Founded by Brian Dobson in 1987.",
+          "url": "https://metroflexgym.com",
+          "telephone": "+1-817-465-9331",
+          "priceRange": "$$",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "2921 South Cooper Street, #109",
+            "addressLocality": "Arlington",
+            "addressRegion": "TX",
+            "postalCode": "76015",
+            "addressCountry": "US"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "32.6853",
+            "longitude": "-97.1086"
+          }
+        },
+        {
+          "@type": "SportsEvent",
+          "@id": "https://metroflexevents.com/#better-bodies-2026",
+          "name": "NPC Better Bodies Mutant Classic 2026",
+          "description": "Premier NPC bodybuilding competition. National qualifier status for pro card hopefuls. Kick off the 2026 season at Dallas Market Hall.",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "startDate": "2026-04-11T09:00:00-05:00",
+          "endDate": "2026-04-11T18:00:00-05:00",
+          "organizer": {
+            "@id": "https://metroflexevents.com/#organization"
+          },
+          "location": {
+            "@type": "Place",
+            "name": "Dallas Market Hall",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Dallas",
+              "addressRegion": "TX",
+              "addressCountry": "US"
+            }
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": "https://metroflexevents.com/#register",
+            "availability": "https://schema.org/InStock"
+          }
+        },
+        {
+          "@type": "SportsEvent",
+          "@id": "https://metroflexevents.com/#ronnie-coleman-2026",
+          "name": "NPC Ronnie Coleman Classic 30th Anniversary 2026",
+          "description": "Celebrating 30 years of championship excellence. Honor the legacy of 8x Mr. Olympia Ronnie Coleman at Texas' most legendary NPC bodybuilding competition. National qualifier event.",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "startDate": "2026-05-16T09:00:00-05:00",
+          "endDate": "2026-05-16T19:00:00-05:00",
+          "organizer": {
+            "@id": "https://metroflexevents.com/#organization"
+          },
+          "location": {
+            "@type": "Place",
+            "name": "Round Up Inn",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Fort Worth",
+              "addressRegion": "TX",
+              "addressCountry": "US"
+            }
+          },
+          "performer": [
+            {
+              "@type": "Person",
+              "name": "Ronnie Coleman",
+              "description": "8x Mr. Olympia, legendary bodybuilder"
+            }
+          ],
+          "offers": {
+            "@type": "Offer",
+            "url": "https://metroflexevents.com/#register",
+            "availability": "https://schema.org/InStock"
+          }
+        },
+        {
+          "@type": "SportsEvent",
+          "@id": "https://metroflexevents.com/#branch-warren-colorado-2026",
+          "name": "NPC Branch Warren Classic Colorado 2026",
+          "description": "Championship NPC bodybuilding event honoring 2x Arnold Classic Champion Branch Warren. Compete at one of the premier NPC qualifiers in Colorado. National qualifier status.",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "startDate": "2026-05-02T09:00:00-06:00",
+          "endDate": "2026-05-02T18:00:00-06:00",
+          "organizer": {
+            "@id": "https://metroflexevents.com/#organization"
+          },
+          "location": {
+            "@type": "Place",
+            "name": "Denver Sport Stable",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Superior",
+              "addressRegion": "CO",
+              "addressCountry": "US"
+            }
+          },
+          "performer": [
+            {
+              "@type": "Person",
+              "name": "Branch Warren",
+              "description": "2x Arnold Classic Champion, professional bodybuilder"
+            }
+          ],
+          "offers": {
+            "@type": "Offer",
+            "url": "https://metroflexevents.com/#register",
+            "availability": "https://schema.org/InStock"
+          }
+        },
+        {
+          "@type": "SportsEvent",
+          "@id": "https://metroflexevents.com/#branch-warren-houston-2026",
+          "name": "NPC Branch Warren Classic Houston 2026",
+          "description": "Texas' flagship Branch Warren Classic. Championship NPC bodybuilding event honoring 2x Arnold Classic Champion Branch Warren. National qualifier status.",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "startDate": "2026-06-20T09:00:00-05:00",
+          "endDate": "2026-06-20T18:00:00-05:00",
+          "organizer": {
+            "@id": "https://metroflexevents.com/#organization"
+          },
+          "location": {
+            "@type": "Place",
+            "name": "Houston Venue",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Houston",
+              "addressRegion": "TX",
+              "addressCountry": "US"
+            }
+          },
+          "performer": [
+            {
+              "@type": "Person",
+              "name": "Branch Warren",
+              "description": "2x Arnold Classic Champion, professional bodybuilder"
+            }
+          ],
+          "offers": {
+            "@type": "Offer",
+            "url": "https://metroflexevents.com/#register",
+            "availability": "https://schema.org/InStock"
+          }
+        },
+        {
+          "@type": "SportsEvent",
+          "@id": "https://metroflexevents.com/#raw-power-2025",
+          "name": "28th Annual Raw Power & Wild Game Feast 2025",
+          "description": "Raw bench press and deadlift competition meets wild game celebration. Featuring deer, elk, wild boar, and more. 100% of proceeds support Open Door Church Mexico Mission & SPARK International.",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "startDate": "2025-12-05T18:00:00-06:00",
+          "endDate": "2025-12-05T23:00:00-06:00",
+          "organizer": {
+            "@id": "https://metroflexevents.com/#organization"
+          },
+          "location": {
+            "@type": "Place",
+            "name": "The Original MetroFlex Gym",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "2921 South Cooper Street, #109",
+              "addressLocality": "Arlington",
+              "addressRegion": "TX",
+              "postalCode": "76015",
+              "addressCountry": "US"
+            }
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": "https://form.jotform.com/252827580417967",
+            "availability": "https://schema.org/InStock"
+          }
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        /* ============================================
+           METROFLEX EVENTS - COMPLETE HOMEPAGE
+           World-Class Premium Design
+           ============================================ */
+
+        /* DESIGN SYSTEM - CSS Variables */
+        :root {
+            /* Colors */
+            --mf-black: #000000;
+            --mf-black-deep: #0A0E14;
+            --mf-black-surface: #141414;
+            --mf-red: #C41E3A;
+            --mf-red-light: #DC2626;
+            --mf-red-dark: #991B2E;
+            --mf-red-alpha: rgba(196, 30, 58, 0.4);
+            --mf-steel-100: #FFFFFF;
+            --mf-steel-95: #F5F5F5;
+            --mf-steel-80: #C2C8CF;
+            --mf-steel-70: #A8AFB6;
+            --mf-gold: #FFD700;
+
+            /* Typography */
+            --font-display: 'Bebas Neue', 'Arial Black', sans-serif;
+            --font-body: 'Inter', system-ui, sans-serif;
+
+            /* Spacing */
+            --space-2: 16px;
+            --space-3: 24px;
+            --space-4: 32px;
+            --space-6: 48px;
+            --space-8: 64px;
+        }
+
+        /* RESET & BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--mf-black);
+            color: var(--mf-steel-95);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* UTILITY CLASSES */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* NAVIGATION */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(196, 30, 58, 0.2);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 28px;
+            color: var(--mf-steel-100);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .logo span {
+            color: var(--mf-red);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--mf-steel-80);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: color 300ms;
+        }
+
+        .nav-links a:hover {
+            color: var(--mf-red);
+        }
+
+        /* Dropdown Menu Styles */
+        .dropdown {
+            position: relative;
+        }
+
+        /* Add padding to dropdown parent to create hover bridge */
+        .dropdown > a {
+            padding-bottom: 20px;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(20, 20, 20, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(196, 30, 58, 0.3);
+            border-radius: 8px;
+            padding: 12px 0;
+            min-width: 220px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+
+        /* Custom scrollbar for dropdown */
+        .dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dropdown-menu::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+        }
+
+        .dropdown-menu::-webkit-scrollbar-thumb {
+            background: var(--mf-red);
+            border-radius: 3px;
+        }
+
+        .dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: var(--mf-red-light);
+        }
+
+        .dropdown:hover .dropdown-menu,
+        .dropdown-menu:hover {
+            display: block;
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: var(--mf-steel-80);
+            transition: all 200ms;
+            white-space: nowrap;
+        }
+
+        .dropdown-menu a:hover {
+            background: rgba(196, 30, 58, 0.1);
+            color: var(--mf-red);
+            padding-left: 25px;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: transparent;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .mobile-menu-toggle span {
+            width: 28px;
+            height: 3px;
+            background: var(--mf-steel-95);
+            border-radius: 2px;
+            transition: all 300ms ease;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* Focus States - WCAG 2.1 Compliance */
+        .btn:focus-visible {
+            outline: 3px solid rgba(196, 30, 58, 0.8);
+            outline-offset: 4px;
+        }
+
+        .nav-links a:focus-visible {
+            outline: 2px solid var(--mf-red);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        .sponsor-tab:focus-visible,
+        .floorplan-pin:focus-visible {
+            outline: 3px solid rgba(196, 30, 58, 0.8);
+            outline-offset: 3px;
+        }
+
+        .social-links a:focus-visible {
+            outline: 3px solid var(--mf-red);
+            outline-offset: 4px;
+        }
+
+        /* Scroll offset for sticky nav */
+        section {
+            scroll-margin-top: 80px;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: var(--mf-black);
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--mf-red) 0%, var(--mf-black-deep) 50%, var(--mf-black-surface) 100%);
+            opacity: 0.3;
+            filter: blur(120px);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 900px;
+            padding: 100px 20px;
+        }
+
+        .eyebrow {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--mf-red);
+            margin-bottom: var(--space-3);
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(48px, 8vw, 96px);
+            line-height: 1.1;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: var(--space-4);
+            text-shadow: 0 0 40px rgba(196, 30, 58, 0.5), 0 4px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-display);
+            font-size: clamp(20px, 3vw, 28px);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--mf-steel-95);
+            margin-bottom: var(--space-3);
+        }
+
+        .hero-description {
+            font-size: clamp(16px, 2vw, 19px);
+            color: var(--mf-steel-95);
+            max-width: 700px;
+            margin: 0 auto;
+            margin-bottom: 50px;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        .highlight {
+            color: var(--mf-red);
+        }
+
+        /* CTA BUTTONS */
+        .cta-group {
+            display: flex;
+            gap: var(--space-3);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 18px 40px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-radius: 8px;
+            transition: all 300ms;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--mf-red);
+            color: var(--mf-steel-100);
+            border: none;
+            box-shadow: 0 0 30px var(--mf-red-alpha);
+        }
+
+        .btn-primary:hover {
+            background: var(--mf-red-light);
+            transform: translateY(-4px);
+            box-shadow: 0 0 50px var(--mf-red-alpha);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--mf-steel-95);
+            border: 2px solid var(--mf-steel-95);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(196, 30, 58, 0.1);
+            border-color: var(--mf-red);
+            color: var(--mf-red);
+        }
+
+        /* EVENTS SECTION */
+        .events {
+            padding: 80px 20px;
+            background: var(--mf-black-deep);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(36px, 6vw, 56px);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--mf-steel-70);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .event-card {
+            background: linear-gradient(135deg, var(--mf-black-surface), var(--mf-black));
+            border: 2px solid rgba(196, 30, 58, 0.2);
+            border-radius: 16px;
+            padding: 40px;
+            transition: all 300ms;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--mf-red), var(--mf-gold));
+        }
+
+        .event-card:hover {
+            border-color: var(--mf-red);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(196, 30, 58, 0.3);
+        }
+
+        .event-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            color: var(--mf-steel-100);
+        }
+
+        .event-series {
+            font-size: 14px;
+            color: var(--mf-red);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        .event-date {
+            font-size: 16px;
+            color: var(--mf-steel-80);
+            margin-bottom: 12px;
+        }
+
+        .event-location {
+            font-size: 14px;
+            color: var(--mf-steel-70);
+            margin-bottom: 20px;
+        }
+
+        .event-description {
+            font-size: 15px;
+            color: var(--mf-steel-80);
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* PARTNERS SECTION - Scrolling Text Banner */
+        .partners {
+            padding: 60px 0;
+            background: var(--mf-black);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .partners-marquee {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .partners-track {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            animation: scroll 30s linear infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .partner-name {
+            font-family: var(--font-display);
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--mf-steel-70);
+            opacity: 0.5;
+            transition: all 300ms ease;
+        }
+
+        .partner-name:hover {
+            color: var(--mf-red);
+            opacity: 1;
+        }
+
+        .partner-separator {
+            font-size: 24px;
+            color: var(--mf-red);
+            opacity: 0.3;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .partners-track {
+                animation: none;
+            }
+        }
+
+        /* SPONSORSHIPS SECTION */
+        .sponsorships {
+            padding: 100px 20px;
+            background: var(--mf-black-surface);
+        }
+
+        .sponsor-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        .sponsor-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: 2px solid rgba(196, 30, 58, 0.3);
+            border-radius: 8px;
+            color: var(--mf-steel-80);
+            font-family: var(--font-display);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 300ms ease;
+        }
+
+        .sponsor-tab:hover,
+        .sponsor-tab.active {
+            background: var(--mf-red);
+            border-color: var(--mf-red);
+            color: var(--mf-steel-100);
+        }
+
+        .sponsor-content {
+            display: none;
+        }
+
+        .sponsor-content.active {
+            display: block;
+        }
+
+        .sponsor-options {
+            display: grid;
+            gap: 1.5rem;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .floorplan-frame {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2397 / 1852;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--mf-black-deep);
+            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.45);
+            margin-bottom: 30px;
+        }
+
+        .floorplan-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .floorplan-pin {
+            position: absolute;
+            top: var(--y);
+            left: var(--x);
+            transform: translate(-50%, -50%);
+            padding: 0.35rem 0.65rem;
+            border: none;
+            border-radius: 999px;
+            background: var(--mf-red);
+            color: var(--mf-steel-100);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.22);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .floorplan-pin:hover,
+        .floorplan-pin:focus-visible {
+            transform: translate(-50%, -50%) scale(1.06);
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.32);
+        }
+
+        .sponsor-details {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            background: var(--mf-black-deep);
+            border: 1px solid rgba(196, 30, 58, 0.3);
+            border-radius: 14px;
+            padding: 30px;
+        }
+
+        .sponsor-details h3 {
+            font-family: var(--font-display);
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--mf-red);
+            margin-bottom: 15px;
+        }
+
+        .sponsor-details p {
+            color: var(--mf-steel-80);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .sponsor-details .btn {
+            margin-top: 10px;
+        }
+
+        .sponsor-packages {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .sponsor-package {
+            background: var(--mf-black-deep);
+            border: 1px solid rgba(196, 30, 58, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 300ms ease;
+        }
+
+        .sponsor-package:hover {
+            border-color: var(--mf-red);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(196, 30, 58, 0.2);
+        }
+
+        .sponsor-package h4 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--mf-red);
+            margin-bottom: 15px;
+        }
+
+        .sponsor-package .price {
+            font-family: var(--font-display);
+            font-size: 36px;
+            color: var(--mf-steel-100);
+            margin-bottom: 20px;
+        }
+
+        .sponsor-package .availability {
+            font-size: 14px;
+            color: var(--mf-steel-70);
+            font-style: italic;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+
+        .sponsor-package ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+            text-align: left;
+        }
+
+        .sponsor-package li {
+            color: var(--mf-steel-80);
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(196, 30, 58, 0.1);
+        }
+
+        .sponsor-package li:before {
+            content: "✓ ";
+            color: var(--mf-red);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 680px) {
+            .sponsor-tabs {
+                flex-direction: column;
+            }
+
+            .sponsor-tab {
+                width: 100%;
+            }
+
+            .floorplan-pin {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.55rem;
+            }
+        }
+
+        /* LEGACY SECTION */
+        .legacy {
+            padding: 100px 20px;
+            background: var(--mf-black-deep);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Parallax Video Background - Marvel Effect */
+        .legacy-video-bg {
+            position: absolute;
+            top: -10%;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            z-index: 1;
+            will-change: transform;
+        }
+
+        .legacy-video-bg video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.15;
+            filter: grayscale(0.9) contrast(1.2);
+        }
+
+        .legacy-video-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                180deg,
+                var(--mf-black-deep) 0%,
+                rgba(10, 14, 20, 0.7) 30%,
+                rgba(10, 14, 20, 0.7) 70%,
+                var(--mf-black-deep) 100%
+            );
+            z-index: 2;
+        }
+
+        .legacy-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 3;
+        }
+
+        .legacy-story h3 {
+            font-family: var(--font-display);
+            font-size: 32px;
+            color: var(--mf-steel-100);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 30px;
+        }
+
+        .legacy-story p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--mf-steel-80);
+            margin-bottom: 25px;
+        }
+
+        .legacy-story p strong {
+            color: var(--mf-steel-100);
+        }
+
+        .legacy-cta-text {
+            font-size: 20px;
+            color: var(--mf-red);
+            text-align: center;
+            margin-top: 50px;
+            padding: 40px;
+            border-top: 2px solid var(--mf-red);
+            border-bottom: 2px solid var(--mf-red);
+        }
+
+        /* CONTACT SECTION */
+        .contact {
+            padding: 120px 20px;
+            background: var(--mf-black);
+        }
+
+        .contact-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 60px;
+        }
+
+        /* Contact Form Styles */
+        .contact-form-wrapper {
+            background: var(--mf-black-surface);
+            border: 1px solid rgba(196, 30, 58, 0.2);
+            border-radius: 16px;
+            padding: 50px;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--mf-steel-95);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: var(--mf-black);
+            border: 2px solid rgba(196, 30, 58, 0.3);
+            border-radius: 8px;
+            padding: 14px 18px;
+            color: var(--mf-steel-95);
+            font-family: var(--font-body);
+            font-size: 16px;
+            transition: all 300ms;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--mf-red);
+            box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--mf-steel-70);
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            max-height: 300px;
+        }
+
+        /* Form Validation States */
+        .form-group input:focus-visible,
+        .form-group select:focus-visible,
+        .form-group textarea:focus-visible {
+            outline: 3px solid rgba(196, 30, 58, 0.8);
+            outline-offset: 2px;
+        }
+
+        .form-group input:invalid:not(:placeholder-shown),
+        .form-group textarea:invalid:not(:placeholder-shown) {
+            border-color: #DC2626;
+        }
+
+        .form-group input:valid:not(:placeholder-shown),
+        .form-group textarea:valid:not(:placeholder-shown) {
+            border-color: #10B981;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .contact-item {
+            background: var(--mf-black-surface);
+            border: 1px solid rgba(196, 30, 58, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .contact-item h3 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--mf-red);
+            margin-bottom: 15px;
+        }
+
+        .contact-item p {
+            color: var(--mf-steel-80);
+            margin-bottom: 10px;
+        }
+
+        .contact-item a {
+            color: var(--mf-steel-95);
+            transition: color 200ms;
+        }
+
+        .contact-item a:hover {
+            color: var(--mf-red);
+        }
+
+        .social-links-large {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links-large a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(196, 30, 58, 0.1);
+            border: 1px solid rgba(196, 30, 58, 0.3);
+            border-radius: 8px;
+            color: var(--mf-steel-95);
+            font-weight: 600;
+            transition: all 300ms;
+        }
+
+        .social-links-large a:hover {
+            background: var(--mf-red);
+            border-color: var(--mf-red);
+            transform: translateX(5px);
+        }
+
+        .social-links-large svg {
+            flex-shrink: 0;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--mf-black-deep);
+            padding: 60px 20px 30px;
+            border-top: 1px solid rgba(196, 30, 58, 0.2);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        .footer-logo span {
+            color: var(--mf-red);
+        }
+
+        .footer-text {
+            color: var(--mf-steel-70);
+            margin-bottom: 30px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: var(--mf-black-surface);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mf-steel-80);
+            transition: all 300ms;
+        }
+
+        .social-links a:hover {
+            background: var(--mf-red);
+            color: white;
+            transform: translateY(-4px);
+        }
+
+        .copyright {
+            color: var(--mf-steel-70);
+            font-size: 14px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(196, 30, 58, 0.1);
+        }
+
+        /* MOBILE RESPONSIVE */
+        /* Small Mobile Devices */
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 20px;
+            }
+
+            .hero-title {
+                font-size: 40px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .hero-description {
+                font-size: 15px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .event-card,
+            .contact-form-wrapper {
+                padding: 24px;
+            }
+
+            .event-title {
+                font-size: 22px;
+            }
+
+            .btn {
+                padding: 14px 28px;
+                font-size: 13px;
+            }
+
+            .nav-container {
+                padding: 15px;
+            }
+
+            .floorplan-pin {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.75rem;
+                min-width: 44px;
+                min-height: 44px;
+            }
+
+            .sponsor-package {
+                padding: 24px;
+            }
+        }
+
+        /* Tablets and Mobile */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(10, 14, 20, 0.98);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                padding: 30px 20px;
+                gap: 20px;
+                border-top: 1px solid rgba(196, 30, 58, 0.3);
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .dropdown-menu {
+                position: static;
+                display: none;
+                margin-top: 10px;
+                border-radius: 0;
+                border-left: 3px solid var(--mf-red);
+                padding-left: 15px;
+            }
+
+            .dropdown.active .dropdown-menu {
+                display: block;
+            }
+
+            .hero {
+                min-height: auto;
+                padding: 80px 20px;
+            }
+
+            .hero-content {
+                padding: 60px 20px;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .contact-form-wrapper {
+                padding: 30px;
+            }
+
+            .cta-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <div class="logo">Metro<span>Flex</span> Events</div>
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="https://npcnewsonline.com/join-the-npc/" target="_blank" rel="noopener">Join The NPC</a></li>
+                <li><a href="https://npcusatexas.com/" target="_blank" rel="noopener">NPC USA Texas</a></li>
+                <li class="dropdown">
+                    <a href="#npc-rules">NPC Division Rules</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="https://npcnewsonline.com/bodybuilding/" target="_blank" rel="noopener">Bodybuilding</a></li>
+                        <li><a href="https://npcnewsonline.com/womens-physique/" target="_blank" rel="noopener">Women's Physique</a></li>
+                        <li><a href="https://npcnewsonline.com/bikini/" target="_blank" rel="noopener">Bikini</a></li>
+                        <li><a href="https://npcnewsonline.com/fitness/" target="_blank" rel="noopener">Fitness</a></li>
+                        <li><a href="https://npcnewsonline.com/figure/" target="_blank" rel="noopener">Figure</a></li>
+                        <li><a href="https://npcnewsonline.com/mens-classic-physique/" target="_blank" rel="noopener">Men's Classic Physique</a></li>
+                        <li><a href="https://npcnewsonline.com/mens-physique/" target="_blank" rel="noopener">Men's Physique</a></li>
+                        <li><a href="https://npcnewsonline.com/wellness/" target="_blank" rel="noopener">Wellness</a></li>
+                        <li><a href="https://npcnewsonline.com/wheelchair/" target="_blank" rel="noopener">Wheelchair</a></li>
+                    </ul>
+                </li>
+                <li><a href="https://npcusatexas.com/feedback/" target="_blank" rel="noopener">Competitor Feedback</a></li>
+                <li class="dropdown">
+                    <a href="#sponsorships">Sponsorships</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#sponsor-all-events">All Events</a></li>
+                        <li><a href="#sponsor-better-bodies">NPC Better Bodies Classic</a></li>
+                        <li><a href="#sponsor-ronnie-coleman">NPC Ronnie Coleman Classic</a></li>
+                        <li><a href="#sponsor-branch-warren-co">NPC Branch Warren Classic - Colorado</a></li>
+                        <li><a href="#sponsor-branch-warren-tx">NPC Branch Warren Classic - Houston</a></li>
+                        <li><a href="#sponsor-raw-power">Raw Power & Wild Game Feast</a></li>
+                    </ul>
+                </li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="home" aria-labelledby="hero-title">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="hero-content">
+            <h1 id="hero-title" class="hero-title">
+                Where Champions Compete
+            </h1>
+            <p class="hero-subtitle">
+                Home of the Legendary <span class="highlight">NPC Ronnie Coleman Classic</span><br>
+                Celebrating 30th Anniversary in 2026<br>
+                <strong>National Qualifiers</strong>
+            </p>
+            <p class="hero-description">
+                Premier NPC bodybuilding and powerlifting competitions.
+            </p>
+            <div class="cta-group">
+                <a href="#events" class="btn btn-primary">View Upcoming Events</a>
+                <a href="#legacy" class="btn btn-secondary">Our Legacy</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- EVENTS SECTION -->
+    <section class="events" id="events" aria-labelledby="events-title">
+        <div class="container">
+            <div class="section-header">
+                <span class="eyebrow">Championship Series</span>
+                <h2 id="events-title" class="section-title">Upcoming Events</h2>
+                <p class="section-subtitle">
+                    Premier NPC bodybuilding competitions featuring national qualifier status.
+                </p>
+            </div>
+
+            <!-- FEATURED EVENT - Raw Power & Wild Game Feast -->
+            <article class="featured-event" style="background: linear-gradient(135deg, rgba(20, 20, 20, 0.98), rgba(10, 14, 20, 0.98)); border: 3px solid var(--mf-red); border-radius: 20px; padding: 60px 40px; margin-bottom: 60px; position: relative; overflow: hidden;">
+                <div style="position: relative; z-index: 2; text-align: center;">
+                    <div style="display: inline-block; background: var(--mf-red); color: var(--mf-steel-100); padding: 8px 20px; border-radius: 999px; font-family: var(--font-display); font-size: 14px; letter-spacing: 0.1em; margin-bottom: 20px;">
+                        28TH ANNUAL • STRENGTH & FEAST
+                    </div>
+                    <h3 style="font-family: var(--font-display); font-size: clamp(32px, 5vw, 48px); text-transform: uppercase; letter-spacing: 0.05em; color: var(--mf-steel-100); margin-bottom: 15px;">
+                        Raw Power & Wild Game Feast
+                    </h3>
+                    <p style="font-size: 20px; color: var(--mf-red); font-weight: 700; margin-bottom: 15px;">
+                        Friday, December 5, 2025
+                    </p>
+                    <p style="font-size: 16px; color: var(--mf-steel-95); margin-bottom: 10px;">
+                        <strong>Location:</strong> The Original MetroFlex Gym, Arlington, TX
+                    </p>
+                    <p style="font-size: 16px; color: var(--mf-steel-80); max-width: 700px; margin: 20px auto; line-height: 1.7;">
+                        Raw bench press and deadlift competition meets wild game celebration. Featuring deer, elk, wild boar, and more.
+                        <strong style="color: var(--mf-red);">100% of proceeds support Open Door Church Mexico Mission & SPARK International.</strong>
+                    </p>
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 30px;">
+                        <a href="https://form.jotform.com/252827580417967" target="_blank" rel="noopener" class="btn btn-primary" style="background: var(--mf-red); min-width: 200px;">
+                            Register to Compete
+                        </a>
+                        <a href="mailto:brian@metroflexgym.com" class="btn btn-secondary" style="min-width: 200px;">
+                            Contact for Details
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <div class="events-grid">
+                <!-- Event Card 1 -->
+                <article class="event-card">
+                    <h3 class="event-title">NPC Better Bodies Classic</h3>
+                    <p class="event-series">MetroFlex Championship Series</p>
+                    <p class="event-date"><strong>Date:</strong> April 11, 2026</p>
+                    <p class="event-location"><strong>Location:</strong> Dallas Market Hall, Dallas, TX</p>
+                    <p class="event-description">
+                        Kick off the season with our flagship event. National qualifier status for pro card hopefuls.
+                    </p>
+                    <a href="#register" class="btn btn-primary">Register Now</a>
+                </article>
+
+                <!-- Event Card 2 - 30th Anniversary -->
+                <article class="event-card">
+                    <h3 class="event-title">NPC Ronnie Coleman Classic</h3>
+                    <p class="event-series">30th Anniversary - 2026</p>
+                    <p class="event-date"><strong>Date:</strong> May 16, 2026</p>
+                    <p class="event-location"><strong>Location:</strong> Round Up Inn, Fort Worth, TX</p>
+                    <p class="event-description">
+                        Celebrating 30 years of championship excellence. Honor the legacy of 8x Mr. Olympia Ronnie Coleman at Texas' most legendary NPC competition.
+                    </p>
+                    <a href="#register" class="btn btn-primary">Register Now</a>
+                </article>
+
+                <!-- Event Card 3 -->
+                <article class="event-card">
+                    <h3 class="event-title">NPC Branch Warren Classic - Colorado</h3>
+                    <p class="event-series">MetroFlex Championship Series</p>
+                    <p class="event-date"><strong>Date:</strong> May 2, 2026</p>
+                    <p class="event-location"><strong>Location:</strong> Denver Sport Stable, Superior, CO</p>
+                    <p class="event-description">
+                        Championship event honoring 2x Arnold Classic Champion Branch Warren. Compete at one of the premier NPC qualifiers in Colorado.
+                    </p>
+                    <a href="#register" class="btn btn-primary">Register Now</a>
+                </article>
+
+                <!-- Event Card 4 -->
+                <article class="event-card">
+                    <h3 class="event-title">NPC Branch Warren Classic - Houston</h3>
+                    <p class="event-series">MetroFlex Championship Series</p>
+                    <p class="event-date"><strong>Date:</strong> June 20, 2026</p>
+                    <p class="event-location"><strong>Location:</strong> Houston, TX (Location TBD)</p>
+                    <p class="event-description">
+                        Texas' flagship Branch Warren Classic. Championship event honoring 2x Arnold Classic Champion. National qualifier status.
+                    </p>
+                    <a href="#register" class="btn btn-primary">Register Now</a>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- PARTNERS SECTION - Scrolling Brand Banner -->
+    <section class="partners" aria-label="MetroFlex partners and sponsors">
+        <div class="partners-marquee">
+            <div class="partners-track">
+                <span class="partner-name">MetroFlex Gym</span>
+                <span class="partner-separator">•</span>
+                <span class="partner-name">Pro Tan USA</span>
+                <span class="partner-separator">•</span>
+                <span class="partner-name">Ronnie Coleman Signature Series</span>
+                <span class="partner-separator">•</span>
+                <span class="partner-name">NPC USA Texas</span>
+                <span class="partner-separator">•</span>
+                <span class="partner-name">Wicked Cutz</span>
+                <span class="partner-separator">•</span>
+                <!-- Duplicate for seamless loop -->
+                <span class="partner-name">MetroFlex Gym</span>
+                <span class="partner-separator">•</span>
+                <span class="partner-name">Pro Tan USA</span>
+                <span class="partner-separator">•</span>
+                <span class="partner-name">Ronnie Coleman Signature Series</span>
+                <span class="partner-separator">•</span>
+                <span class="partner-name">NPC USA Texas</span>
+                <span class="partner-separator">•</span>
+                <span class="partner-name">Wicked Cutz</span>
+                <span class="partner-separator">•</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- LEGACY SECTION -->
+    <section class="legacy" id="legacy" aria-labelledby="legacy-title">
+        <!-- Parallax Video Background - Marvel Effect -->
+        <div class="legacy-video-bg">
+            <video autoplay muted loop playsinline poster="https://images.pexels.com/videos/6456266/pexels-photo-6456266.jpeg">
+                <source src="https://player.vimeo.com/external/508329616.hd.mp4?s=c9e9e9c9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9&profile_id=174" type="video/mp4">
+                <!-- Fallback: Using Pexels video of bodybuilding/gym workout -->
+                <!-- For GHL: Upload compressed video to Media Library and replace URL -->
+            </video>
+        </div>
+        <div class="legacy-video-overlay" aria-hidden="true"></div>
+
+        <div class="container">
+            <div class="section-header">
+                <span class="eyebrow">The MetroFlex Story</span>
+                <h2 id="legacy-title" class="section-title">38+ Years of Making Champions</h2>
+            </div>
+
+            <div class="legacy-content">
+                <div class="legacy-story">
+                    <h3>From Legendary Gym to Premier Events</h3>
+                    <p>
+                        In 1987, Brian Dobson opened MetroFlex Gym in Arlington, Texas with a vision: create a
+                        champion making facility focused on heavy iron and real results. No corporate frills.
+                        No gimmicks. Just hardcore training.
+                    </p>
+                    <p>
+                        Three years later, a police officer named Ronnie Coleman walked through those doors.
+                        Brian saw potential and made him an offer: "Let me train you for Mr. Texas. Win, and
+                        you train here free for life."
+                    </p>
+                    <p>
+                        Ronnie did not just win Mr. Texas. He went on to become <strong>8x Mr. Olympia</strong>,
+                        the greatest bodybuilder of all time. Trained at MetroFlex.
+                    </p>
+                    <p>
+                        Today, MetroFlex Events brings that same 38+ year champion making pedigree to every
+                        NPC competition we organize. Professional judging. Championship atmosphere. Legacy standards.
+                    </p>
+                    <p class="legacy-cta-text">
+                        <strong>This isn't just another event.<br>
+                        This is a MetroFlex Event.</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+        <div class="container">
+            <div class="section-header">
+                <span class="eyebrow">Get In Touch</span>
+                <h2 id="contact-title" class="section-title">Contact MetroFlex Events</h2>
+            </div>
+
+            <div class="contact-grid">
+                <!-- Contact Form -->
+                <div class="contact-form-wrapper">
+                    <form class="contact-form" action="#" method="POST">
+                        <div class="form-group">
+                            <label for="contact-name">Name</label>
+                            <input type="text" id="contact-name" name="name" required placeholder="Your Name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-email">Email</label>
+                            <input type="email" id="contact-email" name="email" required placeholder="your@email.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-phone">Phone</label>
+                            <input type="tel" id="contact-phone" name="phone" placeholder="(123) 456-7890">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-event">Event Interest</label>
+                            <select id="contact-event" name="event">
+                                <option value="">Select an event</option>
+                                <option value="better-bodies">NPC Better Bodies Classic</option>
+                                <option value="ronnie-coleman">NPC Ronnie Coleman Classic</option>
+                                <option value="branch-warren-co">NPC Branch Warren Classic (Colorado)</option>
+                                <option value="branch-warren-tx">NPC Branch Warren Classic (Houston)</option>
+                                <option value="general">General Inquiry</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact-message">Message</label>
+                            <textarea id="contact-message" name="message" rows="5" placeholder="Tell us about your inquiry..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+
+                <!-- Contact Info Sidebar -->
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h3>Brian Dobson</h3>
+                        <p>Event Director & Founder</p>
+                        <p><strong>Email:</strong> <a href="mailto:brian@metroflexgym.com">brian@metroflexgym.com</a></p>
+                        <p><strong>Phone:</strong> <a href="tel:+18174659331">(817) 465-9331</a></p>
+                    </div>
+
+                    <div class="contact-item">
+                        <h3>MetroFlex Gym</h3>
+                        <p>2921 South Cooper Street, #109</p>
+                        <p>Arlington, TX 76015</p>
+                    </div>
+
+                    <div class="contact-item">
+                        <h3>Follow Us</h3>
+                        <div class="social-links-large">
+                            <a href="https://www.facebook.com/OriginalMetroflexGym" target="_blank" rel="noopener" aria-label="Facebook">
+                                <svg fill="currentColor" viewBox="0 0 24 24" width="24" height="24">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                                Facebook
+                            </a>
+                            <a href="https://www.instagram.com/originalmetroflexgym" target="_blank" rel="noopener" aria-label="Instagram">
+                                <svg fill="currentColor" viewBox="0 0 24 24" width="24" height="24">
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                </svg>
+                                Instagram
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SPONSORSHIPS SECTION -->
+    <section class="sponsorships" id="sponsorships" aria-labelledby="sponsorships-title">
+        <div class="container">
+            <div class="section-header">
+                <span class="eyebrow">Partner With Champions</span>
+                <h2 id="sponsorships-title" class="section-title">Event Sponsorships</h2>
+                <p class="section-description">Align your brand with 38+ years of champion making legacy. Multiple sponsorship packages available for each event.</p>
+            </div>
+
+            <!-- Event Tabs -->
+            <div class="sponsor-tabs">
+                <button class="sponsor-tab active" data-event="all-events">All Events</button>
+                <button class="sponsor-tab" data-event="better-bodies">Better Bodies Classic</button>
+                <button class="sponsor-tab" data-event="ronnie-coleman">Ronnie Coleman Classic</button>
+                <button class="sponsor-tab" data-event="branch-warren-co">Branch Warren - Colorado</button>
+                <button class="sponsor-tab" data-event="branch-warren-tx">Branch Warren - Houston</button>
+                <button class="sponsor-tab" data-event="raw-power">Raw Power & Wild Game Feast</button>
+            </div>
+
+            <!-- All Events Content -->
+            <div class="sponsor-content active" id="sponsor-all-events">
+                <div class="sponsor-packages">
+                    <div class="sponsor-package">
+                        <h4>Platinum Package</h4>
+                        <div class="price">$25,000</div>
+                        <ul>
+                            <li>Title sponsorship for all 4 events</li>
+                            <li>Logo on all marketing materials</li>
+                            <li>Premium booth space at each event</li>
+                            <li>20 VIP passes (5 per event)</li>
+                            <li>Stage recognition at each event</li>
+                            <li>Website homepage placement</li>
+                            <li>Social media features</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Inquire Now</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Gold Package</h4>
+                        <div class="price">$15,000</div>
+                        <ul>
+                            <li>Sponsorship for all 4 events</li>
+                            <li>Logo on event signage</li>
+                            <li>Standard booth space at each event</li>
+                            <li>12 VIP passes (3 per event)</li>
+                            <li>Social media mentions</li>
+                            <li>Website partner page listing</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Inquire Now</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Silver Package</h4>
+                        <div class="price">$8,000</div>
+                        <ul>
+                            <li>Sponsorship for all 4 events</li>
+                            <li>Logo on select materials</li>
+                            <li>Booth space at 2 events</li>
+                            <li>8 VIP passes (2 per event)</li>
+                            <li>Website partner listing</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Inquire Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ronnie Coleman Classic Content -->
+            <div class="sponsor-content" id="sponsor-ronnie-coleman">
+                <div class="sponsor-packages">
+                    <div class="sponsor-package">
+                        <h4>Title Sponsorship</h4>
+                        <div class="price">$25,000</div>
+                        <p class="availability">(1 Available)</p>
+                        <ul>
+                            <li>Premium Custom Booth Space</li>
+                            <li>6 Vendor Badges • Prominent On-Stage Banner</li>
+                            <li>Naming Rights: "NPC Better Bodies Classic Presented by [Your Company Name]"</li>
+                            <li>Sponsorship of Overall Trophy Awards (14 Categories)</li>
+                            <li>Trophy Presenter for Overall Winners (4)</li>
+                            <li>12 Complimentary Event Tickets</li>
+                            <li>Logo Included in All Event Print, Digital Media, and Advertising</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                            <li>Featured Digital Marketing on Social Media Platforms (Pre-Event & During Event)</li>
+                            <li>Logo and Video Ad Placement on Livestream</li>
+                            <li>Customized Apparel Package for Staff & Ambassadors</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Diamond Sponsorship</h4>
+                        <div class="price">$5,000</div>
+                        <p class="availability">(2 Available)</p>
+                        <ul>
+                            <li>Premium 20x20 Booth Space</li>
+                            <li>Recognition Across All Promotional Materials</li>
+                            <li>5 Vendor Badges • 6 Complimentary Event Tickets</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                            <li>Sponsorship & Trophy Presentation for Two Overall Winner Categories</li>
+                            <li>Video Ad Placement on Livestream</li>
+                            <li>Tickets for Social Media Contests</li>
+                            <li>Customized Apparel Package for Staff & Ambassadors</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Gold Sponsorship</h4>
+                        <div class="price">$2,000</div>
+                        <ul>
+                            <li>Spacious 10x20 Booth Space</li>
+                            <li>Recognition in Event Promotions</li>
+                            <li>4 Vendor Badges</li>
+                            <li>4 Complimentary Event Tickets</li>
+                            <li>Sponsorship & Trophy Presentation for One Overall Winner Category</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Silver Sponsorship</h4>
+                        <div class="price">$900</div>
+                        <ul>
+                            <li>10x20 Booth Space</li>
+                            <li>3 Vendor Badges</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Bronze Sponsorship</h4>
+                        <div class="price">$600</div>
+                        <ul>
+                            <li>10x10 Booth Space</li>
+                            <li>2 Vendor Badges</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Better Bodies Classic Content -->
+            <div class="sponsor-content" id="sponsor-better-bodies">
+                <div class="sponsor-packages">
+                    <div class="sponsor-package">
+                        <h4>Title Sponsor</h4>
+                        <div class="price">$10,000</div>
+                        <ul>
+                            <li>Exclusive title sponsorship</li>
+                            <li>Logo on all event materials</li>
+                            <li>Premium booth space</li>
+                            <li>6 VIP passes</li>
+                            <li>Stage recognition</li>
+                            <li>Social media features</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Inquire Now</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Stage Sponsor</h4>
+                        <div class="price">$5,000</div>
+                        <ul>
+                            <li>Stage backdrop placement</li>
+                            <li>Logo on event signage</li>
+                            <li>Standard booth space</li>
+                            <li>4 VIP passes</li>
+                            <li>Social media mentions</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Inquire Now</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Vendor Booth</h4>
+                        <div class="price">$1,500</div>
+                        <ul>
+                            <li>10x10 booth space</li>
+                            <li>2 vendor badges</li>
+                            <li>Power outlet included</li>
+                            <li>Logo on partner page</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Reserve Booth</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branch Warren Colorado Content -->
+            <div class="sponsor-content" id="sponsor-branch-warren-co">
+                <div class="sponsor-packages">
+                    <div class="sponsor-package">
+                        <h4>Title Sponsorship</h4>
+                        <div class="price">$25,000</div>
+                        <p class="availability">(1 Available)</p>
+                        <ul>
+                            <li>Premium Custom Booth Space</li>
+                            <li>6 Vendor Badges • Prominent On-Stage Banner</li>
+                            <li>Naming Rights: "NPC Better Bodies Classic Presented by [Your Company Name]"</li>
+                            <li>Sponsorship of Overall Trophy Awards (14 Categories)</li>
+                            <li>Trophy Presenter for Overall Winners (4)</li>
+                            <li>12 Complimentary Event Tickets</li>
+                            <li>Logo Included in All Event Print, Digital Media, and Advertising</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                            <li>Featured Digital Marketing on Social Media Platforms (Pre-Event & During Event)</li>
+                            <li>Logo and Video Ad Placement on Livestream</li>
+                            <li>Customized Apparel Package for Staff & Ambassadors</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Diamond Sponsorship</h4>
+                        <div class="price">$5,000</div>
+                        <p class="availability">(2 Available)</p>
+                        <ul>
+                            <li>Premium 20x20 Booth Space</li>
+                            <li>Recognition Across All Promotional Materials</li>
+                            <li>5 Vendor Badges • 6 Complimentary Event Tickets</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                            <li>Sponsorship & Trophy Presentation for Two Overall Winner Categories</li>
+                            <li>Video Ad Placement on Livestream</li>
+                            <li>Tickets for Social Media Contests</li>
+                            <li>Customized Apparel Package for Staff & Ambassadors</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Gold Sponsorship</h4>
+                        <div class="price">$2,000</div>
+                        <ul>
+                            <li>Spacious 10x20 Booth Space</li>
+                            <li>Recognition in Event Promotions</li>
+                            <li>4 Vendor Badges</li>
+                            <li>4 Complimentary Event Tickets</li>
+                            <li>Sponsorship & Trophy Presentation for One Overall Winner Category</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Silver Sponsorship</h4>
+                        <div class="price">$900</div>
+                        <ul>
+                            <li>10x20 Booth Space</li>
+                            <li>3 Vendor Badges</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Bronze Sponsorship</h4>
+                        <div class="price">$600</div>
+                        <ul>
+                            <li>10x10 Booth Space</li>
+                            <li>2 Vendor Badges</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branch Warren Houston Content -->
+            <div class="sponsor-content" id="sponsor-branch-warren-tx">
+                <div class="sponsor-packages">
+                    <div class="sponsor-package">
+                        <h4>Title Sponsorship</h4>
+                        <div class="price">$25,000</div>
+                        <p class="availability">(1 Available)</p>
+                        <ul>
+                            <li>Premium Custom Booth Space</li>
+                            <li>6 Vendor Badges • Prominent On-Stage Banner</li>
+                            <li>Naming Rights: "NPC Better Bodies Classic Presented by [Your Company Name]"</li>
+                            <li>Sponsorship of Overall Trophy Awards (14 Categories)</li>
+                            <li>Trophy Presenter for Overall Winners (4)</li>
+                            <li>12 Complimentary Event Tickets</li>
+                            <li>Logo Included in All Event Print, Digital Media, and Advertising</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                            <li>Featured Digital Marketing on Social Media Platforms (Pre-Event & During Event)</li>
+                            <li>Logo and Video Ad Placement on Livestream</li>
+                            <li>Customized Apparel Package for Staff & Ambassadors</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Diamond Sponsorship</h4>
+                        <div class="price">$5,000</div>
+                        <p class="availability">(2 Available)</p>
+                        <ul>
+                            <li>Premium 20x20 Booth Space</li>
+                            <li>Recognition Across All Promotional Materials</li>
+                            <li>5 Vendor Badges • 6 Complimentary Event Tickets</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                            <li>Sponsorship & Trophy Presentation for Two Overall Winner Categories</li>
+                            <li>Video Ad Placement on Livestream</li>
+                            <li>Tickets for Social Media Contests</li>
+                            <li>Customized Apparel Package for Staff & Ambassadors</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Gold Sponsorship</h4>
+                        <div class="price">$2,000</div>
+                        <ul>
+                            <li>Spacious 10x20 Booth Space</li>
+                            <li>Recognition in Event Promotions</li>
+                            <li>4 Vendor Badges</li>
+                            <li>4 Complimentary Event Tickets</li>
+                            <li>Sponsorship & Trophy Presentation for One Overall Winner Category</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Silver Sponsorship</h4>
+                        <div class="price">$900</div>
+                        <ul>
+                            <li>10x20 Booth Space</li>
+                            <li>3 Vendor Badges</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Bronze Sponsorship</h4>
+                        <div class="price">$600</div>
+                        <ul>
+                            <li>10x10 Booth Space</li>
+                            <li>2 Vendor Badges</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Raw Power & Wild Game Feast Content -->
+            <div class="sponsor-content" id="sponsor-raw-power">
+                <div class="sponsor-packages">
+                    <div class="sponsor-package">
+                        <h4>Title Sponsorship</h4>
+                        <div class="price">$25,000</div>
+                        <p class="availability">(1 Available)</p>
+                        <ul>
+                            <li>Premium Custom Booth Space</li>
+                            <li>6 Vendor Badges • Prominent On-Stage Banner</li>
+                            <li>Naming Rights: "NPC Better Bodies Classic Presented by [Your Company Name]"</li>
+                            <li>Sponsorship of Overall Trophy Awards (14 Categories)</li>
+                            <li>Trophy Presenter for Overall Winners (4)</li>
+                            <li>12 Complimentary Event Tickets</li>
+                            <li>Logo Included in All Event Print, Digital Media, and Advertising</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                            <li>Featured Digital Marketing on Social Media Platforms (Pre-Event & During Event)</li>
+                            <li>Logo and Video Ad Placement on Livestream</li>
+                            <li>Customized Apparel Package for Staff & Ambassadors</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Diamond Sponsorship</h4>
+                        <div class="price">$5,000</div>
+                        <p class="availability">(2 Available)</p>
+                        <ul>
+                            <li>Premium 20x20 Booth Space</li>
+                            <li>Recognition Across All Promotional Materials</li>
+                            <li>5 Vendor Badges • 6 Complimentary Event Tickets</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                            <li>Sponsorship & Trophy Presentation for Two Overall Winner Categories</li>
+                            <li>Video Ad Placement on Livestream</li>
+                            <li>Tickets for Social Media Contests</li>
+                            <li>Customized Apparel Package for Staff & Ambassadors</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Gold Sponsorship</h4>
+                        <div class="price">$2,000</div>
+                        <ul>
+                            <li>Spacious 10x20 Booth Space</li>
+                            <li>Recognition in Event Promotions</li>
+                            <li>4 Vendor Badges</li>
+                            <li>4 Complimentary Event Tickets</li>
+                            <li>Sponsorship & Trophy Presentation for One Overall Winner Category</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Silver Sponsorship</h4>
+                        <div class="price">$900</div>
+                        <ul>
+                            <li>10x20 Booth Space</li>
+                            <li>3 Vendor Badges</li>
+                            <li>Competitor Gift Bag Inserts (250)</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+
+                    <div class="sponsor-package">
+                        <h4>Bronze Sponsorship</h4>
+                        <div class="price">$600</div>
+                        <ul>
+                            <li>10x10 Booth Space</li>
+                            <li>2 Vendor Badges</li>
+                        </ul>
+                        <a href="#contact" class="btn btn-primary">Secure Sponsorship</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer role="contentinfo">
+        <div class="footer-content">
+            <div class="footer-logo">Metro<span>Flex</span> Events</div>
+            <p class="footer-text">
+                Elite bodybuilding competitions powered by 38+ years of champion making legacy
+            </p>
+            <div class="social-links">
+                <a href="https://www.facebook.com/OriginalMetroflexGym" aria-label="Facebook" target="_blank" rel="noopener">
+                    <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                </a>
+                <a href="https://www.instagram.com/originalmetroflexgym" aria-label="Instagram" target="_blank" rel="noopener">
+                    <svg fill="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="copyright">
+                &copy; 2025 MetroFlex Events. All rights reserved. | 2921 S Cooper St #109, Arlington, TX 76015 | (817) 465-9331
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactions and parallax effects -->
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href.startsWith('#')) {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+
+        // Parallax Video Background Effect - Marvel Cinematic Style
+        function initParallax() {
+            const legacySection = document.querySelector('.legacy');
+            const videoBg = document.querySelector('.legacy-video-bg');
+
+            if (!legacySection || !videoBg) return;
+
+            let ticking = false;
+
+            function updateParallax() {
+                const rect = legacySection.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+
+                // Calculate scroll progress through section (-1 to 1)
+                const scrollProgress = (windowHeight - rect.top) / (windowHeight + rect.height);
+
+                // Apply parallax transform (slower movement creates depth)
+                // Negative value moves video upward as you scroll down
+                const translateY = -(scrollProgress * 100) * 0.3; // 0.3 = parallax speed
+
+                videoBg.style.transform = `translateY(${translateY}px) scale(1.1)`;
+
+                ticking = false;
+            }
+
+            function requestParallaxUpdate() {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateParallax);
+                    ticking = true;
+                }
+            }
+
+            // Throttled scroll listener
+            window.addEventListener('scroll', requestParallaxUpdate, { passive: true });
+
+            // Initial parallax position
+            updateParallax();
+        }
+
+        // Initialize on DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initParallax);
+        } else {
+            initParallax();
+        }
+
+        // Pause video on mobile for performance
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            const videos = document.querySelectorAll('.legacy-video-bg video');
+            videos.forEach(video => {
+                video.pause();
+                video.removeAttribute('autoplay');
+            });
+        }
+
+        // Mobile Menu Toggle
+        const mobileToggle = document.querySelector('.mobile-menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                const isExpanded = mobileToggle.getAttribute('aria-expanded') === 'true';
+                mobileToggle.setAttribute('aria-expanded', !isExpanded);
+                mobileToggle.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('nav')) {
+                    mobileToggle.classList.remove('active');
+                    navLinks.classList.remove('active');
+                    mobileToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Handle dropdown clicks on mobile
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                const link = dropdown.querySelector('a');
+                link.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        dropdown.classList.toggle('active');
+                    }
+                });
+            });
+        }
+
+        // Sponsorship Tabs Functionality
+        const sponsorTabs = document.querySelectorAll('.sponsor-tab');
+        const sponsorContents = document.querySelectorAll('.sponsor-content');
+
+        sponsorTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                sponsorTabs.forEach(t => t.classList.remove('active'));
+                sponsorContents.forEach(c => c.classList.remove('active'));
+
+                // Add active class to clicked tab
+                tab.classList.add('active');
+
+                // Show corresponding content
+                const eventId = tab.dataset.event;
+                const targetContent = document.getElementById(`sponsor-${eventId}`);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+
+        // Floorplan Interactive Booth Selection
+        document.querySelectorAll('[data-floorplan] .floorplan-pin').forEach((pin) => {
+            pin.addEventListener('click', () => {
+                const target = pin.dataset.zone;
+                const details = document.querySelector('[data-floorplan-details]');
+
+                switch (target) {
+                    case 'booth-a1':
+                        details.innerHTML = `
+                            <h3>Booth A1 - Premium Corner</h3>
+                            <p>Premium 10x10 corner booth. High traffic location near main entrance. Includes power outlet and 2 vendor badges.</p>
+                            <p><strong>Price:</strong> $2,500</p>
+                            <a href="#contact" class="btn btn-primary">Reserve Booth A1</a>
+                        `;
+                        break;
+
+                    case 'booth-a2':
+                        details.innerHTML = `
+                            <h3>Booth A2 - Front Row</h3>
+                            <p>10x10 booth in prime front row position. Great visibility and foot traffic. Includes power and 2 vendor badges.</p>
+                            <p><strong>Price:</strong> $2,000</p>
+                            <a href="#contact" class="btn btn-primary">Reserve Booth A2</a>
+                        `;
+                        break;
+
+                    case 'booth-a3':
+                        details.innerHTML = `
+                            <h3>Booth A3 - Front Row</h3>
+                            <p>10x10 booth in front row. Excellent exposure near registration area. Includes power and 2 vendor badges.</p>
+                            <p><strong>Price:</strong> $2,000</p>
+                            <a href="#contact" class="btn btn-primary">Reserve Booth A3</a>
+                        `;
+                        break;
+
+                    case 'booth-b6':
+                        details.innerHTML = `
+                            <h3>Booth B6 - Central Location</h3>
+                            <p>8x10 inline booth in central location. Good foot traffic between stage and registration. Includes power and 2 vendor badges.</p>
+                            <p><strong>Price:</strong> $1,500</p>
+                            <a href="#contact" class="btn btn-primary">Reserve Booth B6</a>
+                        `;
+                        break;
+
+                    case 'booth-b7':
+                        details.innerHTML = `
+                            <h3>Booth B7 - Near Stage</h3>
+                            <p>8x10 inline booth near main stage. Great for stage-facing promotions. Includes power and 2 vendor badges.</p>
+                            <p><strong>Price:</strong> $1,500</p>
+                            <a href="#contact" class="btn btn-primary">Reserve Booth B7</a>
+                        `;
+                        break;
+
+                    case 'stage':
+                        details.innerHTML = `
+                            <h3>Stage Sponsorship</h3>
+                            <p>Become the official stage sponsor. Your logo featured prominently on stage backdrop, visible in all competitor photos and videos. Maximum brand exposure.</p>
+                            <p><strong>Price:</strong> $8,000</p>
+                            <a href="#contact" class="btn btn-primary">Inquire About Stage Sponsorship</a>
+                        `;
+                        break;
+
+                    default:
+                        details.innerHTML = `
+                            <h3>Select a Booth</h3>
+                            <p>Click a booth marker on the floorplan to see details and pricing.</p>
+                        `;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

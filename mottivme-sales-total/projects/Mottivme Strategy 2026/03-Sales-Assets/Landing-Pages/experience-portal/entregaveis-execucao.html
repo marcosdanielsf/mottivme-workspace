@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Demand Stack - 6 Meses de Execução Completa">
+    <title>Demand Stack - Execução Detalhada | Carol & Luiz</title>
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="design-system.css">
+
+    <style>
+        body {
+            background: var(--bg-primary);
+            scroll-behavior: smooth;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #000 0%, #1a1a2e 100%);
+            padding: var(--space-24) var(--space-8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background: radial-gradient(circle at 70% 50%, var(--blue-500) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.2; }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: var(--space-2) var(--space-6);
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid var(--blue-500);
+            border-radius: var(--radius-full);
+            color: var(--blue-500);
+            font-size: var(--tipo-2);
+            font-weight: var(--peso-semibold);
+            letter-spacing: 2px;
+            margin-bottom: var(--space-8);
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: var(--tipo-9);
+            font-weight: var(--peso-bold);
+            line-height: var(--altura-titulo);
+            margin-bottom: var(--space-6);
+            background: linear-gradient(135deg, var(--blue-500) 0%, var(--gold-500) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: var(--tipo-4);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            margin-bottom: var(--space-12);
+        }
+
+        .hero-highlight {
+            font-size: var(--tipo-3);
+            color: var(--text-primary);
+            background: rgba(88, 166, 255, 0.1);
+            padding: var(--space-6);
+            border-left: 4px solid var(--blue-500);
+            border-radius: var(--radius-lg);
+            margin: var(--space-12) auto;
+            max-width: 600px;
+        }
+
+        /* Monthly Deliverables Section */
+        .monthly-deliverables {
+            padding: var(--space-24) var(--space-8);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-16);
+        }
+
+        .section-title {
+            font-size: var(--tipo-7);
+            font-weight: var(--peso-bold);
+            margin-bottom: var(--space-4);
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+        }
+
+        /* Service Card */
+        .service-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 2px solid rgba(88, 166, 255, 0.2);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-12);
+            margin-bottom: var(--space-12);
+            transition: all var(--transition-base) ease;
+        }
+
+        .service-card:hover {
+            border-color: var(--blue-500);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-5);
+        }
+
+        .service-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .service-icon {
+            font-size: var(--tipo-8);
+            flex-shrink: 0;
+        }
+
+        .service-title-group {
+            flex: 1;
+        }
+
+        .service-title {
+            font-size: var(--tipo-5);
+            font-weight: var(--peso-bold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-3);
+        }
+
+        .service-monthly-value {
+            font-size: var(--tipo-3);
+            color: var(--blue-500);
+            font-weight: var(--peso-semibold);
+        }
+
+        .service-description {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            margin-bottom: var(--space-8);
+        }
+
+        .service-items {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: var(--space-4);
+        }
+
+        .service-items li {
+            padding-left: var(--space-8);
+            position: relative;
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+        }
+
+        .service-items li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--blue-500);
+            font-weight: var(--peso-bold);
+            font-size: var(--tipo-4);
+        }
+
+        .service-items li strong {
+            color: var(--text-primary);
+        }
+
+        /* Metrics Section */
+        .metrics-section {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            padding: var(--space-24) var(--space-8);
+        }
+
+        .metrics-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-8);
+        }
+
+        .metric-card {
+            background: rgba(88, 166, 255, 0.05);
+            border: 2px solid var(--blue-500);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: var(--tipo-8);
+            font-weight: var(--peso-bold);
+            color: var(--blue-500);
+            line-height: 1;
+            margin-bottom: var(--space-4);
+        }
+
+        .metric-label {
+            font-size: var(--tipo-2);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* What We DON'T Do Section */
+        .dont-do-section {
+            background: var(--bg-secondary);
+            padding: var(--space-24) var(--space-8);
+            margin: var(--space-24) 0;
+        }
+
+        .dont-do-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .dont-do-title {
+            font-size: var(--tipo-6);
+            font-weight: var(--peso-bold);
+            color: var(--red-500);
+            margin-bottom: var(--space-8);
+        }
+
+        .dont-do-intro {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            margin-bottom: var(--space-12);
+        }
+
+        .dont-do-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-8);
+            margin-bottom: var(--space-12);
+        }
+
+        .dont-do-item {
+            background: rgba(248, 81, 73, 0.05);
+            border: 2px solid var(--red-500);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+        }
+
+        .dont-do-item-icon {
+            font-size: var(--tipo-7);
+            margin-bottom: var(--space-4);
+        }
+
+        .dont-do-item-title {
+            font-size: var(--tipo-4);
+            font-weight: var(--peso-semibold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-3);
+        }
+
+        .dont-do-item-text {
+            font-size: var(--tipo-2);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+        }
+
+        .do-instead {
+            background: rgba(63, 185, 80, 0.05);
+            border: 2px solid var(--green-500);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+            margin-top: var(--space-12);
+        }
+
+        .do-instead-title {
+            font-size: var(--tipo-5);
+            font-weight: var(--peso-bold);
+            color: var(--green-500);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            justify-content: center;
+        }
+
+        .do-instead-text {
+            font-size: var(--tipo-3);
+            color: var(--text-primary);
+            line-height: var(--altura-corpo);
+        }
+
+        /* Investment Section */
+        .investment-section {
+            padding: var(--space-24) var(--space-8);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .investment-breakdown {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid rgba(88, 166, 255, 0.3);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+            margin-bottom: var(--space-12);
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-4) 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+            padding-top: var(--space-6);
+            margin-top: var(--space-6);
+            border-top: 2px solid var(--blue-500);
+        }
+
+        .breakdown-label {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+        }
+
+        .breakdown-value {
+            font-size: var(--tipo-4);
+            font-weight: var(--peso-semibold);
+            color: var(--text-primary);
+        }
+
+        .breakdown-item:last-child .breakdown-label {
+            color: var(--text-primary);
+            font-weight: var(--peso-bold);
+        }
+
+        .breakdown-item:last-child .breakdown-value {
+            color: var(--blue-500);
+            font-size: var(--tipo-6);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #0a0a0a 0%, #16213e 100%);
+            padding: var(--space-24) var(--space-8);
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: var(--tipo-7);
+            font-weight: var(--peso-bold);
+            margin-bottom: var(--space-6);
+            color: var(--text-primary);
+        }
+
+        .cta-text {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            margin-bottom: var(--space-12);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: var(--space-6) var(--space-16);
+            min-height: 56px;
+            background: var(--gradient-gold);
+            color: var(--text-inverse);
+            font-size: var(--tipo-3);
+            font-weight: var(--peso-bold);
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            transition: all var(--transition-fast) ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .cta-button:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Navigation */
+        .nav-breadcrumb {
+            position: fixed;
+            top: var(--space-4);
+            left: var(--space-4);
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(88, 166, 255, 0.2);
+            z-index: 9999;
+            font-size: var(--tipo-1);
+        }
+
+        .nav-breadcrumb a {
+            color: var(--text-tertiary);
+            text-decoration: none;
+            transition: color var(--transition-fast) ease;
+        }
+
+        .nav-breadcrumb a:hover {
+            color: var(--blue-500);
+        }
+
+        .nav-breadcrumb .current {
+            color: var(--blue-500);
+            font-weight: var(--peso-semibold);
+        }
+
+        /* Logo Header */
+        .logo-header {
+            position: fixed;
+            top: var(--space-4);
+            right: var(--space-4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-5);
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            border: 1px solid var(--blue-700);
+            box-shadow: 0 4px 12px rgba(88, 166, 255, 0.15);
+        }
+
+        .logo-icon {
+            font-size: var(--tipo-5);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--blue-400), var(--blue-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text {
+            font-size: var(--tipo-2);
+            color: var(--neutral-400);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: var(--tipo-7);
+            }
+
+            .service-header {
+                flex-direction: column;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dont-do-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Breadcrumb -->
+    <nav class="nav-breadcrumb" aria-label="Navegação">
+        <a href="proposta.html">Visão Geral</a> /
+        <a href="entregaveis-foundation.html">Foundation</a> /
+        <span class="current">Execução</span>
+    </nav>
+
+    <!-- Logo Header -->
+    <div class="logo-header">
+        <div class="logo-icon">MOTTIVME</div>
+        <div class="logo-text">Sales</div>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="hero-content">
+            <span class="hero-badge">6 Meses de Execução</span>
+            <h1 class="hero-title">Demand Stack</h1>
+            <p class="hero-subtitle">
+                Gestão Completa de 2 Contas + Tráfego Pago + SDR + 15-20 Reuniões/Mês<br>
+                Transformamos sua estrutura em RESULTADOS
+            </p>
+            <div class="hero-highlight">
+                <strong>R$ 66.000 (6 meses)</strong><br>
+                R$ 11.000/mês de execução full-stack
+            </div>
+        </div>
+    </section>
+
+    <!-- Monthly Deliverables -->
+    <section class="monthly-deliverables">
+        <div class="section-header">
+            <h2 class="section-title">🚀 O Que Fazemos TODO Mês</h2>
+            <p class="section-subtitle">
+                Execução completa durante 6 meses. Você foca em fechar vendas, nós cuidamos do resto.
+            </p>
+        </div>
+
+        <!-- Service 1: Social Media Management -->
+        <article class="service-card">
+            <div class="service-header">
+                <div class="service-icon">📱</div>
+                <div class="service-title-group">
+                    <h3 class="service-title">Gestão de 2 Contas Instagram</h3>
+                    <div class="service-monthly-value">R$ 8.000/mês (Dr. Luiz + Dra. Carol)</div>
+                </div>
+            </div>
+            <p class="service-description">
+                Gerenciamos completamente as duas contas de vocês. Criação, publicação, engajamento, stories, reels — TUDO.
+            </p>
+            <ul class="service-items">
+                <li><strong>90 posts/mês por conta</strong> (3 posts/dia baseados no Content Calendar)</li>
+                <li><strong>Stories diários</strong> (mínimo 5-7 stories/dia para manter engajamento)</li>
+                <li><strong>3-5 Reels/semana</strong> (conteúdo viral otimizado para alcance)</li>
+                <li><strong>Resposta a DMs</strong> (qualificação inicial + agendamento)</li>
+                <li><strong>Resposta a comentários</strong> (engajamento + autoridade)</li>
+                <li><strong>Análise semanal</strong> (métricas de crescimento + ajustes)</li>
+                <li><strong>2 lives/mês coordenadas</strong> (planejamento + roteiro + divulgação)</li>
+            </ul>
+        </article>
+
+        <!-- Service 2: Paid Traffic -->
+        <article class="service-card">
+            <div class="service-header">
+                <div class="service-icon">🎯</div>
+                <div class="service-title-group">
+                    <h3 class="service-title">Tráfego Pago (Meta Ads)</h3>
+                    <div class="service-monthly-value">R$ 3.000/mês (gestão de campanhas)</div>
+                </div>
+            </div>
+            <p class="service-description">
+                Rodamos anúncios no Instagram e Facebook para gerar leads qualificados. Orçamento de mídia separado (sugestão: R$ 5-10k/mês).
+            </p>
+            <ul class="service-items">
+                <li><strong>Criação de campanhas</strong> (targeting preciso baseado no ICP)</li>
+                <li><strong>5-10 criativos/mês</strong> (imagens + vídeos + copys testadas)</li>
+                <li><strong>A/B testing contínuo</strong> (headlines, imagens, públicos)</li>
+                <li><strong>Otimização diária</strong> (ajustes de lance, público, budget)</li>
+                <li><strong>Gestão de orçamento</strong> (ROI tracking + realocação inteligente)</li>
+                <li><strong>Relatórios semanais</strong> (CPL, CPA, ROAS, conversão por anúncio)</li>
+                <li><strong>Landing pages otimizadas</strong> (criação + testes + melhorias)</li>
+            </ul>
+        </article>
+
+        <!-- Service 3: SDR Human+IA -->
+        <article class="service-card">
+            <div class="service-header">
+                <div class="service-icon">🤖</div>
+                <div class="service-title-group">
+                    <h3 class="service-title">SDR Human+IA Dedicado</h3>
+                    <div class="service-monthly-value">Incluído no pacote</div>
+                </div>
+            </div>
+            <p class="service-description">
+                SDR híbrido (humano + inteligência artificial) para qualificar leads e agendar reuniões de alta qualidade.
+            </p>
+            <ul class="service-items">
+                <li><strong>Qualificação de todos os leads</strong> (orgânico + pago)</li>
+                <li><strong>Outreach proativo</strong> (follow-up em leads frios)</li>
+                <li><strong>Agendamento de reuniões</strong> (usando scripts testados)</li>
+                <li><strong>Confirmação L-24h e L-2h</strong> (reduz no-show de 60% → 20%)</li>
+                <li><strong>Brief pré-call</strong> (você recebe contexto completo do lead)</li>
+                <li><strong>Follow-up pós-call</strong> (nurturing de leads que não fecharam)</li>
+                <li><strong>CRM atualizado em tempo real</strong> (histórico completo de interações)</li>
+            </ul>
+        </article>
+
+        <!-- Service 4: Meetings Guarantee -->
+        <article class="service-card">
+            <div class="service-header">
+                <div class="service-icon">📅</div>
+                <div class="service-title-group">
+                    <h3 class="service-title">Garantia de 15-20 Reuniões/Mês</h3>
+                    <div class="service-monthly-value">Meta mínima garantida</div>
+                </div>
+            </div>
+            <p class="service-description">
+                Não entregamos "leads". Entregamos REUNIÕES agendadas, confirmadas e qualificadas na sua agenda.
+            </p>
+            <ul class="service-items">
+                <li><strong>15-20 reuniões/mês</strong> (distribuídas entre Dr. Luiz e Dra. Carol)</li>
+                <li><strong>Leads qualificados</strong> (fit com ICP definido no Foundation Sprint)</li>
+                <li><strong>Show-Rate Guard 65%+</strong> (confirmações L-24h e L-2h)</li>
+                <li><strong>Reuniões de 45-60 minutos</strong> (tempo ideal para descoberta + pitch)</li>
+                <li><strong>Calendário organizado</strong> (slots otimizados, sem sobrecarga)</li>
+                <li><strong>Briefing pré-call</strong> (você sabe TUDO sobre o lead antes da call)</li>
+            </ul>
+        </article>
+
+        <!-- Service 5: Reporting & Optimization -->
+        <article class="service-card">
+            <div class="service-header">
+                <div class="service-icon">📊</div>
+                <div class="service-title-group">
+                    <h3 class="service-title">Relatórios + Otimizações Contínuas</h3>
+                    <div class="service-monthly-value">Incluído no pacote</div>
+                </div>
+            </div>
+            <p class="service-description">
+                Transparência total. Você sabe EXATAMENTE onde cada real está sendo investido e quais resultados está gerando.
+            </p>
+            <ul class="service-items">
+                <li><strong>Dashboard em tempo real</strong> (acesso 24/7 a todas as métricas)</li>
+                <li><strong>Relatório semanal</strong> (métricas-chave: leads, reuniões, conversão)</li>
+                <li><strong>Call mensal de alinhamento</strong> (60 minutos de estratégia + ajustes)</li>
+                <li><strong>Otimizações contínuas</strong> (A/B testing de tudo: anúncios, scripts, funis)</li>
+                <li><strong>Forecasting</strong> (projeção de resultados dos próximos 30-90 dias)</li>
+                <li><strong>Benchmarking</strong> (como vocês estão vs mercado)</li>
+            </ul>
+        </article>
+    </section>
+
+    <!-- Expected Metrics -->
+    <section class="metrics-section">
+        <div class="section-header">
+            <h2 class="section-title">📈 Métricas Esperadas (Mensal)</h2>
+            <p class="section-subtitle">
+                Baseado em casos reais de clientes similares
+            </p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">15-20</div>
+                <div class="metric-label">Reuniões Agendadas/Mês</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value">65%+</div>
+                <div class="metric-label">Show-Rate Médio</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value">30-42%</div>
+                <div class="metric-label">Taxa de Fechamento</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-value">4-8</div>
+                <div class="metric-label">Novos Clientes/Mês</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What We DON'T Do -->
+    <section class="dont-do-section">
+        <div class="dont-do-content">
+            <h2 class="dont-do-title">⚠️ O QUE NÃO FAZEMOS NA EXECUÇÃO</h2>
+            <p class="dont-do-intro">
+                Para evitar expectativas erradas, aqui está o que <strong>NÃO</strong> está incluído no Demand Stack:
+            </p>
+
+            <div class="dont-do-grid">
+                <div class="dont-do-item">
+                    <div class="dont-do-item-icon">❌</div>
+                    <h3 class="dont-do-item-title">Fechar Vendas por Vocês</h3>
+                    <p class="dont-do-item-text">
+                        Entregamos leads qualificados e reuniões agendadas. Mas <strong>VOCÊS fecham a venda</strong>. Ninguém vende melhor que vocês.
+                    </p>
+                </div>
+
+                <div class="dont-do-item">
+                    <div class="dont-do-item-icon">❌</div>
+                    <h3 class="dont-do-item-title">Criar Produto/Mentoria</h3>
+                    <p class="dont-do-item-text">
+                        Ajudamos a <strong>estruturar a oferta</strong> no Foundation Sprint. Mas o conteúdo da mentoria é 100% de vocês.
+                    </p>
+                </div>
+
+                <div class="dont-do-item">
+                    <div class="dont-do-item-icon">❌</div>
+                    <h3 class="dont-do-item-title">Garantir X Vendas/Mês</h3>
+                    <p class="dont-do-item-text">
+                        Garantimos <strong>reuniões qualificadas</strong>. A conversão depende da sua habilidade de fechamento e fit da oferta.
+                    </p>
+                </div>
+
+                <div class="dont-do-item">
+                    <div class="dont-do-item-icon">❌</div>
+                    <h3 class="dont-do-item-title">Orçamento de Mídia Incluso</h3>
+                    <p class="dont-do-item-text">
+                        R$ 3.000/mês é a <strong>gestão das campanhas</strong>. O budget de anúncios (sugestão: R$ 5-10k/mês) é <strong>separado</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="do-instead">
+                <h3 class="do-instead-title">
+                    <span>✅</span> O QUE FAZEMOS NO DEMAND STACK
+                </h3>
+                <p class="do-instead-text">
+                    Demand Stack é <strong>EXECUÇÃO</strong>. Nós rodamos TUDO: posts, anúncios, qualificação, agendamento.<br><br>
+                    Você recebe <strong>15-20 reuniões qualificadas/mês</strong> na sua agenda.<br><br>
+                    <strong>Seu único trabalho: aparecer na call e fechar a venda.</strong><br><br>
+                    (E se precisar de ajuda com fechamento, temos script pronto do Foundation Sprint 😉)
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Investment Breakdown -->
+    <section class="investment-section">
+        <div class="section-header">
+            <h2 class="section-title">💰 Investimento Detalhado</h2>
+            <p class="section-subtitle">Transparência total de onde seu investimento vai</p>
+        </div>
+
+        <div class="investment-breakdown">
+            <div class="breakdown-item">
+                <span class="breakdown-label">Gestão 2 Contas Instagram</span>
+                <span class="breakdown-value">R$ 8.000/mês</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Tráfego Pago (gestão)</span>
+                <span class="breakdown-value">R$ 3.000/mês</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">SDR Human+IA Dedicado</span>
+                <span class="breakdown-value">Incluso</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Relatórios + Otimizações</span>
+                <span class="breakdown-value">Incluso</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Show-Rate Guard (confirmações)</span>
+                <span class="breakdown-value">Incluso</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label"><strong>TOTAL (6 meses)</strong></span>
+                <span class="breakdown-value">R$ 66.000</span>
+            </div>
+        </div>
+
+        <p style="text-align: center; color: var(--text-secondary); font-size: var(--tipo-2); margin-top: var(--space-8);">
+            <strong>Nota:</strong> Orçamento de mídia paga (Meta Ads) é separado. Sugestão: R$ 5-10k/mês para resultados ótimos.
+        </p>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">Agora Você Sabe TUDO</h2>
+            <p class="cta-text">
+                Você viu os detalhes do <strong>Foundation Sprint</strong> (estrutura)...<br>
+                E agora viu os detalhes do <strong>Demand Stack</strong> (execução).<br><br>
+                Hora de <strong>escolher sua opção</strong>.
+            </p>
+            <a href="escolha-final.html" class="cta-button">
+                ESCOLHER MINHA OPÇÃO →
+            </a>
+        </div>
+    </section>
+
+    <script>
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Add entrance animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '0';
+                    entry.target.style.transform = 'translateY(20px)';
+                    entry.target.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, 100);
+
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.service-card, .metric-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

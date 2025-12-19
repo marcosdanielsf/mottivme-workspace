@@ -1,0 +1,681 @@
+================================================================================
+MAPEAMENTO COMPLETO DO N8N - MOTTIVME SALES
+================================================================================
+
+📊 ESTATÍSTICAS GERAIS:
+   Total de Workflows: 396
+   🟢 Ativos: 162
+   🔴 Inativos: 234
+   📦 Arquivados: 89
+   📂 Não arquivados: 307
+   🏷️  Tags únicas: 48
+   📁 Projetos únicos: 1
+
+================================================================================
+TAGS EXISTENTES:
+================================================================================
+   [ 1] AI Agents
+   [ 1] AI Assistant
+   [ 2] AI agent
+   [ 1] Admin
+   [ 1] AgenteSocialMedia
+   [ 1] Assembly Line
+   [ 1] Automação
+   [ 1] Cliente-2
+   [ 1] Demo
+   [ 1] FUP - Tráfego
+   [ 1] Financeiro
+   [ 1] GgNocode
+   [ 1] Gustavo Moura
+   [ 1] Lançamento IA
+   [ 1] LuanCarvalho
+   [37] Marcos-Daniel
+   [ 3] Marketing - ON
+   [ 2] Marketing Automation
+   [ 2] Mentorfy
+   [ 1] Mottivme Sales
+   [ 1] N8N Course
+   [ 4] Notification
+   [ 1] Notion Pipeline
+   [ 1] Simon Scrapes
+   [ 1] Templates
+   [ 4] adm
+   [ 3] ai-vertical
+   [ 1] analisar com calma
+   [ 1] assistente-adm
+   [ 1] automation
+   [ 1] banco de dados p/dashboa
+   [ 1] benchmarking
+   [ 3] big data
+   [ 2] conselheiros
+   [ 1] crm
+   [ 1] em revisão
+   [ 2] estratégico
+   [ 5] facebook
+   [ 3] fernando
+   [ 2] financeiro
+   [ 1] follow up
+   [ 1] linkedin
+   [ 3] machine lead generation
+   [ 1] mellhor rag
+   [20] on
+   [ 1] test
+   [ 2] teste de prompts
+   [ 7] ultimate media agent
+
+================================================================================
+LISTA COMPLETA DE WORKFLOWS (ordenado por nome)
+================================================================================
+
+================================================================================
+🟢 WORKFLOWS ATIVOS (149)
+================================================================================
+[J3KR2jkvspICLEUW] ## 3. Outbound
+[ZXOk20R2nN6Badss] ## Instagram Lead Scraper (Google Search + Apify) - FIXED
+[F2hV1OM411vlI9vI] 01. Secretária
+[si0lxAyvbgKOoO0g] 02. Baixar e enviar arquivo do Google Drive
+[K2T5oJMpZs4emU2s] 03. [ Socialfy ] Busca Disponibilidade v3
+[mnbPUb9D20ydvpGm] 04. [ Socialfy ] Agendar
+[tB6BNUcIu0SxpA9u] 04.1 Atualizar/Cancelar agendamento/notificar
+[0r0V3ija6EM88T6E] 05 - Escalar para humano - SOCIALFY
+[RtgpAYdMwT8GCnBr] 05. Escalar humano
+[nRF4tNJkCmqe4BIx] 06. SENTINEL - Chief Intelligence Officer de IA da Mottivme.
+[45POrWnyU2UR7HjQ] 06.1 Integração Asaas
+[eqo3OhukCZPvD9VH] 06.1 Integração Supabase [assistente-adm]
+[YA2Adv8GnQgbAD0U] 07. Quebrar e enviar mensagens
+[I2zdv2vMIB1zaINz] 09. Desmarcar e enviar alerta
+[VeLmGz6GUVUI1Xuv] 1. Fluxo Principal - Agentes Financeiro/Contratos [Marcos-Daniel]
+[v9CKl4oSmYS0qaRm] 1. Knowledge Analysis Agent
+[mjv3moHMyfCSvcKh] 1. Meta Ads System - 1. Reference Ad Scraper [on, Marketing Automation]
+[nR9enRLwA72XFvEi] 1. Ultimate Media Agent [ultimate media agent]
+[W8sQLUkaWCQa5ENU] 10. Buscar ou criar contato + conversa [on]
+[PSfM4j8fmuGtU9GE] 12. Gestão de ligações
+[Xq3UJRgmdkbZ8nzK] 2. Meta Ads System - 1b. Import Scraped Ads to Generated Ads [on]
+[WEAv9whVhq0R1lNx] 2. Process Agent - Bottlenecks & Automation
+[TvZVMLcfTmptZtHD] 2.Create Doc Tool [ultimate media agent]
+[7NK9QDUxJpoquUFr] 2: Busca de Histórias Contextuais
+[bQW8tijbyLZE7q9I] 3. Create Image Tool [ultimate media agent]
+[pmdSj432imnrgTX6] 3. Customer Engagement Tracker - Churn Prevention
+[pm5QJZMEENAYC34r] 4 - Monday Forms → Contrato Pendente [on]
+[KJGHl53oQm1w7xe4] 4. Calculate file hash [on]
+[ikdpbqLioxKgJCL0] 4. Create Video Tool [ultimate media agent]
+[sZlYcQKj193Nw848] 5. Alertas de Contas a Pagar
+[J4p75K4RCuwIMBoy] 5. Edit Image Tool [ultimate media agent]
+[ADPjJla7AGiNljUH] 6. Image to Video Tool [ultimate media agent]
+[FeQO7Sq5aYiTGs3k] 6. Relatório Semanal Automático
+[tYVUSctePja7VtvF] 7. Instagram Post
+[kizNU9gy3I0zPYMy] 8. Agente de Contratos
+[RxINXeUs8j0o7qX0] 8. TikTok Post Tool
+[IBTSCQo4JUjZa7g0] 9. X Post
+[BtHmCsdr4fNaqnyR] [ Core ] IA Vertical [Marcos-Daniel, ai-vertical]
+[konHKyJVT6V5hOTW] [ Core ] IA Vertical copy [Marcos-Daniel, ai-vertical]
+[C7ebxqPhve1BX814] [ GHL ] Assistencia
+[pZIcRI1PGMzbQHZZ] [ GHL ] Busca Disponibilidade [on]
+[TWE7PMLjCsaiSBEp] [ GHL ] Follow Up Eterno - CORRIGIDO
+[MbnnPwrQTXyfjral] [ GHL ] MCP Compartilhado
+[O6GLUDJqywz2UWy1] [ Kommo follow up] Split and Delivery Message
+[1d1kT9fs2G1gvkUq] [ MCP Mentorfy ] Clientes
+[kjhpwMBwyNRQ94rk] [ MCP Mentorfy ] Minha Conta
+[JdopUKEmhlNHLmTi] [ MCP Mentorfy ] Produtos
+[ZQucwDKLX9R3I0N5] [Agendafy] Agendamento
+[FZujF9clGLepuIGl] [Agendafy] Formatar Fuso
+[v8CrQyqh80ZwLeSg] [Agendafy] Formatar Fuso Brasil
+[YmDow22yCx8X1PXs] [Agendafy] MCP
+[ZmioyCr3EbktOvAt] [GHL - APEXPRO] Atualizar Lead
+[ybDPJk1rjmIzKB3c] [KOMMO - APEXPRO] Atualizar Lead
+[BObn39eEN9pt4GyU] [KOMMO - MOTTIVME] Atualizar Lead - BRL
+[Uq3cdvnPIDwT2F8T] [TOOL] Buscar Movimentações
+[dEPGbp6hUQbW1g5a] [TOOL] Criar Cliente/Fornecedor
+[Acllbvk5jMEMDzd7] [TOOL] Listar Categorias
+[UZSQ0ovulSKyfbfL] [TOOL] Salvar Movimentação Financeira
+[7YKG23UuSFOkRBxA] agendando pelo gohilevel - no kommo
+[u1UsmjNNpaEiwIsp] Agendar pelo GHL - ATUALIZAR KOMMO [on]
+[b812w30PC6wHwvsO] Agente de Contato [fernando]
+[gLhxvWoRlGmyNCFy] Agente IA → Criar Contrato no Airtable
+[kesz3UCvmUek6Pmu] Agente Whatsapp [fernando]
+[lRVkA0WpI5ZJMlJB] Airtable Integration - CORRIGIDO [banco de dados p/dashboa]
+[dnU6HVk9IjLR6Nra] Anthropic Agent Skills Workflows
+[Oa8LHJbghhq1bdwl] Apify Scrape New Instagram Reels -> Transcribe -> Add to Sheet [N8N Course]
+[jXNBnrFzGDgOGpDj] Assembly line [on, facebook]
+[Kq3b79P6v4rTsiaH] Atualizar Campo Profissão GHL (Auto-Config) [on]
+[wsQQYmx8CLNBHoWq] Atualizar Estado GHL (Otimizado) [on]
+[3Dd8d5AnpD4iLPwG] Atualizar Work Permit GHL (Otimizado) [on]
+[di62HyME2aDvqD0q] Baixar e enviar arquivo do Google Drive
+[Vl752TAPBEUKsnfB] conselheiros [conselheiros, estratégico]
+[bIUKBiu5GvGUSiod] Contador de Tentativas de Objeção
+[lOf0YiCHwnhHLzio] Contador de Tentativas de Objeção
+[q0klXjC0a6IjG6Ni] Criador de prompt
+[yr2frjHn6u0OLxcN] Dr. Alberto Correia
+[GZB8zLq9RWHXVi3j] dra gabi
+[gRZjZVVkdXjYCYJt] Dra. Gabriella Rossmam
+[WnRF9AdjFBkEW9Ma] Error Handler V3 - Coletor de Padroes
+[8LOqlwmi1ZMnt3ge] error-analyzer-daily
+[v78tDluGyATsK8uT] Escalar humano
+[pIyR3CSORHls22e9] Escalar para humano
+[LnASPbaM5ptlLiBH] Facebook Ads Daily Report - CORRIGIDO [Notification]
+[AfVNiiQWzrNl5lV0] FLUXO BASE PARA DUPLICAR
+[oWXzdpw70l018yVP] Fluxo Marcos Daniel Testes - GHL
+[UuecOgxezwC1KlhX] Fluxo teste - teste prompts [teste de prompts]
+[RsTOnAWBgT9lKRBt] fluxos - agentes-financeiros [financeiro, adm]
+[iwc6Jx2zaHTszkLs] Gerar PDF Proposta BPOSS
+[ucjBRa54qaWldfDJ] Get Lucas Messages
+[wfPnrT2wLBFo1j1Z] GHL - Agendamento com Validação Anti-Duplicata [on]
+[LUDLncD12Y2oMkAb] GHL - Innovat Phone Calls (INBOUND + OUTBOUND) - BULLETPROOF
+[HaKICQ2aNNbWZBgB] GHL - Mottivme -EUA - COM REAGENDAMENTO - COM TRACKING
+[PNU745c6bXwEPpoD] GHL - Mottivme -EUA - Versão Atual [Marcos-Daniel]
+[E5IoqSiDWQehy0mN] GHL Agent AI - Browser Automation Trigger
+[oDfErNAlV0W6yeYV] GHL Agent AI - Client Onboarding
+[DctYIhYHlpbTPXzD] GHL Agent AI - Payment to Onboarding (Complete)
+[fnSxFqeegy266VOS] Gustavo Couto
+[TkQylMd3zoNKqTZJ] ia financeira
+[aC0nKzxrVUgKSU6Z] IA FINCEIRA
+[0eq7VTwySd9qqbZj] IA MARKEGTING [AgenteSocialMedia, LuanCarvalho]
+[qaOoCKlz4Tmpb9SZ] IA que cria IA
+[uGnIUUKy7sTyUjLc] Image Generation - Fixed [Simon Scrapes, Admin, Templates]
+[5N8FB0gBMJwHyMcy] Inserir Lead Insights - V2 (Melhorado) [analisar com calma]
+[Qz74TLYJ83qJu5y1] Instagram Scraping
+[AvczBOL2wMLBuRR7] Invoice Extractor - CORRIGIDO [adm]
+[6ICzyTrrI5J9PJQD] Invoice Extractor - CORRIGIDO copy [adm]
+[PtGKBmhU7gg8cd3u] KOMMO - Mottivme - EUA [Marcos-Daniel]
+[vwprKDA4pEwSwhPN] Lappe Finance
+[zt8zLucZdWJzu5yS] Lead Gen Army V3 - LIVE
+[wvlEOLU9TSgSBrqX] leadscraper linkedin novo
+[VBtQVFAiJmEyfMOT] Marina Couto
+[CCKudyBwT2EiUBK8] Marina Couto 2
+[YGaIKVihOMu8gMD6] Marketing - Git Hub [Marketing - ON]
+[cxX8NVuIO6WZLikm] MCP - Histórias Clientes
+[FqRbC9XUFknCfwyY] Milton
+[wnceqwQ2x01AX5pg] MIS - SENTINEL Intelligence Observer
+[WPGUcxBnvjZzb0Xt] multiplos fluxox - imagem
+[NX8VeXT809UqXbDt] My Sub-workflow
+[rZZrpPvtMTDh2i4p] My Sub-Workflow 1 leadscreaper
+[Vq8tDxtspg2ZrXnt] Notification Group [on, Notification]
+[JwXxbG3tw2bT7ERl] PROPOSTAL - Chat Escalation Alert
+[SImxQrdZjlm6fcPk] PROPOSTAL - Lead Quente Alert
+[mZfc8FzTHa2gfb0b] PROPOSTAL - Sync Supabase → GHL
+[nyts8T4bKvnJC7Cb] PROPOSTAL - Update Score GHL
+[0BMpGZ1zoJdezZti] Psychologist Personal AI v3.3 (SQL Safe)
+[tMAxvaw8y7qOci3W] Receive Error Notifications
+[L6XpZ8LakLIx6BT4] SDR - Orthodontic
+[ZSMyI8r27LYVPUGl] SEO Content Generation System - V1 Skool
+[u5Jk276kwk32Kq44] Simple Image Download Upload
+[9Y1yFmUJGVszyUSy] Sofia - Assistente Completo (Financeiro + Contratos) [adm]
+[vRzpUPyQCY1Myb43] Sync GoHighLevel -> Postgres (Diario)
+[APp0EGpUKYMM8l3R] TODOS OS TEMPLETATES DA SECRETARIA
+[26CfRoE4UWP0iro5] TODOS OS TEMPLETATES DA SECRETARIA BASE
+[72FSNqvPRh6H4ftw] Tool Call for Anthropic Prompt Engineer
+[iRSiLpXm78bMm5CQ] Tool Call for Google Prompt Engineer
+[SOpdKx80r2LEoozR] Tool Call for OpenAI Prompt Engineer
+[6JeEKeVISMwQDYfS] Tool Call for Other Models Prompt Engineer
+[2b7qY6FV4SksBgXV] TOOL fin_movimentacoes
+[uk22BY89znhwGeJD] Transcribe YouTube Video
+[xC1leTQTQyIuGgcN] Trigger link mover
+[ZWiUsIjAQt2TQlQZ] video_generator
+[Q34tfBT2l1vFlmNc] VSL
+[SmoFdsRzMUcWUkGf] Webhook - Follow-up Contrato Visualizado [on]
+[MbrVQwBB0xGhvTNn] Webhook - Notificação Assinatura Autentique [on]
+[2gK91BDNnPw6yf8j] webhook Marcos
+[e64yJx5YNXUSFurY] Yellow Pages Scraping
+[zvKHBEqXlP6Nnzii] Yellow Pages Scraping
+[QHtMQG5FpRlVLrsD] 📄 2. [ Sofia ] Split and Delivery Notification.json (Auxiliar)
+[RWIFCp2Jw3eajc2v] 🧪 AI Agent Quality Evaluator - Mottivme
+
+================================================================================
+🔴 WORKFLOWS INATIVOS (158)
+================================================================================
+[JMA6UNhzX0g5Jnub] ## 1. Lead Collection
+[NnP4JKSIVRMO3gE0] ## 2. Lead Enrichment and Verification
+[qPtSlb9PAz4M6b3q] #Haly
+[2yMNVMXQSUZ9sDL7] 08.  Agente Assistente Interno
+[tGHQBDRi7CsJK7BH] 08.  Agente Assistente Interno copy
+[od9aWqc1Hb3opUmp] 08. Agente Assistente Interno - CORRIGIDO
+[X0mZK2dJO2VgCO8P] 1. apify+n8n [big data, machine lead generation]
+[6KQuYqHzOMLuZR4g] 1. Lead Gen Army
+[ThplosNFINNbWBiG] 1. Ultimate Media Agent copy [ultimate media agent]
+[HNyR6co4yembRBFE] 1. 🎯 Classificador de Urgência
+[wJL6Ak7CzVbB7jrE] 11. Agente de Lembretes de Agendamento
+[drhusp7otT3Hr5SY] 13. Agente de Recuperação de Leads
+[hqjZosHw3IOCjuMh] 2. Lead Gen Army
+[AK8gVhwmpdU9Z1Tr] 2. Sistema de Cobrança Automática v2 [on]
+[ttLRmzcnbOC6Rchj] 2. 🏠 Modo Família (ON/OFF)
+[Yg467kBX063T6lge] 3. Processador de Comprovantes (JÁ ESTA ON NO WORKFLOW PRINCIPAL )
+[bdZMyMFdmS8uIDMC] 3. ☀️ Resumo Matinal Inteligente
+[6ZQamH31fkpIYcL0] 4. 🔔 Notificador Inteligente
+[9IH4sqzQ3uOM65yf] 7. Gerar Recorrências Mensais
+[s1FZRsx5o7AIrQjk] 9 - Gerar Contrato Automatico
+[yCWxSwa2vwbvhKCZ] [ copia ] Agente IA HTC
+[3pKGsofADSdQUMGV] [ Core ] IA Vertical copy 2 [Marcos-Daniel, ai-vertical]
+[ys4tKFo0sKzlOnxQ] [ Core ] Kommo - Mottivme - EUA (Jul 23 at 19:40:32)
+[4MMGBaJ4ILpjR6oH] [ Core ] Kommo - Mottivme - EUA copy [Marcos-Daniel]
+[lpcpaMbzIq5GAaIf] [ Core ] Kommo - Mottivme - EUA copy 2 [Marcos-Daniel]
+[gO1dzYLbnjlpK8at] [ Core ] Kommo - Mottivme - EUA copy 3 [Marcos-Daniel]
+[YD6lUJvjqFMNcuEk] [ Core ] Kommo - Mottivme - EUA copy 4 [Marcos-Daniel]
+[VM60u3q6GEr4kWjl] [ Core ] Kommo - Mottivme - EUA copy ultima versao [Marcos-Daniel]
+[PwLUv4NkXv19INPU] [ Core ] Kommo - Mottivme - EUA PROJETO ABSE PARA CONTEXTO NO CLAUDE [Marcos-Daniel]
+[kyXQkILcXrBBr1Y7] [ Core ] Kommo - Mottivme Sales - Brasil [Marcos-Daniel]
+[v3NY9RQkq8iCSSq9] [ Core ] Kommo - Mottivme Sales - BRL [Marcos-Daniel]
+[5tHICP7ivazkeQtk] [ Core GHL ] Mottivme - EUA - V2 [Marcos-Daniel]
+[RSaHaw3esPqA5tGH] [ Core GHL ] Mottivme - EUA copy [Marcos-Daniel]
+[IYCyVzRv6sU9s5Wd] [ Core GHL ] Mottivme - EUA copy 2 [Marcos-Daniel]
+[ngIDU4f0rUCuYDtJ] [ Core GHL ] Mottivme - Multiagentes [Marcos-Daniel]
+[09ZHRuV3TZdL27M0] [ GHL ] Agendar - BASE
+[gxZH90pMTloyz0sH] [ GHL ] Cérebro Marcos
+[puYSW3hJtUt55uDl] [ MKT ] Kommo - Mottivme [Marcos-Daniel]
+[dtxagi9rMJEIuuDr] [AIAA] [Outreach] Insta URL to WhatsApp
+[jgj24PdYf3RZgr8B] [GHL] Atualizar Lead
+[knyEQeLJsGBBWrof] [KOMMO - APEXPRO] Atualizar Lead copy
+[mtNbOiMxMZvVH0RB] [TOOL] Atualizar Dados Cliente
+[1AyAvl2oQEa1v2mW] [TOOL] Atualizar Termos Contrato
+[GAmDsrgHzVowt0nk] [TOOL] Buscar Contrato Pendente
+[aG3RpCHz7V5BCvA0] [TOOL] Buscar Pendências Financeiras
+[Vu6Uk9NqVD5KTNqM] [TOOL] Centros de Custo
+[Z1IFeHsHZYnooRMs] [TOOL] Conciliação Bancária
+[lbOH0pP3mOyEAkXQ] [TOOL] Criar Parcelamento
+[h2JGa8pTPjTtA5vn] [TOOL] Criar Recorrência
+[s6HIkSZxkKL90B18] [TOOL] Dashboard KPIs [on]
+[9N4DwvjLk6WsJm64] [TOOL] DRE Simplificado
+[C4kPTHRzifQ0CIMy] [TOOL] Fluxo de Caixa Projetado
+[YIZtkQs7CMRhYGQF] [TOOL] Gerar Contrato
+[eDcNygFXYIPuDY1g] [TOOL] Gerar Contrato [on]
+[pZfi7Juh5CXcEaJh] [TOOL] Listar Contratos Cliente
+[vStkWfdwFAg0vqZw] [TOOL] Orçamento vs Realizado
+[GWKl5KuXAdeu4BLr] [TOOL] Registrar Custo IA
+[zmj9M6HKSrdxJuZb] [TOOL] Relatório de Inadimplência
+[U2GXTa9vupQUZtRs] ADMIN - Backup N8N to GDrive
+[0sqmtOqLmdY24yAI] ADMIN - Geração de notas de reunião a partir de arquivos e do TimeOS. [AI agent]
+[iUxtsAvU2DAFj3oB] Agente IA Browser n8n
+[CsMRMu54mnKDE6Hf] Agente IA Browser n8n = tool
+[vOKC72Iq4mGNjj4g] Agente IA de Scraping Gratuito
+[7NxHRiAg1hIaDGD9] Agente IA de Scraping no Instagram
+[GkuuEbYdQBQrKLNM] AGENTE IA LANÇAMENTOS
+[0azcP78xERCrpccO] agente marcos renan teste
+[hGtHeCuZIfvA9n2C] Agente Scraping
+[whaSZpHZPo4Z9kHT] Agente V (Diretor/Sec)
+[JiTZQcq7Tt2c5Xol] AI Agent - Head de Vendas
+[zrgz3MIH7hYkI61W] Anthropic Agent Skills Workflows
+[HeBsA0Tu5KdoAma6] Assembly Line - Clone Expert Completo copy [facebook]
+[1zqFwLj95060FOGn] Assembly line APP [on, facebook]
+[nZi0GOxfo5BMmrBy] assembly line inserindo no ghl
+[7ZPMktQsgGlKEKEu] Assistente Administrativa Financeira AI (Cobrança e Dashboard)
+[YNCeYJ6d6gF9CTjZ] Assistente de Viagens
+[jC7XCFuq3XngU9gf] Assistente Financeira IA - Contas a Pagar e Receber
+[UFbSSknc8WJ8p5Qg] Assistente Financeiro AI - Cobrança e Contas
+[rYlN2tPxMmTngVri] Atualizar Agente IA GHL [on]
+[2zvOdDg0sRPkh6wZ] Atualizar Last Appointment GHL
+[DQMP7FAzPZ2t1P2U] BACKLOG COPIA DA VERSÃO ATUAL - GHL - Mottivme -EUA - COM REAGENDAMENTO copy 2 [Marcos-Daniel]
+[TF9rmgeEzNpu99RV] backup - conselheiros copy [conselheiros, estratégico]
+[zWkv2Mb60N2cGZKq] benchmarking-ai [benchmarking]
+[6RzTXDCfPZNej5RC] Company_Website_Analysis
+[PEizLY5CzmAr3zWv] Competitors_Analysis_System
+[Gqmf4Lay86W3h4ab] COPILOT - WhatsApp CEO Interface
+[7bxm2NyTgBiK5HtG] Core
+[fm0fXY6nClb7OsyU] Criar Campo Etapas do Funil - GHL [DOCUMENTADO PARA LLMs]
+[umBbDCmHkfPe3qjD] Criar Campo Etapas do Funil - GHL [DOCUMENTADO PARA LLMs]
+[nelruSQVzne8G47V] Criação de Clone n8n
+[MAKmkfG6WMSTQwvb] CS Call Analyzer - Mottivme [crm, automation]
+[EpddKu9VMjQMNtFT] Customer Service AI Bot - Complete [Notification]
+[CtVA4mxKfeyXwGsX] Cérebro para IA
+[zoT61AfyiWJoO4JO] Demo: RAG in n8n [teste de prompts]
+[YpGLmm4Q4d7Q9Z6U] Email#1 - T2
+[uiZ9blmeU71Nzrcw] Fail Notification
+[BgnE7cQoj5KOFY8z] follow up eterno ARQUIVO BASE - KOMMO
+[qZO4Ig5Qq9jWAgv0] Follow-Up Eterno - MFY [follow up]
+[4qBlFUZQVSOVroBz] Follow-Up Eterno copy 2
+[mdGuw84g35XYU7q7] Follow-Up Eterno Financeiro
+[UucEGA8xB4cvsquT] Follow-Up Eterno ghl
+[AVvFIHyOqw6mbM40] GHL Agent AI - Email 2FA Code Extractor
+[C0FOQe5YsNsPqcYe] GHL Agent AI - Usage Tracking & Billing
+[YgmXSqT0xOcPPkjo] GHL Auto-Config Custom Reports
+[j82uY3XgEKUHYQ4i] GHL Webhook Receiver
+[6kjD74fQPdTd0fj6] Kiwify - Ascensão Low → High Ticket
+[1tZ6eiXxfC27KGBg] Lead generation workflow
+[kxT6ZCnWyQRFy3J7] Leadscraper - [machine lead generation]
+[83p794DjdXpSZxj4] Leadscreper - LINKEDIN - SEM EMAIL E WHATSAPP [big data, machine lead generation]
+[IHUZaHamheM5OLYs] lembretes [Gustavo Moura]
+[cBSUaqPD8NFJJSgB] LinkedIn Auto Message Router and Responder with Request Detection
+[mszr2oLagMtqiwmR] linkedin dm [linkedin]
+[8aiKlHio3U8bXdJD] LinkedIn_Analyzer
+[m1bYcYGYlzIsK3Uv] Markegin
+[ccHBfcfeKrXwUhIA] MCP Google Calendar
+[lHgqrzpin5alT0l1] Mentor
+[9QSS9WW2kRJkOI6o] MIS - Auto Response to Critical Issues (READY)
+[Gzkzaav9Yyx8kmpU] Monitor-Pasta-Calls
+[3a2PnyTsNYgEMAtg] My Sub-Workflow 1
+[V4j24Ki4elzKzkK4] My Sub-Workflow 2
+[f89fcZEPsIC5ZmpC] My workflow 10
+[1AXKVocSpNJ1mj1y] My workflow 11 [Lançamento IA]
+[aqxWCJ1ILz1kAEfH] My workflow 13 [Notion Pipeline, Assembly Line, Marketing Automation, AI Agents]
+[nE3v4UdxFMZ66lf9] My workflow 4 [GgNocode, test]
+[fAXY1s1O8CbxZaOg] n5_Notion
+[RFEbEHGGgesrt7v9] ORCHESTRATOR - Distribuir Tarefas de Contrato
+[un7o6XrvdvhQvwPG] Prompt Engineer
+[2XlpBVEyD0EJLrZq] PROPOSTAL - Follow-up 24h
+[XYWrFiKRxy6aS1L6] R25 | The Ultimate Publishing Agent
+[QiIo6dLzv8ny7BCo] rag - `drive-postgress`
+[CQTrOnt7q9A3op6F] rag assistente - pinecone [mellhor rag]
+[JrANtZkYPcjUFfUM] Rag Escala Sem Fórmula
+[6mBD8HlT2q6ejCez] Rag Mottivme Sales [Mottivme Sales]
+[5EdJXV3fnoeYwJ4X] Receipt Data Extractor
+[gGWXux8s616cHYL2] Sales Automation
+[8FhZYmgkmTuBTDTw] sdr
+[q50HryzcSyGqfwS8] secretária agenda ghl
+[Jch8fNfrU3U3WuOz] SECRETÁRIA IA (PRINCIPAL) [fernando]
+[vZ6FlQf3hKu6rzfw] Segundo cérebro
+[TGnMsoIyg9xcTv4b] SEO Reporting Presentation [YT Demo]
+[yJunZprPDsvhSKgF] Short Memory + LLM Cost Tracker
+[IINiuzB3nioeLzu7] Social Media Scheduling - Blotato // For Viral LinkedIn Posts (n8n) - Skool Paid
+[fSLEQmfRW2HvzD8l] Socialfy - Gerar URLs Status (GHL Webhook) - CORRIGIDO [Notification, em revisão]
+[dvvb7K6WIQDb0hbx] Sofia - Assistente Completo (Financeiro + Contratos)
+[8TgyP5CuGWntu7Xc] sofia testes
+[tbDnjLWJ8iAjrM4J] Tavily_News
+[2z2hLgjCZ93ARf2y] Template Contábil de Conciliação de Recibos [AI agent]
+[h8n3RChy0pUUh38c] TrackCosts
+[RH5qRYS59onzLdMU] Twitter_Analysis
+[3PbNZwSAc7mee6Bj] v1. [ Core GHL ] Mottivme - EUA [Marcos-Daniel]
+[20jBwtUmoDrhXXAP] VAPI CALL
+[YLj61DYEhTIXwh6k] VAPI CALL copy
+[BPRX1mhFS1ZEkojf] Website_Screenshot
+[Hr1nY6x6w2JAjlEt] Youtube_Analysis
+[Dg9k5Png144IIWxA] 🏭 AI Marketing Assembly Line - COMPLETO v2.0 copy [facebook]
+[Nssh2p5UVzx97Jq4] 📄 1. Sofia - Assistente Financeiro.json (Principal)
+[c8TPb0vRZ0ZMK1bu] 📚 Popular Base n8n - INCREMENTAL (Postgres) v2
+[EygNxL5yAUmpd61v] 🤖 Agent - MCP Demo [Demo]
+[3knMLp9pMs4f9rWb] 🤖 Agent - Tool 🛠️ Prompt Engineer v1
+
+================================================================================
+📦 WORKFLOWS ARQUIVADOS (89)
+================================================================================
+🔴 [d3JsQSbjkr30O9cU] 01 copy
+🟢 [eBJ1Jlfui3rfOZDT] 04. Criar evento Google Calendar
+🟢 [rEb76Qr2bJrEABj6] 04.1 [EXTRA] Atualizar agendamento
+🟢 [SroUvO1R00hTuwrQ] 05. atualizar agendamento
+🔴 [g6i3byhKN63lPV6N] 06. Integração Asaas
+🟢 [C4xd2H1a19LXv5PW] 09. Desmarcar e enviar alerta
+🔴 [MuuSZhs7fy6KhH8a] 1. Agente Financeiro Principal
+🔴 [NGmj04CC0HH55OGk] 1. Ultimate Media Agent
+🔴 [Gmb8ALg8bOYTpPsY] 8. Agente de Contratos
+🔴 [sHQFos0kDcv1CQCq] [ Core ] Kommo - Comercial - Mentorfy [Mentorfy]
+🔴 [AGcxGAgLmreRVBEe] [ Core ] Kommo - Mentorfy [Marcos-Daniel]
+🔴 [dz5x9sU3fLUfBLNn] [ Core ] Kommo - Mentorfy [Marcos-Daniel]
+🔴 [W5BvSlWuT5riIo6z] [ Core ] Kommo - Mottivme - Brasil [Marcos-Daniel]
+🔴 [ZNCaAhHCGbDdWvGq] [ Core ] Kommo - Mottivme - Gustavo Couto [Marcos-Daniel]
+🔴 [b7jPDMgxKIrsXIFv] [ Core ] Kommo - Mottivme - Lappe - Finance [Marcos-Daniel]
+🔴 [AlXkCRAcADNJT0dg] [ Core ] Kommo - Mottivme Sales - B.I [Marcos-Daniel]
+🔴 [QzliHadmEIYze65i] [ Core ] Kommo - Mottivme Sales - Brasil - Correto [Marcos-Daniel]
+🔴 [vBSwPZITPqiFBo3t] [ Core ]Marketing [Marcos-Daniel]
+🔴 [BIU3cGEjFCstWPip] [ Core MultiAgente ] Kommo - Mottivme - EUA [Marcos-Daniel]
+🔴 [zv7a657T9fVIL7Fi] [ Core Old ] GHL - Mottivme [Marcos-Daniel]
+🔴 [jORA1KxID7bYPF7e] [ GHL ] mover lead pra pipeline pra eta
+🔴 [nAclrTXulY2wKUKq] [Consulta e Agenda] Agendafy - Mentorfy
+🔴 [VBXXKWWL1rGqjGuV] [KOMMO - MENTORFY] Atualizar Lead
+🔴 [tyghx3t5HYWLSHU5] a
+🔴 [v1NLbgZQ7YnqtCtr] Agency Ads copy [facebook]
+🔴 [gHxtfU2Z8LcEiDDA] Agendafy
+🔴 [kQLcEkxNoZcekh2B] Agente IA GHL MFY
+🔴 [1ojl8yMfxAc5hDqK] Agente IA HTC
+🔴 [9rPdZNuLJ14c4kvc] Agrupa MSG
+🔴 [QUkout7aLnEdzxjh] API Agendafy
+🔴 [KlEkZnwK0xK5d7Q8] ARQUIVO RAIZ - EUA [Marcos-Daniel]
+🔴 [D3yduh7TxuaEcYpA] Assistente Financeira IA - Contas a Pagar e Receber
+🔴 [AMJtdwmJAIoKj78N] assistente financeiro [financeiro]
+🟢 [0ddX9qTwxkvvtPTz] assistente financeiro - kommo
+🔴 [h7CJbJr1AekYE3fw] Assistente interno (Desabilitado)
+🔴 [mHJSNdWQIaKt86G5] Atualizar Kommo
+🔴 [4qccwS5bbBSubSkL] Banco de Dados - Dashboard
+🔴 [JgdhD6wpN1IrhsDw] benchmarking
+🔴 [u8fujkqomDUXzFaS] Call
+🔴 [9HyjLfAKVOfzc5x0] Core cliente 2 [Cliente-2]
+🔴 [geXsCJtYfRzU0uP0] Core Daniels [Marcos-Daniel]
+🔴 [tuJK5DqJsa0amIfc] Core Daniels copy [Marcos-Daniel]
+🔴 [WVC5gwfOeSeW2vjm] Core Kommo [Marcos-Daniel]
+🔴 [Xl07HAlWjTgPPBaM] Criação do Clone - Airtable
+🔴 [CraAjlTs9AC5liP1] Demo: RAG in n8n 2
+🟢 [U7UJmVPpzKHFFUB1] Enviar agendamento
+🔴 [bTwk4BNbrvVjB5AC] Financeiro
+🔴 [1GVoZT1q0Aq3wKSC] Financeiro - Git Hub [Marketing - ON]
+🟢 [RWqKKfYDlESR7XQo] Fluxo de Follow UP 1
+🔴 [OnK2bCgcpDQmcoKr] Follow-Up Eterno
+🔴 [ameUId4HjV5TkFLe] Follow-Up Eterno copy [FUP - Tráfego]
+🔴 [PFZ3Z97EsSZYPmU2] Followuper Inteligente
+🔴 [wK2rtvWCx394Z9Xu] GHL - Mottivme -EUA - COM REAGENDAMENTO copy [Marcos-Daniel]
+🔴 [nyJBljnJ6DykjgyC] GoHighLevel - Testes de Conexão
+🔴 [i9BHnEkMq6zmNbGz] IA - GHL
+🔴 [Hbp9FI73v30OgRFm] IA CHAT FLUTUANTE
+🔴 [GJhP9aeNnlYQZPg0] IA TESTE de PROMPTS
+🔴 [S7lWtf8GqnT4j2Kn] Lead Agent - lead generation [big data]
+🔴 [zsBNTT9iRT3h2AZN] mentorfy [Marcos-Daniel]
+🔴 [wfOCS258mQB3ErVc] meta ads
+🟢 [ps46D4EgH84GsNXI] Milton
+🔴 [CM8P2wYysWADUX6r] MIS - V3
+🔴 [xDbzXcyWkIo3IHeM] mover lead agendado ghl gustavo
+🔴 [y2e4L0jHtSt39nl0] My Sub-workflow
+🟢 [ZiCCW71kh5DH7Pix] My Sub-Workflow 1
+🟢 [4AgUKANTObAIgZiH] My Sub-Workflow 2
+🟢 [akEbv70CH5pyoL8O] My Sub-Workflow 2
+🟢 [jpgalsi5HIXYEmk9] My Sub-Workflow 2
+🔴 [iEUlhqedRIEVvP5M] My workflow 12
+🔴 [GHVluiZK0SaN5VRz] My workflow 15
+🔴 [EYuR1kI6dVj3Zs7M] My workflow 16
+🔴 [kJ1X0VFPsGucbms9] My workflow 18
+🔴 [N5cJ8yhqnctsuGBK] My workflow 19
+🔴 [Xfv08vwybSmqXvry] My workflow 19
+🔴 [AcIoQlFxVdt7PwhZ] My workflow 2
+🔴 [G1LoqiLY3nRZnvI3] My workflow 3
+🔴 [asOWi0NIXJVnZuas] My workflow 7
+🔴 [hI91t4Mk89PkH4o8] My workflow 8
+🔴 [yhc7fAqI3coPZ3yD] My workflow 9
+🔴 [c4gKA2WS9WMDrF6p] sofia agente finannceira [AI Assistant, Automação, Financeiro]
+🔴 [SJbOPIDwvxPjtK2J] Stev Jobs - My mentor [Marketing - ON]
+🟢 [O3J57vJKjxHANstz] sub-workflow teste
+🔴 [f2ojBhxQlXPbWBTw] Template Fluxo Calendario
+🔴 [W3qHifZ2hLVN2oA8] Teste no Agente Extrator de DNA
+🔴 [BTs5ZShEa50Y9JHK] testes mentorfy
+🔴 [PXx1isDimy5cfPKW] TI
+🔴 [ai7BN4P1nRVufG2V] Verificar agendamento existente
+🔴 [hhWPRTCV2H6rW2lT] Webhook - LP - Import CRM [Mentorfy]
+🔴 [E2HzG12daIeLM4xD] Webhook Chamada
+
+================================================================================
+ANÁLISE DE PADRÕES DE NOMENCLATURA
+================================================================================
+
+Prefixos detectados:
+   [21] [ Core ]
+   [21] [TOOL]
+   [10] 1.
+   [ 7] [ GHL ]
+   [ 5] 2.
+   [ 4] ## (categoria)
+   [ 4] 3.
+   [ 4] [ Core GHL ]
+   [ 4] [Agendafy]
+   [ 3] 08.
+   [ 3] 4.
+   [ 3] 8.
+   [ 3] [ MCP Mentorfy ]
+   [ 2] 04.
+   [ 2] 05.
+   [ 2] 06.
+   [ 2] 09.
+   [ 2] 5.
+   [ 2] 6.
+   [ 2] 7.
+   [ 2] [KOMMO - APEXPRO]
+   [ 1] 01.
+   [ 1] 02.
+   [ 1] 03.
+   [ 1] 07.
+   [ 1] 10.
+   [ 1] 11.
+   [ 1] 12.
+   [ 1] 13.
+   [ 1] 9.
+   [ 1] Dr.
+   [ 1] Dra.
+   [ 1] [ Core MultiAgente ]
+   [ 1] [ Core Old ]
+   [ 1] [ Kommo follow up]
+   [ 1] [ MKT ]
+   [ 1] [ copia ]
+   [ 1] [AIAA]
+   [ 1] [Consulta e Agenda]
+   [ 1] [GHL - APEXPRO]
+   [ 1] [GHL]
+   [ 1] [KOMMO - MENTORFY]
+   [ 1] [KOMMO - MOTTIVME]
+   [ 1] v1.
+   [ 1] 📄 1.
+   [ 1] 📄 2.
+
+================================================================================
+POSSÍVEIS DUPLICADOS / VERSÕES
+================================================================================
+
+📌 08.  agente assistente interno:
+   🔴 [2yMNVMXQSUZ9sDL7] 08.  Agente Assistente Interno
+   🔴 [tGHQBDRi7CsJK7BH] 08.  Agente Assistente Interno copy
+
+📌 09. desmarcar e enviar alerta:
+   🟢 📦 [C4xd2H1a19LXv5PW] 09. Desmarcar e enviar alerta
+   🟢 [I2zdv2vMIB1zaINz] 09. Desmarcar e enviar alerta
+
+📌 1. ultimate media agent:
+   🔴 📦 [NGmj04CC0HH55OGk] 1. Ultimate Media Agent
+   🟢 [nR9enRLwA72XFvEi] 1. Ultimate Media Agent
+   🔴 [ThplosNFINNbWBiG] 1. Ultimate Media Agent copy
+
+📌 8. agente de contratos:
+   🔴 📦 [Gmb8ALg8bOYTpPsY] 8. Agente de Contratos
+   🟢 [kizNU9gy3I0zPYMy] 8. Agente de Contratos
+
+📌 [ core ] ia vertical:
+   🟢 [BtHmCsdr4fNaqnyR] [ Core ] IA Vertical
+   🟢 [konHKyJVT6V5hOTW] [ Core ] IA Vertical copy
+
+📌 [ core ] kommo - mentorfy:
+   🔴 📦 [AGcxGAgLmreRVBEe] [ Core ] Kommo - Mentorfy
+   🔴 📦 [dz5x9sU3fLUfBLNn] [ Core ] Kommo - Mentorfy
+
+📌 [kommo - apexpro] atualizar lead:
+   🟢 [ybDPJk1rjmIzKB3c] [KOMMO - APEXPRO] Atualizar Lead
+   🔴 [knyEQeLJsGBBWrof] [KOMMO - APEXPRO] Atualizar Lead copy
+
+📌 [tool] gerar contrato:
+   🔴 [YIZtkQs7CMRhYGQF] [TOOL] Gerar Contrato
+   🔴 [eDcNygFXYIPuDY1g] [TOOL] Gerar Contrato
+
+📌 anthropic agent skills workflows:
+   🟢 [dnU6HVk9IjLR6Nra] Anthropic Agent Skills Workflows
+   🔴 [zrgz3MIH7hYkI61W] Anthropic Agent Skills Workflows
+
+📌 assistente financeira ia - contas a pagar e receber:
+   🔴 📦 [D3yduh7TxuaEcYpA] Assistente Financeira IA - Contas a Pagar e Receber
+   🔴 [jC7XCFuq3XngU9gf] Assistente Financeira IA - Contas a Pagar e Receber
+
+📌 contador de tentativas de objeção:
+   🟢 [bIUKBiu5GvGUSiod] Contador de Tentativas de Objeção
+   🟢 [lOf0YiCHwnhHLzio] Contador de Tentativas de Objeção
+
+📌 core daniels:
+   🔴 📦 [geXsCJtYfRzU0uP0] Core Daniels
+   🔴 📦 [tuJK5DqJsa0amIfc] Core Daniels copy
+
+📌 criar campo etapas do funil - ghl [documentado para llms]:
+   🔴 [fm0fXY6nClb7OsyU] Criar Campo Etapas do Funil - GHL [DOCUMENTADO PARA LLMs]
+   🔴 [umBbDCmHkfPe3qjD] Criar Campo Etapas do Funil - GHL [DOCUMENTADO PARA LLMs]
+
+📌 follow-up eterno:
+   🔴 📦 [OnK2bCgcpDQmcoKr] Follow-Up Eterno
+   🔴 📦 [ameUId4HjV5TkFLe] Follow-Up Eterno copy
+
+📌 invoice extractor:
+   🟢 [AvczBOL2wMLBuRR7] Invoice Extractor - CORRIGIDO
+   🟢 [6ICzyTrrI5J9PJQD] Invoice Extractor - CORRIGIDO copy
+
+📌 milton:
+   🟢 [FqRbC9XUFknCfwyY] Milton
+   🟢 📦 [ps46D4EgH84GsNXI] Milton
+
+📌 my sub-workflow:
+   🟢 [NX8VeXT809UqXbDt] My Sub-workflow
+   🔴 📦 [y2e4L0jHtSt39nl0] My Sub-workflow
+
+📌 my sub-workflow 1:
+   🔴 [3a2PnyTsNYgEMAtg] My Sub-Workflow 1
+   🟢 📦 [ZiCCW71kh5DH7Pix] My Sub-Workflow 1
+
+📌 my sub-workflow 2:
+   🟢 📦 [4AgUKANTObAIgZiH] My Sub-Workflow 2
+   🔴 [V4j24Ki4elzKzkK4] My Sub-Workflow 2
+   🟢 📦 [akEbv70CH5pyoL8O] My Sub-Workflow 2
+   🟢 📦 [jpgalsi5HIXYEmk9] My Sub-Workflow 2
+
+📌 my workflow 19:
+   🔴 📦 [N5cJ8yhqnctsuGBK] My workflow 19
+   🔴 📦 [Xfv08vwybSmqXvry] My workflow 19
+
+📌 sofia - assistente completo (financeiro + contratos):
+   🟢 [9Y1yFmUJGVszyUSy] Sofia - Assistente Completo (Financeiro + Contratos)
+   🔴 [dvvb7K6WIQDb0hbx] Sofia - Assistente Completo (Financeiro + Contratos)
+
+📌 vapi call:
+   🔴 [20jBwtUmoDrhXXAP] VAPI CALL
+   🔴 [YLj61DYEhTIXwh6k] VAPI CALL copy
+
+📌 yellow pages scraping:
+   🟢 [e64yJx5YNXUSFurY] Yellow Pages Scraping
+   🟢 [zvKHBEqXlP6Nnzii] Yellow Pages Scraping
+
+================================================================================
+WORKFLOWS SEM PADRÃO (candidatos a limpeza)
+================================================================================
+🔴 📦 [d3JsQSbjkr30O9cU] 01 copy
+🔴 [tGHQBDRi7CsJK7BH] 08.  Agente Assistente Interno copy
+🔴 [ThplosNFINNbWBiG] 1. Ultimate Media Agent copy
+🔴 [U2GXTa9vupQUZtRs] ADMIN - Backup N8N to GDrive
+🔴 📦 [v1NLbgZQ7YnqtCtr] Agency Ads copy
+🔴 [HeBsA0Tu5KdoAma6] Assembly Line - Clone Expert Completo copy
+🔴 [DQMP7FAzPZ2t1P2U] BACKLOG COPIA DA VERSÃO ATUAL - GHL - Mottivme -EUA - COM REAGENDAMENTO copy 2
+🔴 📦 [tuJK5DqJsa0amIfc] Core Daniels copy
+🟢 [oWXzdpw70l018yVP] Fluxo Marcos Daniel Testes - GHL
+🟢 [UuecOgxezwC1KlhX] Fluxo teste - teste prompts
+🔴 📦 [ameUId4HjV5TkFLe] Follow-Up Eterno copy
+🔴 [4qBlFUZQVSOVroBz] Follow-Up Eterno copy 2
+🔴 📦 [wK2rtvWCx394Z9Xu] GHL - Mottivme -EUA - COM REAGENDAMENTO copy
+🔴 📦 [nyJBljnJ6DykjgyC] GoHighLevel - Testes de Conexão
+🔴 📦 [GJhP9aeNnlYQZPg0] IA TESTE de PROMPTS
+🟢 [6ICzyTrrI5J9PJQD] Invoice Extractor - CORRIGIDO copy
+🔴 [f89fcZEPsIC5ZmpC] My workflow 10
+🔴 [1AXKVocSpNJ1mj1y] My workflow 11
+🔴 📦 [iEUlhqedRIEVvP5M] My workflow 12
+🔴 [aqxWCJ1ILz1kAEfH] My workflow 13
+🔴 📦 [GHVluiZK0SaN5VRz] My workflow 15
+🔴 📦 [EYuR1kI6dVj3Zs7M] My workflow 16
+🔴 📦 [kJ1X0VFPsGucbms9] My workflow 18
+🔴 📦 [N5cJ8yhqnctsuGBK] My workflow 19
+🔴 📦 [Xfv08vwybSmqXvry] My workflow 19
+🔴 📦 [AcIoQlFxVdt7PwhZ] My workflow 2
+🔴 📦 [G1LoqiLY3nRZnvI3] My workflow 3
+🔴 [nE3v4UdxFMZ66lf9] My workflow 4
+🔴 📦 [asOWi0NIXJVnZuas] My workflow 7
+🔴 📦 [hI91t4Mk89PkH4o8] My workflow 8
+🔴 📦 [yhc7fAqI3coPZ3yD] My workflow 9
+🔴 📦 [W3qHifZ2hLVN2oA8] Teste no Agente Extrator de DNA
+🔴 [YLj61DYEhTIXwh6k] VAPI CALL copy
+🔴 [RSaHaw3esPqA5tGH] [ Core GHL ] Mottivme - EUA copy
+🔴 [IYCyVzRv6sU9s5Wd] [ Core GHL ] Mottivme - EUA copy 2
+🔴 📦 [zv7a657T9fVIL7Fi] [ Core Old ] GHL - Mottivme
+🟢 [konHKyJVT6V5hOTW] [ Core ] IA Vertical copy
+🔴 [3pKGsofADSdQUMGV] [ Core ] IA Vertical copy 2
+🔴 [4MMGBaJ4ILpjR6oH] [ Core ] Kommo - Mottivme - EUA copy
+🔴 [lpcpaMbzIq5GAaIf] [ Core ] Kommo - Mottivme - EUA copy 2
+🔴 [gO1dzYLbnjlpK8at] [ Core ] Kommo - Mottivme - EUA copy 3
+🔴 [YD6lUJvjqFMNcuEk] [ Core ] Kommo - Mottivme - EUA copy 4
+🔴 [VM60u3q6GEr4kWjl] [ Core ] Kommo - Mottivme - EUA copy ultima versao
+🔴 [knyEQeLJsGBBWrof] [KOMMO - APEXPRO] Atualizar Lead copy
+🔴 [0azcP78xERCrpccO] agente marcos renan teste
+🔴 [TF9rmgeEzNpu99RV] backup - conselheiros copy
+🔴 [8TgyP5CuGWntu7Xc] sofia testes
+🟢 📦 [O3J57vJKjxHANstz] sub-workflow teste
+🔴 📦 [BTs5ZShEa50Y9JHK] testes mentorfy
+🔴 [Dg9k5Png144IIWxA] 🏭 AI Marketing Assembly Line - COMPLETO v2.0 copy

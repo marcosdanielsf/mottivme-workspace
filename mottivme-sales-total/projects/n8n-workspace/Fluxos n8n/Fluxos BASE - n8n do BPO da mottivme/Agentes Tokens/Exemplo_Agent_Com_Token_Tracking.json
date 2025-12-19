@@ -1,0 +1,171 @@
+{
+  "name": "Exemplo - Agent com Token Tracking Real",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Exemplo: Agent com Token Tracking Real\n\nEste exemplo mostra como usar o LLM Token Tracker\npara capturar tokens REAIS de qualquer chamada LLM.\n\n## Fluxo:\n1. Google Gemini (LLM) conecta no Tracker\n2. Tracker conecta no Agent\n3. Quando o Agent executa, o callback captura tokens\n4. Tokens sao enviados automaticamente ao Supabase\n\n## Para testar:\n1. Importe este workflow\n2. Configure suas credenciais do Gemini\n3. Execute manualmente\n4. Verifique a tabela n8n_custos_execucao no Supabase",
+        "height": 320,
+        "width": 400,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-200, 0],
+      "id": "note-exemplo-001",
+      "name": "Instrucoes"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [100, 200],
+      "id": "trigger-exemplo-001",
+      "name": "Trigger Manual"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simula dados de contexto de um lead\nreturn {\n  json: {\n    location_id: 'loc_teste_123',\n    location_name: 'Empresa Teste',\n    contact_id: 'cont_teste_456',\n    contact_name: 'Joao Teste',\n    canal: 'whatsapp',\n    tipo_acao: 'teste_tracking',\n    historico_mensagens: 'Lead interessado em consultoria. Perguntou sobre precos.'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [300, 200],
+      "id": "contexto-exemplo-001",
+      "name": "Simular Contexto Lead"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Responda de forma curta e amigavel: Oi, tudo bem?",
+        "options": {
+          "systemMessage": "Voce e um assistente amigavel. Responda sempre de forma curta e casual."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [700, 200],
+      "id": "agent-exemplo-001",
+      "name": "Agent Teste"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [500, 500],
+      "id": "gemini-exemplo-001",
+      "name": "Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "4ut0CD80SN7lbITM",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "code": {
+          "supplyData": {
+            "code": "// ========================================\n// LLM TOKEN TRACKER WRAPPER\n// Captura tokens reais e registra no Supabase\n// ========================================\n\n// === CONFIGURACAO SUPABASE ===\nconst SUPABASE_URL = 'https://bfumywvwubvernvhjehk.supabase.co/rest/v1/n8n_custos_execucao';\nconst SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao';\n\n// === TABELA DE PRECOS (USD por 1M tokens) ===\nconst PRECOS = {\n  'gemini-2.0-flash': { input: 0.10, output: 0.40 },\n  'gemini-2.5-flash': { input: 0.075, output: 0.30 },\n  'gemini-2.5-pro': { input: 1.25, output: 10.00 },\n  'gemini-1.5-flash': { input: 0.075, output: 0.30 },\n  'gemini-1.5-pro': { input: 1.25, output: 5.00 },\n  'models/gemini-2.0-flash': { input: 0.10, output: 0.40 },\n  'models/gemini-2.5-flash': { input: 0.075, output: 0.30 },\n  'models/gemini-2.5-pro': { input: 1.25, output: 10.00 },\n  'gpt-4o': { input: 2.50, output: 10.00 },\n  'gpt-4o-mini': { input: 0.15, output: 0.60 },\n  'claude-3-sonnet': { input: 3.00, output: 15.00 },\n  'claude-3-haiku': { input: 0.25, output: 1.25 },\n  'llama-3.3-70b-versatile': { input: 0.59, output: 0.79 },\n  'llama3-70b-8192': { input: 0.59, output: 0.79 },\n  'default': { input: 0.10, output: 0.40 }\n};\n\n// === FUNCAO PARA CALCULAR CUSTO ===\nfunction calcularCusto(modelo, tokensInput, tokensOutput) {\n  const modeloLower = (modelo || '').toLowerCase();\n  let preco = PRECOS['default'];\n  \n  for (const [key, value] of Object.entries(PRECOS)) {\n    if (modeloLower.includes(key.toLowerCase()) || key.toLowerCase().includes(modeloLower)) {\n      preco = value;\n      break;\n    }\n  }\n  \n  const custoInput = (tokensInput / 1000000) * preco.input;\n  const custoOutput = (tokensOutput / 1000000) * preco.output;\n  return parseFloat((custoInput + custoOutput).toFixed(8));\n}\n\n// === PEGA A LLM CONECTADA ===\nconst llm = await this.getInputConnectionData('ai_languageModel', 0);\n\n// === DADOS DO WORKFLOW ===\nconst workflowId = $workflow.id;\nconst workflowName = $workflow.name;\nconst executionId = $execution.id;\n\n// === CAPTURA DADOS DE CONTEXTO ===\nlet contextData = {\n  location_id: '',\n  location_name: '',\n  contact_id: '',\n  contact_name: '',\n  canal: 'whatsapp',\n  tipo_acao: 'ia_generica',\n  mensagem_entrada: ''\n};\n\ntry {\n  const possibleNodes = [\n    'Simular Contexto Lead',\n    'Code in JavaScript',\n    'Code in JavaScript1', \n    'Preparar Contexto',\n    'Extrair Info Lead',\n    'Informacoes Relevantes',\n    'Informacoes Relevantes - FUP1'\n  ];\n  \n  for (const nodeName of possibleNodes) {\n    try {\n      const nodeData = $(nodeName).first()?.json;\n      if (nodeData) {\n        contextData.location_id = contextData.location_id || nodeData.location_id || '';\n        contextData.location_name = contextData.location_name || nodeData.location_name || '';\n        contextData.contact_id = contextData.contact_id || nodeData.contact_id || nodeData['Lead Id'] || '';\n        contextData.contact_name = contextData.contact_name || nodeData.contact_name || nodeData.nome || nodeData.name || '';\n        contextData.canal = nodeData.canal || nodeData.source || contextData.canal;\n        contextData.tipo_acao = nodeData.tipo_acao || contextData.tipo_acao;\n        contextData.mensagem_entrada = contextData.mensagem_entrada || nodeData.historico_mensagens || nodeData.historico_resumo || '';\n      }\n    } catch (e) {}\n  }\n} catch (e) {}\n\n// === CONFIGURA CALLBACK ===\nconst originalCallbacks = llm.callbacks || [];\n\nllm.callbacks = [\n  ...originalCallbacks,\n  {\n    handleLLMEnd: async (output) => {\n      try {\n        const generation = output.generations?.[0]?.[0];\n        if (!generation) return;\n        \n        const usage = generation.message?.usage_metadata\n          || generation.generationInfo?.usage_metadata\n          || generation.message?.response_metadata?.usage\n          || generation.generationInfo?.usage\n          || output.llmOutput?.usage\n          || { input_tokens: 0, output_tokens: 0 };\n        \n        const tokensInput = usage.input_tokens || usage.prompt_tokens || 0;\n        const tokensOutput = usage.output_tokens || usage.completion_tokens || 0;\n        const modelo = llm.modelName || llm.model || 'unknown';\n        const custoUsd = calcularCusto(modelo, tokensInput, tokensOutput);\n        const mensagemSaida = (generation.text || generation.message?.content || '').substring(0, 1000);\n        \n        const payload = {\n          workflow_id: workflowId,\n          workflow_name: workflowName,\n          execution_id: executionId,\n          location_id: contextData.location_id,\n          location_name: contextData.location_name,\n          contact_id: contextData.contact_id,\n          contact_name: contextData.contact_name,\n          canal: contextData.canal,\n          tipo_acao: contextData.tipo_acao,\n          modelo_ia: modelo,\n          tokens_input: tokensInput,\n          tokens_output: tokensOutput,\n          custo_usd: custoUsd,\n          mensagem_entrada: contextData.mensagem_entrada.substring(0, 1000),\n          mensagem_saida: mensagemSaida\n        };\n        \n        const response = await fetch(SUPABASE_URL, {\n          method: 'POST',\n          headers: {\n            'apikey': SUPABASE_KEY,\n            'Authorization': `Bearer ${SUPABASE_KEY}`,\n            'Content-Type': 'application/json',\n            'Prefer': 'return=minimal'\n          },\n          body: JSON.stringify(payload)\n        });\n        \n        if (!response.ok) {\n          console.error('Erro ao registrar custo:', await response.text());\n        } else {\n          console.log(`Tokens: ${tokensInput} in / ${tokensOutput} out = $${custoUsd}`);\n        }\n      } catch (err) {\n        console.error('Erro callback:', err.message);\n      }\n    }\n  }\n];\n\nreturn llm;"
+          }
+        },
+        "inputs": {
+          "input": [
+            {
+              "type": "ai_languageModel",
+              "required": true,
+              "maxConnections": 1
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "type": "ai_languageModel"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.code",
+      "typeVersion": 1,
+      "position": [500, 350],
+      "id": "tracker-exemplo-001",
+      "name": "LLM Token Tracker"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Exibe resultado do agent\nconst agentOutput = $input.first().json;\n\nreturn {\n  json: {\n    resposta_agent: agentOutput.output || agentOutput.text || 'Sem resposta',\n    sucesso: true,\n    nota: 'Verifique a tabela n8n_custos_execucao no Supabase para ver os tokens registrados'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 200],
+      "id": "resultado-exemplo-001",
+      "name": "Exibir Resultado"
+    }
+  ],
+  "connections": {
+    "Trigger Manual": {
+      "main": [
+        [
+          {
+            "node": "Simular Contexto Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simular Contexto Lead": {
+      "main": [
+        [
+          {
+            "node": "Agent Teste",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent Teste": {
+      "main": [
+        [
+          {
+            "node": "Exibir Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "LLM Token Tracker",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Token Tracker": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent Teste",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

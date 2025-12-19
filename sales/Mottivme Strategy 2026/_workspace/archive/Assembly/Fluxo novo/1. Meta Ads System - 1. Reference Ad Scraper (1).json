@@ -1,0 +1,4864 @@
+{
+  "name": "1. Meta Ads System - 1. Reference Ad Scraper",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### Need pagination?\nGetting 150 results is fine without pagination, but if you want to get too many ads at once, you're going to need to implement the pagination logic.\n\nRefer to this [documentation](\nhttps://docs.apify.com/api/v2#pagination)",
+        "height": 376,
+        "width": 261,
+        "color": 7
+      },
+      "id": "f6a5288c-a0ea-4aa3-9d9b-8689c96e0ed8",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "01ef04df-e0fc-45e0-848f-117da25eca13",
+              "leftValue": "={{ $json.collation_count }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "28cb3314-a4c3-48ed-802e-a6c98dce2689",
+      "name": "collation_count",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        1536
+      ],
+      "notesInFlow": true,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "start_date"
+            },
+            {
+              "fieldName": "collation_count",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "df0f2266-2900-4e74-82b9-528592836af7",
+      "name": "Sort by oldest and more used",
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        896
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Ad Quality filters (OPTIONAL)\nWe're going to return all ads, then filter them inside Airtable. If you want to filter them at this stage, insert the ad quality filters that show useage and longevity of ads",
+        "height": 503,
+        "width": 969,
+        "color": 7
+      },
+      "id": "04046c18-59fd-4c14-a580-75516c785912",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        272,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cf3ab735-43ec-4f82-8f8e-d97c03da3022",
+              "name": "pageId",
+              "value": "={{ $json['❗ Meta Ads page_id'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3a6c1b19-0fd3-4746-adeb-d8c40071ca94",
+              "name": "start_date[min]",
+              "value": "={{\n  (() => {\n    const period = $json['❗ Ad Start Date'];\n    if (period.includes('Most Recent Unscraped Ads')) {\n      // Check if last_scraped exists\n      if (!$json.last_scraped) {\n        return $today.minus(90, 'days'); // Default to 90 days if no last_scraped date\n      }\n      // Parse last_scraped if it's a string\n      const lastScraped = typeof $json.last_scraped === 'string' ? \n        DateTime.fromISO($json.last_scraped) : \n        $json.last_scraped;\n      \n      // Check if last_scraped is today\n      if (lastScraped.toFormat('yyyy-MM-dd') === $today.toFormat('yyyy-MM-dd')) {\n        return $today;\n      }\n      return lastScraped.plus(1, 'days');\n    }\n    if (period.includes('24hr')) return $today.minus(24, 'hours');\n    if (period.includes('7days')) return $today.minus(7, 'days');\n    if (period.includes('30days')) return $today.minus(30, 'days');\n    if (period.includes('90days')) return $today.minus(90, 'days');\n    if (period.includes('180days')) return $today.minus(180, 'days');\n    return $today;\n  })().format('yyyy-MM-dd')\n}}",
+              "type": "string"
+            },
+            {
+              "id": "b2e6ae62-adc7-4974-9a06-ddf563ffa203",
+              "name": "start_date[max]",
+              "value": "={{ $today.minus(0, 'day').format('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "51d5c04d-d92e-4231-a955-2fed6d981548",
+              "name": "airtable_creator_page_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "3b53e05c-863e-4f2d-aa82-9805a6c627b2",
+              "name": "limit",
+              "value": "={{ $json[\"❗ Limit # Ads\"] ? $json[\"❗ Limit # Ads\"] : 100  }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6b6bb159-06d3-4a3b-b0a1-fc58c245b3bc",
+      "name": "Set some fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        896
+      ]
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "Name",
+              "value": "={{ $('Get Ad Pages').item.json.Name }}"
+            },
+            {
+              "key": "airtable_id",
+              "value": "={{ $('Get Ad Pages').item.json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1,
+      "position": [
+        80,
+        368
+      ],
+      "id": "4ca5be81-06e0-4c29-990a-995297f5cd8b",
+      "name": "Execution Data"
+    },
+    {
+      "parameters": {},
+      "id": "e9f4adfb-639c-4eb5-a94d-e27e0c78ebe6",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4752,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cd493cb8-2bc5-4133-9030-f7b08c521e89",
+                    "leftValue": "={{ $json.snapshot.cards[0].video_hd_url || $json.snapshot.cards[0].video_sd_url}}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "VIDEO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.snapshot.cards[0].original_image_url }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IMAGE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2128,
+        784
+      ],
+      "id": "cefe1981-3470-4b4a-9809-582449dc8320",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "content": "# IMAGE\n# DCO IMAGE",
+        "height": 128,
+        "color": 6
+      },
+      "id": "3e940e9f-468c-4fc3-9730-33a849af89b4",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# VIDEO\n# DCO VIDEO",
+        "height": 127.01230223067762,
+        "color": 6
+      },
+      "id": "6debb6f5-c903-432e-9809-84aae8ed4c23",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "property_file_hash",
+              "field2": "file_hash"
+            }
+          ]
+        },
+        "joinMode": "enrichInput2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        4256,
+        352
+      ],
+      "id": "1236d19a-e3f7-4877-b05b-fe7a5b1560d4",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "content": "### Ad used in more than one adset\nHaving the ad being used multiple times is a good indicator that the ad is converting.",
+        "height": 336,
+        "width": 224,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        304,
+        1376
+      ],
+      "id": "bf1ec6e1-7675-4cc6-a469-f8e497f490b7",
+      "name": "Sticky Note8",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "file_URL",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2832,
+        368
+      ],
+      "id": "704a7368-0b7e-4e6c-b5cc-0950ff195673",
+      "name": "Remove duplicates"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6fd75ee-30d4-448b-8f96-5524fba19d3d",
+              "name": "file_URL",
+              "value": "={{\n  $json.snapshot.videos?.[0]?.video_sd_url ??\n  $json.snapshot.videos?.[0]?.video_hd_url ??\n  $json.snapshot.cards?.[0]?.video_sd_url ??\n  $json.snapshot.cards?.[0]?.video_hd_url ??\n  'Default Video URL' // Optional fallback\n}}",
+              "type": "string"
+            },
+            {
+              "id": "38985346-e9f0-4285-8ed1-c15ff09d0423",
+              "name": "thumbnail_URL",
+              "value": "={{ \n  $json.snapshot.videos[0]?.video_preview_image_url ??\n  $json.snapshot.cards[0].video_preview_image_url\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2608,
+        368
+      ],
+      "id": "c1ce2d90-9068-405b-b3e4-224d9c189f26",
+      "name": "Extract file URL"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "KJGHl53oQm1w7xe4",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/KJGHl53oQm1w7xe4",
+          "cachedResultName": "4. Calculate file hash"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "file_URL": "={{ $('Remove duplicates').first().json.file_URL }}"
+          },
+          "matchingColumns": [
+            "file_URL"
+          ],
+          "schema": [
+            {
+              "id": "file_URL",
+              "displayName": "file_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3552,
+        368
+      ],
+      "name": "Calculate file hash",
+      "id": "62ddee29-44f4-4a4f-87c5-78614706b38b"
+    },
+    {
+      "parameters": {
+        "content": "A file hash is a unique identifier for a file. Identical files have the same hash.\n\nWe calculate the hash separately because there’s a limit to how much data can be processed in a single execution. So we run one execution for each file to avoid hitting the data limit.",
+        "height": 416,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3280,
+        128
+      ],
+      "id": "4ed181b4-97df-40c7-9d31-40a61af04227",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "method": "HEAD",
+        "url": "={{ $json.file_URL }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "0241d62b-8282-4650-b943-dafad3c6d24e",
+      "name": "Get file info_",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3056,
+        368
+      ],
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "This filter prevents the workflow from processing files that are too big.\n\nIf you still want to analyze long videos, feel free to increase this limit and adjust the logic.\n\nTranscribing big files will require a different logic, though. You'll have to split the file into chunks.",
+        "height": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3008,
+        128
+      ],
+      "id": "e49dafcf-6fa6-4aab-9a6c-3de9856fa2f0",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "59b337fa-45ae-4317-997c-255a131e2d88",
+              "leftValue": "={{ $json.headers['content-length'].toNumber() }}",
+              "rightValue": 52428800,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        3280,
+        368
+      ],
+      "id": "6b5889b0-2160-4b36-861c-11fe8811452a",
+      "name": "Maximum of 50MB"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "804548a2-7f41-4b1e-9ded-407f88031bbb",
+              "leftValue": "={{ $json.snapshot.cards[0].original_image_url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "05e81b16-e99e-4263-9093-409b5a2948ad",
+              "leftValue": "={{ $json.snapshot.cards[0].original_image_url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2352,
+        1536
+      ],
+      "id": "d0220716-6d90-4afa-8110-45d9dd298ff2",
+      "name": "Only images"
+    },
+    {
+      "parameters": {
+        "content": "# CAROUSEL",
+        "height": 80,
+        "color": 6
+      },
+      "id": "3efe50b6-fed4-470c-9d00-38cce853bd40",
+      "name": "Sticky Note12",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2064,
+        1408
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6fd75ee-30d4-448b-8f96-5524fba19d3d",
+              "name": "file_URL",
+              "value": "={{ $json.snapshot.cards[0].original_image_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2624,
+        1536
+      ],
+      "id": "ec367ce2-7c66-4b4e-8a27-bc519529d84d",
+      "name": "Extract file URL1"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "file_URL",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2864,
+        1536
+      ],
+      "id": "bb0adcf8-9b14-4553-af90-9652f83f59f2",
+      "name": "Remove duplicates1"
+    },
+    {
+      "parameters": {
+        "content": "To simplify the logic we use only the first image of the carousel to analyze if we already have this ad.",
+        "height": 288,
+        "width": 192,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        1408
+      ],
+      "id": "d6fb1260-5f97-4a95-a07b-ad9e886a71d9",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "property_file_hash",
+              "field2": "file_hash"
+            }
+          ]
+        },
+        "joinMode": "enrichInput2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3840,
+        1520
+      ],
+      "id": "80ad636c-96e8-4ef2-b907-fb0c84adea58",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "KJGHl53oQm1w7xe4",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/KJGHl53oQm1w7xe4",
+          "cachedResultName": "4. Calculate file hash"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "file_URL": "={{ $('Remove duplicates1').item.json.file_URL }}"
+          },
+          "matchingColumns": [
+            "file_URL"
+          ],
+          "schema": [
+            {
+              "id": "file_URL",
+              "displayName": "file_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3136,
+        1536
+      ],
+      "name": "Calculate file hash1",
+      "id": "06cd4cd0-24d9-474c-9654-b219555c738e"
+    },
+    {
+      "parameters": {
+        "content": "A file hash is a unique identifier for a file. Identical files have the same hash.\n\nWe calculate the hash separately because there’s a limit to how much data can be processed in a single execution. So we run one execution for each file to avoid hitting the data limit.",
+        "height": 416,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2864,
+        1296
+      ],
+      "id": "170a251a-572a-4c03-8348-88fa819189b4",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "## Upload limit in Airtable's free plan\nFree plan is limited to 1GB per base",
+        "height": 96,
+        "width": 400,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4288,
+        544
+      ],
+      "id": "f918f8b7-214b-4820-94fe-0d36cdd12906",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "content": "### Ads running for > 2 weeks\nLength of time is also a good indicator that the ad is converting.",
+        "height": 336,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        544,
+        1376
+      ],
+      "id": "f265564a-0f39-48ff-a2bc-b1a150a9cb87",
+      "name": "Sticky Note3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "fields['Ad Library URL']",
+              "field2": "ad_library_url"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3840,
+        1920
+      ],
+      "id": "1db142ab-f046-4e79-866e-ad596f626b64",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        4048,
+        1920
+      ],
+      "id": "4f172f87-f2db-4748-9247-dabf1064eeac",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "snapshot.cards",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "ad_archive_id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        4336,
+        1920
+      ],
+      "id": "ef24a40b-6c43-4b3a-bd80-deeb4e8d83f9",
+      "name": "Split Carousel Cards"
+    },
+    {
+      "parameters": {
+        "content": "The ones that haven't been scraped yet go first.\n\nThen the oldest dates, because they haven't been scraped for a while.",
+        "height": 288,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        768
+      ],
+      "id": "0b39b173-408c-4ee1-aede-e7c0fa31914e",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblh98ZPy3tnRWTRP",
+          "mode": "list",
+          "cachedResultName": "Ad Pages",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblh98ZPy3tnRWTRP"
+        },
+        "filterByFormula": "=AND(\n  {❗ Meta Ads page_id} != '',\n  {Scrape} = 1\n)",
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "last_scraped"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -816,
+        896
+      ],
+      "id": "1d24bad1-ced0-478f-bdb1-852e81802b99",
+      "name": "Get Ad Pages",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "da50853f-6bc5-4d45-9545-7154192883f8",
+              "leftValue": "={{ $json.start_date.toDateTime('s') }}",
+              "rightValue": "={{ $today.minus(2, 'weeks') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c0383ddb-5976-4df0-ab86-0ec67fb28a88",
+      "name": "at least 2 weeks old",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        1536
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "filterByFormula": "={file_hash} = '{{ $json.file_hash }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3920,
+        192
+      ],
+      "id": "8bee0b7c-b745-44db-b40d-b1f8ee2464e7",
+      "name": "Search records",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "94c2368c-e48b-47cf-8cd9-fbee418debcf",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1ff8ed47-fdf2-4987-8f92-2d94f0f747b7",
+      "name": "Does it exist it Airtable?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        4496,
+        352
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{\n  $if( $('Extract file URL').item.json?.snapshot?.title.includes('{{'),\n      $('Extract file URL').item.json.snapshot.cards[0].title,\n      ($('Extract file URL').item.json.snapshot.title ?? \"No title\")\n  )\n}}",
+            "Page": "=['{{ $('Set some fields').item.json.airtable_creator_page_id }}']",
+            "file_hash": "={{ $('Calculate file hash').item.json.file_hash }}",
+            "Ad Library URL": "={{ $('Extract file URL').item.json.ad_library_url }}",
+            "Ad text": "=**Title:** {{\n  $if( $('Extract file URL').item.json?.snapshot?.title.includes('{{'),\n      $('Extract file URL').item.json.snapshot.cards[0].title,\n      ($('Extract file URL').item.json.snapshot.title ?? \"No title\")\n  )\n}}\n**Caption:** {{ $('Extract file URL').item.json.snapshot.caption }}\n**CTA:** {{ $('Extract file URL').item.json.snapshot.cta_text }}\n\n**Ad body:**\n{{\n  $if( $('Extract file URL').item.json?.snapshot?.body.text.includes('{{'),\n      $('Extract file URL').item.json.snapshot.cards[0].body,\n      ($('Extract file URL').item.json?.snapshot?.body.text ?? \"No body\")\n  )\n}}",
+            "Type": "Video",
+            "collation_count": "={{ $('Extract file URL').item.json.collation_count }}",
+            "collation_id": "={{ $('Extract file URL').item.json.collation_id }}",
+            "Ad Status": "={{ $('Extract file URL').item.json.is_active ? 'Active' : 'Not Active' }}",
+            "CTA": "={{ $('Extract file URL').item.json.snapshot.cta_text }}",
+            "Caption": "={{ $('Extract file URL').item.json.snapshot.caption }}",
+            "Page Profile Picture": "={{ $('Extract file URL').item.json.snapshot.page_profile_picture_url }}",
+            "Link URL": "={{ $('Extract file URL').item.json.snapshot.link_url }}",
+            "Body": "={{\n  $if( $('Extract file URL').item.json?.snapshot?.body.text.includes('{{'),\n      $('Extract file URL').item.json.snapshot.cards[0].body,\n      ($('Extract file URL').item.json?.snapshot?.body.text ?? \"No body\")\n  )\n}}",
+            "Files": "=[\n  { \n    \"url\": \"{{ $('Extract file URL').item.json.thumbnail_URL }}\",\n    \"filename\": \"thumbnail.jpg\"\n  },\n  { \n    \"url\": \"{{ $('Remove duplicates').item.json.file_URL }}\",\n    \"filename\": \"video.mp4\"\n  }\n]"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Status",
+              "displayName": "Ad Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Active",
+                  "value": "Active"
+                },
+                {
+                  "name": "Not Active",
+                  "value": "Not Active"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Import",
+              "displayName": "Import",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import Status",
+              "displayName": "Import Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not imported",
+                  "value": "Not imported"
+                },
+                {
+                  "name": "Processing",
+                  "value": "Processing"
+                },
+                {
+                  "name": "Imported",
+                  "value": "Imported"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_until",
+              "displayName": "running_until",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_scraped_date",
+              "displayName": "last_scraped_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "days_running",
+              "displayName": "days_running",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "collation_count",
+              "displayName": "collation_count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "collation_id",
+              "displayName": "collation_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Page Profile Picture",
+              "displayName": "Page Profile Picture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link URL",
+              "displayName": "Link URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Import_edited",
+              "displayName": "Import_edited",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link to Generated Ads",
+              "displayName": "Link to Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generated Ads",
+              "displayName": "Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Briefs copy",
+              "displayName": "Ad Briefs copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": false
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4704,
+        368
+      ],
+      "id": "35a79b8a-3476-40f3-8230-6184ca18f4aa",
+      "name": "Create a record",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appk7eiHbR9LpgY4Y/tblusQi6XqIUNy8SO"
+        },
+        "filterByFormula": "={file_hash} = '{{ $json.file_hash }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3488,
+        1392
+      ],
+      "id": "9a69db8e-5c20-4633-9f34-df0b3694b0a2",
+      "name": "Search records1",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "94c2368c-e48b-47cf-8cd9-fbee418debcf",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "27c494a1-3337-41f9-ad33-77bc06c238a1",
+      "name": "Does it exist it Airtable?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        4128,
+        1520
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appk7eiHbR9LpgY4Y/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ $('Extract file URL1').item.json.snapshot.title ?? \"No title\" }}",
+            "Page": "={{ $('Set some fields').item.json.airtable_creator_page_id }}",
+            "file_hash": "={{ $('Calculate file hash1').item.json.file_hash }}",
+            "running_since": "={{ $('Extract file URL1').item.json.start_date.toDateTime('s').toUTC().toString() }}",
+            "Ad Library URL": "={{ $('Extract file URL1').item.json.ad_library_url }}",
+            "Ad text": "=**Title:** {{ $('Extract file URL1').item.json.snapshot.title ?? \"No title\"}}\n**Caption:** {{ $('Extract file URL1').item.json.snapshot.caption }}\n**CTA:** {{ $('Extract file URL1').item.json.snapshot.cta_text }}\n\n**Ad body:**\n{{ $('Extract file URL1').item.json.snapshot.body.text }}",
+            "Type": "Carousel",
+            "Ad Status": "={{ $('Extract file URL1').item.json.is_active ? 'Active' : 'Not Active' }}",
+            "running_until": "={{ $('Extract file URL1').item.json.end_date.toDateTime('s').toUTC().toString() }}",
+            "collation_count": "={{ $('Extract file URL1').item.json.collation_count }}",
+            "collation_id": "={{ $('Extract file URL1').item.json.collation_id }}",
+            "Body": "={{\n  $if( $('Extract file URL1').item.json?.snapshot?.body.text.includes('{{'),\n      $('Extract file URL1').item.json.snapshot.cards[0].body,\n      ($('Extract file URL1').item.json?.snapshot?.body.text ?? \"No body\")\n  )\n}}",
+            "CTA": "={{ $('Extract file URL1').item.json.cta_text }}",
+            "Caption": "={{ $('Extract file URL1').item.json.caption }}",
+            "Page Profile Picture": "={{ $('Extract file URL1').item.json.snapshot.page_profile_picture_url }}",
+            "Link URL": "={{ $('Extract file URL1').item.json.snapshot.link_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Status",
+              "displayName": "Ad Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Active",
+                  "value": "Active"
+                },
+                {
+                  "name": "Not Active",
+                  "value": "Not Active"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Import",
+              "displayName": "Import",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import Status",
+              "displayName": "Import Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not imported",
+                  "value": "Not imported"
+                },
+                {
+                  "name": "Processing",
+                  "value": "Processing"
+                },
+                {
+                  "name": "Imported",
+                  "value": "Imported"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import_edited",
+              "displayName": "Import_edited",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "running_until",
+              "displayName": "running_until",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_scraped_date",
+              "displayName": "last_scraped_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "days_running",
+              "displayName": "days_running",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "collation_count",
+              "displayName": "collation_count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "collation_id",
+              "displayName": "collation_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Page Profile Picture",
+              "displayName": "Page Profile Picture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link URL",
+              "displayName": "Link URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link to Generated Ads",
+              "displayName": "Link to Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generated Ads",
+              "displayName": "Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4736,
+        1520
+      ],
+      "id": "ebd54936-8e49-4ec9-9738-b98c82a1752f",
+      "name": "Create a record1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "['snapshot.cards'].resized_image_url",
+              "renameField": true,
+              "outputFieldName": "image_urls"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        4544,
+        1920
+      ],
+      "id": "274fdcee-3063-4908-9b07-77daa2daff55",
+      "name": "Aggregate URLs"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appk7eiHbR9LpgY4Y/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Create a record1').item.json.id }}",
+            "Files": "={{ $json.image_urls.map((u,i) => ({ url: u, filename: `image${i+1}.jpg` })).toJsonString() }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4768,
+        1920
+      ],
+      "id": "5b447187-40c8-4abb-853b-2d08e6d7118c",
+      "name": "Upload images",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6fd75ee-30d4-448b-8f96-5524fba19d3d",
+              "name": "file_URL",
+              "value": "={{ $json.snapshot.cards[0].original_image_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2624,
+        1024
+      ],
+      "id": "595e8a14-4ba4-4545-bebd-cba47c71ee6f",
+      "name": "Extract file URL2"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "file_URL",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2864,
+        1024
+      ],
+      "id": "38813dfd-3659-43c7-a7f0-e864319343f2",
+      "name": "Remove duplicates2"
+    },
+    {
+      "parameters": {
+        "content": "To simplify the logic we use only the first image of the carousel to analyze if we already have this ad.",
+        "height": 288,
+        "width": 192,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        896
+      ],
+      "id": "12bb581d-4680-4608-842e-e279940e22b6",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "property_file_hash",
+              "field2": "file_hash"
+            }
+          ]
+        },
+        "joinMode": "enrichInput2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3712,
+        1008
+      ],
+      "id": "d5e9c38b-d54e-4fe8-8519-6479e13e2978",
+      "name": "Merge4"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "KJGHl53oQm1w7xe4",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/KJGHl53oQm1w7xe4",
+          "cachedResultName": "4. Calculate file hash"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "file_URL": "={{ $json.file_URL }}"
+          },
+          "matchingColumns": [
+            "file_URL"
+          ],
+          "schema": [
+            {
+              "id": "file_URL",
+              "displayName": "file_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        3136,
+        1024
+      ],
+      "name": "Calculate file hash2",
+      "id": "9ff70120-67f9-45a7-a341-78088e0a0a6b",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "A file hash is a unique identifier for a file. Identical files have the same hash.\n\nWe calculate the hash separately because there’s a limit to how much data can be processed in a single execution. So we run one execution for each file to avoid hitting the data limit.",
+        "height": 416,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2864,
+        784
+      ],
+      "id": "859578f9-6b0e-4e95-922e-622991a1883f",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "filterByFormula": "={file_hash} = '{{ $json.file_hash }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3488,
+        880
+      ],
+      "id": "b5351e07-923e-436b-a518-78337acd5c85",
+      "name": "Search records2",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "94c2368c-e48b-47cf-8cd9-fbee418debcf",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5122f0f3-7096-47a9-a46a-ff77ab4b9a20",
+      "name": "Does it exist it Airtable?2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3952,
+        1008
+      ],
+      "alwaysOutputData": false,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{\n  $if( $('Extract file URL2').item.json?.snapshot?.title.includes('{{'),\n      $('Extract file URL2').item.json.snapshot.cards[0].title,\n      ($('Extract file URL2').item.json.snapshot.title ?? \"No title\")\n  )\n\n}}",
+            "Page": "={{ $('Set some fields').item.json.airtable_creator_page_id }}",
+            "file_hash": "={{ $('Calculate file hash2').item.json.file_hash }}",
+            "running_since": "={{ $('Extract file URL2').item.json.start_date.toDateTime('s').toUTC().toString() }}",
+            "Ad Library URL": "={{ $('Extract file URL2').item.json.ad_library_url }}",
+            "Ad text": "=**Title:** {{\n  $if( $('Extract file URL2').item.json?.snapshot?.title.includes('{{'),\n      $('Extract file URL2').item.json.snapshot.cards[0].title,\n      ($('Extract file URL2').item.json.snapshot.title ?? \"No title\")\n  )\n}}\n**Caption:** {{ $('Extract file URL2').item.json.snapshot.caption }}\n**CTA:** {{ $('Extract file URL2').item.json.snapshot.cta_text }}\n\n**Ad body:**\n{{\n  $if( $('Extract file URL2').item.json?.snapshot?.body.text.includes('{{'),\n      $('Extract file URL2').item.json.snapshot.cards[0].body,\n      ($('Extract file URL2').item.json?.snapshot?.body.text ?? \"No body\")\n  )\n}}",
+            "Type": "Image",
+            "Ad Status": "={{ $('Extract file URL2').item.json.is_active ? 'Active' : 'Not Active' }}",
+            "Body": "={{\n  $if( $('Extract file URL2').item.json?.snapshot?.body.text.includes('{{'),\n      $('Extract file URL2').item.json.snapshot.cards[0].body,\n      ($('Extract file URL2').item.json?.snapshot?.body.text ?? \"No body\")\n  )\n}}",
+            "running_until": "={{ $('Extract file URL2').item.json.end_date.toDateTime('s').toUTC().toString() }}",
+            "collation_count": "={{ $('Extract file URL2').item.json.collation_count }}",
+            "collation_id": "={{ $('Extract file URL2').item.json.collation_id }}",
+            "CTA": "={{ $('Extract file URL2').item.json.snapshot.cta_text }}",
+            "Caption": "={{ $('Extract file URL2').item.json.snapshot.caption }}",
+            "Page Profile Picture": "={{ $('Extract file URL2').item.json.snapshot.page_profile_picture_url }}",
+            "Link URL": "={{ $('Extract file URL2').item.json.snapshot.link_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Status",
+              "displayName": "Ad Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Active",
+                  "value": "Active"
+                },
+                {
+                  "name": "Not Active",
+                  "value": "Not Active"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Import",
+              "displayName": "Import",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import Status",
+              "displayName": "Import Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not imported",
+                  "value": "Not imported"
+                },
+                {
+                  "name": "Processing",
+                  "value": "Processing"
+                },
+                {
+                  "name": "Imported",
+                  "value": "Imported"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import_edited",
+              "displayName": "Import_edited",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "running_until",
+              "displayName": "running_until",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_scraped_date",
+              "displayName": "last_scraped_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "days_running",
+              "displayName": "days_running",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "collation_count",
+              "displayName": "collation_count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "collation_id",
+              "displayName": "collation_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Page Profile Picture",
+              "displayName": "Page Profile Picture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link URL",
+              "displayName": "Link URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link to Generated Ads",
+              "displayName": "Link to Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generated Ads",
+              "displayName": "Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4256,
+        1024
+      ],
+      "id": "cc9ab147-def6-418a-9aad-0f437218eee1",
+      "name": "Create a record2",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "advanced": true,
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "fields['Ad Library URL']",
+              "field2": "ad_library_url"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4480,
+        1040
+      ],
+      "id": "207227ca-1fc8-479f-b55c-8a18c3ad7728",
+      "name": "Merge5"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Create a record2').item.json.id }}",
+            "Files": "=[\n  {\n    \"url\": \"{{\n  $json.snapshot.images[0]?.resized_image_url ?? \n  $json.snapshot.cards[0].resized_image_url\n}}\",\n    \"filename\": \"image.jpg\"\n  }\n]"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4768,
+        1040
+      ],
+      "id": "b8e33e40-9861-4ab6-a395-98f8af58d089",
+      "name": "Upload images1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblh98ZPy3tnRWTRP",
+          "mode": "list",
+          "cachedResultName": "Ad Pages",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblh98ZPy3tnRWTRP"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get Ad Pages').item.json.id }}",
+            "last_scraped": "={{ $now }}",
+            "Scraping Status": "Scraping"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Meta Ads page_id",
+              "displayName": "❗ Meta Ads page_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Limit # Ads",
+              "displayName": "❗ Limit # Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Ad Start Date",
+              "displayName": "❗ Ad Start Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Most Recent Unscraped Ads",
+                  "value": "Most Recent Unscraped Ads"
+                },
+                {
+                  "name": "Last 24hr",
+                  "value": "Last 24hr"
+                },
+                {
+                  "name": "Last 7days",
+                  "value": "Last 7days"
+                },
+                {
+                  "name": "Last 30days",
+                  "value": "Last 30days"
+                },
+                {
+                  "name": "Last 90days",
+                  "value": "Last 90days"
+                },
+                {
+                  "name": "Last 180days",
+                  "value": "Last 180days"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Scrape",
+              "displayName": "Scrape",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Scraping Status",
+              "displayName": "Scraping Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not in Progress / Complete",
+                  "value": "Not in Progress / Complete"
+                },
+                {
+                  "name": "Scraping",
+                  "value": "Scraping"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Count of Scraped Ads",
+              "displayName": "Count of Scraped Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "last_scraped",
+              "displayName": "last_scraped",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ads",
+              "displayName": "Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        368,
+        368
+      ],
+      "id": "115514be-7e5b-4228-8e8e-e4762930c85f",
+      "name": "Update last_scraped1",
+      "executeOnce": false,
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "This ads metadata to your executions, so you can easily filter for specific Ad Pages that were scraped.",
+        "height": 288,
+        "width": 256,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        256
+      ],
+      "id": "9e9298b0-8d36-44e0-94de-6c8044bac23e",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "content": "In case no ads get scraped because they don't match our quality filters, the date is still updated so it goes to the end of the queue.",
+        "height": 272,
+        "width": 256,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        288,
+        256
+      ],
+      "id": "2b6c70c0-c228-4530-94c6-b68a5ecb3054",
+      "name": "Sticky Note21"
+    },
+    {
+      "parameters": {
+        "content": "### Sort by oldest\n",
+        "height": 224,
+        "width": 208,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        784,
+        848
+      ],
+      "id": "3c2c729e-c1c5-46e4-9cda-3bc13418bff8",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "# Content Types\n1. `Video advertisements`\n2. `Image advertisements`\n3. `Carousel` (multiple image advertisements)\n4. `Dynamic Creative Optimization ads (DCO)` - type of digital advertising that uses real-time technology to automatically customize ad elements like images, text, and calls to action for individual users. So these end up being either image or video.",
+        "height": 503,
+        "width": 617,
+        "color": 7
+      },
+      "id": "5a33845f-6468-4f57-9af0-f07e604c6d53",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.snapshot.display_format }}",
+                    "rightValue": "VIDEO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a08ed2fa-f182-4b54-aa97-7d272da12273"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "VIDEO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3167edd2-3ea6-4ca3-9066-2b2a4d3b9f58",
+                    "leftValue": "={{ $json.snapshot.display_format }}",
+                    "rightValue": "DCO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "DCO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c5edf085-bdc7-4a03-9c03-b3f8b78c475d",
+                    "leftValue": "={{ $json.snapshot.display_format }}",
+                    "rightValue": "IMAGE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IMAGE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "154cf578-13df-45b9-8014-e08669753892",
+                    "leftValue": "={{ $json.snapshot.display_format }}",
+                    "rightValue": "CAROUSEL",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CAROUSEL"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1552,
+        848
+      ],
+      "id": "1c1060e1-32f9-4e14-8d97-fc0d423c8a19",
+      "name": "ContentSwitch"
+    },
+    {
+      "parameters": {
+        "content": "## Check for existing content\nAnd save top 5 only",
+        "height": 256,
+        "width": 736,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3968,
+        272
+      ],
+      "id": "3d3fbc14-fbaf-43b9-bc37-bdd47d2c7808",
+      "name": "Sticky Note23"
+    },
+    {
+      "parameters": {
+        "content": "## Check for existing content\nAnd save top 5 only",
+        "height": 256,
+        "width": 560,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3664,
+        928
+      ],
+      "id": "29c6df02-0d09-49db-b8c7-945750eecedc",
+      "name": "Sticky Note24"
+    },
+    {
+      "parameters": {
+        "content": "## Check for existing content\nAnd save top 5 only",
+        "height": 256,
+        "width": 800,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3856,
+        1424
+      ],
+      "id": "782463f8-53ff-41b8-891c-1eb6d6af7e72",
+      "name": "Sticky Note25"
+    },
+    {
+      "parameters": {
+        "content": "## Upload individual carousel images\n",
+        "height": 288,
+        "width": 688,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4064,
+        1824
+      ],
+      "id": "d4741bc8-08c1-4412-aeca-0f1686e0ae0f",
+      "name": "Sticky Note26"
+    },
+    {
+      "parameters": {
+        "content": "## Upload individual ad images\n",
+        "height": 272,
+        "width": 512,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4256,
+        928
+      ],
+      "id": "ec8880dd-8eba-453e-bb15-75ef054a0d0f",
+      "name": "Sticky Note27"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        720
+      ],
+      "id": "5cdab331-8cf7-46d6-b5b5-e5fd1d2ed168",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "# Ad Quality filters (OPTIONAL)\n1. Has the ad creative been used more than once?\n2. Has the ad been running for 2 weeks or more?\n3. Sorts by most likely to be performing well",
+        "height": 503,
+        "width": 553,
+        "color": 7
+      },
+      "id": "00f6ffe9-4fa6-47f0-9254-49539f0db5b3",
+      "name": "Sticky Note22",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        272,
+        1232
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblh98ZPy3tnRWTRP",
+          "mode": "list",
+          "cachedResultName": "Ad Pages",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblh98ZPy3tnRWTRP"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get Ad Pages').item.json.id }}",
+            "Scraping Status": "Not in Progress / Complete"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Meta Ads page_id",
+              "displayName": "❗ Meta Ads page_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Limit # Ads",
+              "displayName": "❗ Limit # Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Ad Start Date",
+              "displayName": "❗ Ad Start Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Most Recent Unscraped Ads",
+                  "value": "Most Recent Unscraped Ads"
+                },
+                {
+                  "name": "Last 24hr",
+                  "value": "Last 24hr"
+                },
+                {
+                  "name": "Last 7days",
+                  "value": "Last 7days"
+                },
+                {
+                  "name": "Last 30days",
+                  "value": "Last 30days"
+                },
+                {
+                  "name": "Last 90days",
+                  "value": "Last 90days"
+                },
+                {
+                  "name": "Last 180days",
+                  "value": "Last 180days"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Scrape",
+              "displayName": "Scrape",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Scraping Status",
+              "displayName": "Scraping Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not in Progress / Complete",
+                  "value": "Not in Progress / Complete"
+                },
+                {
+                  "name": "Scraping",
+                  "value": "Scraping"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Count of Scraped Ads",
+              "displayName": "Count of Scraped Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "last_scraped",
+              "displayName": "last_scraped",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ads",
+              "displayName": "Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        80
+      ],
+      "id": "a280bb56-cea5-4480-a238-58113777c306",
+      "name": "Update Status End",
+      "executeOnce": false,
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Updates status once scraping is completed",
+        "height": 224,
+        "width": 256,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5d355df3-8ae8-46e7-9c93-8cd527f96870",
+      "name": "Sticky Note28"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "39960db2-4895-459a-b2a5-91d2b4dff166",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        896
+      ],
+      "id": "e4eecdcb-0bce-4528-a677-89d9a7c67ea5",
+      "name": "IfNotError"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4608,
+        1328
+      ],
+      "id": "997677ed-a45d-4dc1-851e-fbb0b6db131e",
+      "name": "No Operation, do nothing4"
+    },
+    {
+      "parameters": {},
+      "id": "b94b68d1-14e1-4ea3-b5f8-36715befe951",
+      "name": "No Operation, do nothing5",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        4208,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "running_since": "={{ $('Extract file URL').item.json.start_date.toDateTime('s').toUTC().toString() }}",
+            "running_until": "={{ $('Extract file URL').item.json.end_date.toDateTime('s').toUTC().toString() }}",
+            "id": "={{ $json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Status",
+              "displayName": "Ad Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Active",
+                  "value": "Active"
+                },
+                {
+                  "name": "Not Active",
+                  "value": "Not Active"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import",
+              "displayName": "Import",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import Status",
+              "displayName": "Import Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not imported",
+                  "value": "Not imported"
+                },
+                {
+                  "name": "Processing",
+                  "value": "Processing"
+                },
+                {
+                  "name": "Imported",
+                  "value": "Imported"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import_edited",
+              "displayName": "Import_edited",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "running_until",
+              "displayName": "running_until",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_scraped_date",
+              "displayName": "last_scraped_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "days_running",
+              "displayName": "days_running",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "collation_count",
+              "displayName": "collation_count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "collation_id",
+              "displayName": "collation_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page Profile Picture",
+              "displayName": "Page Profile Picture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link URL",
+              "displayName": "Link URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link to Generated Ads",
+              "displayName": "Link to Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generated Ads",
+              "displayName": "Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        4896,
+        368
+      ],
+      "id": "5d6ba523-a4e8-465b-9ec6-a3fad2b2cde3",
+      "name": "Typecast Dates",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblh98ZPy3tnRWTRP",
+          "mode": "list",
+          "cachedResultName": "Ad Pages",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblh98ZPy3tnRWTRP"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get Ad Pages').item.json.id }}",
+            "last_scraped": "={{ $now }}",
+            "Scraping Status": "Scraping"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Meta Ads page_id",
+              "displayName": "❗ Meta Ads page_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Limit # Ads",
+              "displayName": "❗ Limit # Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Ad Start Date",
+              "displayName": "❗ Ad Start Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Most Recent Unscraped Ads",
+                  "value": "Most Recent Unscraped Ads"
+                },
+                {
+                  "name": "Last 24hr",
+                  "value": "Last 24hr"
+                },
+                {
+                  "name": "Last 7days",
+                  "value": "Last 7days"
+                },
+                {
+                  "name": "Last 30days",
+                  "value": "Last 30days"
+                },
+                {
+                  "name": "Last 90days",
+                  "value": "Last 90days"
+                },
+                {
+                  "name": "Last 180days",
+                  "value": "Last 180days"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Scrape",
+              "displayName": "Scrape",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Scraping Status",
+              "displayName": "Scraping Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not in Progress / Complete",
+                  "value": "Not in Progress / Complete"
+                },
+                {
+                  "name": "Scraping",
+                  "value": "Scraping"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Count of Scraped Ads",
+              "displayName": "Count of Scraped Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "last_scraped",
+              "displayName": "last_scraped",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ads",
+              "displayName": "Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        352,
+        80
+      ],
+      "id": "9f3f879d-d3df-4520-bcc7-3cd22b84ea69",
+      "name": "Update last_scraped",
+      "executeOnce": false,
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.apify.com/v2/acts/curious_coder~facebook-ads-library-scraper/run-sync-get-dataset-items",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "apifyApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"scrapePageAds.activeStatus\": \"all\",\n  \"scrapePageAds.countryCode\":\"ALL\",\n  \"count\": {{ $json.limit }},\n  \"urls\": [\n    {\n      \"url\": \"https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&media_type=all&search_type=page&start_date[min]={{ $json.start_date.min }}&start_date[max]={{ $json.start_date.max }}&view_all_page_id={{ $json.pageId }}\"\n    }\n  ]\n}",
+        "options": {
+          "batching": {
+            "batch": {}
+          }
+        }
+      },
+      "id": "ac8e45df-a609-4632-9e64-7e94a0c02f32",
+      "name": "APIFY | Get Ads",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        896
+      ],
+      "credentials": {
+        "apifyApi": {
+          "id": "El2KQGQX6znZRf3o",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "ads",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1120,
+        944
+      ],
+      "id": "46d9c382-4111-4b97-b4b8-94f60f8b0a96",
+      "name": "Webhook",
+      "webhookId": "1462c345-ac7a-40cf-835a-94efbdb0dbf9"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "cliente-a1.mentorfy.io",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "pt-BR,pt;q=0.9,en;q=0.8",
+            "cookie": "rl_page_init_referrer=RudderEncrypt%3AU2FsdGVkX1%2B05NijU94WlGpnaEK2pqNp0oODRnVmEpw%3D; rl_page_init_referring_domain=RudderEncrypt%3AU2FsdGVkX18wDUsOSDKHstSexlsqwqLZcGHOTTcbfAw%3D; _fbp=fb.1.1763947830517.349382141624689440; _gcl_au=1.1.46310026.1763947831; ph_phc_g2EjOk3weAaKu4u9eCvuAyQmuDx2sPmk2vTGlGaVywX_posthog=%7B%22distinct_id%22%3A%22ceo%40marcosdaniels.com%22%2C%22%24sesid%22%3A%5B1763947922229%2C%22019ab37c-4336-7cda-8166-a14c4a29454b%22%2C1763947856694%5D%2C%22%24epp%22%3Atrue%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22https%3A%2F%2Fmentorfy.io%2Flogin%22%2C%22u%22%3A%22https%3A%2F%2Fmentorfy.io%2Fmentor%2Fmentorias%2Fminhas-mentorias%22%7D%7D; rl_anonymous_id=RudderEncrypt%3AU2FsdGVkX19IUW3pUWTMW6lchN4GDq2gFaoIBEmGv%2BTqXti0M5k0f0HkdzLiClA3BGjdImU7K8TsFmh5ZxdS8A%3D%3D; rl_session=RudderEncrypt%3AU2FsdGVkX1%2BWmLbwtBdQh46ZT4EY2Y9Ylir%2Bv4f0dFli325dPicA4oq4e2fJE1171i2kpcG6vUxNaUiU9udy7McaoVC4mFhWMaLZiwEzOR%2FOmOya12lePE2bKrQHlQ3iLJq7oIVwk51u60FCwpanJw%3D%3D; ph_phc_4URIAm1uYfJO7j8kWSe0J8lc8IqnstRLS7Jx8NcakHo_posthog=%7B%22distinct_id%22%3A%229d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69%23c236702a-fb1c-471c-b22c-6b898a17bcb1%22%2C%22%24sesid%22%3A%5B1763995882009%2C%22019ab613-7b44-74b2-b690-c89a4fd18890%22%2C1763991321411%5D%2C%22%24epp%22%3Atrue%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22%24direct%22%2C%22u%22%3A%22https%3A%2F%2Fcliente-a1.mentorfy.io%2Fsignin%3Fredirect%3D%25252Fworkflow%25252FPtGKBmhU7gg8cd3u%25252Fexecutions%25252F%22%7D%7D",
+            "priority": "u=0, i",
+            "sec-ch-ua": "\"Chromium\";v=\"142\", \"Google Chrome\";v=\"142\", \"Not_A Brand\";v=\"99\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "x-forwarded-for": "177.198.79.26",
+            "x-forwarded-host": "cliente-a1.mentorfy.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "9e2d5292a02e",
+            "x-real-ip": "177.198.79.26"
+          },
+          "params": {},
+          "query": {
+            "recordId": "rec67Tkb2cmctwwnF"
+          },
+          "body": {},
+          "webhookUrl": "https://cliente-a1.mentorfy.io/webhook/ads",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "collation_count": {
+      "main": [
+        [
+          {
+            "node": "at least 2 weeks old",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort by oldest and more used": {
+      "main": [
+        [
+          {
+            "node": "ContentSwitch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set some fields": {
+      "main": [
+        [
+          {
+            "node": "Update Status End",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "APIFY | Get Ads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract file URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract file URL2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Does it exist it Airtable?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove duplicates": {
+      "main": [
+        [
+          {
+            "node": "Get file info_",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract file URL": {
+      "main": [
+        [
+          {
+            "node": "Remove duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate file hash": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get file info_": {
+      "main": [
+        [
+          {
+            "node": "Maximum of 50MB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Maximum of 50MB": {
+      "main": [
+        [
+          {
+            "node": "Calculate file hash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only images": {
+      "main": [
+        [
+          {
+            "node": "Extract file URL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract file URL1": {
+      "main": [
+        [
+          {
+            "node": "Remove duplicates1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Does it exist it Airtable?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate file hash1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Search records1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove duplicates1": {
+      "main": [
+        [
+          {
+            "node": "Calculate file hash1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Split Carousel Cards",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Carousel Cards": {
+      "main": [
+        [
+          {
+            "node": "Aggregate URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Ad Pages": {
+      "main": [
+        [
+          {
+            "node": "Set some fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Does it exist it Airtable?": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Typecast Dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records1": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Does it exist it Airtable?1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record1": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate URLs": {
+      "main": [
+        [
+          {
+            "node": "Upload images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload images": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract file URL2": {
+      "main": [
+        [
+          {
+            "node": "Remove duplicates2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove duplicates2": {
+      "main": [
+        [
+          {
+            "node": "Calculate file hash2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge4": {
+      "main": [
+        [
+          {
+            "node": "Does it exist it Airtable?2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate file hash2": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Search records2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records2": {
+      "main": [
+        [
+          {
+            "node": "Merge4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Does it exist it Airtable?2": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a record2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record2": {
+      "main": [
+        [
+          {
+            "node": "Merge5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge5": {
+      "main": [
+        [
+          {
+            "node": "Upload images1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContentSwitch": {
+      "main": [
+        [
+          {
+            "node": "Extract file URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract file URL2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Only images",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Ad Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IfNotError": {
+      "main": [
+        [
+          {
+            "node": "Sort by oldest and more used",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "APIFY | Get Ads": {
+      "main": [
+        [
+          {
+            "node": "IfNotError",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status End": {
+      "main": [
+        [
+          {
+            "node": "Update last_scraped",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execution Data": {
+      "main": [
+        [
+          {
+            "node": "Update last_scraped1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Ad Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ccc3d6b2-5c88-45cf-b4c9-2c9ca0e166a9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "mjv3moHMyfCSvcKh",
+  "tags": [
+    {
+      "updatedAt": "2025-11-03T19:28:46.270Z",
+      "createdAt": "2025-11-03T19:28:46.270Z",
+      "id": "3znkt8vlq1yubGAB",
+      "name": "on"
+    },
+    {
+      "updatedAt": "2025-10-12T15:03:50.706Z",
+      "createdAt": "2025-10-12T15:03:50.706Z",
+      "id": "9pHWkatkFi1VBzd9",
+      "name": "Marketing Automation"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+﻿Guia Completo de Agendamento, Confirmação e Redução de No‑Show
+1. Ligação Inicial (Lista de Confirmados)
+1.1 Objetivo
+* Qualificar rapidamente o lead.
+* Agendar a apresentação personalizada com especialista.
+* Travar compromisso e preparar terreno para os reminders.
+1.2 Script passo‑a‑passo
+1. Abertura
+> Oi {{contact.first_name}}, aqui é a Hallen Naiane da Mottivme Sales, tudo bem?
+2. Rapport curto
+> Que ótimo falar com você! Está tudo excelente por aqui, obrigada por perguntar.
+3. Enquadramento
+> A conversa vai ser breve, coisa de 5 minutinhos, combinado? Nossa lista de interessados está cheia, então preciso te fazer três perguntas rápidas para entender melhor seu perfil.
+4. Perguntas de qualificação
+   * Você já utiliza alguma estratégia de prospecção ativa no Instagram?
+   * Como você conheceu a nossa metodologia e o que achou dela até agora? Há algo que você acredita que poderíamos ajustar?
+   * Se conectando com clientes ideais e utilizando uma abordagem eficaz como a nossa, você estaria disposto a recomendar para outros colegas ou empresas?
+   5. Pitch de valor
+> Perfeito, {{contact.first_name}}! Esta apresentação mostra casos reais de sucesso e como geramos reuniões estratégicas com leads qualificados. Ao final, se fizer sentido, conversamos sobre a implementação na sua empresa.
+   6. Checagem de dúvidas
+> Alguma dúvida até aqui?
+   7. Oferta de horários (máx. 72 h)
+> Tenho horários para amanhã às 18h ou às 20h. Qual funciona melhor pra você?
+   8. Fechamento & Travamento
+      * Confirme o horário ✔
+      * Valide e‑mail para convite ✉️
+> Seu e‑mail é [ … ]? Vou enviar os detalhes da apresentação e o link do Zoom.
+      * Comprometimento explícito
+> Existe algo que possa te impedir de participar nesse horário?
+________________
+
+
+2. Follow‑Up WhatsApp (após 3 tentativas de ligação)
+Oi {{contact.first_name}}, aqui é a Hallen Naiane da Mottivme Sales. Sou responsável pela apresentação sobre alavancar suas prospecções e gerar mais reuniões estratégicas. Tivemos alta demanda e preciso de 5 min para ajustar os detalhes da sua participação e garantir foco total nos seus objetivos. Me dá um ok por aqui que eu retorno ainda hoje.
+________________
+
+
+3. Processo de Redução de No‑Show
+3.1 Erros Comuns 👀
+         * Não entrar em contato com leads de agendamento automático.
+         * Marcar reunião com > 72 h de antecedência.
+         * Não “travar” o compromisso durante o agendamento.
+         * Agendar sem descobrir dor ou desejo claro.
+         * Falhar nos reminders (dia ‑1 e dia 0).
+
+
+
+
+3.2 Fluxo Padrão
+Fase
+	Responsável
+	Ação & Script Resumido
+	Agendamento
+	SDR
+	- Encontrar dor/desejo
+- Posicionar a call como solução
+- Travar horário + e-mail
+- “Algo pode atrapalhar?”
+	Passagem de Bastão
+	SDR
+	- Criar grupo WhatsApp “Consultoria Comercial 18h – Nome”
+- Apresentar Lead ↔ Closer
+	Nutrição
+	SDR
+	- Enviar 2-3 materiais: post de história, cases (links)
+	Confirmação Dia -1
+	SDR
+	- “Fala {{nome}}, lembrando do nosso bate-papo amanhã às 18h com o {{closer}}. Tudo certo?”
+	Reminder Dia 0 (manhã)
+	SDR
+	- “Bom dia! Hoje às 18h é nossa conversa. O {{closer}} mandará o link aqui.”
+	Sem Resposta
+	SDR
+	- Tentar ligação
+- Se ainda sem retorno, mensagem de aviso e retirada do slot
+	Início da Reunião
+	Closer
+	- Entrar na sala, iniciar gravação
+- Mensagem: “{{nome}}, já estou na sala. Link aqui 👇”
+- Após 3 minutos sem lead: 3 ligações
+	Reagendamento
+	Closer → SDR
+	- Nunca oferecer data de bandeja
+- Se data longe, colocar em “lembrar”
+- Se data próxima, reconfirmar compromisso
+	
+
+3.3 Modelos de Mensagens Chave
+         * Grupo criado
+> Fulano, criei este grupo para facilitar nossa comunicação. O {{closer}} será seu consultor. Qualquer dúvida, estamos aqui! Confirmado 24/09, 17h (Brasília).
+
+         * Envio de materiais
+> Vou compartilhar alguns materiais rápidos para você chegar ainda mais preparado:
+> • Post do Marcos sobre nossa história
+> • Case: +60 % de agendamentos
+> • Case: 1,7 MM em 15 dias
+
+         * Lembrete Dia ‑1
+> Fala {{nome}}! Passando para lembrar nossa consultoria amanhã, 17h. Tudo ok?
+
+         * Retirada de slot (falta de confirmação)
+> {{nome}}, tentamos contato para confirmar mas não tivemos retorno. Para respeitar nossa fila, vou liberar seu horário. Prefere confirmar para o slot das 17h ou reagendamos mais adiante?
+3.4 Checklist de CRM
+            * Nome & IG
+
+               * Segmento / Ticket / Faturamento
+
+                  * Dor / Meta
+
+                     * Sócios (e‑mails)
+
+                        * Observações (Key insights)
+________________
+
+
+4. Observações Finais
+                        * Sempre validar se sócios ou decisores precisam estar na call.
+                        * Utilize máx. 2 canais simultâneos (WhatsApp + Ligação) para não poluir.
+                        * Agendas travadas até 72 h mantêm o lead quente e reduzem o esquecimento.
+                        * Follow‑up é prova de cuidado, não de insistência — personalize.
+________________
+
+
+Mottivme Sales – 2025
+“Venda a reunião, não o produto.”

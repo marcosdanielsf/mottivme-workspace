@@ -1,0 +1,295 @@
+const agentOutput = $input.item.json.output;
+
+// Remove markdown code blocks
+let cleaned = typeof agentOutput === 'string'
+  ? agentOutput.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim()
+  : JSON.stringify(agentOutput);
+
+console.log('📝 Tamanho do output:', cleaned.length);
+
+// ✅ FORÇA FECHAMENTO DE JSON TRUNCADO
+function forceCloseJSON(jsonStr) {
+  console.log('🔧 Forçando fechamento de JSON truncado...');
+
+  // Encontrar última linha válida
+  const lines = jsonStr.split('\n');
+  let validJSON = '';
+  let lastValidLine = -1;
+
+  // Percorrer de trás pra frente para encontrar última propriedade completa
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const line = lines[i].trim();
+
+    // Ignorar linhas vazias ou incompletas
+    if (!line || line === '{' || line === '[' || line === ',') continue;
+
+    // Se termina com vírgula ou aspas, pode ser válida
+    if (line.match(/[",\}\]]$/)) {
+      lastValidLine = i;
+      break;
+    }
+  }
+
+  // Reconstruir até a última linha válida
+  if (lastValidLine > 0) {
+    validJSON = lines.slice(0, lastValidLine + 1).join('\n');
+
+    // Remover vírgula final se existir
+    validJSON = validJSON.replace(/,(\s*[\}\]])$/, '$1');
+  } else {
+    validJSON = jsonStr;
+  }
+
+  // Contar estruturas abertas
+  let openBraces = 0;
+  let closeBraces = 0;
+  let openBrackets = 0;
+  let closeBrackets = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = 0; i < validJSON.length; i++) {
+    const char = validJSON[i];
+
+    if (char === '\\' && !escaped) {
+      escaped = true;
+      continue;
+    }
+
+    if (char === '"' && !escaped) {
+      inString = !inString;
+    }
+
+    if (!inString) {
+      if (char === '{') openBraces++;
+      if (char === '}') closeBraces++;
+      if (char === '[') openBrackets++;
+      if (char === ']') closeBrackets++;
+    }
+
+    escaped = false;
+  }
+
+  console.log('📊 Estruturas:', {
+    braces: `${openBraces} abertos, ${closeBraces} fechados`,
+    brackets: `${openBrackets} abertos, ${closeBrackets} fechados`
+  });
+
+  // Fechar o que falta
+  let closers = '';
+
+  // Se tem string aberta, fechar
+  const quoteCount = (validJSON.match(/"/g) || []).length;
+  if (quoteCount % 2 !== 0) {
+    console.log('⚠️ String aberta - fechando com aspas');
+    closers += '"';
+  }
+
+  // Fechar arrays primeiro (mais interno)
+  if (openBrackets > closeBrackets) {
+    const diff = openBrackets - closeBrackets;
+    console.log(`⚠️ Faltam ${diff} colchetes - fechando arrays`);
+    closers += '\n' + '    ]'.repeat(diff);
+  }
+
+  // Depois fechar objetos
+  if (openBraces > closeBraces) {
+    const diff = openBraces - closeBraces;
+    console.log(`⚠️ Faltam ${diff} chaves - fechando objetos`);
+    closers += '\n' + '  }'.repeat(diff);
+  }
+
+  const fixed = validJSON + closers;
+  console.log('✅ JSON fechado - tentando parsear...');
+
+  return fixed;
+}
+
+// ✅ TENTAR PARSE COM FECHAMENTO FORÇADO
+try {
+  const fixed = forceCloseJSON(cleaned);
+  const parsed = JSON.parse(fixed);
+
+  console.log('✅ PARSE BEM-SUCEDIDO!');
+  console.log(`📅 Dias recuperados: ${parsed.trilha_editorial?.length || 0}`);
+
+  return processarTrilha(parsed);
+
+} catch (parseError) {
+  console.error('❌ Parse falhou mesmo após fechamento forçado');
+  console.error('Erro:', parseError.message);
+
+  // ✅ PLANO B: Extrair objetos do array manualmente
+  try {
+    console.log('🔧 PLANO B: Extraindo objetos válidos do array...');
+
+    const arrayMatch = cleaned.match(/"trilha_editorial"\s*:\s*\[([\s\S]*)/);
+    if (!arrayMatch) {
+      throw new Error('Array trilha_editorial não encontrado');
+    }
+
+    const arrayContent = arrayMatch[1];
+    const dias = [];
+
+    // Extrair cada objeto do dia usando regex
+    const diaPattern = /\{[^{}]*?"dia"\s*:\s*(\d+)[^{}]*?\}/g;
+    let match;
+
+    while ((match = diaPattern.exec(arrayContent)) !== null) {
+      try {
+        const diaObj = JSON.parse(match[0]);
+        dias.push(diaObj);
+      } catch (e) {
+        console.log(`⚠️ Dia ${match[1]} ignorado - JSON inválido`);
+      }
+    }
+
+    console.log(`✅ Extraídos ${dias.length} dias válidos via regex`);
+
+    if (dias.length > 0) {
+      const parsed = {
+        trilha_editorial: dias,
+        expert_id: cleaned.match(/"expert_id"\s*:\s*"([^"]+)"/)?.[1] || 'unknown',
+        expert_name: cleaned.match(/"expert_name"\s*:\s*"([^"]+)"/)?.[1] || 'Unknown',
+        estrategia_resumo: null,
+        insights_estrategicos: null
+      };
+
+      return processarTrilha(parsed);
+    }
+
+  } catch (planBError) {
+    console.error('❌ Plano B também falhou:', planBError.message);
+  }
+
+  // ✅ ÚLTIMO RECURSO: Retornar erro com dados completos para debug
+  return {
+    json: {
+      parsing_status: 'error',
+      error_message: 'JSON truncado - agente não completou os 30 dias',
+      error_type: 'AGENT_OUTPUT_TRUNCATED',
+
+      output_full: cleaned,
+      output_length: cleaned.length,
+      output_preview_start: cleaned.substring(0, 500),
+      output_preview_end: cleaned.substring(Math.max(0, cleaned.length - 500)),
+
+      structure_analysis: {
+        open_braces: (cleaned.match(/{/g) || []).length,
+        close_braces: (cleaned.match(/}/g) || []).length,
+        open_brackets: (cleaned.match(/\[/g) || []).length,
+        close_brackets: (cleaned.match(/\]/g) || []).length,
+        quote_count: (cleaned.match(/"/g) || []).length
+      },
+
+      suggested_fix: 'O agente está truncando o output no meio do dia 7. Soluções:\n' +
+        '1. Aumentar max_tokens no agente\n' +
+        '2. Pedir ao agente para gerar apenas 15 dias em vez de 30\n' +
+        '3. Dividir em 2 chamadas: dias 1-15 e dias 16-30',
+
+      trilha_texto: '⚠️ ATENÇÃO: O agente parou de gerar no meio do dia 7. Veja suggested_fix.',
+      estrategia_texto: '',
+      insights_texto: '',
+      calendario_texto: '',
+      stats_texto: '',
+      trilha_json: '[]',
+      trilha_completa_json: '{}',
+      dias_reels_json: '[]',
+      expert_id: 'error',
+      expert_name: 'Error',
+      total_dias: 0,
+      total_reels: 0,
+      stats: {},
+      data_geracao: new Date().toISOString()
+    }
+  };
+}
+
+// ========================================
+// FUNÇÃO: PROCESSAR TRILHA
+// ========================================
+function processarTrilha(parsed) {
+  console.log('📋 Processando trilha...');
+
+  const trilhaArray = parsed.trilha_editorial || [];
+  const diasComReels = trilhaArray.filter(d => d.formato_primario === 'Reel');
+
+  console.log(`✅ ${trilhaArray.length} dias | ${diasComReels.length} reels`);
+
+  // ✅ FORMATAR TRILHA
+  const trilhaFormatada = trilhaArray.map(dia =>
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+    `📅 DIA ${dia.dia} | ${dia.dia_semana} ${dia.data_sugerida}\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `🎯 FASE: ${dia.fase}\n` +
+    `📌 PILAR: ${dia.pilar}\n` +
+    `🌡️ TEMPERATURA: ${dia.temperatura_lead}\n\n` +
+    `📝 TEMA:\n${dia.tema}\n\n` +
+    `🔍 ÂNGULO:\n${dia.angulo}\n\n` +
+    `🎬 FORMATO: ${dia.formato_primario}${dia.duracao_estimada ? ` (${dia.duracao_estimada})` : ''}\n\n` +
+    `🎪 GATILHO: ${dia.gatilho_mental}\n` +
+    `🎯 OBJETIVO: ${dia.objetivo}\n` +
+    `📊 MÉTRICA: ${dia.metrica_sucesso}\n\n` +
+    `💡 PONTOS:\n${(dia.pontos_chave || []).map((p, i) => `  ${i+1}. ${p}`).join('\n')}\n\n` +
+    `🪝 HOOK: "${dia.hook_sugerido || 'N/A'}"\n` +
+    `📣 CTA (${dia.cta_tipo}): ${dia.cta_texto || 'N/A'}\n`
+  ).join('\n\n');
+
+  // ✅ STATS
+  const stats = {
+    total_dias: trilhaArray.length,
+    total_reels: diasComReels.length,
+    total_stories: trilhaArray.filter(d => d.formato_primario === 'Story').length,
+    total_carrosseis: trilhaArray.filter(d => d.formato_primario === 'Carrossel').length,
+    total_posts: trilhaArray.filter(d => d.formato_primario === 'Post').length,
+    por_fase: {
+      awareness: trilhaArray.filter(d => d.fase === 'Awareness').length,
+      educacao: trilhaArray.filter(d => d.fase === 'Educação').length,
+      diferenciacao: trilhaArray.filter(d => d.fase === 'Diferenciação').length,
+      conversao: trilhaArray.filter(d => d.fase === 'Conversão').length
+    }
+  };
+
+  const statsFormatadas =
+    `📊 ESTATÍSTICAS\n\n` +
+    `📅 Total: ${stats.total_dias} dias\n` +
+    `🎬 Reels: ${stats.total_reels} | Stories: ${stats.total_stories} | Carrosséis: ${stats.total_carrosseis}\n\n` +
+    `🌡️ POR FASE:\n` +
+    `  • Awareness: ${stats.por_fase.awareness}\n` +
+    `  • Educação: ${stats.por_fase.educacao}\n` +
+    `  • Diferenciação: ${stats.por_fase.diferenciacao}\n` +
+    `  • Conversão: ${stats.por_fase.conversao}`;
+
+  const calendarioSimples = trilhaArray.map(dia =>
+    `${dia.data_sugerida} (${dia.dia_semana}) | ${dia.formato_primario} | ${dia.tema}`
+  ).join('\n');
+
+  // ⚠️ AVISO se incompleto
+  const aviso = trilhaArray.length < 30
+    ? `\n\n⚠️ ATENÇÃO: Trilha incompleta! Apenas ${trilhaArray.length}/30 dias foram gerados.\n` +
+      `O agente provavelmente atingiu o limite de tokens. Considere:\n` +
+      `- Aumentar max_tokens no agente\n` +
+      `- Gerar em 2 partes (15 + 15 dias)\n`
+    : '';
+
+  return {
+    json: {
+      trilha_texto: trilhaFormatada + aviso,
+      estrategia_texto: parsed.estrategia_resumo?.objetivo_mes || 'N/A',
+      insights_texto: JSON.stringify(parsed.insights_estrategicos || {}, null, 2),
+      calendario_texto: calendarioSimples,
+      stats_texto: statsFormatadas + aviso,
+      trilha_json: JSON.stringify(trilhaArray, null, 2),
+      trilha_completa_json: JSON.stringify(parsed, null, 2),
+      dias_reels_json: JSON.stringify(diasComReels, null, 2),
+      expert_id: parsed.expert_id || 'unknown',
+      expert_name: parsed.expert_name || 'Unknown',
+      total_dias: stats.total_dias,
+      total_reels: stats.total_reels,
+      stats: stats,
+      data_geracao: new Date().toISOString(),
+      parsing_status: 'success',
+      parsing_warning: trilhaArray.length < 30 ? 'trilha_incompleta' : null
+    }
+  };
+}

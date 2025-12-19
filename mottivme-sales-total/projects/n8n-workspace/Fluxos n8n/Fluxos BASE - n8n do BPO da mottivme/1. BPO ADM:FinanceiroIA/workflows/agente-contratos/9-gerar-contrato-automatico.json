@@ -1,0 +1,450 @@
+{
+  "name": "9 - Gerar Contrato Automatico",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "contrato_pendente_id",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300],
+      "id": "trigger-gerar",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT \n  cp.*,\n  tc.google_doc_id as template_google_doc_id,\n  tc.google_folder_id as template_folder_id,\n  tc.entregas_padrao,\n  tc.nao_incluso_padrao,\n  tc.dias_onboarding_padrao\nFROM fin_contratos_pendentes cp\nLEFT JOIN fin_templates_contrato tc ON \n  tc.produto = COALESCE(cp.produto, 'BPOSS')\n  AND tc.pais = COALESCE(cp.pais, 'Brasil')\n  AND (tc.nicho = cp.nicho OR cp.nicho IS NULL OR tc.nicho IS NULL)\n  AND tc.ativo = true\nWHERE \n  -- Busca por UUID exato (se for UUID valido)\n  (cp.id::text = '{{ $json.contrato_pendente_id }}')\n  -- Busca por monday_item_id (como texto)\n  OR (cp.monday_item_id::text = '{{ $json.contrato_pendente_id }}')\n  -- Busca por nome parcial (case insensitive)\n  OR (cp.nome ILIKE '%{{ $json.contrato_pendente_id }}%')\n  -- Busca por email parcial\n  OR (cp.email ILIKE '%{{ $json.contrato_pendente_id }}%')\nORDER BY \n  -- Prioriza match exato por ID\n  CASE WHEN cp.id::text = '{{ $json.contrato_pendente_id }}' THEN 0\n       WHEN cp.monday_item_id::text = '{{ $json.contrato_pendente_id }}' THEN 1\n       ELSE 2 END,\n  cp.created_at DESC\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [460, 300],
+      "id": "buscar-dados",
+      "name": "Buscar Dados",
+      "credentials": {
+        "postgres": {
+          "id": "WsU3bciJm7aMyAoC",
+          "name": "postgress - financeiro - mottivme sales"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verificar se encontrou dados e se tem template\nconst dados = $json;\nconst idBuscado = $('When Executed by Another Workflow').first().json.contrato_pendente_id;\n\nif (!dados || !dados.id) {\n  return {\n    json: {\n      erro: true,\n      tipo: 'contrato_nao_encontrado',\n      mensagem: `Contrato não encontrado para: \"${idBuscado}\". Use o UUID do contrato, o monday_item_id numérico, ou o nome do cliente.`,\n      id_buscado: idBuscado,\n      dica: 'Use a tool buscar_contrato_pendente primeiro para obter o contrato_id correto.'\n    }\n  };\n}\n\nif (!dados.template_google_doc_id) {\n  return {\n    json: {\n      erro: true,\n      tipo: 'template_nao_encontrado',\n      mensagem: `Template não encontrado para produto=${dados.produto || 'BPOSS'}, pais=${dados.pais || 'Brasil'}. Cadastre o google_doc_id na tabela fin_templates_contrato.`,\n      contrato_encontrado: { id: dados.id, nome: dados.nome, produto: dados.produto, pais: dados.pais }\n    }\n  };\n}\n\nreturn {\n  json: {\n    erro: false,\n    ...dados\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300],
+      "id": "validar-dados",
+      "name": "Validar Dados"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-erro",
+              "leftValue": "={{ $json.erro }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [900, 300],
+      "id": "check-template",
+      "name": "Dados OK?"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.template_google_doc_id }}"
+        },
+        "name": "={{ $json.nome }} - Contrato {{ $json.produto }}",
+        "options": {
+          "parents": ["={{ $json.template_folder_id }}"]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [1120, 200],
+      "id": "copiar-template",
+      "name": "Copiar Template",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "google-drive-oauth",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preparar substituições - Todos os placeholders do template\nconst cp = $('Validar Dados').first().json;\nconst docId = $json.id;\n\n// Função para formatar data por extenso\nconst formatarDataExtenso = (dataStr) => {\n  if (!dataStr) return '_______________';\n  const data = new Date(dataStr);\n  const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];\n  return `${data.getDate()} de ${meses[data.getMonth()]} de ${data.getFullYear()}`;\n};\n\n// Função para formatar moeda (apenas valor formatado, sem símbolo)\nconst formatarValor = (valor) => {\n  if (!valor) return '0,00';\n  return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });\n};\n\n// Função para número por extenso\nconst numeroExtenso = (num) => {\n  const extenso = {\n    1: 'um', 2: 'dois', 3: 'três', 4: 'quatro', 5: 'cinco',\n    6: 'seis', 7: 'sete', 8: 'oito', 9: 'nove', 10: 'dez',\n    11: 'onze', 12: 'doze', 13: 'treze', 14: 'quatorze', 15: 'quinze',\n    16: 'dezesseis', 17: 'dezessete', 18: 'dezoito', 19: 'dezenove', 20: 'vinte',\n    21: 'vinte e um', 22: 'vinte e dois', 23: 'vinte e três', 24: 'vinte e quatro',\n    25: 'vinte e cinco', 26: 'vinte e seis', 27: 'vinte e sete', 28: 'vinte e oito',\n    29: 'vinte e nove', 30: 'trinta', 31: 'trinta e um'\n  };\n  return extenso[num] || num.toString();\n};\n\n// Função para valor por extenso em reais\nconst valorExtenso = (valor, moeda) => {\n  if (!valor) return 'zero reais';\n  const v = parseFloat(valor);\n  const inteiro = Math.floor(v);\n  const centavos = Math.round((v - inteiro) * 100);\n  \n  const moedaNome = moeda === 'USD' ? 'dólares' : 'reais';\n  const centavosNome = moeda === 'USD' ? 'centavos de dólar' : 'centavos';\n  \n  // Extenso simplificado para valores comuns\n  const milhares = Math.floor(inteiro / 1000);\n  const centenas = inteiro % 1000;\n  \n  let resultado = '';\n  if (milhares > 0) {\n    if (milhares === 1) resultado += 'mil';\n    else resultado += numeroExtenso(milhares) + ' mil';\n    if (centenas > 0) resultado += ' e ';\n  }\n  if (centenas > 0 || milhares === 0) {\n    if (centenas <= 31) {\n      resultado += numeroExtenso(centenas);\n    } else if (centenas < 100) {\n      const dezenas = Math.floor(centenas / 10) * 10;\n      const unidades = centenas % 10;\n      const dezExtenso = {40:'quarenta',50:'cinquenta',60:'sessenta',70:'setenta',80:'oitenta',90:'noventa'};\n      resultado += dezExtenso[dezenas] || dezenas.toString();\n      if (unidades > 0) resultado += ' e ' + numeroExtenso(unidades);\n    } else {\n      const cent = Math.floor(centenas / 100);\n      const resto = centenas % 100;\n      const centExtenso = {1:'cento',2:'duzentos',3:'trezentos',4:'quatrocentos',5:'quinhentos',6:'seiscentos',7:'setecentos',8:'oitocentos',9:'novecentos'};\n      if (centenas === 100) resultado += 'cem';\n      else resultado += centExtenso[cent];\n      if (resto > 0) {\n        resultado += ' e ';\n        if (resto <= 31) resultado += numeroExtenso(resto);\n        else {\n          const dez = Math.floor(resto / 10) * 10;\n          const uni = resto % 10;\n          const dezEx = {40:'quarenta',50:'cinquenta',60:'sessenta',70:'setenta',80:'oitenta',90:'noventa'};\n          resultado += dezEx[dez] || dez.toString();\n          if (uni > 0) resultado += ' e ' + numeroExtenso(uni);\n        }\n      }\n    }\n  }\n  resultado += ' ' + moedaNome;\n  \n  if (centavos > 0) {\n    resultado += ' e ' + numeroExtenso(centavos) + ' ' + centavosNome;\n  }\n  \n  return resultado;\n};\n\n// Detectar tipo de documento (CPF ou CNPJ)\nconst detectarTipoDocumento = (doc) => {\n  if (!doc) return 'CPF/CNPJ';\n  const numeros = doc.replace(/\\D/g, '');\n  return numeros.length > 11 ? 'CNPJ' : 'CPF';\n};\n\n// Símbolo da moeda\nconst simboloMoeda = (moeda) => {\n  return moeda === 'USD' ? 'US$' : 'R$';\n};\n\n// Nome da moeda\nconst nomeMoeda = (moeda) => {\n  return moeda === 'USD' ? 'Dólar Americano (USD)' : 'Real Brasileiro (BRL)';\n};\n\n// Valores calculados\nconst valorMensal = parseFloat(cp.valor_mensal) || 0;\nconst numParcelas = parseInt(cp.num_parcelas) || 12;\nconst diaVencimento = parseInt(cp.dia_vencimento) || 10;\nconst diasOnboarding = parseInt(cp.dias_onboarding) || cp.dias_onboarding_padrao || 15;\nconst budgetTrafego = parseFloat(cp.budget_trafego) || 0;\nconst moeda = cp.moeda || 'BRL';\nconst produto = cp.produto || 'BPOSS';\nconst nicho = cp.nicho || 'Clinicas';\nconst pais = cp.pais || 'Brasil';\n\n// Metas padrão baseadas no nicho\nconst metaAbordagensDia = 10;\nconst metaAbordagensDiaMax = 30;\nconst metaAgendamentosMes = '8 a 15';\n\nreturn {\n  json: {\n    doc_id: docId,\n    contrato_pendente_id: cp.id,\n    email_cliente: cp.email,\n    nome_documento: `${cp.nome} - Contrato ${produto}`,\n    substituicoes: [\n      // Dados do contratante\n      { find: '{{CONTRATANTE}}', replace: cp.nome_completo_razao_social || cp.nome || '' },\n      { find: '{{DOCUMENTO_TIPO}}', replace: detectarTipoDocumento(cp.documento) },\n      { find: '{{DOCUMENTO}}', replace: cp.documento || '' },\n      { find: '{{ENDERECO_COMPLETO}}', replace: cp.endereco || '' },\n      { find: '{{EMAIL}}', replace: cp.email || '' },\n      { find: '{{TELEFONE}}', replace: cp.telefone || '' },\n      \n      // Produto e contexto\n      { find: '{{PRODUTO}}', replace: produto },\n      { find: '{{NICHO}}', replace: nicho },\n      { find: '{{PAIS}}', replace: pais },\n      { find: '{{MOEDA}}', replace: simboloMoeda(moeda) },\n      { find: '{{MOEDA_NOME}}', replace: nomeMoeda(moeda) },\n      \n      // Budget de tráfego\n      { find: '{{BUDGET_TRAFEGO}}', replace: formatarValor(budgetTrafego) },\n      { find: '{{BUDGET_TRAFEGO_EXTENSO}}', replace: valorExtenso(budgetTrafego, moeda) },\n      \n      // Valores e parcelas\n      { find: '{{VALOR_MENSAL}}', replace: formatarValor(valorMensal) },\n      { find: '{{VALOR_MENSAL_EXTENSO}}', replace: valorExtenso(valorMensal, moeda) },\n      { find: '{{NUM_PARCELAS}}', replace: numParcelas.toString() },\n      { find: '{{NUM_PARCELAS_EXTENSO}}', replace: numeroExtenso(numParcelas) },\n      \n      // Datas e prazos\n      { find: '{{DATA_INICIO_EXTENSO}}', replace: formatarDataExtenso(cp.data_inicio) },\n      { find: '{{DIA_VENCIMENTO}}', replace: diaVencimento.toString() },\n      { find: '{{DIA_VENCIMENTO_EXTENSO}}', replace: numeroExtenso(diaVencimento) },\n      { find: '{{DIAS_ONBOARDING}}', replace: diasOnboarding.toString() },\n      { find: '{{DIAS_ONBOARDING_EXTENSO}}', replace: numeroExtenso(diasOnboarding) },\n      { find: '{{DATA_GERACAO_EXTENSO}}', replace: formatarDataExtenso(new Date().toISOString()) },\n      \n      // Entregas e condições\n      { find: '{{ENTREGAS_PRODUTO}}', replace: cp.entregas_padrao || '' },\n      { find: '{{NAO_INCLUSO}}', replace: cp.nao_incluso_padrao || '' },\n      { find: '{{CONDICOES_ESPECIAIS}}', replace: cp.condicoes_especiais || 'Nenhuma condição especial.' },\n      \n      // Metas\n      { find: '{{META_ABORDAGENS_DIA}}', replace: metaAbordagensDia.toString() },\n      { find: '{{META_ABORDAGENS_DIA_MAX}}', replace: metaAbordagensDiaMax.toString() },\n      { find: '{{META_AGENDAMENTOS_MES}}', replace: metaAgendamentosMes }\n    ]\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 200],
+      "id": "preparar-substituicoes",
+      "name": "Preparar Substituições"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://docs.googleapis.com/v1/documents/{{ $json.doc_id }}:batchUpdate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ requests: $json.substituicoes.map(s => ({ replaceAllText: { containsText: { text: s.find, matchCase: true }, replaceText: s.replace || '' } })) }) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 200],
+      "id": "substituir-placeholders",
+      "name": "Substituir Placeholders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "google-drive-oauth",
+          "name": "Google Drive OAuth2"
+        }
+      },
+      "notes": "Substitui TODOS os placeholders via Google Docs API batchUpdate"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Preparar Substituições').first().json.doc_id }}"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [1780, 200],
+      "id": "exportar-pdf",
+      "name": "Exportar PDF",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "google-drive-oauth",
+          "name": "Google Drive OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preparar dados para o Autentique com multipart/form-data\nconst prepSub = $('Preparar Substituições').first().json;\nconst validarDados = $('Validar Dados').first().json;\n\nconst nomeDoc = prepSub.nome_documento;\nconst emailCliente = prepSub.email_cliente;\nconst nomeCliente = validarDados.nome;\nconst contratoId = prepSub.contrato_pendente_id;\nconst docId = prepSub.doc_id;\n\n// Criar o JSON do operations para GraphQL multipart\nconst operations = JSON.stringify({\n  query: 'mutation CreateDocumentMutation($document: DocumentInput!, $signers: [SignerInput!]!, $file: Upload!) { createDocument(document: $document, signers: $signers, file: $file) { id name signatures { public_id name email link { short_link } } } }',\n  variables: {\n    document: { name: nomeDoc },\n    signers: [\n      { email: 'hallennaiane@gmail.com', action: 'APPROVE' },\n      { email: emailCliente, action: 'APPROVE' },\n      { email: 'ceo@marcosdaniels.com', action: 'SIGN_AS_A_WITNESS' },\n      { email: 'lucasadley5@gmail.com', action: 'SIGN_AS_A_WITNESS' },\n      { name: nomeCliente, action: 'APPROVE' }\n    ],\n    file: null\n  }\n});\n\nconst map = JSON.stringify({ '0': ['variables.file'] });\n\n// Pegar o binary do input e garantir que tem nome de arquivo com extensão .pdf\nconst inputBinary = $input.first().binary;\nconst binaryData = {\n  data: {\n    ...inputBinary.data,\n    fileName: nomeDoc.replace(/[^a-zA-Z0-9\\s]/g, '') + '.pdf',\n    mimeType: 'application/pdf'\n  }\n};\n\nreturn [\n  {\n    json: {\n      nome_documento: nomeDoc,\n      email_cliente: emailCliente,\n      nome_cliente: nomeCliente,\n      contrato_pendente_id: contratoId,\n      doc_id: docId,\n      operations: operations,\n      map: map\n    },\n    binary: binaryData\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1890, 200],
+      "id": "preparar-autentique",
+      "name": "Preparar Autentique"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.autentique.com.br/v2/graphql",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer ac247a815ee6bb7b492f3ff3963720a81aec9b26727e9ff6ce37d2704a77e41e"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "operations",
+              "value": "={{ $json.operations }}"
+            },
+            {
+              "name": "map",
+              "value": "={{ $json.map }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "0",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2100, 200],
+      "id": "enviar-autentique",
+      "name": "Enviar Autentique HTTP"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE fin_contratos_pendentes\nSET \n  status = 'contrato_gerado',\n  google_doc_id = '{{ $('Preparar Substituições').first().json.doc_id }}',\n  url_contrato_gerado = 'https://docs.google.com/document/d/{{ $('Preparar Substituições').first().json.doc_id }}/edit',\n  autentique_doc_id = '{{ $json.data.createDocument.id }}',\n  contrato_gerado_em = NOW(),\n  updated_at = NOW()\nWHERE id = '{{ $('Preparar Substituições').first().json.contrato_pendente_id }}'\nRETURNING id, nome, status, url_contrato_gerado;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [2220, 200],
+      "id": "atualizar-status",
+      "name": "Atualizar Status",
+      "credentials": {
+        "postgres": {
+          "id": "WsU3bciJm7aMyAoC",
+          "name": "postgress - financeiro - mottivme sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrair link de assinatura do cliente (último signatário - o que não tem email)\nconst autentiqueResponse = $('Enviar Autentique HTTP').first().json;\nconst prepSub = $('Preparar Substituições').first().json;\nconst validarDados = $('Validar Dados').first().json;\nconst dbResponse = $json;\n\n// Pegar todas as assinaturas\nconst signatures = autentiqueResponse.data?.createDocument?.signatures || [];\n\n// O link do cliente é o último (índice 4) - o signatário sem email\nconst linkCliente = signatures[4]?.link?.short_link || null;\nconst linkAdmin = signatures[0]?.link?.short_link || null; // hallennaiane@gmail.com\n\n// Todos os links para referência\nconst todosLinks = signatures.map((sig, i) => ({\n  nome: sig.name || sig.email,\n  email: sig.email || 'Link direto',\n  link: sig.link?.short_link\n}));\n\nreturn {\n  json: {\n    sucesso: true,\n    mensagem: 'Contrato gerado e enviado para assinatura!',\n    contrato: {\n      id: dbResponse.id,\n      nome: dbResponse.nome,\n      status: dbResponse.status,\n      url: dbResponse.url_contrato_gerado\n    },\n    assinatura: {\n      link_cliente: linkCliente,\n      link_admin: linkAdmin,\n      nome_cliente: validarDados.nome,\n      email_cliente: prepSub.email_cliente,\n      autentique_doc_id: autentiqueResponse.data?.createDocument?.id,\n      todos_links: todosLinks\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2440, 200],
+      "id": "resposta-sucesso",
+      "name": "Preparar Links Assinatura"
+    },
+    {
+      "parameters": {
+        "fromEmail": "contratos@marcosdaniels.com",
+        "toEmail": "ceo@marcosdaniels.com",
+        "subject": "=📝 Novo Contrato Gerado - {{ $json.contrato.nome }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\n  <h2 style=\"color: #333;\">📝 Contrato Gerado com Sucesso!</h2>\n  \n  <div style=\"background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;\">\n    <p><strong>Cliente:</strong> {{ $json.assinatura.nome_cliente }}</p>\n    <p><strong>Email:</strong> {{ $json.assinatura.email_cliente }}</p>\n  </div>\n  \n  <h3 style=\"color: #333;\">🔗 Links de Assinatura</h3>\n  \n  <div style=\"background: #e8f4f8; padding: 20px; border-radius: 8px; margin: 20px 0;\">\n    <p><strong>Link do Cliente (para enviar):</strong></p>\n    <p><a href=\"{{ $json.assinatura.link_cliente }}\" style=\"color: #0066cc; font-size: 16px;\">{{ $json.assinatura.link_cliente }}</a></p>\n  </div>\n  \n  <div style=\"background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0;\">\n    <p><strong>Link Admin (Hallen):</strong></p>\n    <p><a href=\"{{ $json.assinatura.link_admin }}\" style=\"color: #0066cc;\">{{ $json.assinatura.link_admin }}</a></p>\n  </div>\n  \n  <p style=\"color: #666; font-size: 12px; margin-top: 30px;\">Google Doc: <a href=\"{{ $json.contrato.url }}\">{{ $json.contrato.url }}</a></p>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [2660, 200],
+      "id": "enviar-email-admin",
+      "name": "Enviar Link por Email",
+      "credentials": {
+        "smtp": {
+          "id": "smtp-credentials",
+          "name": "SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Resposta final após envio do email\nconst dados = $('Preparar Links Assinatura').first().json;\n\nreturn {\n  json: {\n    ...dados,\n    email_enviado: true,\n    email_destino: 'ceo@marcosdaniels.com'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2880, 200],
+      "id": "resposta-final",
+      "name": "Resposta Sucesso"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Retornar erro formatado\nreturn {\n  json: {\n    sucesso: false,\n    erro: $json.mensagem || 'Erro desconhecido',\n    tipo: $json.tipo\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 400],
+      "id": "erro-template",
+      "name": "Erro: Sem Template"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Buscar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Dados": {
+      "main": [
+        [
+          {
+            "node": "Validar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Dados": {
+      "main": [
+        [
+          {
+            "node": "Dados OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados OK?": {
+      "main": [
+        [
+          {
+            "node": "Copiar Template",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Erro: Sem Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copiar Template": {
+      "main": [
+        [
+          {
+            "node": "Preparar Substituições",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Substituições": {
+      "main": [
+        [
+          {
+            "node": "Substituir Placeholders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Substituir Placeholders": {
+      "main": [
+        [
+          {
+            "node": "Exportar PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exportar PDF": {
+      "main": [
+        [
+          {
+            "node": "Preparar Autentique",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Autentique": {
+      "main": [
+        [
+          {
+            "node": "Enviar Autentique",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Autentique": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Status": {
+      "main": [
+        [
+          {
+            "node": "Preparar Links Assinatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Links Assinatura": {
+      "main": [
+        [
+          {
+            "node": "Enviar Link por Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Link por Email": {
+      "main": [
+        [
+          {
+            "node": "Resposta Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "v3.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "n8n-bpo-financeiro"
+  },
+  "id": "9-gerar-contrato-automatico",
+  "tags": [],
+  "pinData": {}
+}

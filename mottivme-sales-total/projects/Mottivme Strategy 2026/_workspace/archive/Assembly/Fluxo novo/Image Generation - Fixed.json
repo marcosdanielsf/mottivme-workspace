@@ -1,0 +1,3756 @@
+{
+  "name": "Image Generation - Fixed",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "67af7153-878f-4af0-b018-2972be99d0e0",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1280,
+        352
+      ],
+      "id": "60d60df9-818a-43b3-a96e-0b51b49dcb71",
+      "name": "Webhook",
+      "webhookId": "67af7153-878f-4af0-b018-2972be99d0e0"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "783e15a1-bacb-4b04-a224-f43ae5cb4de0",
+              "name": "reference.id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2ddac209-703d-4367-b93d-5b0da1273fc7",
+              "name": "reference.transcript",
+              "value": "={{ $json.Transcript }}",
+              "type": "string"
+            },
+            {
+              "id": "3444e713-ed7a-4d53-9349-0fbc4be3de0e",
+              "name": "reference.ad_text",
+              "value": "={{ $json['Ad text'] }}",
+              "type": "string"
+            },
+            {
+              "id": "7f8e1821-f42a-4cbf-ac79-1e6e9e3fd312",
+              "name": "reference.ad_type",
+              "value": "={{ $json.Type }}",
+              "type": "string"
+            },
+            {
+              "id": "05eaf068-1a6d-4111-907b-86f58e4b3737",
+              "name": "reference.media_description",
+              "value": "={{ $json['Media description'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ac4d2583-e390-4a27-92ad-4afd46ca4c8c",
+              "name": "reference.new_ad_type",
+              "value": "={{ $('Get Ad Brief').item.json['❗ Generate Type'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        96
+      ],
+      "id": "de23db59-7ad2-40b4-a0fe-2c7e1e52370a",
+      "name": "Organize fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff7feeed-f971-4d95-921e-241345e9c02c",
+              "name": "brandvoice.guidelines",
+              "value": "={{ $json['Voice guidelines'] }}",
+              "type": "string"
+            },
+            {
+              "id": "f7ab1350-db0b-4e95-aef7-c97c74c56761",
+              "name": "brandvoice.product",
+              "value": "={{ $json['Product & Audience'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c9df3501-848e-4d2b-81dc-9c9c824df8bf",
+              "name": "brandvoice.ad_examples",
+              "value": "={{ $json.Examples }}",
+              "type": "string"
+            },
+            {
+              "id": "f4647c71-cc79-4dc9-8ee2-5baa489bf86e",
+              "name": "brandvoice.colors",
+              "value": "={{ $json['Brand Colors'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        256
+      ],
+      "id": "dcea2417-badf-4083-8042-09fb4b494fdd",
+      "name": "Organize fields1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 4,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        624,
+        304
+      ],
+      "id": "760da399-c77a-4219-91e6-ffcb225e0ae3",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {
+          "maxOutputTokens": 64000,
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        848,
+        576
+      ],
+      "id": "ca21d8b2-8136-4225-90df-71bdbec6e287",
+      "name": "Gemini-2.5-pro",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-opus-4-1-20250805",
+          "mode": "list",
+          "cachedResultName": "Claude Opus 4.1"
+        },
+        "options": {
+          "maxTokensToSample": 64000,
+          "thinking": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        576
+      ],
+      "id": "9bab7429-e91a-4be8-8840-32c7e80cf89c",
+      "name": "Opus-4.1-thinking",
+      "credentials": {
+        "anthropicApi": {
+          "id": "nNkFTZpNoiBCbO1I",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "The highest ranking models in the [LLM Arena](https://beta.lmarena.ai/leaderboard/text/creative-writing) for creative writing as of 26.Sep.2025",
+        "height": 208,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        784,
+        496
+      ],
+      "id": "a47d11c0-4a64-43f0-8315-43288682d69a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"variations\": {\n      \"type\": \"array\",\n      \"minItems\": 5,\n      \"maxItems\": 5,\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"variation_number\": {\n            \"type\": \"integer\"\n          },\n          \"Ad_Type\": {\n            \"type\": \"string\"\n          },\n          \"Title\": {\n            \"type\": \"string\"\n          },\n          \"Transcript\": {\n            \"type\": \"string\"\n          },\n          \"Ad_body\": {\n            \"type\": \"string\"\n          },\n          \"CTA\": {\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\"variation_number\", \"Ad_Type\", \"Title\", \"Ad_body\", \"Transcript\", \"CTA\"]\n      }\n    }\n  },\n  \"required\": [\"variations\"]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1232,
+        576
+      ],
+      "id": "f3b03254-4b14-4fea-9211-b2fdfd26addd",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-5-mini"
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1232,
+        688
+      ],
+      "id": "6932aed2-a87e-4450-be5d-da259eb511aa",
+      "name": "gpt-5-mini",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=### Função\n\nVocê é um redator publicitário especializado, com ampla experiência em **adaptação criativa** e **consistência de voz de marca**.\nSua especialidade é **transformar anúncios de referência em múltiplas variações criativas**, mantendo a identidade da marca e otimizando para diferentes formatos de anúncio.\n\n---\n\n### Restrições\n\n* Gere **exatamente 5 variações criativas** que mantenham a mesma mensagem central, mas com execuções distintas.\n* Cada variação deve manter **70–80% de similaridade** com o anúncio de referência, introduzindo **20–30% de elementos novos**.\n* Preserve o **gancho emocional** e a **proposta de valor central** do anúncio original.\n* Adapte o conteúdo de forma apropriada ao converter entre tipos de anúncio (vídeo → imagem, imagem → texto etc.).\n* Use **dupla quebra de linha** nas seções *Transcript* e *Ad_body* para melhor legibilidade.\n* Mantenha **voz de marca consistente** em todas as variações.\n* Cada variação deve funcionar **como um anúncio completo e independente**.\n* Aplique a **Regra dos Três**: varie estrutura do título, posição do CTA e apelo emocional entre as versões.\n* Siga as **melhores práticas específicas da plataforma** (limites de caracteres, hierarquia visual etc.).\n* **Nunca duplique frases exatas** entre variações — **reformule mantendo o sentido**.\n\n---\n\n### Entradas\n\n* **Informações do Anúncio de Referência:**\n\n  * Tipo Original de Anúncio: `{{ $json.reference.ad_type }}`\n  * Novo Tipo de Anúncio a Gerar: `{{ $json.reference.new_ad_type }}`\n  * Transcrição do Anúncio (para vídeos, o texto falado; para imagens e carrosséis, o texto exibido na peça):\n    `{{ $json.reference.transcript }}`\n  * Descrição do Anúncio (descrição dos visuais, excluindo o texto da peça):\n    `{{ $('Get Ad Brief').item.json['Media_Description_reference'] }}`\n  * Texto do Anúncio: `{{ $json.reference.ad_text }}`\n\n* **Detalhes da Marca:**\n\n  * Diretrizes de Voz: `{{ $json.brandvoice.guidelines }}`\n  * Informações do Produto: `{{ $json.brandvoice.product }}`\n  * Exemplos de Anúncios Bem-Sucedidos: `{{ $json.brandvoice.ad_examples }}`\n\n---\n\n### Instruções\n\n1. **Analisar o Anúncio de Referência:**\n\n   * Identifique a **mensagem central** e os **gatilhos emocionais**.\n   * Extraia os **principais pontos de venda** e **propostas de valor** (para adaptar ao produto atual).\n   * Observe a **estrutura narrativa e o ritmo**.\n   * Identifique **ganchos** e **chamadas para ação** de maior impacto.\n\n2. **Compreender os Requisitos de Conversão de Formato:**\n\n   * **Vídeo → Imagem:** Foque no momento visual mais marcante e na copy mais persuasiva.\n   * **Imagem → Vídeo:** Expanda a narrativa com começo, meio e fim.\n   * **Para texto puro:** Enfatize **storytelling** e linguagem descritiva vívida.\n\n3. **Aplicar Técnicas de Variação Criativa:**\n\n   * **Variação 1 – Adaptação direta:** a mais próxima do original, com ajustes sutis de voz de marca.\n   * **Variação 2 – Amplificação emocional:** destaque o sentimento e o benefício.\n   * **Variação 3 – Inversão problema-solução:** comece pelo ponto de dor e introduza a solução.\n   * **Variação 4 – Ênfase em prova social:** use tom de depoimento ou foco em resultados.\n   * **Variação 5 – Híbrido urgência/curiosidade:** combine senso de tempo com mistério.\n\n4. **Para Cada Variação:**\n\n   * Crie um **título único** e chamativo.\n   * Ajuste o **gancho inicial** conforme a estratégia da variação.\n   * Mantenha **consistência da voz de marca**.\n   * Crie um **CTA distinto, mas relacionado**.\n   * Ajuste o **comprimento e estrutura** conforme o formato do anúncio.\n\n5. **Verificações de Qualidade:**\n\n   * Confirme alinhamento com as **diretrizes de voz da marca**.\n   * Garanta **consistência da mensagem central** entre as versões.\n   * Assegure que cada variação esteja **adequadamente adaptada** ao novo formato.\n   * Verifique se **cada versão oferece uma perspectiva nova**.\n\n---\n\n### Conclusões\n\nO resultado deve conter **exatamente 5 variações criativas**, com:\n\n* Número da variação\n* Título\n* Tipo de Anúncio (Imagem, Vídeo ou Carrossel)\n* Corpo do Anúncio (*Ad Body*)\n* CTA\n* Transcrição (se for vídeo)\n\n---\n\n### Soluções\n\n* **Se o tipo de anúncio de referência estiver ausente:** analise o conteúdo disponível, infira o formato e siga com a melhor estimativa.\n* **Se as diretrizes de voz da marca forem limitadas:** extraia o tom dos exemplos e da descrição do produto.\n* **Se a conversão for entre formatos muito diferentes:** preserve o **impacto emocional** acima da tradução literal.\n* **Se as informações do produto forem vagas:** destaque **benefícios e resultados**, não recursos técnicos.\n* **Se não houver exemplos de anúncios anteriores:** adote um tom **profissional, mas conversacional**.\n* **Se a transcrição estiver confusa ou corrompida:** use o **texto do anúncio** como fonte principal.\n* **Se houver conflito entre diretrizes da marca:** priorize os **exemplos de anúncios mais recentes e bem-sucedidos**.\n",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        944,
+        304
+      ],
+      "id": "cf977c52-ae17-4303-afff-9b4d6440684b",
+      "name": "Ad Generator",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "478fac74-22c4-4dee-9f0a-f7b32aa11ed7",
+              "leftValue": "={{ $json.Ad_Reference[0] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "afbbf949-26a3-4cc0-8f17-699b674d8217",
+              "leftValue": "={{ $json['❗ Brand Voice'][0] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -496,
+        352
+      ],
+      "id": "293c9642-de03-463b-86e5-71fd42bf48f0",
+      "name": "All fields ok"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <meta name=\"description\" content=\"Success message displaying generation status\" />\n    <title>✅ Generating</title>\n    <style>\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');\n\n        :root {\n            --color-bg-start: #a7c7e7; /* light blue */\n            --color-bg-end: #cdb4db; /* light purple */\n            --color-text: #1f2121;\n            --color-shadow: rgba(0, 0, 0, 0.15);\n        }\n\n        * {\n            box-sizing: border-box;\n        }\n\n        body, html {\n            height: 100%;\n            margin: 0;\n            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,\n                Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;\n            background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));\n            color: var(--color-text);\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            text-align: center;\n            overflow: hidden;\n        }\n\n        main {\n            padding: 2rem 3rem;\n            background: rgba(255, 255, 255, 0.85);\n            border-radius: 1rem;\n            box-shadow: 0 10px 20px var(--color-shadow);\n            max-width: 90vw;\n            animation: fadeIn 1s ease forwards;\n            user-select: none;\n        }\n\n        .success-message {\n            font-weight: 600;\n            font-size: 3rem;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            gap: 0.6rem;\n            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n            cursor: default;\n            transition: transform 0.3s ease;\n            outline: none;\n        }\n\n        .success-message:focus {\n            box-shadow: 0 0 0 3px #7b68ee;\n            border-radius: 0.5rem;\n        }\n\n        .success-message:hover {\n            transform: translateY(-2px) scale(1.02);\n        }\n\n        .checkmark {\n            font-size: 3.5rem;\n            line-height: 1;\n        }\n\n        @keyframes fadeIn {\n            from {\n                opacity: 0;\n                transform: translateY(10px);\n            }\n            to {\n                opacity: 1;\n                transform: translateY(0);\n            }\n        }\n    </style>\n</head>\n<body>\n    <main>\n        <div\n            class=\"success-message\"\n            id=\"successMessage\"\n            tabindex=\"0\"\n            role=\"status\"\n            aria-label=\"Success: Generating\"\n            aria-live=\"polite\"\n        >\n            <span class=\"checkmark\">✅</span>\n            <span class=\"message-text\">Generating</span>\n        </div>\n    </main>\n\n    <script>\n        document.addEventListener('DOMContentLoaded', function () {\n            const successMessage = document.getElementById('successMessage');\n\n            // Accessibility announcement already handled by aria-live\n\n            // Keyboard focus styling is handled by CSS focus selector\n\n            // Optional debug log\n            console.log('Success message loaded successfully ✅');\n        });\n    </script>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -256,
+        176
+      ],
+      "id": "9e121458-04b3-45a3-8cf4-1641b99f03d6",
+      "name": "Respond Success"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <meta name=\"description\" content=\"Error message displaying selection warning\" />\n    <title>❌ Error</title>\n    <style>\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');\n\n        :root {\n            --color-bg-start: #f8d7da; /* light red/pinkish */\n            --color-bg-end: #f5c6cb; /* lighter pink */\n            --color-text: #721c24; /* dark red */\n            --color-shadow: rgba(114, 28, 36, 0.4);\n        }\n\n        * {\n            box-sizing: border-box;\n        }\n\n        body, html {\n            height: 100%;\n            margin: 0;\n            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,\n                Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;\n            background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));\n            color: var(--color-text);\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            text-align: center;\n            overflow: hidden;\n        }\n\n        main {\n            padding: 2rem 3rem;\n            background: rgba(255, 255, 255, 0.95);\n            border-radius: 1rem;\n            box-shadow: 0 10px 20px var(--color-shadow);\n            max-width: 90vw;\n            animation: fadeIn 0.6s ease forwards;\n            user-select: none;\n        }\n\n        .error-message {\n            display: flex;\n            align-items: flex-start;\n            gap: 1rem;\n            font-weight: 600;\n            animation: error-shake 0.6s ease-out forwards;\n            cursor: default;\n            color: var(--color-text);\n            user-select: none;\n            text-align: left;\n        }\n\n        .error-icon {\n            font-size: 2.5rem;\n            line-height: 1;\n            margin-top: 0.15rem;\n        }\n\n        .error-text {\n            display: flex;\n            flex-direction: column;\n        }\n\n        .error-title {\n            margin: 0;\n            font-size: 2rem;\n            font-weight: 700;\n            line-height: 1.2;\n        }\n\n        .error-detail {\n            margin: 0.25rem 0 0;\n            font-size: 1.2rem;\n            font-weight: 400;\n            line-height: 1.4;\n        }\n\n        .error-message:focus {\n            box-shadow: 0 0 0 3px #b02a37;\n            border-radius: 0.5rem;\n            outline: none;\n        }\n\n        .error-message:hover {\n            transform: translateY(-2px) scale(1.02);\n            animation-play-state: paused;\n            outline: none;\n        }\n\n        @keyframes fadeIn {\n            from {\n                opacity: 0;\n                transform: translateY(10px);\n            }\n            to {\n                opacity: 1;\n                transform: translateY(0);\n            }\n        }\n\n        @keyframes error-shake {\n            0% {\n                opacity: 0;\n                transform: translateY(10px);\n            }\n            50% {\n                opacity: 1;\n                transform: translateY(0);\n            }\n            65% { transform: translateX(-6px); }\n            80% { transform: translateX(6px); }\n            95% { transform: translateX(-3px); }\n            100% { transform: translateX(0); }\n        }\n    </style>\n</head>\n<body>\n    <main>\n        <div\n            class=\"error-message\"\n            id=\"errorMessage\"\n            tabindex=\"0\"\n            role=\"alert\"\n            aria-label=\"Error: Make sure the Reference and Brand Voice are selected\"\n            aria-live=\"assertive\"\n        >\n            <span class=\"error-icon\">❌</span>\n            <div class=\"error-text\">\n                <h1 class=\"error-title\">Error</h1>\n                <p class=\"error-detail\">Make sure the Reference and Brand Voice are selected.</p>\n            </div>\n        </div>\n    </main>\n\n    <script>\n        document.addEventListener('DOMContentLoaded', function () {\n            console.log('Error message loaded with split title and detail, shake animation ❌');\n        });\n    </script>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -256,
+        512
+      ],
+      "id": "9fe9cf56-4459-4d5b-ac2c-1504aa912bf6",
+      "name": "Respond Error"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9QXEni1oCWXOQu",
+          "mode": "list",
+          "cachedResultName": "Ad Briefs",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tbl9QXEni1oCWXOQu"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "Status": "Generating..."
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ready to Generate",
+                  "value": "Ready to Generate"
+                },
+                {
+                  "name": "Generating...",
+                  "value": "Generating..."
+                },
+                {
+                  "name": "Ad Generated",
+                  "value": "Ad Generated"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad_Reference",
+              "displayName": "Ad_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Type_Reference",
+              "displayName": "Type_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Generate Type",
+              "displayName": "❗ Generate Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Brand Voice",
+              "displayName": "❗ Brand Voice",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗Output Image Style",
+              "displayName": "❗Output Image Style",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Additional Images",
+              "displayName": "❗ Additional Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ad",
+              "displayName": "Generate Ad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Imported Date",
+              "displayName": "Imported Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "URL_Reference",
+              "displayName": "URL_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Transcript_Reference",
+              "displayName": "Transcript_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Body_Reference",
+              "displayName": "Body_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "CTA_Reference",
+              "displayName": "CTA_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Caption_Reference",
+              "displayName": "Caption_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Reference Files",
+              "displayName": "Reference Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Brand Voices copy",
+              "displayName": "Brand Voices copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ads - Draft Ads",
+              "displayName": "Generate Ads - Draft Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        336
+      ],
+      "id": "aa0d62c5-9d1b-4e81-ad05-da1c9256a11a",
+      "name": "Update status",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "id": "={{ $json.fields.Ad_Reference[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        96
+      ],
+      "id": "0b098b63-e203-432c-a9c0-4e89e9119b9a",
+      "name": "Get Reference",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <meta name=\"description\" content=\"Error message displaying selection warning\" />\n    <title>❌ Error</title>\n    <style>\n        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');\n\n        :root {\n            --color-bg-start: #f8d7da; /* light red/pinkish */\n            --color-bg-end: #f5c6cb; /* lighter pink */\n            --color-text: #721c24; /* dark red */\n            --color-shadow: rgba(114, 28, 36, 0.4);\n        }\n\n        * {\n            box-sizing: border-box;\n        }\n\n        body, html {\n            height: 100%;\n            margin: 0;\n            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,\n                Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;\n            background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));\n            color: var(--color-text);\n            display: flex;\n            justify-content: center;\n            align-items: center;\n            text-align: center;\n            overflow: hidden;\n        }\n\n        main {\n            padding: 2rem 3rem;\n            background: rgba(255, 255, 255, 0.95);\n            border-radius: 1rem;\n            box-shadow: 0 10px 20px var(--color-shadow);\n            max-width: 90vw;\n            animation: fadeIn 0.6s ease forwards;\n            user-select: none;\n        }\n\n        .error-message {\n            display: flex;\n            align-items: flex-start;\n            gap: 1rem;\n            font-weight: 600;\n            animation: error-shake 0.6s ease-out forwards;\n            cursor: default;\n            color: var(--color-text);\n            user-select: none;\n            text-align: left;\n        }\n\n        .error-icon {\n            font-size: 2.5rem;\n            line-height: 1;\n            margin-top: 0.15rem;\n        }\n\n        .error-text {\n            display: flex;\n            flex-direction: column;\n        }\n\n        .error-title {\n            margin: 0;\n            font-size: 2rem;\n            font-weight: 700;\n            line-height: 1.2;\n        }\n\n        .error-detail {\n            margin: 0.25rem 0 0;\n            font-size: 1.2rem;\n            font-weight: 400;\n            line-height: 1.4;\n        }\n\n        .error-message:focus {\n            box-shadow: 0 0 0 3px #b02a37;\n            border-radius: 0.5rem;\n            outline: none;\n        }\n\n        .error-message:hover {\n            transform: translateY(-2px) scale(1.02);\n            animation-play-state: paused;\n            outline: none;\n        }\n\n        @keyframes fadeIn {\n            from {\n                opacity: 0;\n                transform: translateY(10px);\n            }\n            to {\n                opacity: 1;\n                transform: translateY(0);\n            }\n        }\n\n        @keyframes error-shake {\n            0% {\n                opacity: 0;\n                transform: translateY(10px);\n            }\n            50% {\n                opacity: 1;\n                transform: translateY(0);\n            }\n            65% { transform: translateX(-6px); }\n            80% { transform: translateX(6px); }\n            95% { transform: translateX(-3px); }\n            100% { transform: translateX(0); }\n        }\n    </style>\n</head>\n<body>\n    <main>\n        <div\n            class=\"error-message\"\n            id=\"errorMessage\"\n            tabindex=\"0\"\n            role=\"alert\"\n            aria-label=\"Error: Update status to Imported if you want to run again - this ad has already been generated\"\n            aria-live=\"assertive\"\n        >\n            <span class=\"error-icon\">❌</span>\n            <div class=\"error-text\">\n                <h1 class=\"error-title\">Error</h1>\n                <p class=\"error-detail\">Update status to Imported if you want to run again - this ad has already been generated.</p>\n            </div>\n        </div>\n    </main>\n\n    <script>\n        document.addEventListener('DOMContentLoaded', function () {\n            console.log('Error message loaded with split title and detail, shake animation ❌');\n        });\n    </script>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -544,
+        528
+      ],
+      "id": "56dd8b44-e72c-407f-950b-29a28fa41d2f",
+      "name": "Respond Error1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b97d4013-2063-483d-a070-eada481a2904",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Ready to Generate",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -704,
+        352
+      ],
+      "id": "efadd687-b3cf-4fd5-aef4-a1d16e064ec6",
+      "name": "NotAlreadyDone"
+    },
+    {
+      "parameters": {
+        "content": "## Receive Webhook\nAirtable 'Generate Ad' button",
+        "height": 224,
+        "width": 320,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        272
+      ],
+      "id": "a99808a9-6ef0-4d0c-894d-bf5e9cc4e4e6",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Generates Ads from reference adverts",
+        "height": 96,
+        "width": 352,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        128
+      ],
+      "id": "639340dd-0c4d-4e26-9c6d-e19a475b295c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Validates inputs\nBrand Voice, Reference Ad and that it is not overwriting existing content (checks status = `imported`). Checks for single ad.",
+        "height": 576,
+        "width": 896,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        96
+      ],
+      "id": "c4e8b27d-c717-4e62-b442-f2de77836686",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Standardizes inputs from reference ads\nCaptures ad details from either input flows in a standardized way (used when you have multiple inputs). Transcript, ad text, media description etc.",
+        "height": 752,
+        "width": 768,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "54cbce84-0a4d-4320-8519-a8ec1d607eb9",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Ad Generation and storage",
+        "height": 400,
+        "width": 736,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        784,
+        208
+      ],
+      "id": "10ba32b0-0d47-4353-8603-61c9d73e03cd",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblLBPdVxEeSrBQcM",
+          "mode": "list",
+          "cachedResultName": "Brand Guidelines",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblLBPdVxEeSrBQcM"
+        },
+        "id": "={{ $json.fields['❗ Brand Voice'][0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        256
+      ],
+      "id": "7a7e2f8a-53d3-40d6-8e27-d67051104a98",
+      "name": "Get Brand Guidelines",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.variations",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        304
+      ],
+      "id": "705b3300-97fd-4f47-8fb7-a69cb15d5b02",
+      "name": "Split Out Creatives"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9QXEni1oCWXOQu",
+          "mode": "list",
+          "cachedResultName": "Ad Briefs",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tbl9QXEni1oCWXOQu"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Ad Generated",
+            "id": "={{ $('Get Ad Brief').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ready to Generate",
+                  "value": "Ready to Generate"
+                },
+                {
+                  "name": "Generating...",
+                  "value": "Generating..."
+                },
+                {
+                  "name": "Ad Generated",
+                  "value": "Ad Generated"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad_Reference",
+              "displayName": "Ad_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Type_Reference",
+              "displayName": "Type_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Generate Type",
+              "displayName": "❗ Generate Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Brand Voice",
+              "displayName": "❗ Brand Voice",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗Output Image Style",
+              "displayName": "❗Output Image Style",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Additional Images",
+              "displayName": "❗ Additional Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ad",
+              "displayName": "Generate Ad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Imported Date",
+              "displayName": "Imported Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "URL_Reference",
+              "displayName": "URL_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Transcript_Reference",
+              "displayName": "Transcript_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Body_Reference",
+              "displayName": "Body_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "CTA_Reference",
+              "displayName": "CTA_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Caption_Reference",
+              "displayName": "Caption_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Reference Files",
+              "displayName": "Reference Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Brand Voices copy",
+              "displayName": "Brand Voices copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ads - Draft Ads",
+              "displayName": "Generate Ads - Draft Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1856,
+        32
+      ],
+      "id": "f0d515f0-3bbc-45fa-a5dd-52132b5ac4ee",
+      "name": "Update Status",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblBLZDYT4NVtlp6W",
+          "mode": "list",
+          "cachedResultName": "Draft Ads",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblBLZDYT4NVtlp6W"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Ready for Review",
+            "Title": "={{ $('Split Out Creatives').item.json.Title }}",
+            "Transcript": "={{ $('Split Out Creatives').item.json.Transcript }}",
+            "Body": "={{ $('Split Out Creatives').item.json.Ad_body }}",
+            "CTA": "={{ $('Split Out Creatives').item.json.CTA }}",
+            "Type": "={{ $('Split Out Creatives').item.json.Ad_Type }}",
+            "Brand Voice": "={{ $('Get Ad Brief').item.json['❗ Brand Voice'] }}",
+            "Output Image Style": "={{ $('Get Ad Brief').item.json['❗Output Image Style'] }}",
+            "Reference_Original_Ad": "={{ $('Get Ad Brief').item.json.Ad_Reference }}",
+            "Reference_Ad_Brief": "=['{{ $('Get Ad Brief').item.json.id }}']",
+            "Assets": "=[\n  { \n    \"url\": \"{{ $json.output.images[0].url }}\",\n    \"filename\": \"thumbnail.jpg\"\n  }\n]"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ready for Review",
+                  "value": "Ready for Review"
+                },
+                {
+                  "name": "Editing",
+                  "value": "Editing"
+                },
+                {
+                  "name": "Approved",
+                  "value": "Approved"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Assets",
+              "displayName": "Assets",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reference_Original_Ad",
+              "displayName": "Reference_Original_Ad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Brand Voice",
+              "displayName": "Brand Voice",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Output Image Style",
+              "displayName": "Output Image Style",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reference_Ad_Brief",
+              "displayName": "Reference_Ad_Brief",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad_Brief_Images",
+              "displayName": "Ad_Brief_Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Created Date",
+              "displayName": "Created Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Reference Files",
+              "displayName": "Reference Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": false
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2176,
+        304
+      ],
+      "id": "f546aeea-69c9-4335-9274-8e828d15a1e1",
+      "name": "Store Generated Ad",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"completed_creative\": {\n      \"type\": \"string\",\n      \"description\": \"Complete ad creative with all text elements and image placements formatted for the ad type\"\n    },\n    \"images\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"url\": {\n            \"type\": \"string\",\n            \"description\": \"Generated image URL\"\n          },\n          \"placement_context\": {\n            \"type\": \"string\",\n            \"description\": \"Description of image role (e.g., 'carousel_slide_1', 'hero_image', 'video_thumbnail')\"\n          },\n          \"prompt_used\": {\n            \"type\": \"string\",\n            \"description\": \"The complete prompt used to generate this image\"\n          }\n        }\n      }\n    }\n  },\n  \"required\": [\"completed_creative\", \"images\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2160,
+        496
+      ],
+      "id": "255a6c23-cc4e-4593-aa21-e8669eaaadc4",
+      "name": "Structured Output Parser4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=### Inputs\n\n## DO ANÚNCIO ANTIGO — APENAS MATERIAL DE REFERÊNCIA\n\n* reference_ad_transcript (obrigatório): {{ $('Get Ad Brief').item.json.Transcript_Reference[0] }}\n\n* reference_ad_title (obrigatório): {{ $json.Title }}\n\n* reference_ad_body (obrigatório): {{ $json.Ad_body }}\n\n* reference_ad_description (esta é uma descrição dos visuais, excluindo o texto do anúncio de referência original): {{ $('Get Ad Brief').item.json['Media_Description_Reference'] }}\n\n## PARA GERAÇÃO DO NOVO ANÚNCIO\n\n* creative_strategy_prompt (obrigatório): {{ $('Get Creative Style').item.json['Style prompt'] }}\n\n* brand_guidelines (opcional): Um objeto JSON contendo os ativos da marca.\n\n  * brand_colors: {{ $('Get Brand Guidelines').item.json['Brand Colors'] }}\n\n  * brand_font_name: {{ $('Get Brand Guidelines').item.json['Brand Font'] }}\n\n    * brand_logo_url (pode haver múltiplos para versões clara e escura): {{ $('Get Brand Guidelines').item.json['Brand Logo'][0].url }} {{ $('Get Brand Guidelines').item.json['Brand Logo'][0].url }}\n\n* new_ad_format (obrigatório): {{ $json.Ad_Type }}\n\n* new_additional_instructions (opcional): {{ $('Get Ad Brief').item.json['❗ Ad Instructions'] }}\n\n* new_product_images (opcional):\n\n1. {{ $('Get Ad Brief').item.json['❗ Additional Images'][0].url }}\n\n2. {{ $('Get Ad Brief').item.json['❗ Additional Images'][1].url }}\n\n3. {{ $('Get Ad Brief').item.json['❗ Additional Images'][2].url }}\n\nMais:\n\n{{ $('Get Ad Brief').item.json['❗ Additional Images'][3].url }}\n\n{{ $('Get Ad Brief').item.json['❗ Additional Images'][4].url }}\n\n{{ $('Get Ad Brief').item.json['❗ Additional Images'][5].url }}\n\n{{ $('Get Ad Brief').item.json['❗ Additional Images'][6].url }}\n\n## OUTROS\n\naspect_ratio_image (opcional): {{ $('Get Image Preset').item.json['Aspect Ratio Image'][0].url }}\n",
+        "hasOutputParser": true,
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=🚨 IDENTIDADE DA MARCA (PRIORIDADE MÁXIMA):\n\nSEMPRE use as seguintes informações da marca atual:\n- Nome da Empresa: {{ $('Get Brand Guidelines').item.json['Brand Name'] }}\n- Cores da Marca: {{ $('Get Brand Guidelines').item.json['Brand Colors'] }}\n- Fonte da Marca: {{ $('Get Brand Guidelines').item.json['Brand Font'] }}\n- Logo da Marca: {{ $('Get Brand Guidelines').item.json['Brand Logo'][0].url }}\n\n⚠️ REGRA CRÍTICA:\nSe o material de referência mencionar QUALQUER nome de empresa diferente do especificado acima, \nIGNORE completamente e substitua pelo nome correto da marca atual.\nO logo e identidade visual devem SEMPRE corresponder à marca especificada acima,\nindependente do que apareça no anúncio de referência ou em qualquer outro material fornecido.\n\n═══════════════════════════════════════════════════════════════════\n\n### Função\n\nVocê é um **Estrategista Visual de Criativos Publicitários (Ad Creative Visual Strategist)** especializado em gerar **prompts de imagem impactantes** para campanhas publicitárias em múltiplos formatos (**imagens únicas**, **carrosséis** e **thumbnails de vídeo**).\nSua especialidade é **traduzir a copy e as diretrizes da marca em imagens visualmente marcantes e otimizadas para conversão**, mantendo consistência de identidade e capturando atenção imediata.\n\n---\n\n### Restrições\n\n* Se forem fornecidos **arquivos adicionais** e **instruções adicionais**, eles têm **prioridade máxima** no *image_prompt*. Inclua sua essência ou desenvolva melhor se forem vagos.\n* Gere exatamente o número de imagens de acordo com o formato do anúncio:\n\n  * **Imagem única:** 1 *image prompt*\n  * **Carrossel:** 2 a 10 *image prompts*, conforme os segmentos do *transcript*\n  * **Vídeo:** 1 *hero image prompt* (thumbnail/capa)\n* Cada *image prompt* deve ter **menos de 2000 caracteres** no total.\n* O *image prompt final* deve ser uma versão **preenchida do `creative_strategy_prompt`**, substituindo os placeholders por informações relevantes.\n* Se `brand_logo_url` for fornecido, trate-o como **ativo essencial** — ele deve ser incluído em `additional_image_urls` para a ferramenta de geração, com posicionamento definido em `additional_instructions`.\n  O mesmo se aplica a **textos com a fonte exigida**, caso o anúncio contenha texto.\n* Mantenha **consistência visual** entre todas as imagens de um carrossel.\n* Foque na **visualização do produto/serviço**, evitando sobreposição excessiva de texto.\n* As imagens devem **complementar** o texto do anúncio, não duplicá-lo.\n* **Nunca** gere imagens inadequadas, enganosas ou ofensivas.\n* Inclua **elementos de marca (logos, cores)** apenas quando houver instrução explícita.\n* Cada imagem do carrossel deve **contar uma parte sequencial da história**.\n* As **cores da marca** devem ser integradas **de forma natural**, sem dominar a composição.\n* **Sempre descreva precisamente no *image_prompt*** as imagens fornecidas, explicando **o que deve ser editado e como**, para que o gerador compreenda as instruções.\n\n---\n\n### Entradas\n\n#### DO ANÚNCIO ANTIGO – SOMENTE REFERÊNCIA\n\n* `reference_ad_transcript` (obrigatório): conteúdo original descrevendo visuais ou narrativa.\n* `reference_ad_title` (obrigatório): título do anúncio original — apenas para contexto. **Não é o novo anúncio.**\n* `reference_ad_body` (obrigatório): corpo principal do anúncio original. **Não é o novo anúncio.**\n* `reference_ad_description`: descrição dos visuais, **sem incluir texto**, do anúncio original.\n\n---\n\n#### PARA GERAÇÃO DO NOVO ANÚNCIO\n\n* `creative_strategy_prompt` (obrigatório): prompt-base da estratégia criativa (ex: \"Color Palette Swap\").\n* `new_brand_guidelines` (opcional): objeto JSON contendo ativos da marca:\n\n  * `brand_colors`: array de códigos hexadecimais ou nomes de cores\n  * `brand_font_name`: nome da fonte da marca\n  * `brand_logo_url`: URL(s) do logo (podendo haver versões para fundo claro e escuro)\n* `new_ad_format` (obrigatório): tipo de anúncio — `\"single_image\"`, `\"carousel\"` ou `\"video\"`\n* `new_additional_instructions` (opcional): instruções específicas (ex: \"incluir logo no canto inferior direito\").\n* `new_product_images` (opcional): array de URLs de imagens limpas do produto, a serem passadas como `additional_image_urls`.\n  Caso não haja imagens, envie um **array vazio**, mas mantenha a chave.\n\n---\n\n#### OUTROS\n\n* `aspect_ratio_image` (opcional): URL da imagem que define a proporção do anúncio — também passada ao subworkflow.\n\n---\n\n### Instruções\n\n1. **Analisar o Conteúdo do Anúncio**\n\n   * Use `new_ad_format` para determinar o número de imagens necessárias.\n   * Extraia **elementos textuais chave** do `transcript`.\n   * Identifique **elementos visuais chave** a partir de `ad_description`.\n   * Defina a **mensagem central** e o **tom emocional** com base em `ad_title` e `ad_body`.\n   * Liste características e benefícios do produto que devem aparecer visualmente.\n\n2. **Determinar Requisitos Visuais**\n\n   * **Imagem única:** crie um visual principal que capture toda a mensagem do anúncio.\n   * **Carrossel:**\n\n     * Divida o `reference_ad_transcript` em segmentos visuais distintos.\n     * Planeje a sequência narrativa entre os slides.\n   * **Vídeo:** desenvolva um *thumbnail* atrativo que represente o conteúdo do vídeo.\n\n3. **Selecionar a Base Criativa**\n\n   * Use o `creative_strategy_prompt` como base para montar os *image prompts*.\n\n4. **Incorporar Elementos de Marca**\n\n   * Analise as diretrizes da marca (cores, fontes, logos).\n   * Extraia termos e conceitos visuais de `ad_title`, `ad_body` e `transcript`.\n   * Identifique quais ativos serão usados: `product_images`, imagens de referência etc.\n\n5. **Construir os Prompts Finais de Imagem**\n\n   * Substitua os placeholders do `creative_strategy_prompt` por informações específicas.\n   * Descreva **com clareza as transformações visuais** — por exemplo:\n     \"Substituir o produto original (de `ad_description`: imagem de vela) pelo produto da marca (imagem: página de compra da comunidade). Aplicar as novas cores da marca (#fe3e5a) e a fonte Roboto. Inserir o logo (descrição: logo minimalista circular) no canto esquerdo inferior.\"\n   * Certifique-se de que cada prompt seja **claro, preciso e dentro do limite de 2000 caracteres**.\n   * Para carrosséis, mantenha **progressão narrativa** entre as imagens.\n   * **Não copie o texto do `reference_ad_transcript`** — use apenas como referência visual.\n\n6. **Aplicar Instruções Especiais**\n\n   * Se houver `new_additional_instructions`, integre-as de forma explícita no prompt.\n   * Se houver `additional_files`, siga suas posições e contextos conforme descritos.\n   * Priorize quaisquer cenas ou direções criativas mencionadas.\n\n7. **Gerar Imagens**\n\n   * Envie cada *image_prompt* com seus arquivos adicionais (`brand_logo_url`, `product_images`, `reference_assets`) para o subworkflow.\n   * Sempre envie `additional_image_urls` como array, por exemplo:\n     `[\"img1_url\", \"img2_url\", \"img3_url\"]`.\n   * Caso não haja arquivos adicionais, envie `[]`.\n   * Mantenha a **ordem correlata** entre prompts e URLs geradas.\n\n8. **Montagem e Saída Final**\n\n   * Compile o criativo completo com todas as imagens geradas.\n   * Inclua as URLs e os *prompts* correspondentes.\n   * Formate a entrega conforme o tipo de anúncio.\n\n---\n\n### Conclusão\n\nO resultado final deve ser um **objeto JSON** com:\n\n* `images`: um array contendo as imagens geradas, suas respectivas URLs e os *prompts* utilizados na criação."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1792,
+        256
+      ],
+      "id": "6dd4c1ed-ac55-4652-b436-3cbc6c6c8818",
+      "name": "Image Generation",
+      "retryOnFail": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## Image Generation and storage",
+        "height": 400,
+        "width": 736,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        208
+      ],
+      "id": "6a62d0c1-b2c5-4ac5-842a-0935ee795f4a",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff7feeed-f971-4d95-921e-241345e9c02c",
+              "name": "imagestyles.base_prompt",
+              "value": "={{ $json['Style prompt'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        416
+      ],
+      "id": "774835e2-7e5b-4c36-8865-210444f65742",
+      "name": "Organize fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff7feeed-f971-4d95-921e-241345e9c02c",
+              "name": "aspect_ratio.name",
+              "value": "={{ $json['Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "74b70ade-c1fb-41d7-81a1-3a1365e0d85a",
+              "name": "aspect_ratio.image",
+              "value": "={{ $json['Aspect Ratio Image'][0].url }} ",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        592
+      ],
+      "id": "3dd094e7-cdcb-48c8-b836-3f761e34cfe7",
+      "name": "Organize fields3"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblUO4dIK9tep9Szq",
+          "mode": "list",
+          "cachedResultName": "Image Presets",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblUO4dIK9tep9Szq"
+        },
+        "id": "={{ $('Get Ad Brief').item.json['❗ Aspect Ratio'][0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        592
+      ],
+      "id": "71d5fe13-fad5-45e2-8ab2-3fd1d4dea9ba",
+      "name": "Get Image Preset",
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1616,
+        320
+      ],
+      "id": "92e8fef6-584a-4e33-b4aa-dc134615c8cd",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "25d795d3-e319-4067-9e00-86597e19a79a",
+              "leftValue": "={{ $('Get Ad Brief').item.json['❗ Generate_Images']  }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        304
+      ],
+      "id": "d289e615-1ab6-480c-b071-58ed828de51d",
+      "name": "GenerateImages"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblBLZDYT4NVtlp6W",
+          "mode": "list",
+          "cachedResultName": "Draft Ads",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblBLZDYT4NVtlp6W"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Ready for Review",
+            "Title": "={{ $('Split Out Creatives').item.json.Title }}",
+            "Transcript": "={{ $('Split Out Creatives').item.json.Transcript }}",
+            "Body": "={{ $('Split Out Creatives').item.json.Ad_body }}",
+            "CTA": "={{ $('Split Out Creatives').item.json.CTA }}",
+            "Type": "={{ $('Split Out Creatives').item.json.Ad_Type }}",
+            "Brand Voice": "={{ $('Get Ad Brief').item.json['❗ Brand Voice'] }}",
+            "Output Image Style": "={{ $('Get Ad Brief').item.json['❗Output Image Style'] }}",
+            "Reference_Original_Ad": "={{ $('Get Ad Brief').item.json.Ad_Reference }}",
+            "Reference_Ad_Brief": "=['{{ $('Get Ad Brief').item.json.id }}']"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ready for Review",
+                  "value": "Ready for Review"
+                },
+                {
+                  "name": "Editing",
+                  "value": "Editing"
+                },
+                {
+                  "name": "Approved",
+                  "value": "Approved"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Assets",
+              "displayName": "Assets",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reference_Original_Ad",
+              "displayName": "Reference_Original_Ad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Brand Voice",
+              "displayName": "Brand Voice",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Output Image Style",
+              "displayName": "Output Image Style",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reference_Ad_Brief",
+              "displayName": "Reference_Ad_Brief",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad_Brief_Images",
+              "displayName": "Ad_Brief_Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Created Date",
+              "displayName": "Created Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Reference Files",
+              "displayName": "Reference Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": false
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        704
+      ],
+      "id": "a61e04da-b398-4533-93e5-ba4f1a7ea1e0",
+      "name": "Store Generated Ad1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### With no image generation\nJust stored directly",
+        "height": 240,
+        "width": 256,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        624
+      ],
+      "id": "5fc7909c-e19e-40d9-ae54-5c3f793a1577",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblobEXeeBuW26smD",
+          "mode": "list",
+          "cachedResultName": "Image styles",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblobEXeeBuW26smD"
+        },
+        "id": "={{ $json.fields['❗Creative Style Twist'][0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        416
+      ],
+      "id": "eedcb393-f21e-4866-bded-87147607431b",
+      "name": "Get Creative Style",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9QXEni1oCWXOQu",
+          "mode": "list",
+          "cachedResultName": "Ad Briefs",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tbl9QXEni1oCWXOQu"
+        },
+        "id": "={{ $json.query.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -880,
+        352
+      ],
+      "id": "f4359e11-6f6f-4440-b7b9-6a543185fb67",
+      "name": "Get Ad Brief",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {
+          "maxOutputTokens": 64000,
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        496
+      ],
+      "id": "1c518938-aa97-491c-acb5-dd0ffd3a399b",
+      "name": "Gemini-2.5-pro1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-opus-4-1-20250805",
+          "mode": "list",
+          "cachedResultName": "Claude Opus 4.1"
+        },
+        "options": {
+          "maxTokensToSample": 64000,
+          "thinking": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1792,
+        480
+      ],
+      "id": "07fb6991-1a22-44c7-9b13-66975b6c1a8e",
+      "name": "Opus-4.1-thinking1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "nNkFTZpNoiBCbO1I",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Generate an image using Ideogram AI. Provide a detailed image_prompt describing what to create. Optionally include additional_image_urls as an array of URLs for reference images, logos, or product images to incorporate. Always send additional_image_urls as an array, even if empty: []",
+        "workflowId": {
+          "__rl": true,
+          "value": "u5Jk276kwk32Kq44",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/u5Jk276kwk32Kq44",
+          "cachedResultName": "UGC Ads Veo & Sora"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "image_prompt": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('image_prompt', ``, 'string') }}",
+            "additional_image_urls": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('additional_image_urls', `Always as an array with quotation marks between each url [\"url1\", \"url2\"]`, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "image_prompt",
+              "displayName": "image_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "additional_image_urls",
+              "displayName": "additional_image_urls",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        2032,
+        464
+      ],
+      "id": "3fb2bb8c-2237-4ac4-9620-f27e683fc0a5",
+      "name": "image_generation"
+    },
+    {
+      "parameters": {
+        "description": "Generate a video from a text prompt and optional reference image",
+        "workflowId": {
+          "__rl": true,
+          "value": "ZWiUsIjAQt2TQlQZ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ZWiUsIjAQt2TQlQZ",
+          "cachedResultName": "video_generator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1888,
+        464
+      ],
+      "id": "4482cdf4-a58a-4645-8128-397ac7487580",
+      "name": "video_generation"
+    },
+    {
+      "parameters": {
+        "content": "## Upload & Optimize \nUpload image to ImgBB, Optimise using ReSmush .it\n",
+        "height": 241,
+        "width": 570,
+        "color": 7
+      },
+      "id": "34283e4f-723d-437c-bc9a-53ef92c7cec7",
+      "name": "Sticky Note36",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Image Gen\nNano Banana (Gemini-2.5-Flash-Image-Preview)",
+        "height": 240,
+        "width": 512,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        928,
+        288
+      ],
+      "id": "6a0f8bb6-78c3-46e7-bf6c-bfdd49e66238",
+      "name": "Sticky Note43"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Garante que arrays existem mesmo vazios\nconst item = $input.item.json;\n\nreturn {\n  json: {\n    ...item,\n    brand_logo_urls: item.brand_logo_urls || [],\n    product_images: item.product_images || [],\n    additional_images: item.additional_images || []\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        592
+      ],
+      "id": "3a8e8ef4-a17d-4f14-bc1d-e51471b6b957",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9QXEni1oCWXOQu",
+          "mode": "list",
+          "cachedResultName": "Resumos de anúncios",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tbl9QXEni1oCWXOQu"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Ad Generated",
+            "id": "={{ $('Get Ad Brief').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ready to Generate",
+                  "value": "Ready to Generate"
+                },
+                {
+                  "name": "Generating...",
+                  "value": "Generating..."
+                },
+                {
+                  "name": "Ad Generated",
+                  "value": "Ad Generated"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad_Reference",
+              "displayName": "Ad_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad_Reference_Files",
+              "displayName": "Ad_Reference_Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Type_Reference",
+              "displayName": "Type_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Generate Type",
+              "displayName": "❗ Generate Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Brand Voice",
+              "displayName": "❗ Brand Voice",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗Creative Style Twist",
+              "displayName": "❗Creative Style Twist",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Ad Instructions",
+              "displayName": "❗ Ad Instructions",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Additional Images",
+              "displayName": "❗ Additional Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Aspect Ratio",
+              "displayName": "❗ Aspect Ratio",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Generate_Images",
+              "displayName": "❗ Generate_Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ad",
+              "displayName": "Generate Ad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Imported Date",
+              "displayName": "Imported Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "URL_Reference",
+              "displayName": "URL_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Transcript_Reference",
+              "displayName": "Transcript_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Body_Reference",
+              "displayName": "Body_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "CTA_Reference",
+              "displayName": "CTA_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Caption_Reference",
+              "displayName": "Caption_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Media_Description_Reference",
+              "displayName": "Media_Description_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Generate Ads - Draft Ads",
+              "displayName": "Generate Ads - Draft Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Reference Files",
+              "displayName": "Reference Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Brand Voices copy",
+              "displayName": "Brand Voices copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Image Styles copy",
+              "displayName": "Image Styles copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Creative Styles copy",
+              "displayName": "Creative Styles copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Creative Styles copy",
+              "displayName": "Creative Styles copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2656,
+        416
+      ],
+      "id": "53bf71a9-9c29-45d7-b500-91a05f5d9d0c",
+      "name": "Update Status1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9QXEni1oCWXOQu",
+          "mode": "list",
+          "cachedResultName": "Ad Briefs",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tbl9QXEni1oCWXOQu"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Ad Generated",
+            "id": "={{ $('Get Ad Brief').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ready to Generate",
+                  "value": "Ready to Generate"
+                },
+                {
+                  "name": "Generating...",
+                  "value": "Generating..."
+                },
+                {
+                  "name": "Ad Generated",
+                  "value": "Ad Generated"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad_Reference",
+              "displayName": "Ad_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Type_Reference",
+              "displayName": "Type_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Generate Type",
+              "displayName": "❗ Generate Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Brand Voice",
+              "displayName": "❗ Brand Voice",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗Output Image Style",
+              "displayName": "❗Output Image Style",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Additional Images",
+              "displayName": "❗ Additional Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ad",
+              "displayName": "Generate Ad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Imported Date",
+              "displayName": "Imported Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "URL_Reference",
+              "displayName": "URL_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Transcript_Reference",
+              "displayName": "Transcript_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Body_Reference",
+              "displayName": "Body_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "CTA_Reference",
+              "displayName": "CTA_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Caption_Reference",
+              "displayName": "Caption_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Reference Files",
+              "displayName": "Reference Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Brand Voices copy",
+              "displayName": "Brand Voices copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ads - Draft Ads",
+              "displayName": "Generate Ads - Draft Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2512,
+        640
+      ],
+      "id": "30e32c56-03a3-4a9f-97d5-43a1cca844de",
+      "name": "Update Status2",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item.json;\nconst adBrief = $('Get Ad Brief').item.json;\nconst brandGuidelines = $('Get Brand Guidelines').item.json;\n\nconst imageUrls = [];\n\nif (brandGuidelines['Brand Logo']?.[0]?.url) {\n  imageUrls.push(brandGuidelines['Brand Logo'][0].url);\n}\n\nif (adBrief['❗ Additional Images']) {\n  adBrief['❗ Additional Images'].forEach(img => {\n    if (img?.url) imageUrls.push(img.url);\n  });\n}\n\nreturn {\n  json: {\n    ...item,\n    prepared_image_urls: imageUrls.join(','),\n    image_urls_count: imageUrls.length,\n    has_brand_logo: imageUrls.length > 0 ? 'yes' : 'no'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        1040
+      ],
+      "id": "29e25bea-8c68-4d7a-8318-520dc91abc1f",
+      "name": "Prepare URLs"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * PARSE AI AGENT OUTPUT\n * Remove markdown, extract JSON, format for Airtable\n */\n\nconst agentOutput = $input.item.json;\nlet outputText = agentOutput.output || agentOutput.text || '';\n\nconsole.log('=== RAW OUTPUT ===');\nconsole.log(outputText.substring(0, 500));\n\n// Remove markdown code blocks\noutputText = outputText.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\n// Try to find JSON object\nlet jsonMatch = outputText.match(/\\{[\\s\\S]*\\}/);\nif (!jsonMatch) {\n  throw new Error('No JSON object found in output');\n}\n\nlet parsedData;\ntry {\n  parsedData = JSON.parse(jsonMatch[0]);\n} catch (e) {\n  console.error('JSON Parse Error:', e.message);\n  console.error('Attempted to parse:', jsonMatch[0].substring(0, 200));\n  throw new Error('Failed to parse JSON from AI output');\n}\n\n// Validate structure\nif (!parsedData.images || !Array.isArray(parsedData.images)) {\n  throw new Error('Invalid output structure: missing images array');\n}\n\nif (parsedData.images.length === 0) {\n  throw new Error('No images were generated');\n}\n\n// Format for Airtable\nconst formattedImages = parsedData.images.map((img, index) => ({\n  url: img.url,\n  filename: `ad_image_${index + 1}.jpg`\n}));\n\nconst generatedImagesJson = JSON.stringify(formattedImages);\n\nconsole.log('=== PARSED SUCCESSFULLY ===');\nconsole.log('Images found:', parsedData.images.length);\nconsole.log('First image URL:', parsedData.images[0]?.url);\n\nreturn {\n  json: {\n    ...agentOutput,\n    parsed_data: parsedData,\n    generated_images_json: generatedImagesJson,\n    generated_images_array: formattedImages,\n    generation_success: true,\n    total_images_generated: parsedData.images.length,\n    completed_creative: parsedData.completed_creative || 'N/A'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        1040
+      ],
+      "id": "5d66fbdc-a5d2-4058-9abd-29c20704ce3b",
+      "name": "Parse JSON Output"
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentOutput = $input.item.json;\nconst images = agentOutput.parsed_data?.images || [];\n\nconst formattedImages = images.map((img, index) => ({\n  url: img.url,\n  filename: `ad_image_${index + 1}.jpg`\n}));\n\nreturn {\n  json: {\n    ...agentOutput,\n    generated_images_json: JSON.stringify(formattedImages),\n    generation_success: images.length > 0,\n    total_images_generated: images.length\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2816,
+        1040
+      ],
+      "id": "7c89d4b3-3342-425a-a0f6-8fdd0877e81a",
+      "name": "Format for Airtable"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9QXEni1oCWXOQu",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Ad Generated",
+            "id": "={{ $('Get Ad Brief').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2832,
+        768
+      ],
+      "id": "c0c1e5ff-9392-490b-9bb8-f84fa3383ad3",
+      "name": "Update Status3",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=## REFERENCE AD\n\n**Title:** {{ $json.Title }}\n**Body:** {{ $json.Ad_body }}\n**Transcript:** {{ $('Get Ad Brief').item.json.Transcript_Reference?.[0] || 'N/A' }}\n\n## NEW AD\n\n**Format:** {{ $json.Ad_Type }}\n**Strategy:** {{ $('Get Creative Style').item.json['Style prompt'] }}\n**Assets:** {{ $json.prepared_image_urls || 'None' }}\n\n## TASK\n\nGenerate {{ $json.Ad_Type === 'carousel' ? '3-5 images' : '1 image' }}.\n\nFor each:\n1. Call image_generation with detailed prompt\n2. Use additional_image_urls: \"{{ $json.prepared_image_urls || '' }}\"\n\nReturn ONLY a JSON object:\n```json\n{\n  \"completed_creative\": \"description\",\n  \"images\": [\n    {\"url\": \"https://...\", \"placement_context\": \"hero\", \"prompt_used\": \"...\"}\n  ]\n}\n```\n\nIMPORTANT: Response must be PURE JSON, no markdown, no backticks, just the JSON object.",
+        "options": {
+          "systemMessage": "=Você é um Estrategista Visual de Criativos para Anúncios.\n🎯 MARCA: {{ $('Get Brand Guidelines').item.json['Brand Name'] }}\nCores: {{ $('Get Brand Guidelines').item.json['Brand Colors'] }}\nLogo: {{ $('Get Brand Guidelines').item.json['Brand Logo']?.[0]?.url }}\n## REGRAS\n1. Chame a ferramenta image_generation para cada imagem\n2. Passe additional_image_urls como: \"url1,url2\" ou \"\"\n3. Prompts com menos de 2000 caracteres\n4. Retorne APENAS JSON válido (sem markdown)\n## FORMATO DE SAÍDA\nRetorne exatamente esta estrutura:\n```json\n{\n  \"completed_creative\": \"string\",\n  \"images\": [\n    {\n      \"url\": \"string\",\n      \"placement_context\": \"string\",\n      \"prompt_used\": \"string\"\n    }\n  ]\n}\n```\nNÃO envolva em blocos de código markdown.\nNÃO adicione nenhum texto antes ou depois do JSON.\nApenas retorne o objeto JSON puro."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2400,
+        1040
+      ],
+      "id": "6e5b9700-6bad-4778-ada9-48a781b71733",
+      "name": "Image Generation Agent2",
+      "retryOnFail": true,
+      "maxTries": 2
+    },
+    {
+      "parameters": {
+        "content": "## No Structured Parser\n\nAgent returns raw JSON\nParse manually in Code node",
+        "height": 400,
+        "width": 750,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        944
+      ],
+      "id": "375baf5d-21ac-42fd-ab1f-de2d226f9c19",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2096,
+        1040
+      ],
+      "id": "9f5c4c10-10f4-4148-beb3-b6ccbdffbcdd",
+      "name": "Loop Over Items3"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-exp",
+        "options": {
+          "maxOutputTokens": 8192,
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        1232
+      ],
+      "id": "e03a80be-2a58-4a28-b204-6c7b613c83fd",
+      "name": "Gemini Flash 2.",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblBLZDYT4NVtlp6W",
+          "mode": "list",
+          "cachedResultName": "Anúncios em rascunho",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblBLZDYT4NVtlp6W"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Ready for Review",
+            "Title": "={{ $('Split Out Creatives').item.json.Title }}",
+            "Transcript": "={{ $('Split Out Creatives').item.json.Transcript }}",
+            "Body": "={{ $('Split Out Creatives').item.json.Ad_body }}",
+            "CTA": "={{ $('Split Out Creatives').item.json.CTA }}",
+            "Type": "={{ $('Split Out Creatives').item.json.Ad_Type }}",
+            "Brand Voice": "={{ $('Get Ad Brief').item.json['❗ Brand Voice'] }}",
+            "Output Image Style": "={{ $('Get Ad Brief').item.json['❗Output Image Style'] }}",
+            "Reference_Original_Ad": "={{ $('Get Ad Brief').item.json.Ad_Reference }}",
+            "Reference_Ad_Brief": "=['{{ $('Get Ad Brief').item.json.id }}']",
+            "Assets": "={{ $json.generated_images_json }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ready for Review",
+                  "value": "Ready for Review"
+                },
+                {
+                  "name": "Editing",
+                  "value": "Editing"
+                },
+                {
+                  "name": "Approved",
+                  "value": "Approved"
+                }
+              ],
+              "readOnly": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "Assets",
+              "displayName": "Assets",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false
+            },
+            {
+              "id": "Reference_Original_Ad",
+              "displayName": "Reference_Original_Ad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false
+            },
+            {
+              "id": "Brand Voice",
+              "displayName": "Brand Voice",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false
+            },
+            {
+              "id": "Output Image Style",
+              "displayName": "Output Image Style",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false
+            },
+            {
+              "id": "Reference_Ad_Brief",
+              "displayName": "Reference_Ad_Brief",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false
+            },
+            {
+              "id": "Ad_Brief_Images",
+              "displayName": "Ad_Brief_Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Reference Files",
+              "displayName": "Reference Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Created Date",
+              "displayName": "Created Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Image Styles copy",
+              "displayName": "Image Styles copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Creative Styles copy",
+              "displayName": "Creative Styles copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Creative Styles copy",
+              "displayName": "Creative Styles copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": false
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3168,
+        1072
+      ],
+      "id": "bca24074-8b3f-4fc1-ae22-5fd831230586",
+      "name": "Store Generated Ad5",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Gerar imagem com Ideogram AI.\nParâmetros:\n- image_prompt: descrição detalhada (máximo 2000 caracteres)\n- additional_image_urls: URLs separadas por vírgula ou string vazia",
+        "workflowId": {
+          "__rl": true,
+          "value": "u5Jk276kwk32Kq44",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/u5Jk276kwk32Kq44",
+          "cachedResultName": "NanoBanana - Fixed Version"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "image_prompt": "={{ $fromAI('image_prompt', 'Image description', 'string') }}",
+            "additional_image_urls": "={{ $fromAI('additional_image_urls', 'URLs: \"url1,url2\" or \"\"', 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "image_prompt",
+              "displayName": "image_prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "additional_image_urls",
+              "displayName": "additional_image_urls",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        2464,
+        1312
+      ],
+      "id": "d2898152-4e9c-49c0-a42b-115df1f079d5",
+      "name": "image_generation1"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "cliente-a1.mentorfy.io",
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "pt-BR,pt;q=0.9,en;q=0.8",
+            "cookie": "rl_page_init_referrer=RudderEncrypt%3AU2FsdGVkX1%2FRmo6qRLszFay45GwBQZDP3RWELi0BHS8%3D; rl_page_init_referring_domain=RudderEncrypt%3AU2FsdGVkX19KYY6Hnq8FDgDFvnkX62fL1vApJN5nKFY%3D; rl_anonymous_id=RudderEncrypt%3AU2FsdGVkX1%2FGWSiyaR6V4Y9pKb5zza1uqru%2F90KV5akNOa%2BM1AM1Yb4yFxSiJxUKULYwh3f2oZfbU%2FoBUSi%2BbQ%3D%3D; rl_user_id=RudderEncrypt%3AU2FsdGVkX1%2B%2F%2Fum1OLQzFeiwHm1stGilgTYYsb6PpN2dyRLzEkAz90CPdNrhJ5hYw%2BJ7qZRg05qaf7PtofssbmDt5Vq3d4kZ3jI4ymhqhhbcrx%2FByR9T7KpXcSyReX8g7nMkr7Rwxi42U24%2Bj98FPkbeCR8GSczxQatnIOlTkUA%3D; rl_trait=RudderEncrypt%3AU2FsdGVkX19oq%2FlCsQm4TUyRn6q%2Ffgx%2F3yWg65iuxhyNJhQwwqrO8H5aqmKfZrODSraFyVZtLGAm7jkXDqBzMMw8DzuxKgUTZh32%2BRzC733i3MUmSkK8EgjiWiil5rp317fxGSWD7bXJax23%2Bm%2FMXo9cr8j0YXO45vjhlYhNK2E%3D; rl_session=RudderEncrypt%3AU2FsdGVkX1%2B3hZMTu%2BQekPo38WM1XXTqLHpdFz7wc7tySClQI0YwhRzeB%2Bc1TrwdFH5kDm7ToiV6minyxPlPZXXLkSa8sJcZan5QpUTKMl2lqrE%2FW32Fz6Ks16Gqmx9t1%2FeAd6rOYuMdvRm5M1n0ZQ%3D%3D; ph_phc_4URIAm1uYfJO7j8kWSe0J8lc8IqnstRLS7Jx8NcakHo_posthog=%7B%22distinct_id%22%3A%229d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69%23c236702a-fb1c-471c-b22c-6b898a17bcb1%22%2C%22%24sesid%22%3A%5B1763626744769%2C%22019aa044-8563-7a83-b3da-aae3b0f13053%22%2C1763625436513%5D%2C%22%24epp%22%3Atrue%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22%24direct%22%2C%22u%22%3A%22https%3A%2F%2Fcliente-a1.mentorfy.io%2Fsignin%3Fredirect%3D%25252Fworkflow%25252FPtGKBmhU7gg8cd3u%25252Fexecutions%25252F%22%7D%7D",
+            "priority": "u=0, i",
+            "sec-ch-ua": "\"Chromium\";v=\"142\", \"Google Chrome\";v=\"142\", \"Not_A Brand\";v=\"99\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "x-forwarded-for": "177.198.79.190",
+            "x-forwarded-host": "cliente-a1.mentorfy.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "9e2d5292a02e",
+            "x-real-ip": "177.198.79.190"
+          },
+          "params": {},
+          "query": {
+            "id": "recGPKCuGYNVHTAmo"
+          },
+          "body": {},
+          "webhookUrl": "https://cliente-a1.mentorfy.io/webhook/67af7153-878f-4af0-b018-2972be99d0e0",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Ad Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organize fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organize fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Ad Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini-2.5-pro": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ad Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Opus-4.1-thinking": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ad Generator",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Ad Generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-5-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ad Generator": {
+      "main": [
+        [
+          {
+            "node": "Split Out Creatives",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All fields ok": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update status": {
+      "main": [
+        [
+          {
+            "node": "Get Reference",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Brand Guidelines",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Creative Style",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Image Preset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Reference": {
+      "main": [
+        [
+          {
+            "node": "Organize fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NotAlreadyDone": {
+      "main": [
+        [
+          {
+            "node": "All fields ok",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Error1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Brand Guidelines": {
+      "main": [
+        [
+          {
+            "node": "Organize fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out Creatives": {
+      "main": [
+        [
+          {
+            "node": "GenerateImages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Generated Ad": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser4": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Image Generation",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organize fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Get Image Preset": {
+      "main": [
+        [
+          {
+            "node": "Organize fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Organize fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Image Generation": {
+      "main": [
+        [
+          {
+            "node": "Store Generated Ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Update Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Image Generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GenerateImages": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Store Generated Ad1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Creative Style": {
+      "main": [
+        [
+          {
+            "node": "Organize fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Ad Brief": {
+      "main": [
+        [
+          {
+            "node": "NotAlreadyDone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini-2.5-pro1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Image Generation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Opus-4.1-thinking1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Image Generation",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "image_generation": {
+      "ai_tool": [
+        [
+          {
+            "node": "Image Generation",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "video_generation": {
+      "ai_tool": [
+        [
+          {
+            "node": "Image Generation",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare URLs": {
+      "main": [
+        [
+          {
+            "node": "Image Generation Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON Output": {
+      "main": [
+        [
+          {
+            "node": "Format for Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format for Airtable": {
+      "main": [
+        [
+          {
+            "node": "Store Generated Ad5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Generation Agent2": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items3": {
+      "main": [
+        [
+          {
+            "node": "Update Status3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Flash 2.": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Image Generation Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Generated Ad5": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image_generation1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Image Generation Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "959fb80d-bf8c-43a1-994d-9359e4c2fe56",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "uGnIUUKy7sTyUjLc",
+  "tags": [
+    {
+      "updatedAt": "2025-10-25T08:24:52.082Z",
+      "createdAt": "2025-10-25T08:24:52.082Z",
+      "id": "UB5qzOIudsdqrNUY",
+      "name": "Simon Scrapes"
+    },
+    {
+      "updatedAt": "2025-10-24T11:28:26.036Z",
+      "createdAt": "2025-10-24T11:28:26.036Z",
+      "id": "iHufEKXmCdyVG7sh",
+      "name": "Admin"
+    },
+    {
+      "updatedAt": "2025-10-24T11:28:26.054Z",
+      "createdAt": "2025-10-24T11:28:26.054Z",
+      "id": "xN0OQmUNxlTZCOu8",
+      "name": "Templates"
+    }
+  ]
+}

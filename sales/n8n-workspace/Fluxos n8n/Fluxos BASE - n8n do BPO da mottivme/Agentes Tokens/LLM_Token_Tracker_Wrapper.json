@@ -1,0 +1,69 @@
+{
+  "name": "LLM Token Tracker - Componente Reutilizavel",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# LLM Token Tracker Wrapper\n\nEste componente captura tokens REAIS das chamadas LLM e registra no Supabase.\n\n## Como usar:\n1. Conecte seu modelo LLM (Gemini, Groq, OpenAI) na entrada 'ai_languageModel'\n2. Conecte este wrapper na entrada do seu Agent ou Chain\n3. Os tokens serão capturados automaticamente via callback\n\n## Dados capturados:\n- tokens_input (prompt_tokens)\n- tokens_output (completion_tokens)\n- modelo usado\n- custo calculado automaticamente\n\n## Configuracao:\nEdite o código para ajustar:\n- SUPABASE_URL\n- SUPABASE_KEY\n- Dados de contexto (location_id, contact_id, etc)",
+        "height": 380,
+        "width": 450,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-100, 0],
+      "id": "note-wrapper-001",
+      "name": "Instrucoes"
+    },
+    {
+      "parameters": {
+        "code": {
+          "supplyData": {
+            "code": "// ========================================\n// LLM TOKEN TRACKER WRAPPER\n// Captura tokens reais e registra no Supabase\n// ========================================\n\n// === CONFIGURACAO SUPABASE ===\nconst SUPABASE_URL = 'https://bfumywvwubvernvhjehk.supabase.co/rest/v1/n8n_custos_execucao';\nconst SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao';\n\n// === TABELA DE PRECOS (USD por 1M tokens) ===\nconst PRECOS = {\n  // Gemini\n  'gemini-2.0-flash': { input: 0.10, output: 0.40 },\n  'gemini-2.0-flash-exp': { input: 0.10, output: 0.40 },\n  'gemini-2.5-flash': { input: 0.075, output: 0.30 },\n  'gemini-2.5-pro': { input: 1.25, output: 10.00 },\n  'gemini-1.5-flash': { input: 0.075, output: 0.30 },\n  'gemini-1.5-pro': { input: 1.25, output: 5.00 },\n  'models/gemini-2.0-flash': { input: 0.10, output: 0.40 },\n  'models/gemini-2.5-flash': { input: 0.075, output: 0.30 },\n  'models/gemini-2.5-pro': { input: 1.25, output: 10.00 },\n  // OpenAI\n  'gpt-4o': { input: 2.50, output: 10.00 },\n  'gpt-4o-mini': { input: 0.15, output: 0.60 },\n  'gpt-4-turbo': { input: 10.00, output: 30.00 },\n  'gpt-3.5-turbo': { input: 0.50, output: 1.50 },\n  // Claude\n  'claude-3-opus': { input: 15.00, output: 75.00 },\n  'claude-3-sonnet': { input: 3.00, output: 15.00 },\n  'claude-3-haiku': { input: 0.25, output: 1.25 },\n  'claude-3.5-sonnet': { input: 3.00, output: 15.00 },\n  // Groq (Llama)\n  'llama-3.3-70b-versatile': { input: 0.59, output: 0.79 },\n  'llama-3.1-70b-versatile': { input: 0.59, output: 0.79 },\n  'llama-3.1-8b-instant': { input: 0.05, output: 0.08 },\n  'llama3-70b-8192': { input: 0.59, output: 0.79 },\n  'llama3-8b-8192': { input: 0.05, output: 0.08 },\n  'mixtral-8x7b-32768': { input: 0.24, output: 0.24 },\n  'gemma2-9b-it': { input: 0.20, output: 0.20 },\n  // Default\n  'default': { input: 0.10, output: 0.40 }\n};\n\n// === FUNCAO PARA CALCULAR CUSTO ===\nfunction calcularCusto(modelo, tokensInput, tokensOutput) {\n  // Normaliza nome do modelo\n  const modeloLower = (modelo || '').toLowerCase();\n  let preco = PRECOS['default'];\n  \n  // Busca preco exato ou parcial\n  for (const [key, value] of Object.entries(PRECOS)) {\n    if (modeloLower.includes(key.toLowerCase()) || key.toLowerCase().includes(modeloLower)) {\n      preco = value;\n      break;\n    }\n  }\n  \n  const custoInput = (tokensInput / 1000000) * preco.input;\n  const custoOutput = (tokensOutput / 1000000) * preco.output;\n  return parseFloat((custoInput + custoOutput).toFixed(8));\n}\n\n// === PEGA A LLM CONECTADA ===\nconst llm = await this.getInputConnectionData('ai_languageModel', 0);\n\n// === DADOS DO WORKFLOW ===\nconst workflowId = $workflow.id;\nconst workflowName = $workflow.name;\nconst executionId = $execution.id;\n\n// === CAPTURA DADOS DE CONTEXTO ===\n// Tenta pegar de varios nos possiveis\nlet contextData = {\n  location_id: '',\n  location_name: '',\n  contact_id: '',\n  contact_name: '',\n  canal: 'whatsapp',\n  tipo_acao: 'ia_generica',\n  mensagem_entrada: '',\n  mensagem_saida: ''\n};\n\ntry {\n  // Tenta nos comuns de workflows GHL\n  const possibleNodes = [\n    'Code in JavaScript',\n    'Code in JavaScript1', \n    'Preparar Contexto',\n    'Extrair Info Lead',\n    'Informacoes Relevantes',\n    'Informacoes Relevantes - FUP1',\n    'Webhook',\n    'Webhook TAG Reagendar2'\n  ];\n  \n  for (const nodeName of possibleNodes) {\n    try {\n      const nodeData = $(nodeName).first()?.json;\n      if (nodeData) {\n        contextData.location_id = contextData.location_id || nodeData.location_id || nodeData.locationId || '';\n        contextData.location_name = contextData.location_name || nodeData.location_name || '';\n        contextData.contact_id = contextData.contact_id || nodeData.contact_id || nodeData.contactId || nodeData['Lead Id'] || '';\n        contextData.contact_name = contextData.contact_name || nodeData.contact_name || nodeData.nome || nodeData.name || nodeData.first_name || '';\n        contextData.canal = contextData.canal || nodeData.source || nodeData.canal || 'whatsapp';\n        contextData.mensagem_entrada = contextData.mensagem_entrada || nodeData.historico_mensagens || nodeData.historico_resumo || '';\n      }\n    } catch (e) {\n      // Node nao existe, continua\n    }\n  }\n} catch (e) {\n  console.log('Erro ao capturar contexto:', e.message);\n}\n\n// === CONFIGURA CALLBACK PARA CAPTURAR TOKENS ===\nconst originalCallbacks = llm.callbacks || [];\n\nllm.callbacks = [\n  ...originalCallbacks,\n  {\n    handleLLMEnd: async (output, runId, parentRunId, tags) => {\n      try {\n        const generation = output.generations?.[0]?.[0];\n        if (!generation) return;\n        \n        // Captura usage de diferentes formatos (Gemini, OpenAI, Groq, etc)\n        const usage = generation.message?.usage_metadata\n          || generation.generationInfo?.usage_metadata\n          || generation.message?.response_metadata?.usage\n          || generation.generationInfo?.usage\n          || output.llmOutput?.usage\n          || output.llmOutput?.tokenUsage\n          || { input_tokens: 0, output_tokens: 0 };\n        \n        // Normaliza nomes dos campos\n        const tokensInput = usage.input_tokens || usage.prompt_tokens || usage.promptTokens || 0;\n        const tokensOutput = usage.output_tokens || usage.completion_tokens || usage.completionTokens || 0;\n        \n        // Pega nome do modelo\n        const modelo = llm.modelName || llm.model || llm.modelId || 'unknown';\n        \n        // Calcula custo\n        const custoUsd = calcularCusto(modelo, tokensInput, tokensOutput);\n        \n        // Captura mensagem de saida\n        const mensagemSaida = (generation.text || generation.message?.content || '').substring(0, 1000);\n        \n        // Monta payload\n        const payload = {\n          workflow_id: workflowId,\n          workflow_name: workflowName,\n          execution_id: executionId,\n          location_id: contextData.location_id,\n          location_name: contextData.location_name,\n          contact_id: contextData.contact_id,\n          contact_name: contextData.contact_name,\n          canal: contextData.canal,\n          tipo_acao: contextData.tipo_acao,\n          modelo_ia: modelo,\n          tokens_input: tokensInput,\n          tokens_output: tokensOutput,\n          custo_usd: custoUsd,\n          mensagem_entrada: contextData.mensagem_entrada.substring(0, 1000),\n          mensagem_saida: mensagemSaida\n        };\n        \n        // Envia para Supabase\n        const response = await fetch(SUPABASE_URL, {\n          method: 'POST',\n          headers: {\n            'apikey': SUPABASE_KEY,\n            'Authorization': `Bearer ${SUPABASE_KEY}`,\n            'Content-Type': 'application/json',\n            'Prefer': 'return=minimal'\n          },\n          body: JSON.stringify(payload)\n        });\n        \n        if (!response.ok) {\n          console.error('Erro ao registrar custo IA:', response.status, await response.text());\n        } else {\n          console.log(`Token tracking: ${tokensInput} in / ${tokensOutput} out = $${custoUsd} (${modelo})`);\n        }\n        \n      } catch (err) {\n        console.error('Erro no callback handleLLMEnd:', err.message);\n      }\n    }\n  }\n];\n\n// Retorna a LLM com callback configurado\nreturn llm;"
+          }
+        },
+        "inputs": {
+          "input": [
+            {
+              "type": "ai_languageModel",
+              "required": true,
+              "maxConnections": 1
+            }
+          ]
+        },
+        "outputs": {
+          "output": [
+            {
+              "type": "ai_languageModel"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.code",
+      "typeVersion": 1,
+      "position": [400, 200],
+      "id": "llm-tracker-001",
+      "name": "LLM Token Tracker"
+    },
+    {
+      "parameters": {
+        "content": "## Conexoes:\n\n```\n[Seu LLM Model] --> [LLM Token Tracker] --> [Agent/Chain]\n     (Gemini)           (Este node)          (Seu agent)\n```\n\n## Modelos suportados:\n- Google Gemini (2.0, 2.5, 1.5)\n- OpenAI GPT (4o, 4-turbo, 3.5)\n- Anthropic Claude (3, 3.5)\n- Groq Llama (3.3, 3.1, 3)\n- Mixtral, Gemma\n\n## Dados registrados:\n- workflow_id, workflow_name\n- execution_id\n- location_id, contact_id\n- modelo_ia\n- tokens_input, tokens_output\n- custo_usd (calculado automaticamente)\n- mensagem_entrada, mensagem_saida",
+        "height": 400,
+        "width": 300,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [700, 0],
+      "id": "note-wrapper-002",
+      "name": "Documentacao"
+    }
+  ],
+  "connections": {},
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

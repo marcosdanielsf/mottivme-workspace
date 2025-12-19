@@ -1,0 +1,94 @@
+{
+  "cliente_ideal_definicao": {
+    "perfil_demografico": {
+      "idade": "35-45 anos",
+      "genero": "70% masculino, 30% feminino",
+      "localizacao": "São Paulo, Rio, Belo Horizonte, Curitiba, Florianópolis",
+      "renda": "R$ 40k-120k/mês (empresa faturando R$ 80k-250k)",
+      "educacao": "Superior completo",
+      "ocupacao": "Dono de agência/consultoria de marketing, serviços B2B",
+      "estado_civil": "Casado(a) com filhos",
+      "filhos": "1-2 filhos entre 3-12 anos"
+    },
+    "perfil_psicografico": {
+      "valores": [
+        "Responsabilidade - sente peso de sustentar família e equipe",
+        "Controle - precisa ter mão em tudo para garantir qualidade",
+        "Competência - orgulha-se de ser o melhor tecnicamente"
+      ],
+      "estilo_vida": "Ativo mas desbalanceado - trabalha 14h/dia, negligencia saúde e família",
+      "personalidade": [
+        "Herói Exausto - precisa salvar todos, todos os dias",
+        "Workaholic - confunde movimento com progresso",
+        "Perfeccionista - não delega por medo de mediocridade",
+        "Decisor intuitivo sob pressão"
+      ],
+      "interesses": [
+        "Eficiência operacional e produtividade",
+        "Crescimento de negócios com previsibilidade",
+        "Equilíbrio trabalho-vida (aspira mas não consegue)",
+        "Tecnologia e automação para ganhar tempo"
+      ],
+      "motivacoes": [
+        "Liberdade verdadeira - não ser escravo do próprio negócio",
+        "Tempo com família - estar presente na vida dos filhos",
+        "Legado - construir algo maior que ele mesmo",
+        "Reconhecimento - ser visto como líder, não apenas executor"
+      ]
+    },
+    "situacao_atual": "Empresário trabalhando 14 horas/dia apagando incêndios. Faturamento volátil (40% oscilação mês a mês). Dependente dele para tudo - se parar, empresa para. WhatsApp não para nem domingo. Burnout iminente, casamento em risco, saúde deteriorando. Já tentou contratar mas 'deu mais trabalho treinar'. Perdido entre urgências, sem tempo para estratégia.",
+    "objetivos_aspiracoes": [
+      "Tirar férias sem celular tocar - recuperar vida pessoal",
+      "Empresa funcionar sem ele - ter finais de semana livres",
+      "Faturamento previsível - poder planejar com 90 dias de antecedência",
+      "Time autônomo - delegar com confiança",
+      "Dormir tranquilo - sem pensar em problemas de cliente",
+      "Ser mentor, não executor - desenvolver pessoas",
+      "Construir legado - algo que dure além dele"
+    ],
+    "desafios_obstaculos": [
+      "Trabalha igual condenado mas empresa não sai do lugar",
+      "Não consegue delegar - tudo volta para ele refazer",
+      "Receita imprevisível - mês bom seguido de 3 ruins",
+      "Sem processos documentados - tudo na cabeça",
+      "Equipe sem autonomia - dependem dele para tudo",
+      "Cliente reclamando, funcionário com problema 24/7",
+      "Perda progressiva de sentido - virou escravo do que criou",
+      "Medo de parar - se parar, como paga contas?",
+      "Resentimento crescente - clientes viraram vampiros de energia"
+    ],
+    "comportamento_compra": {
+      "processo_decisao": "Intuitivo sob pressão - decide rápido quando desesperado, paralisa quando não",
+      "gatilhos_compra": [
+        "Exaustão extrema após semana particularmente caótica",
+        "Perder evento importante do filho ou briga com cônjuge",
+        "Ver concorrente menos competente crescendo com organização",
+        "Cliente grande indo embora por desorganização",
+        "Problema de saúde relacionado a stress"
+      ],
+      "objecoes_comuns": [
+        "Não tenho tempo para implementar processo agora",
+        "Já tentei organizar antes e não funcionou",
+        "R$ 50 mil é muito caro para minha realidade",
+        "Meu negócio é muito específico, isso não funcionaria",
+        "Preciso conversar com meu sócio/esposa"
+      ],
+      "investimento_medio": "R$ 50,000-75,000 para programa completo de 6-12 meses",
+      "ciclo_compra": "Médio (2-4 semanas) - namora por 2-3 semanas, decide após crise"
+    },
+    "canais_preferidos": [
+      "Instagram - consumo rápido entre tarefas, stories e reels",
+      "YouTube - vídeos 10-15min no almoço ou dirigindo",
+      "WhatsApp - prefere áudio a texto, quer resposta rápida",
+      "Email - para conteúdo mais denso, lê à noite",
+      "LinkedIn - pesquisa e validação social"
+    ],
+    "jornada_cliente": {
+      "conscientizacao": "Scrollando Instagram às 23h procrastinando, vê anúncio sobre 'parar de apagar incêndio' - ressoa imediatamente",
+      "consideracao": "Assiste 3-4 vídeos no YouTube sobre casos reais, baixa material gratuito, fica 2-3 semanas 'namorando' e consumindo conteúdo",
+      "decisao": "Agenda conversa após crise específica (cliente reclamando, funcionário saindo, briga em casa), precisa de 2-3 conversas para fechar",
+      "pos_venda": "Precisa de quick wins na primeira semana (reduzir reuniões 50%, automatizar 1 processo) ou entra em pânico sobre investimento"
+    },
+    "mensagem_ideal": "Pare de apagar incêndio. Construa uma máquina previsível que funciona sem você através de processos documentados e métricas transparentes. Liberdade vem de processo, não de trabalhar mais horas. Wendell saiu de 1% para 5% de conversão em 90 dias com nossos playbooks. CAC R$47, LTV 24x, 85% de previsibilidade no forecast. Você vai continuar trabalhando 14h pelos próximos 5 anos ou vai investir 2h/semana por 90 dias para nunca mais ser escravo do próprio negócio?"
+  }
+}

@@ -1,0 +1,3818 @@
+{
+  "name": "2. Meta Ads System - 1b. Import Scraped Ads to Generated Ads",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9QXEni1oCWXOQu",
+          "mode": "list",
+          "cachedResultName": "Resumos de anúncios",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tbl9QXEni1oCWXOQu"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Type_Reference": "={{ $('Get a record').item.json.Type }}",
+            "Ad_Reference": "={{ $('Get a record').item.json.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ready to Generate",
+                  "value": "Ready to Generate"
+                },
+                {
+                  "name": "Generating...",
+                  "value": "Generating..."
+                },
+                {
+                  "name": "Ad Generated",
+                  "value": "Ad Generated"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad_Reference",
+              "displayName": "Ad_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Type_Reference",
+              "displayName": "Type_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "❗ Generate Type",
+              "displayName": "❗ Generate Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Brand Voice",
+              "displayName": "❗ Brand Voice",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗Output Image Style",
+              "displayName": "❗Output Image Style",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Additional Images",
+              "displayName": "❗ Additional Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ad",
+              "displayName": "Generate Ad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Imported Date",
+              "displayName": "Imported Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "URL_Reference",
+              "displayName": "URL_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Transcript_Reference",
+              "displayName": "Transcript_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Body_Reference",
+              "displayName": "Body_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "CTA_Reference",
+              "displayName": "CTA_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Caption_Reference",
+              "displayName": "Caption_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Reference Files",
+              "displayName": "Reference Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Brand Voices copy",
+              "displayName": "Brand Voices copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ads - Draft Ads",
+              "displayName": "Generate Ads - Draft Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        576,
+        544
+      ],
+      "id": "3c74b779-c9de-4a35-8b71-f2c6d00fec33",
+      "name": "Import into Generated Ads table",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Anúncios copiados",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Import": false,
+            "id": "={{ $json.id }}",
+            "Import Status": "Imported"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Status",
+              "displayName": "Ad Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Active",
+                  "value": "Active"
+                },
+                {
+                  "name": "Not Active",
+                  "value": "Not Active"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import",
+              "displayName": "Import",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Import Status",
+              "displayName": "Import Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not imported",
+                  "value": "Not imported"
+                },
+                {
+                  "name": "Processing",
+                  "value": "Processing"
+                },
+                {
+                  "name": "Imported",
+                  "value": "Imported"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_until",
+              "displayName": "running_until",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_scraped_date",
+              "displayName": "last_scraped_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "days_running",
+              "displayName": "days_running",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "collation_count",
+              "displayName": "collation_count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "collation_id",
+              "displayName": "collation_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page Profile Picture",
+              "displayName": "Page Profile Picture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link URL",
+              "displayName": "Link URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import_edited",
+              "displayName": "Import_edited",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link to Generated Ads",
+              "displayName": "Link to Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generated Ads",
+              "displayName": "Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Briefs copy",
+              "displayName": "Ad Briefs copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -464,
+        576
+      ],
+      "id": "dac507b2-eb2d-4bbe-abde-6e3e5b257f57",
+      "name": "Uncheck import field",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableOAuth2Api",
+        "baseId": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "id"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "id"
+        },
+        "triggerField": "last_scraped_date",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        400
+      ],
+      "id": "0b1ac4be-f921-47f7-8829-9dde92620be1",
+      "name": "Airtable Trigger",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "aebcc88e-72ad-46d0-87f1-10ef72484dd0",
+              "leftValue": "={{ $json.Import }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1024,
+        400
+      ],
+      "id": "af3f26f5-8cf7-4c16-bae0-19223dbbc012",
+      "name": "IfImport"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        592
+      ],
+      "id": "ae3d592e-3771-4446-9ef7-e56dd11496c6",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appk7eiHbR9LpgY4Y/tblusQi6XqIUNy8SO"
+        },
+        "id": "={{ $json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -704,
+        400
+      ],
+      "id": "6b0e9b25-416e-41fc-943b-84c0eee5f7b1",
+      "name": "Get a record",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Anúncios copiados",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "Import Status": "Processing"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import",
+              "displayName": "Import",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import Status",
+              "displayName": "Import Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not imported",
+                  "value": "Not imported"
+                },
+                {
+                  "name": "Processing",
+                  "value": "Processing"
+                },
+                {
+                  "name": "Imported",
+                  "value": "Imported"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Import_edited",
+              "displayName": "Import_edited",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_scraped_date",
+              "displayName": "last_scraped_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link to Generated Ads",
+              "displayName": "Link to Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -864,
+        80
+      ],
+      "id": "e5b85942-c33b-407a-889a-c99e6fb7ce7c",
+      "name": "Update Import Status",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Track Status \n",
+        "height": 208,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        32
+      ],
+      "id": "84efb533-0d96-45a3-89ea-2cf01192801b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Trigger on Airtable tickbox\nThis is used instead of a button because we want to enable multiple to be imported in one event\n",
+        "height": 256,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        304
+      ],
+      "id": "60747b53-36fe-4668-b206-c4a57cd111c7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Add to Generated Ads Table\nReady for processing\n",
+        "height": 432,
+        "width": 480,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        304
+      ],
+      "id": "e84be468-43c7-4c87-8132-918784b9c825",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Type }}",
+                    "rightValue": "=Video",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "9fc8b8b0-2e2d-4b00-8e31-736c07bf4be1"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "VIDEO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "731cb6b5-71ef-4faa-bce8-1139c8b61b19",
+                    "leftValue": "={{ $json.Type }}",
+                    "rightValue": "Image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IMAGE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ba22f8f3-ed4c-4da7-bb16-d3119816dd74",
+                    "leftValue": "={{ $json.Type }}",
+                    "rightValue": "Carousel",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CAROUSEL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -464,
+        368
+      ],
+      "id": "a77b764d-6aab-47de-84d2-28bede78f4cf",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "text": "You have two very clear tasks:\n1. Transcribe this video. Spoken words only. Output it inside a JSON object named \"transcript\". Don't use timestamps. Output as a single text.\n\n2. Describe what is happening in this video so a person can understand the context. Output it inside a JSON object named \"description\". Don't use timestamps. Be concise. Output as a single text.",
+        "videoUrls": "={{ $json.Files[1].url }}",
+        "options": {
+          "maxOutputTokens": 64000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        128,
+        224
+      ],
+      "id": "7f4fda44-a6ee-4c35-b64c-137e75709068",
+      "name": "Analyze video",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "42ec115d-9524-48ab-aa6b-b9fe8810c0a1",
+              "name": "video_data",
+              "value": "={{ $json.content.parts[0].text.replaceAll(\"```\",\"\").replaceAll(\"json\",\"\").parseJson() }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        224
+      ],
+      "id": "33bad57b-a3b3-4019-8e61-fbee592f72c2",
+      "name": "Parse JSON"
+    },
+    {
+      "parameters": {
+        "content": "Gemini 2.5 Pro is great for transcriptions.\n\nAccurate, affordable and big token output for longer videos.\n\nThere are cheaper alternatives, like [DeepGram](https://deepgram.com/), if you'd like to optimize costs.",
+        "height": 320,
+        "width": 304
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        16,
+        64
+      ],
+      "id": "bc9da594-75cc-42fa-b4b3-c153834d703e",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "## Generate video/image/carousel transcript and description",
+        "height": 688,
+        "width": 1152,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9e8fff1d-e59e-4571-bde8-dd8ba5500f2a",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appk7eiHbR9LpgY4Y/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get a record').item.json.id }}",
+            "Media description": "={{ $('Analyze image1').item.json.content.parts[0].text }}",
+            "collation_count": 0
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Status",
+              "displayName": "Ad Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Active",
+                  "value": "Active"
+                },
+                {
+                  "name": "Not Active",
+                  "value": "Not Active"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Import",
+              "displayName": "Import",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Import Status",
+              "displayName": "Import Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not imported",
+                  "value": "Not imported"
+                },
+                {
+                  "name": "Processing",
+                  "value": "Processing"
+                },
+                {
+                  "name": "Imported",
+                  "value": "Imported"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_until",
+              "displayName": "running_until",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_scraped_date",
+              "displayName": "last_scraped_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "days_running",
+              "displayName": "days_running",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "collation_count",
+              "displayName": "collation_count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "collation_id",
+              "displayName": "collation_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Page Profile Picture",
+              "displayName": "Page Profile Picture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link URL",
+              "displayName": "Link URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Import_edited",
+              "displayName": "Import_edited",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link to Generated Ads",
+              "displayName": "Link to Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Generated Ads",
+              "displayName": "Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Briefs copy",
+              "displayName": "Ad Briefs copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        368,
+        544
+      ],
+      "id": "e7891262-077b-47e5-8d03-b22fd8460c7c",
+      "name": "Add image trancripts1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "content.parts[0].text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        560,
+        832
+      ],
+      "id": "9e0bfb49-48eb-4023-9920-0b8487763779",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "Files",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        144,
+        832
+      ],
+      "id": "6be94985-e234-488c-9c4e-a79b2959f58d",
+      "name": "Split Carousel Cards"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Anúncios copiados",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get a record').item.json.id }}",
+            "Transcript": "={{ $json.text.map((t, i) => `## IMAGE ${i + 1}\\n${t}`).join('\\n\\n') }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        832
+      ],
+      "id": "6502f416-5454-4f0c-82a9-6414130dc19f",
+      "name": "Add image trancripts",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Analyze individual carousel images\n",
+        "height": 400,
+        "width": 1152,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        720
+      ],
+      "id": "5bd42cb5-3d44-4e52-82d3-a27e44e6b93f",
+      "name": "Sticky Note26"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9QXEni1oCWXOQu",
+          "mode": "list",
+          "cachedResultName": "Ad Briefs",
+          "cachedResultUrl": "https://airtable.com/appk7eiHbR9LpgY4Y/tbl9QXEni1oCWXOQu"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Type_Reference": "={{ $('Get a record').item.json.Type }}",
+            "Ad_Reference": "={{ $('Get a record').item.json.id}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ready to Generate",
+                  "value": "Ready to Generate"
+                },
+                {
+                  "name": "Generating...",
+                  "value": "Generating..."
+                },
+                {
+                  "name": "Ad Generated",
+                  "value": "Ad Generated"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad_Reference",
+              "displayName": "Ad_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Type_Reference",
+              "displayName": "Type_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "❗ Generate Type",
+              "displayName": "❗ Generate Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Brand Voice",
+              "displayName": "❗ Brand Voice",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗Output Image Style",
+              "displayName": "❗Output Image Style",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Additional Images",
+              "displayName": "❗ Additional Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ad",
+              "displayName": "Generate Ad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Imported Date",
+              "displayName": "Imported Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "URL_Reference",
+              "displayName": "URL_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Transcript_Reference",
+              "displayName": "Transcript_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Body_Reference",
+              "displayName": "Body_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "CTA_Reference",
+              "displayName": "CTA_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Caption_Reference",
+              "displayName": "Caption_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Reference Files",
+              "displayName": "Reference Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Brand Voices copy",
+              "displayName": "Brand Voices copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ads - Draft Ads",
+              "displayName": "Generate Ads - Draft Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        224
+      ],
+      "id": "1a4c3c15-b2af-4032-839b-26f1023e9997",
+      "name": "Import into Generated Ads table1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
+        },
+        "text": "Extract the text from this image. Output only the extracted text; nothing more.",
+        "imageUrls": "={{\n   $json.Files[0].url\n}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        128,
+        384
+      ],
+      "id": "44b77712-3f09-48b6-b528-43a88c528d95",
+      "name": "Analyze text",
+      "executeOnce": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
+        },
+        "text": "What's in this image? Describe it in detail. Ignore any text that's in the image. Output only the description text, nothing more.",
+        "imageUrls": "={{\n   $json.Files[0].url\n}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        128,
+        544
+      ],
+      "id": "36e49daf-194f-445c-9b60-af4d8f763b3a",
+      "name": "Analyze image1",
+      "executeOnce": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
+        },
+        "text": "Extract the text from this image. Output only the extracted text; nothing more.",
+        "imageUrls": "={{ $json.Files.url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        352,
+        832
+      ],
+      "id": "96aebfbc-4a3d-468e-9444-e2b2e7607f60",
+      "name": "Analyze text1",
+      "executeOnce": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rcBu39KRH8GFsCNh",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
+        },
+        "text": "What's in this image? Describe it in detail. Ignore any text that's in the image. Output only the description text, nothing more.",
+        "imageUrls": "={{ $json.Files.url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        352,
+        992
+      ],
+      "id": "2c4b4285-faa6-409f-9a74-2c3c2cdcdbd8",
+      "name": "Analyze image",
+      "executeOnce": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rcBu39KRH8GFsCNh",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "content.parts[0].text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        560,
+        992
+      ],
+      "id": "76b07097-2105-4757-bc00-dd10732cebb9",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Anúncios copiados",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get a record').item.json.id }}",
+            "Media description": "={{ $json.text.map((t, i) => `## IMAGE ${i + 1}\\n${t}`).join('\\n\\n') }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Status",
+              "displayName": "Ad Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Active",
+                  "value": "Active"
+                },
+                {
+                  "name": "Not Active",
+                  "value": "Not Active"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import",
+              "displayName": "Import",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import Status",
+              "displayName": "Import Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Not imported",
+                  "value": "Not imported"
+                },
+                {
+                  "name": "Processing",
+                  "value": "Processing"
+                },
+                {
+                  "name": "Imported",
+                  "value": "Imported"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_until",
+              "displayName": "running_until",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_scraped_date",
+              "displayName": "last_scraped_date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "days_running",
+              "displayName": "days_running",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "collation_count",
+              "displayName": "collation_count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "collation_id",
+              "displayName": "collation_id",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "CTA",
+              "displayName": "CTA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page Profile Picture",
+              "displayName": "Page Profile Picture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link URL",
+              "displayName": "Link URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Asset Description",
+              "displayName": "Asset Description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Import_edited",
+              "displayName": "Import_edited",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link to Generated Ads",
+              "displayName": "Link to Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generated Ads",
+              "displayName": "Generated Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Briefs copy",
+              "displayName": "Ad Briefs copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        992
+      ],
+      "id": "74e07e89-f673-495a-a97c-e316e8a11ffa",
+      "name": "Add image trancripts2",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9QXEni1oCWXOQu",
+          "mode": "list",
+          "cachedResultName": "Resumos de anúncios",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tbl9QXEni1oCWXOQu"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Type_Reference": "={{ $('Get a record').item.json.Type }}",
+            "Ad_Reference": "={{ $('Get a record').item.json.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Ready to Generate",
+                  "value": "Ready to Generate"
+                },
+                {
+                  "name": "Generating...",
+                  "value": "Generating..."
+                },
+                {
+                  "name": "Ad Generated",
+                  "value": "Ad Generated"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad_Reference",
+              "displayName": "Ad_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Type_Reference",
+              "displayName": "Type_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "❗ Generate Type",
+              "displayName": "❗ Generate Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Brand Voice",
+              "displayName": "❗ Brand Voice",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗Output Image Style",
+              "displayName": "❗Output Image Style",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "❗ Additional Images",
+              "displayName": "❗ Additional Images",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ad",
+              "displayName": "Generate Ad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Imported Date",
+              "displayName": "Imported Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "URL_Reference",
+              "displayName": "URL_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Transcript_Reference",
+              "displayName": "Transcript_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Body_Reference",
+              "displayName": "Body_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "CTA_Reference",
+              "displayName": "CTA_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Caption_Reference",
+              "displayName": "Caption_Reference",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Reference Files",
+              "displayName": "Reference Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Brand Voices copy",
+              "displayName": "Brand Voices copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Generate Ads - Draft Ads",
+              "displayName": "Generate Ads - Draft Ads",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1008,
+        992
+      ],
+      "id": "697efca4-8b29-4ab2-bebc-07daed3c0632",
+      "name": "Import into Generated Ads table3",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Scraped Ads",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get a record').item.json.id }}",
+            "Transcript": "={{ $json.video_data.transcript }}",
+            "Media description": "={{ $json.video_data.description }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        576,
+        224
+      ],
+      "id": "33fbdffa-3a3b-4832-8f12-5705c3e22821",
+      "name": "Add video transcript1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "transcrever-ads-airtable",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1600,
+        416
+      ],
+      "id": "82ffb3db-c5f3-4452-b2ac-f51cb34ce946",
+      "name": "Webhook",
+      "webhookId": "322cf4e4-289d-47ee-9dc1-5b003f166fdc"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Anúncios copiados",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "id": "={{ $json.query.recordId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -1408,
+        416
+      ],
+      "id": "2bb3b39f-eb8a-4efa-aa55-5a7a52933b03",
+      "name": "Get a record1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appOpYw2Wy48ko9X8",
+          "mode": "list",
+          "cachedResultName": "Meta Ads Generator",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblusQi6XqIUNy8SO",
+          "mode": "list",
+          "cachedResultName": "Anúncios copiados",
+          "cachedResultUrl": "https://airtable.com/appOpYw2Wy48ko9X8/tblusQi6XqIUNy8SO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get a record').item.json.id }}",
+            "Transcript": "={{ $('Analyze text').item.json.content.parts[0].text }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Page",
+              "displayName": "Page",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Video",
+                  "value": "Video"
+                },
+                {
+                  "name": "Image",
+                  "value": "Image"
+                },
+                {
+                  "name": "Carousel",
+                  "value": "Carousel"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad Library URL",
+              "displayName": "Ad Library URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Files",
+              "displayName": "Files",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ad text",
+              "displayName": "Ad text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcript",
+              "displayName": "Transcript",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Media description",
+              "displayName": "Media description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "file_hash",
+              "displayName": "file_hash",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "running_since",
+              "displayName": "running_since",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        592,
+        368
+      ],
+      "id": "dc8e6c0d-b7a1-4edd-8a62-1962f132d9a2",
+      "name": "Add image trancripts4",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "cliente-a1.mentorfy.io",
+            "user-agent": "Mozilla/5.0 (compatible; AirtableScripting; +https://airtable.com/developers/scripting;)",
+            "accept": "*/*",
+            "accept-encoding": "gzip,deflate",
+            "x-airtable-source": "appOpYw2Wy48ko9X8/wfl5Xzsyr57WVX3oI",
+            "x-forwarded-for": "98.88.36.23",
+            "x-forwarded-host": "cliente-a1.mentorfy.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "9e2d5292a02e",
+            "x-real-ip": "98.88.36.23"
+          },
+          "params": {},
+          "query": {
+            "recordId": "recEY0yZxpvQ9jOH6",
+            "action": "generateScript"
+          },
+          "body": {},
+          "webhookUrl": "https://cliente-a1.mentorfy.io/webhook/transcrever-ads-airtable",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Airtable Trigger": {
+      "main": [
+        [
+          {
+            "node": "IfImport",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IfImport": {
+      "main": [
+        [
+          {
+            "node": "Get a record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Import Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a record": {
+      "main": [
+        [
+          {
+            "node": "Uncheck import field",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze video": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Add video transcript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Analyze video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analyze text",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analyze image1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split Carousel Cards",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Add image trancripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Carousel Cards": {
+      "main": [
+        [
+          {
+            "node": "Analyze text1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add image trancripts1": {
+      "main": [
+        [
+          {
+            "node": "Import into Generated Ads table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze text": {
+      "main": [
+        [
+          {
+            "node": "Add image trancripts4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image1": {
+      "main": [
+        [
+          {
+            "node": "Add image trancripts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze text1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Add image trancripts2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add image trancripts2": {
+      "main": [
+        [
+          {
+            "node": "Import into Generated Ads table3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add video transcript1": {
+      "main": [
+        [
+          {
+            "node": "Import into Generated Ads table1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get a record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a record1": {
+      "main": [
+        [
+          {
+            "node": "IfImport",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c2b47ff5-7952-444c-bda0-9182cbec37c0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "Xq3UJRgmdkbZ8nzK",
+  "tags": [
+    {
+      "updatedAt": "2025-11-03T19:28:46.270Z",
+      "createdAt": "2025-11-03T19:28:46.270Z",
+      "id": "3znkt8vlq1yubGAB",
+      "name": "on"
+    }
+  ]
+}

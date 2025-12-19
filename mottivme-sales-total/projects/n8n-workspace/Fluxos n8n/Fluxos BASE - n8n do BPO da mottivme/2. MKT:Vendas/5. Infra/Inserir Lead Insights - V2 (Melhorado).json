@@ -1,0 +1,444 @@
+{
+  "name": "Inserir Lead Insights - V2 (Melhorado)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "47381d2d-c092-4ba0-b01f-3a98183fd5ea",
+      "name": "⏰ A cada 6 horas1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Busca leads com pelo menos 3 mensagens nas últimas 7 dias\nSELECT DISTINCT lead_id, full_name, COUNT(*) as total_msg\nFROM public.historico_mensagens_leads\nWHERE datetime >= NOW() - INTERVAL '7 days'\nGROUP BY lead_id, full_name\nHAVING COUNT(*) >= 3\nORDER BY total_msg DESC\nLIMIT 50;",
+        "options": {}
+      },
+      "id": "bbb75e4e-62a7-42e1-905c-be0a1423fe69",
+      "name": "📊 Buscar Leads Ativos1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        304,
+        520
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Busca todas as mensagens do lead\nSELECT \n  mensagem,\n  datetime,\n  source,\n  full_name\nFROM public.historico_mensagens_leads\nWHERE lead_id = '{{ $json.lead_id }}'\nORDER BY datetime ASC;",
+        "options": {}
+      },
+      "id": "0a5347da-f779-4ffc-8fc7-26d67f15fe1e",
+      "name": "💬 Buscar Mensagens do Lead1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        528,
+        520
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Agrupa mensagens e prepara para análise\nconst leadData = $('📊 Buscar Leads Ativos1').item.json;\nconst mensagens = $input.all();\n\n// Monta histórico de conversas\nconst conversasTexto = mensagens.map((msg, idx) => {\n  const data = new Date(msg.json.datetime).toLocaleString('pt-BR');\n  return `[${data}] ${msg.json.mensagem}`;\n}).join('\\n\\n');\n\n// Informações do período\nconst primeiraMsg = mensagens[0]?.json.datetime;\nconst ultimaMsg = mensagens[mensagens.length - 1]?.json.datetime;\n\nreturn {\n  json: {\n    lead_id: leadData.lead_id,\n    full_name: leadData.full_name,\n    total_mensagens: mensagens.length,\n    conversas_texto: conversasTexto,\n    periodo_inicio: primeiraMsg,\n    periodo_fim: ultimaMsg\n  }\n};"
+      },
+      "id": "5a8e778d-db2d-4975-bcaa-badaa4d9af74",
+      "name": "📝 Preparar para Análise1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analise as seguintes conversas do lead {{ $json.full_name }} (ID: {{ $json.lead_id }})\n\nTotal de mensagens analisadas: {{ $json.total_mensagens }}\nPeríodo: {{ $json.periodo_inicio }} até {{ $json.periodo_fim }}\n\nCONVERSAS:\n{{ $json.conversas_texto }}\n\nExtraia todos os insights possíveis dessas conversas e responda em JSON no formato especificado.",
+        "options": {
+          "systemMessage": "=Você é um analista de perfil psicográfico e demográfico especializado em entender leads de negócios através de suas conversas.\n\nSua tarefa é analisar conversas de leads e extrair insights profundos sobre:\n\n**PERFIL PSICOGRÁFICO:**\n- Desafios e problemas que enfrentam\n- Alegrias e momentos positivos\n- Sonhos, objetivos e aspirações\n- Tristezas, frustrações e preocupações\n- Tópicos de interesse\n- Tom de conversação (formal, informal, emotivo, direto)\n- Nível de engajamento (alto, médio, baixo)\n- Fase da jornada do cliente (descoberta, consideração, decisão)\n\n**PERFIL DEMOGRÁFICO E FINANCEIRO:**\n- Estado/cidade onde mora\n- Situação no país (visa, green card, cidadão, permanente, temporário)\n- Status de trabalho (empregado, desempregado, autônomo, empresário)\n- Área de atuação/profissão\n- Nível de renda (se mencionado)\n- Investimentos mencionados (quantias, tipos)\n- Capacidade de investimento\n- Fluência em inglês (fluente, intermediário, básico, nenhum)\n- Tempo nos EUA (se aplicável)\n\nVocê DEVE responder SEMPRE em formato JSON válido, sem texto adicional, seguindo esta estrutura:\n\n{\n  \"desafios\": [\"lista de desafios mencionados\"],\n  \"alegrias\": [\"coisas que deixam o lead feliz\"],\n  \"sonhos\": [\"objetivos e aspirações\"],\n  \"tristezas\": [\"frustrações e preocupações\"],\n  \"topicos_interesse\": [\"temas que gosta de conversar\"],\n  \"tom_conversacional\": \"formal|informal|emotivo|direto\",\n  \"nivel_engajamento\": \"alto|medio|baixo\",\n  \"fase_jornada\": \"descoberta|consideracao|decisao\",\n  \"resumo_perfil\": \"resumo em 2-3 frases do perfil do lead\",\n  \"pontos_dor_principais\": \"principais dores identificadas\",\n  \"motivacoes_principais\": \"o que realmente motiva esse lead\",\n  \"estado\": \"estado onde mora (ex: FL, CA, NY) ou null\",\n  \"cidade\": \"cidade onde mora ou null\",\n  \"situacao_pais\": \"visa|green_card|cidadao|permanente|temporario|outro|null\",\n  \"status_trabalho\": \"empregado|desempregado|autonomo|empresario|estudante|null\",\n  \"area_atuacao\": \"área profissional ou null\",\n  \"nivel_renda\": \"estimativa se mencionado (ex: 50k-100k, 100k+) ou null\",\n  \"investimento_mencionado\": \"quantia ou tipo de investimento mencionado ou null\",\n  \"capacidade_investimento\": \"baixa|media|alta|null\",\n  \"fluencia_ingles\": \"fluente|intermediario|basico|nenhum|null\",\n  \"tempo_eua\": \"tempo nos EUA se mencionado (ex: 2 anos, 6 meses) ou null\",\n  \"possui_permissao_trabalho\": true|false|null\n}\n\nSeja específico e baseie suas análises APENAS no conteúdo das conversas fornecidas. Se algo não for mencionado, use null."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        976,
+        520
+      ],
+      "id": "fe012cac-f348-4a7a-b872-7901f49626ee",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {
+          "maxTokensToSample": 2000,
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1048,
+        744
+      ],
+      "id": "666a147f-0193-4115-9a1c-e73d9996aadd",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "WVbQ0d3w6cnLwPtX",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "lead-insights-insert",
+        "options": {}
+      },
+      "id": "15f18dd1-212a-4340-84e9-ee5ac374cf06",
+      "name": "Webhook ou Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        80,
+        1168
+      ],
+      "webhookId": "lead-insights-insert",
+      "notes": "Recebe o JSON de análise do lead"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validar e formatar dados para PostgreSQL\nconst input = $input.all()[0].json;\n\n// Função para garantir que arrays sejam válidos\nfunction formatArray(arr) {\n  if (!arr || !Array.isArray(arr)) return [];\n  return arr;\n}\n\n// Função para formatar texto ou null\nfunction formatText(value) {\n  if (value === null || value === undefined || value === 'null') return null;\n  return String(value);\n}\n\n// Função para formatar boolean\nfunction formatBoolean(value) {\n  if (value === null || value === undefined || value === 'null') return null;\n  if (typeof value === 'boolean') return value;\n  return value === 'true' || value === true;\n}\n\n// Processar cada lead do array\nconst leads = Array.isArray(input) ? input : [input];\n\nconst formattedLeads = leads.map(lead => {\n  // Converter arrays para formato PostgreSQL\n  const desafios = formatArray(lead.desafios);\n  const alegrias = formatArray(lead.alegrias);\n  const sonhos = formatArray(lead.sonhos);\n  const tristezas = formatArray(lead.tristezas);\n  const topicos_interesse = formatArray(lead.topicos_interesse);\n  \n  // Converter pontos_dor e motivacoes (que podem vir como array)\n  const pontos_dor = Array.isArray(lead.pontos_dor_principais) \n    ? lead.pontos_dor_principais.join('; ') \n    : formatText(lead.pontos_dor_principais);\n    \n  const motivacoes = Array.isArray(lead.motivacoes_principais)\n    ? lead.motivacoes_principais.join('; ')\n    : formatText(lead.motivacoes_principais);\n\n  return {\n    lead_id: formatText(lead.lead_id) || `LEAD_${Date.now()}`,\n    full_name: formatText(lead.full_name) || 'Nome não informado',\n    desafios: desafios,\n    alegrias: alegrias,\n    sonhos: sonhos,\n    tristezas: tristezas,\n    topicos_interesse: topicos_interesse,\n    tom_conversacional: formatText(lead.tom_conversacional),\n    nivel_engajamento: formatText(lead.nivel_engajamento),\n    fase_jornada: formatText(lead.fase_jornada),\n    resumo_perfil: formatText(lead.resumo_perfil),\n    pontos_dor_principais: pontos_dor,\n    motivacoes_principais: motivacoes,\n    total_mensagens: parseInt(lead.total_mensagens) || 0,\n    periodo_analisado_inicio: lead.periodo_analisado_inicio || null,\n    periodo_analisado_fim: lead.periodo_analisado_fim || null,\n    estado: formatText(lead.estado),\n    cidade: formatText(lead.cidade),\n    situacao_pais: formatText(lead.situacao_pais),\n    status_trabalho: formatText(lead.status_trabalho),\n    area_atuacao: formatText(lead.area_atuacao),\n    nivel_renda: formatText(lead.nivel_renda),\n    investimento_mencionado: formatText(lead.investimento_mencionado),\n    capacidade_investimento: formatText(lead.capacidade_investimento),\n    fluencia_ingles: formatText(lead.fluencia_ingles),\n    tempo_eua: formatText(lead.tempo_eua),\n    possui_permissao_trabalho: formatBoolean(lead.possui_permissao_trabalho),\n    ultima_analise: new Date().toISOString(),\n    created_at: new Date().toISOString(),\n    updated_at: new Date().toISOString()\n  };\n});\n\nreturn formattedLeads.map(lead => ({ json: lead }));"
+      },
+      "id": "ff5ca785-c247-4bf5-92a9-eb4c50f188bc",
+      "name": "Formatar Dados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        1168
+      ],
+      "notes": "Formata e valida dados para inserção no PostgreSQL"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO public.leads_insights (\n  lead_id, full_name, desafios, alegrias, sonhos, tristezas, \n  topicos_interesse, tom_conversacional, nivel_engajamento, \n  fase_jornada, resumo_perfil, pontos_dor_principais, \n  motivacoes_principais, total_mensagens, periodo_analisado_inicio, \n  periodo_analisado_fim, estado, cidade, situacao_pais, \n  status_trabalho, area_atuacao, nivel_renda, \n  investimento_mencionado, capacidade_investimento, \n  fluencia_ingles, tempo_eua, possui_permissao_trabalho, \n  ultima_analise, created_at, updated_at\n) VALUES (\n  '{{ $json.lead_id }}',\n  '{{ $json.full_name }}',\n  ARRAY[{{ $json.desafios.map(d => `'${d.replace(/'/g, \"''\")}'`).join(',') }}]::text[],\n  ARRAY[{{ $json.alegrias.map(a => `'${a.replace(/'/g, \"''\")}'`).join(',') }}]::text[],\n  ARRAY[{{ $json.sonhos.map(s => `'${s.replace(/'/g, \"''\")}'`).join(',') }}]::text[],\n  ARRAY[{{ $json.tristezas.map(t => `'${t.replace(/'/g, \"''\")}'`).join(',') }}]::text[],\n  ARRAY[{{ $json.topicos_interesse.map(ti => `'${ti.replace(/'/g, \"''\")}'`).join(',') }}]::text[],\n  {{ $json.tom_conversacional ? `'${$json.tom_conversacional}'` : 'NULL' }},\n  {{ $json.nivel_engajamento ? `'${$json.nivel_engajamento}'` : 'NULL' }},\n  {{ $json.fase_jornada ? `'${$json.fase_jornada}'` : 'NULL' }},\n  {{ $json.resumo_perfil ? `'${$json.resumo_perfil.replace(/'/g, \"''\")}'` : 'NULL' }},\n  {{ $json.pontos_dor_principais ? `'${$json.pontos_dor_principais.replace(/'/g, \"''\")}'` : 'NULL' }},\n  {{ $json.motivacoes_principais ? `'${$json.motivacoes_principais.replace(/'/g, \"''\")}'` : 'NULL' }},\n  {{ $json.total_mensagens || 0 }},\n  {{ $json.periodo_analisado_inicio ? `'${$json.periodo_analisado_inicio}'` : 'NULL' }},\n  {{ $json.periodo_analisado_fim ? `'${$json.periodo_analisado_fim}'` : 'NULL' }},\n  {{ $json.estado ? `'${$json.estado}'` : 'NULL' }},\n  {{ $json.cidade ? `'${$json.cidade}'` : 'NULL' }},\n  {{ $json.situacao_pais ? `'${$json.situacao_pais}'` : 'NULL' }},\n  {{ $json.status_trabalho ? `'${$json.status_trabalho}'` : 'NULL' }},\n  {{ $json.area_atuacao ? `'${$json.area_atuacao}'` : 'NULL' }},\n  {{ $json.nivel_renda ? `'${$json.nivel_renda}'` : 'NULL' }},\n  {{ $json.investimento_mencionado ? `'${$json.investimento_mencionado}'` : 'NULL' }},\n  {{ $json.capacidade_investimento ? `'${$json.capacidade_investimento}'` : 'NULL' }},\n  {{ $json.fluencia_ingles ? `'${$json.fluencia_ingles}'` : 'NULL' }},\n  {{ $json.tempo_eua ? `'${$json.tempo_eua}'` : 'NULL' }},\n  {{ $json.possui_permissao_trabalho !== null ? $json.possui_permissao_trabalho : 'NULL' }},\n  '{{ $json.ultima_analise }}',\n  '{{ $json.created_at }}',\n  '{{ $json.updated_at }}'\n)\nON CONFLICT (lead_id) \nDO UPDATE SET\n  full_name = EXCLUDED.full_name,\n  desafios = EXCLUDED.desafios,\n  alegrias = EXCLUDED.alegrias,\n  sonhos = EXCLUDED.sonhos,\n  tristezas = EXCLUDED.tristezas,\n  topicos_interesse = EXCLUDED.topicos_interesse,\n  tom_conversacional = EXCLUDED.tom_conversacional,\n  nivel_engajamento = EXCLUDED.nivel_engajamento,\n  fase_jornada = EXCLUDED.fase_jornada,\n  resumo_perfil = EXCLUDED.resumo_perfil,\n  pontos_dor_principais = EXCLUDED.pontos_dor_principais,\n  motivacoes_principais = EXCLUDED.motivacoes_principais,\n  total_mensagens = EXCLUDED.total_mensagens,\n  periodo_analisado_inicio = EXCLUDED.periodo_analisado_inicio,\n  periodo_analisado_fim = EXCLUDED.periodo_analisado_fim,\n  estado = EXCLUDED.estado,\n  cidade = EXCLUDED.cidade,\n  situacao_pais = EXCLUDED.situacao_pais,\n  status_trabalho = EXCLUDED.status_trabalho,\n  area_atuacao = EXCLUDED.area_atuacao,\n  nivel_renda = EXCLUDED.nivel_renda,\n  investimento_mencionado = EXCLUDED.investimento_mencionado,\n  capacidade_investimento = EXCLUDED.capacidade_investimento,\n  fluencia_ingles = EXCLUDED.fluencia_ingles,\n  tempo_eua = EXCLUDED.tempo_eua,\n  possui_permissao_trabalho = EXCLUDED.possui_permissao_trabalho,\n  ultima_analise = EXCLUDED.ultima_analise,\n  updated_at = EXCLUDED.updated_at\nRETURNING *;",
+        "options": {}
+      },
+      "id": "f13bcf52-477b-4569-8a2f-f8019d525799",
+      "name": "PostgreSQL - Inserir/Atualizar",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        528,
+        1168
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      },
+      "notes": "INSERT com UPSERT - atualiza se lead_id já existir"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.rowCount }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "3323949c-d2b7-4b76-879a-f6e7654276d0",
+      "name": "Verificar Sucesso",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        752,
+        1168
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const resultado = $input.all()[0].json;\n\nreturn [{\n  json: {\n    success: true,\n    message: 'Lead insights inserido com sucesso!',\n    lead_id: resultado.lead_id || 'N/A',\n    timestamp: new Date().toISOString(),\n    dados_inseridos: resultado\n  }\n}];"
+      },
+      "id": "89e391e8-9e6f-4445-a785-972cce044bcc",
+      "name": "Resposta Sucesso",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const erro = $input.all()[0].json;\n\nreturn [{\n  json: {\n    success: false,\n    message: 'Erro ao inserir lead insights',\n    erro: erro.message || 'Erro desconhecido',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "de970dc5-016a-4141-badd-7cf7aa0277eb",
+      "name": "Resposta Erro",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        1264
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// VALIDAÇÃO E FORMATAÇÃO DE DADOS PARA POSTGRESQL\n// ============================================\n\nconst input = $input.all()[0].json;\n\n// Função para sanitizar strings SQL (prevenir SQL injection)\nfunction sanitizeString(str) {\n  if (!str || str === 'null') return null;\n  return String(str).replace(/'/g, \"''\");\n}\n\n// Função para formatar arrays PostgreSQL\nfunction formatPgArray(arr) {\n  if (!arr || !Array.isArray(arr) || arr.length === 0) {\n    return 'ARRAY[]::text[]';\n  }\n  const sanitized = arr.map(item => `'${sanitizeString(item)}'`);\n  return `ARRAY[${sanitized.join(',')}]::text[]`;\n}\n\n// Função para formatar valor ou NULL\nfunction formatValue(value, type = 'text') {\n  if (value === null || value === undefined || value === 'null' || value === '') {\n    return 'NULL';\n  }\n  \n  switch(type) {\n    case 'text':\n      return `'${sanitizeString(value)}'`;\n    case 'int':\n      return parseInt(value) || 0;\n    case 'boolean':\n      if (typeof value === 'boolean') return value;\n      return value === 'true' || value === true;\n    case 'timestamp':\n      return `'${value}'`;\n    default:\n      return `'${sanitizeString(value)}'`;\n  }\n}\n\n// Processar cada lead (suporta array ou objeto único)\nconst leads = Array.isArray(input) ? input : [input];\n\nconst queries = leads.map(lead => {\n  // Gerar lead_id se não existir\n  const leadId = lead.lead_id || `LEAD_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;\n  \n  // Converter arrays de pontos de dor e motivações para texto\n  const pontosDor = Array.isArray(lead.pontos_dor_principais)\n    ? lead.pontos_dor_principais.join('; ')\n    : (lead.pontos_dor_principais || null);\n    \n  const motivacoes = Array.isArray(lead.motivacoes_principais)\n    ? lead.motivacoes_principais.join('; ')\n    : (lead.motivacoes_principais || null);\n\n  // Construir query INSERT com UPSERT\n  const query = `\nINSERT INTO public.leads_insights (\n  lead_id, full_name, desafios, alegrias, sonhos, tristezas,\n  topicos_interesse, tom_conversacional, nivel_engajamento,\n  fase_jornada, resumo_perfil, pontos_dor_principais,\n  motivacoes_principais, total_mensagens, periodo_analisado_inicio,\n  periodo_analisado_fim, estado, cidade, situacao_pais,\n  status_trabalho, area_atuacao, nivel_renda,\n  investimento_mencionado, capacidade_investimento,\n  fluencia_ingles, tempo_eua, possui_permissao_trabalho,\n  ultima_analise, created_at, updated_at\n) VALUES (\n  ${formatValue(leadId)},\n  ${formatValue(lead.full_name || 'Nome não informado')},\n  ${formatPgArray(lead.desafios)},\n  ${formatPgArray(lead.alegrias)},\n  ${formatPgArray(lead.sonhos)},\n  ${formatPgArray(lead.tristezas)},\n  ${formatPgArray(lead.topicos_interesse)},\n  ${formatValue(lead.tom_conversacional)},\n  ${formatValue(lead.nivel_engajamento)},\n  ${formatValue(lead.fase_jornada)},\n  ${formatValue(lead.resumo_perfil)},\n  ${formatValue(pontosDor)},\n  ${formatValue(motivacoes)},\n  ${lead.total_mensagens || 0},\n  ${lead.periodo_analisado_inicio ? formatValue(lead.periodo_analisado_inicio, 'timestamp') : 'NULL'},\n  ${lead.periodo_analisado_fim ? formatValue(lead.periodo_analisado_fim, 'timestamp') : 'NULL'},\n  ${formatValue(lead.estado)},\n  ${formatValue(lead.cidade)},\n  ${formatValue(lead.situacao_pais)},\n  ${formatValue(lead.status_trabalho)},\n  ${formatValue(lead.area_atuacao)},\n  ${formatValue(lead.nivel_renda)},\n  ${formatValue(lead.investimento_mencionado)},\n  ${formatValue(lead.capacidade_investimento)},\n  ${formatValue(lead.fluencia_ingles)},\n  ${formatValue(lead.tempo_eua)},\n  ${lead.possui_permissao_trabalho !== null && lead.possui_permissao_trabalho !== undefined ? lead.possui_permissao_trabalho : 'NULL'},\n  ${formatValue(new Date().toISOString(), 'timestamp')},\n  ${formatValue(new Date().toISOString(), 'timestamp')},\n  ${formatValue(new Date().toISOString(), 'timestamp')}\n)\nON CONFLICT (lead_id)\nDO UPDATE SET\n  full_name = EXCLUDED.full_name,\n  desafios = EXCLUDED.desafios,\n  alegrias = EXCLUDED.alegrias,\n  sonhos = EXCLUDED.sonhos,\n  tristezas = EXCLUDED.tristezas,\n  topicos_interesse = EXCLUDED.topicos_interesse,\n  tom_conversacional = EXCLUDED.tom_conversacional,\n  nivel_engajamento = EXCLUDED.nivel_engajamento,\n  fase_jornada = EXCLUDED.fase_jornada,\n  resumo_perfil = EXCLUDED.resumo_perfil,\n  pontos_dor_principais = EXCLUDED.pontos_dor_principais,\n  motivacoes_principais = EXCLUDED.motivacoes_principais,\n  total_mensagens = EXCLUDED.total_mensagens,\n  periodo_analisado_inicio = EXCLUDED.periodo_analisado_inicio,\n  periodo_analisado_fim = EXCLUDED.periodo_analisado_fim,\n  estado = EXCLUDED.estado,\n  cidade = EXCLUDED.cidade,\n  situacao_pais = EXCLUDED.situacao_pais,\n  status_trabalho = EXCLUDED.status_trabalho,\n  area_atuacao = EXCLUDED.area_atuacao,\n  nivel_renda = EXCLUDED.nivel_renda,\n  investimento_mencionado = EXCLUDED.investimento_mencionado,\n  capacidade_investimento = EXCLUDED.capacidade_investimento,\n  fluencia_ingles = EXCLUDED.fluencia_ingles,\n  tempo_eua = EXCLUDED.tempo_eua,\n  possui_permissao_trabalho = EXCLUDED.possui_permissao_trabalho,\n  ultima_analise = EXCLUDED.ultima_analise,\n  updated_at = EXCLUDED.updated_at\nRETURNING *;\n`;\n\n  return {\n    json: {\n      query: query,\n      lead_id: leadId,\n      full_name: lead.full_name || 'Nome não informado',\n      original_data: lead\n    }\n  };\n});\n\nreturn queries;"
+      },
+      "id": "e27f0bf9-c8f5-4dc9-a2db-65107ce8a40c",
+      "name": "Construir Query SQL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.query }}",
+        "options": {}
+      },
+      "id": "7a225cc0-cb2d-4b72-8044-408003560dc6",
+      "name": "PostgreSQL Executar",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        520
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = $input.all();\n\nconst successResults = results.map(item => ({\n  json: {\n    success: true,\n    message: 'Lead insights inserido/atualizado com sucesso!',\n    lead_id: item.json[0]?.lead_id || 'N/A',\n    full_name: item.json[0]?.full_name || 'N/A',\n    fase_jornada: item.json[0]?.fase_jornada || 'N/A',\n    nivel_engajamento: item.json[0]?.nivel_engajamento || 'N/A',\n    timestamp: new Date().toISOString(),\n    total_processado: results.length\n  }\n}));\n\nreturn successResults;"
+      },
+      "id": "a493c1c9-f9a2-4dbc-95bc-79c246d3417d",
+      "name": "Formatar Resposta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "154220cc-b1ab-4685-85eb-3742b82013fc",
+      "name": "Responder Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        520
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "⏰ A cada 6 horas1": {
+      "main": [
+        [
+          {
+            "node": "📊 Buscar Leads Ativos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Buscar Leads Ativos1": {
+      "main": [
+        [
+          {
+            "node": "💬 Buscar Mensagens do Lead1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "💬 Buscar Mensagens do Lead1": {
+      "main": [
+        [
+          {
+            "node": "📝 Preparar para Análise1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Preparar para Análise1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Construir Query SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook ou Trigger": {
+      "main": [
+        [
+          {
+            "node": "Formatar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Dados": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL - Inserir/Atualizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostgreSQL - Inserir/Atualizar": {
+      "main": [
+        [
+          {
+            "node": "Verificar Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Sucesso": {
+      "main": [
+        [
+          {
+            "node": "Resposta Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resposta Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir Query SQL": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL Executar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostgreSQL Executar": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Resposta": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3f76b95e-ffe1-4fe7-9d4d-b56d24226ed0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "5N8FB0gBMJwHyMcy",
+  "tags": []
+}

@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "supplyData",
+        "jsCode": "// Pega a LLM e a ferramenta conectadas\nconst llm = await this.getInputConnectionData('ai_languageModel', 0);\nconst tool = await this.getInputConnectionData('ai_tool', 0);\n\n// Obtem os IDs do workflow e da execucao usando variaveis globais\nconst workflowId = $workflow.id;\nconst executionId = $execution.id;\n\n// Define o callback para registrar o uso de tokens\nllm.callbacks = [{\n  handleLLMEnd: async ({ generations }) => {\n    try {\n      const gen = generations[0][0];\n      const usage = gen.message?.usage_metadata \n        || gen.message?.additional_kwargs?.usage_metadata\n        || gen.generationInfo?.usage_metadata \n        || {\n            input_tokens: gen.generationInfo?.promptTokenCount || gen.generationInfo?.input_tokens || gen.generationInfo?.promptTokens || 0,\n            output_tokens: gen.generationInfo?.candidatesTokenCount || gen.generationInfo?.output_tokens || gen.generationInfo?.completionTokens || 0,\n            total_tokens: gen.generationInfo?.totalTokenCount || gen.generationInfo?.total_tokens || gen.generationInfo?.totalTokens || 0\n        };\n\n      const input_tokens = usage.input_tokens || usage.promptTokens || 0;\n      const output_tokens = usage.output_tokens || usage.completionTokens || 0;\n      const total_tokens = usage.total_tokens || (input_tokens + output_tokens);\n\n      await tool.invoke({\n        date: new Date().toISOString(),\n        model: llm.modelName || llm.model || 'unknown-model',\n        input_tokens,\n        output_tokens,\n        total_tokens,\n        workflowId,  \n        executionId\n      });\n    } catch (err) {\n      console.error('Erro ao registrar uso da LLM:', err);\n    }\n  }\n}];\n\nreturn llm;",
+        "inputs": {
+          "ai_languageModel": [
+            {
+              "type": "ai_languageModel",
+              "displayName": "Model",
+              "required": true
+            }
+          ],
+          "ai_tool": [
+            {
+              "type": "ai_tool",
+              "displayName": "Tool",
+              "required": true
+            }
+          ]
+        },
+        "outputs": {
+          "ai_languageModel": {
+            "type": "ai_languageModel",
+            "displayName": "Model"
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.code",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "langchain-interceptor-001",
+      "name": "Token Tracker"
+    }
+  ],
+  "connections": {}
+}

@@ -1,0 +1,704 @@
+{
+  "name": "8. Agente de Contratos",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Set mensagens').first().json.mensagem }}",
+        "options": {
+          "systemMessage": "=# FORMATACAO - OBRIGATORIO\n\nVoce DEVE formatar TODAS as respostas para WhatsApp:\n\n1. QUEBRE LINHAS entre secoes diferentes\n2. Use *texto* para negrito (um asterisco)\n3. Use listas com - no inicio da linha\n4. NUNCA escreva tudo em um paragrafo so\n5. Separe Obrigatorios e Opcionais em blocos distintos\n6. Seja conciso\n\nEXEMPLO CORRETO de resposta:\n\nPara atualizar o contrato de Joao:\n\n*Obrigatorios:*\n- Produto\n- Pais\n- Valor mensal\n- Parcelas\n- Data inicio\n- Dia vencimento\n\n*Opcionais:*\n- Entrada\n- Budget trafego\n- Onboarding\n- Condicoes\n\nQual cliente?\n\n---\n\n# CONTEXTO\n\nDATA: {{ $now.format('FFFF') }}\nCLIENTE: {{ $('Info').first().json.first_name }} {{ $('Info').first().json.last_name }}\nTEL: {{ $('Info').first().json.telefone }}\nCONTACT_ID: {{ $('Info').first().json.lead_id }}\nTIPO: {{ $('Preparar Entrada').first().json.user_type }}\n\n{{ $('Set mensagens').first().json.output_preview && '*MSG_PENDENTE*: '+$('Set mensagens').first().json.output_preview || '' }}\n\n---\n\n# PAPEL\n\nAssistente de contratos da Mottivme Sales.\n\n---\n\n# SE ADMIN:\n\n1. Buscar contratos pendentes -> *buscar_contrato_pendente*\n2. Pedir TODOS os campos de uma vez\n3. Salvar termos -> *atualizar_termos_contrato*\n4. Confirmar dados\n5. Gerar contrato -> *gerar_contrato_google_docs*\n\n*Campos Obrigatorios:*\n- produto (BPOSS, BPOSS Evolution, BPOLG, Trafego, Trafego + Social Media, Implementacao CRM)\n- pais (Brasil ou EUA)\n- valor_mensal\n- num_parcelas\n- data_inicio (YYYY-MM-DD)\n- dia_vencimento (1-31)\n\n*Campos Opcionais:*\n- nicho\n- valor_entrada\n- budget_trafego\n- dias_onboarding (padrao 15)\n- condicoes_especiais\n- observacoes_negociacao\n\n*Moedas:*\n- Brasil = BRL\n- EUA = USD\n\n---\n\n# SE CLIENTE:\n\n1. Verificar dados existentes\n2. Coletar dados faltantes\n3. NAO perguntar valores\n4. Confirmar antes de gerar\n\n*Dados necessarios:*\n- Nome/Razao Social\n- CPF/CNPJ\n- Nacionalidade\n- Profissao\n- Estado Civil\n- Data Nascimento\n- Endereco\n- CEP\n- Cidade/Estado\n- Email\n- Telefone\n\n---\n\n# FERRAMENTAS\n\n*Todos:*\n- buscar_cliente_por_contato\n- atualizar_dados_cliente\n- listar_contratos_cliente\n\n*Admin:*\n- buscar_contrato_pendente\n- atualizar_termos_contrato\n- gerar_contrato_google_docs\n\n---\n\n# REGRAS\n\n1. SEMPRE quebre linhas na resposta\n2. SEMPRE peca todos campos de uma vez\n3. NUNCA discuta valores com cliente\n4. SEMPRE confirme antes de gerar"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        32,
+        -144
+      ],
+      "id": "0ba51233-94f8-4376-b24d-452c028fa010",
+      "name": "Agente de Contratos"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Detectar se eh admin ou cliente\nconst input = $json;\nconst telefone = input.telefone?.replace(/[^0-9]/g, '') || '';\nconst leadId = input.lead_id || input.contact_id || '';\n\n// Lista de telefones/lead_ids admin (Marcos)\nconst admins = [\n  '5511999999999',  // Substituir pelo telefone real do Marcos\n  '11999999999'\n];\n\nconst isAdmin = admins.some(admin => \n  telefone.includes(admin) || \n  admin.includes(telefone) || \n  leadId.includes(admin)\n);\n\n// Session ID: prioriza lead_id, depois telefone\nconst sessionId = leadId || telefone || 'unknown';\n\nreturn {\n  json: {\n    input_text: input.mensagem,\n    telefone: input.telefone,\n    lead_id: leadId,\n    contact_id: leadId,\n    session_id: 'contratos_' + sessionId,\n    is_admin: isAdmin,\n    user_type: isAdmin ? 'admin' : 'cliente'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -512,
+        -96
+      ],
+      "id": "3906ce71-ad13-4bb9-b4ff-294cc5747261",
+      "name": "Preparar Entrada"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list"
+        },
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        96
+      ],
+      "id": "89e9ce87-f140-4d62-b6b8-b90a6d53b621",
+      "name": "OpenAI GPT-4o",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionId": "={{ $('Info').first().json.lead_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryZep",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        96
+      ],
+      "id": "e66c6c74-0b3c-40e8-9b75-df2ea72ba006",
+      "name": "Zep Memory",
+      "credentials": {
+        "zepApi": {
+          "id": "IHh2XhGtPobOTMjm",
+          "name": "Zep Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "atualizar_dados_cliente",
+        "description": "Use esta ferramenta para atualizar/salvar os dados do cliente no banco de dados. Use após coletar informações do cliente via conversa. Campos que podem ser atualizados: nome, documento (CPF/CNPJ), razao_social, nacionalidade, profissao, estado_civil, data_nascimento, telefone, email, endereco, cep, cidade, estado.",
+        "workflowId": {
+          "__rl": true,
+          "value": "mtNbOiMxMZvVH0RB",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/mtNbOiMxMZvVH0RB",
+          "cachedResultName": "[TOOL] Atualizar Dados Cliente"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "cliente_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cliente_id', ``, 'string') }}",
+            "nome": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nome', ``, 'string') }}",
+            "documento": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('documento', ``, 'string') }}",
+            "razao_social": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('razao_social', ``, 'string') }}",
+            "nacionalidade": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nacionalidade', ``, 'string') }}",
+            "profissao": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('profissao', ``, 'string') }}",
+            "estado_civil": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('estado_civil', ``, 'string') }}",
+            "data_nascimento": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('data_nascimento', ``, 'string') }}",
+            "telefone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('telefone', ``, 'string') }}",
+            "email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('email', ``, 'string') }}",
+            "endereco": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('endereco', ``, 'string') }}",
+            "cep": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cep', ``, 'string') }}",
+            "cidade": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cidade', ``, 'string') }}",
+            "estado": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('estado', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "cliente_id",
+              "displayName": "cliente_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "documento",
+              "displayName": "documento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "razao_social",
+              "displayName": "razao_social",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "nacionalidade",
+              "displayName": "nacionalidade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "profissao",
+              "displayName": "profissao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "estado_civil",
+              "displayName": "estado_civil",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "data_nascimento",
+              "displayName": "data_nascimento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "endereco",
+              "displayName": "endereco",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "cep",
+              "displayName": "cep",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "cidade",
+              "displayName": "cidade",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        64,
+        96
+      ],
+      "id": "05f74f4c-9e2f-47d8-85c0-28a5c9802265",
+      "name": "Atualizar Dados Cliente"
+    },
+    {
+      "parameters": {
+        "name": "listar_contratos_cliente",
+        "description": "Use esta ferramenta para listar todos os contratos de um cliente específico. Retorna histórico de contratos com status, valores e datas.",
+        "workflowId": {
+          "__rl": true,
+          "value": "pZfi7Juh5CXcEaJh",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/pZfi7Juh5CXcEaJh",
+          "cachedResultName": "[TOOL] Listar Contratos Cliente"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contact_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('contact_id', ``, 'string') }}",
+            "telefone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('telefone', ``, 'string') }}",
+            "valor_mensal": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('valor_mensal', ``, 'string') }}",
+            "num_parcelas": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('num_parcelas', ``, 'string') }}",
+            "data_inicio": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('data_inicio', ``, 'string') }}",
+            "dia_vencimento": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('dia_vencimento', ``, 'string') }}",
+            "valor_entrada": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('valor_entrada', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "valor_mensal",
+              "displayName": "valor_mensal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "num_parcelas",
+              "displayName": "num_parcelas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "data_inicio",
+              "displayName": "data_inicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "dia_vencimento",
+              "displayName": "dia_vencimento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "valor_entrada",
+              "displayName": "valor_entrada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        320,
+        96
+      ],
+      "id": "70dbebde-ea62-47ef-b520-76a535d001ed",
+      "name": "Listar Contratos Cliente"
+    },
+    {
+      "parameters": {
+        "name": "buscar_contrato_pendente",
+        "description": "SOMENTE ADMIN. Busca contratos pendentes (formularios preenchidos aguardando termos). Pode buscar por nome do cliente. Retorna o contrato_id (UUID no formato xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) que DEVE ser usado nas outras tools (atualizar_termos_contrato e gerar_contrato_google_docs). Use quando o admin perguntar sobre contratos pendentes ou mencionar o nome de um cliente.",
+        "workflowId": {
+          "__rl": true,
+          "value": "GAmDsrgHzVowt0nk",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/GAmDsrgHzVowt0nk",
+          "cachedResultName": "[TOOL] Buscar Contrato Pendente"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nome_cliente": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nome_cliente', ``, 'string') }}",
+            "contrato_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('contrato_id', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "nome_cliente",
+              "displayName": "nome_cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "contrato_id",
+              "displayName": "contrato_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        448,
+        96
+      ],
+      "id": "d981dc55-4146-4115-b40a-7a0b44eaee8b",
+      "name": "Buscar Contrato Pendente"
+    },
+    {
+      "parameters": {
+        "name": "atualizar_termos_contrato",
+        "description": "SOMENTE ADMIN. Atualiza os termos de um contrato pendente. IMPORTANTE: O contrato_id DEVE ser o UUID retornado pela tool buscar_contrato_pendente (formato: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx), NAO o contact_id do GHL! Campos: contrato_id (obrigatorio - UUID), produto, pais, valor_mensal, num_parcelas, data_inicio (YYYY-MM-DD), dia_vencimento, valor_entrada, budget_trafego, dias_onboarding, condicoes_especiais. A moeda e inferida do pais (Brasil=BRL, EUA=USD).",
+        "workflowId": {
+          "__rl": true,
+          "value": "1AyAvl2oQEa1v2mW",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/1AyAvl2oQEa1v2mW",
+          "cachedResultName": "[TOOL] Atualizar Termos Contrato"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contrato_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('contrato_id', ``, 'string') }}",
+            "valor_mensal": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('valor_mensal', ``, 'string') }}",
+            "num_parcelas": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('num_parcelas', ``, 'string') }}",
+            "valor_entrada": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('valor_entrada', ``, 'string') }}",
+            "data_inicio": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('data_inicio', ``, 'string') }}",
+            "dia_vencimento": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('dia_vencimento', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "contrato_id",
+              "displayName": "contrato_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "valor_mensal",
+              "displayName": "valor_mensal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "num_parcelas",
+              "displayName": "num_parcelas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "valor_entrada",
+              "displayName": "valor_entrada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "data_inicio",
+              "displayName": "data_inicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "dia_vencimento",
+              "displayName": "dia_vencimento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        576,
+        96
+      ],
+      "id": "fe3f5899-6309-4ade-952b-42e2e6ed1278",
+      "name": "Atualizar Termos Contrato"
+    },
+    {
+      "parameters": {
+        "name": "buscar_cliente_por_contato",
+        "description": "Use esta ferramenta para buscar dados do cliente no banco de dados. Retorna todos os dados cadastrais incluindo: nome, documento, nacionalidade, profissão, estado civil, endereço completo, etc. Use esta ferramenta PRIMEIRO ao iniciar uma conversa para verificar dados já existentes. NÃO precisa passar parâmetros - a ferramenta usa automaticamente o contact_id e telefone do contexto.",
+        "workflowId": {
+          "__rl": true,
+          "value": "GAmDsrgHzVowt0nk",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/GAmDsrgHzVowt0nk",
+          "cachedResultName": "[TOOL] Buscar Contrato Pendente"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nome_cliente": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('nome_cliente', ``, 'string') }}",
+            "contrato_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('contrato_id', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "nome_cliente",
+              "displayName": "nome_cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contrato_id",
+              "displayName": "contrato_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        96
+      ],
+      "id": "ce3558c1-031a-45fa-a036-a8e08a8d9493",
+      "name": "Buscar Cliente por Contato"
+    },
+    {
+      "parameters": {
+        "name": "gerar_contrato_google_docs",
+        "description": "SOMENTE ADMIN. Gera o contrato oficial via Google Docs e envia para assinatura. IMPORTANTE: O parametro contrato_pendente_id DEVE ser o UUID retornado pela tool buscar_contrato_pendente (formato: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx). NAO use contact_id do GHL! Primeiro use buscar_contrato_pendente para obter o contrato_id correto. Use APENAS quando os termos ja estiverem salvos (status 'termos_informados') e o admin confirmar.",
+        "workflowId": {
+          "__rl": true,
+          "value": "s1FZRsx5o7AIrQjk",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/s1FZRsx5o7AIrQjk",
+          "cachedResultName": "9 - Gerar Contrato Automatico"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "contrato_pendente_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('contrato_pendente_id', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "contrato_pendente_id"
+          ],
+          "schema": [
+            {
+              "id": "contrato_pendente_id",
+              "displayName": "contrato_pendente_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        192,
+        96
+      ],
+      "id": "4ab17825-1233-4de0-ae26-736553c5c624",
+      "name": "Gerar Contrato Google Docs"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Preparar Entrada": {
+      "main": [
+        [
+          {
+            "node": "Agente de Contratos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI GPT-4o": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente de Contratos",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zep Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente de Contratos",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Dados Cliente": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Contratos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Contratos Cliente": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Contratos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Contrato Pendente": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Contratos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Termos Contrato": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Contratos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Cliente por Contato": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Contratos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar Contrato Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente de Contratos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7dbb2656-e329-400d-bf32-cb8b47ec20fe",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "Gmb8ALg8bOYTpPsY",
+  "tags": []
+}

@@ -1,0 +1,204 @@
+{
+  "name": "Registrar Custos IA",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "date",
+              "type": "string"
+            },
+            {
+              "name": "model",
+              "type": "string"
+            },
+            {
+              "name": "input_tokens",
+              "type": "number"
+            },
+            {
+              "name": "output_tokens",
+              "type": "number"
+            },
+            {
+              "name": "total_tokens",
+              "type": "number"
+            },
+            {
+              "name": "workflowId",
+              "type": "string"
+            },
+            {
+              "name": "executionId",
+              "type": "string"
+            },
+            {
+              "name": "location_id",
+              "type": "string"
+            },
+            {
+              "name": "location_name",
+              "type": "string"
+            },
+            {
+              "name": "contact_id",
+              "type": "string"
+            },
+            {
+              "name": "contact_name",
+              "type": "string"
+            },
+            {
+              "name": "canal",
+              "type": "string"
+            },
+            {
+              "name": "tipo_acao",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "trigger-custos-001",
+      "name": "Quando Chamado"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Tabela de precos por modelo (USD por 1M tokens)\nconst precos = {\n  // OpenAI\n  'gpt-4o-mini': { input: 0.15, output: 0.60 },\n  'gpt-4o': { input: 2.50, output: 10.00 },\n  'gpt-4-turbo': { input: 10.00, output: 30.00 },\n  'gpt-3.5-turbo': { input: 0.50, output: 1.50 },\n  \n  // Google Gemini\n  'gemini-2.5-pro': { input: 1.25, output: 10.00 },\n  'gemini-2.5-flash': { input: 0.075, output: 0.30 },\n  'gemini-1.5-pro': { input: 1.25, output: 5.00 },\n  'gemini-1.5-flash': { input: 0.075, output: 0.30 },\n  'models/gemini-2.0-flash': { input: 0.10, output: 0.40 },\n  'models/gemini-1.5-flash': { input: 0.075, output: 0.30 },\n  \n  // Groq (Llama)\n  'llama-3.1-8b-instant': { input: 0.05, output: 0.08 },\n  'llama-3.3-70b-versatile': { input: 0.59, output: 0.79 },\n  'mixtral-8x7b-32768': { input: 0.24, output: 0.24 },\n  \n  // Anthropic Claude\n  'claude-3-opus': { input: 15.00, output: 75.00 },\n  'claude-3-5-sonnet': { input: 3.00, output: 15.00 },\n  'claude-3-sonnet': { input: 3.00, output: 15.00 },\n  'claude-3-haiku': { input: 0.25, output: 1.25 },\n  \n  // Default\n  'default': { input: 1.00, output: 2.00 }\n};\n\n// Identifica o modelo\nlet modelo = input.model || 'default';\n// Normaliza nome do modelo\nconst modeloLower = modelo.toLowerCase();\nlet precoModelo = precos['default'];\n\nfor (const [key, value] of Object.entries(precos)) {\n  if (modeloLower.includes(key.toLowerCase()) || key.toLowerCase().includes(modeloLower)) {\n    precoModelo = value;\n    break;\n  }\n}\n\nconst inputTokens = parseInt(input.input_tokens) || 0;\nconst outputTokens = parseInt(input.output_tokens) || 0;\nconst totalTokens = parseInt(input.total_tokens) || (inputTokens + outputTokens);\n\n// Calcula custo (precos sao por 1M tokens)\nconst custoInput = (inputTokens / 1000000) * precoModelo.input;\nconst custoOutput = (outputTokens / 1000000) * precoModelo.output;\nconst custoTotal = custoInput + custoOutput;\n\nreturn {\n  workflow_id: input.workflowId || '',\n  workflow_name: '', // Sera preenchido depois se necessario\n  execution_id: input.executionId || '',\n  location_id: input.location_id || '',\n  location_name: input.location_name || '',\n  contact_id: input.contact_id || '',\n  contact_name: input.contact_name || '',\n  modelo_ia: modelo,\n  tokens_input: inputTokens,\n  tokens_output: outputTokens,\n  custo_usd: parseFloat(custoTotal.toFixed(6)),\n  canal: input.canal || '',\n  tipo_acao: input.tipo_acao || '',\n  mensagem_entrada: '',\n  mensagem_saida: ''\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "code-calcular-001",
+      "name": "Calcular Custo"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://bfumywvwubvernvhjehk.supabase.co/rest/v1/n8n_custos_execucao",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "http-insert-001",
+      "name": "Insert Supabase"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "success-001",
+              "name": "success",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "custo-001",
+              "name": "custo_registrado",
+              "value": "={{ $('Calcular Custo').item.json.custo_usd }}",
+              "type": "number"
+            },
+            {
+              "id": "tokens-001",
+              "name": "tokens_total",
+              "value": "={{ $('Calcular Custo').item.json.tokens_input + $('Calcular Custo').item.json.tokens_output }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        660,
+        0
+      ],
+      "id": "set-resposta-001",
+      "name": "Resposta"
+    }
+  ],
+  "connections": {
+    "Quando Chamado": {
+      "main": [
+        [
+          {
+            "node": "Calcular Custo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Custo": {
+      "main": [
+        [
+          {
+            "node": "Insert Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Supabase": {
+      "main": [
+        [
+          {
+            "node": "Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  }
+}

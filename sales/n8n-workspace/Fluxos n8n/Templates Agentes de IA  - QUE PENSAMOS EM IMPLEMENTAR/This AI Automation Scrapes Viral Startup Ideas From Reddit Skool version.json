@@ -1,0 +1,1441 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2672,
+        784
+      ],
+      "id": "22d55141-586e-4fd7-95b1-34a93225dd94",
+      "name": "Wait",
+      "webhookId": "0b606b16-f3ce-40cd-9347-2296c9818122"
+    },
+    {
+      "parameters": {
+        "content": "## Step 1 — Targets & Run Variables (Form)\n\nCollects optional subreddits/keywords and run settings (limits, recency, quality thresholds). Normalizes them into variables so downstream nodes don’t need manual edits.",
+        "height": 512,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        784,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "aba43cfa-0e61-480f-b7c6-0893a4b2b961",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Step 2 — Generate Targets & Split\n\nAI generates up to three {subreddit, keyword} pairs (or prioritizes user inputs). The list is parsed to strict JSON and split into three parallel targets.",
+        "height": 496,
+        "width": 576,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "c856b240-bed7-494d-b73d-c85cc3aa3e14",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Step 3 — Filter & Map Posts (per target)\n\nSearches Reddit for each target, drops NSFW/old/low-signal posts, and maps core fields. Batches the kept posts for efficient processing.",
+        "height": 464,
+        "width": 1200,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1792,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "8532ad24-4746-40b6-b0a0-715866fcccac",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Step 4 — Fetch Comments & Aggregate Context\n\nPulls top comments for each post and aggregates them to provide richer context. Passes through the original post meta alongside the summary.",
+        "height": 432,
+        "width": 352,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        784,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "81cca3bb-d612-4711-a1a0-93116285e819",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Step 5 — Evaluate Post → Startup Idea JSON\n\nLLM analyzes the post + comments and returns a structured idea (problem, solution, difficulty, confidence). Output is enforced by a strict JSON schema.",
+        "height": 496,
+        "width": 496,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "a6313a07-9399-4c87-95e1-13677b94af29",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Step 6 — Prepare Row & Merge for Sheets\n\nFormats fields for Sheets and merges post meta with the evaluated idea. A cross-run de-dupe (by post_url) prevents re-logging the same post.",
+        "height": 496,
+        "width": 480,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1760,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "44619aef-f586-4798-9f22-09ef77f6e60a",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Step 7 — Route by Confidence → Log to Google Sheets\n\nApplies the confidence threshold to route entries to Strong vs. Weak tabs, then appends to Google Sheets. A short wait node paces the loop for reliability.",
+        "height": 544,
+        "width": 512,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2288,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "c4983db7-4762-4e6f-b1c0-b5ddcd5c3f10",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI agent that generates Reddit scraping parameters to discover potential business or product ideas.\n\nYour task: output **exactly 3** `{subreddit, keyword}` pairs that will surface posts describing pain points, frustrations, unmet needs, or complaints suitable for new businesses, products, or startups.\n\n=== INPUT VARIABLES (from form/Run Variables) ===\nhas_user_targets: {{$json.has_user_targets}}\nsubreddits (array): {{$json.subreddits}}\nkeywords (array): {{$json.keywords}}\ndefaults/knobs: {\n  \"limit_per_target\": {{$json.limit_per_target}},\n  \"recency_days\": {{$json.recency_days}},\n  \"min_ups\": {{$json.min_ups}},\n  \"min_comments\": {{$json.min_comments}},\n  \"min_selftext_len\": {{$json.min_selftext_len}},\n  \"confidence_threshold\": {{$json.confidence_threshold}}\n}\n\n=== HOW TO USE THE VARIABLES ===\n- If `has_user_targets` is true:\n  - If BOTH arrays have values: choose up to 3 sensible cross-pairs. Match each keyword to a subreddit where that pain commonly appears (not random).\n  - If ONLY `subreddits` has values: generate on-target keywords (1–3) that reflect common pains in those communities.\n  - If ONLY `keywords` has values: choose fitting subreddits where that topic is frequently discussed (one per keyword).\n  - If fewer than 3 valid pairs result, fill the remainder with your own best pairs.\n- If `has_user_targets` is false: choose all 3 pairs yourself with a varied domain mix.\n\n=== HARD RULES (must follow) ===\n- Subreddit format: **bare name only** (e.g., `smallbusiness`), lowercase, no `r/`, no slashes/spaces/URLs. Regex: `^[a-z0-9_]+$`.\n- Keyword format: 1–4 words, ≤40 chars, lowercase, **letters/numbers/spaces only**; **no quotes or punctuation/operators** (`\" ' ( ) : ; , . ! ? * + - / & | ~`), no hashtags/symbols.\n- Keyword intent: capture pain/inefficiency/“wish I had” (e.g., `refund delays`, `bank holds`, `shipping problems`, `budget help`, `school paperwork`).\n- Each pair must be unique and appropriate for that subreddit’s typical problems.\n- Avoid NSFW/meme/entertainment subs.\n\n=== OUTPUT (JSON ONLY) ===\nReturn **only** this JSON (no extra text):\n{\n  \"targets\": [\n    { \"subreddit\": \"subreddit_name\", \"keyword\": \"search phrase\" },\n    { \"subreddit\": \"subreddit_name\", \"keyword\": \"search phrase\" },\n    { \"subreddit\": \"subreddit_name\", \"keyword\": \"search phrase\" }\n  ]\n}\n\n=== VALIDATION BEFORE YOU ANSWER ===\n- 3 items exactly in `targets`.\n- Subreddits match `^[a-z0-9_]+$` and do NOT start with `r/`.\n- Keywords are 1–4 words, letters/numbers/spaces only, ≤40 chars.\n- No duplicates across the 3 pairs.\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        64
+      ],
+      "id": "01b49a05-57cd-4b77-90cc-328af4927afe",
+      "name": "Target Generator (subreddit + keyword)"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        288
+      ],
+      "id": "5712c4aa-1cc5-40d5-9308-997159abc318",
+      "name": "LLM (OpenRouter) – Target Gen"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"targets\": [\n    { \"subreddit\": \"subreddit_name\", \"keyword\": \"search phrase\" },\n    { \"subreddit\": \"subreddit_name\", \"keyword\": \"search phrase\" },\n    { \"subreddit\": \"subreddit_name\", \"keyword\": \"search phrase\" }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1440,
+        288
+      ],
+      "id": "c4e23236-4b0f-488f-940e-59baddc99145",
+      "name": "Target Output Parser (JSON)"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.targets",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        64
+      ],
+      "id": "1c00910b-d7ab-4303-8904-382d1e1775a6",
+      "name": "Split Targets (3 items)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6dadab77-a893-4928-a2ac-7a00e8016e60",
+              "name": "subreddit",
+              "value": "={{ $json.subreddit }}",
+              "type": "string"
+            },
+            {
+              "id": "0da3b8f5-dbab-4b66-a71e-2e95f2575ce9",
+              "name": "keyword",
+              "value": "={{ $json.keyword }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1584,
+        288
+      ],
+      "id": "a3c1b91e-8296-4d17-a619-7489e7d931db",
+      "name": "Attach Target Params"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "subreddit": "={{ $json.subreddit }}",
+        "keyword": "={{ $json.keyword }}",
+        "limit": "={{ $('Variables').item.json.limit_per_target }}",
+        "additionalFields": {
+          "sort": "top"
+        }
+      },
+      "type": "n8n-nodes-base.reddit",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        288
+      ],
+      "id": "f1857dc8-10ec-421d-a3b1-98460407f9a0",
+      "name": "Reddit Search (per target)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0dd41b0c-fe6a-4c4c-b8cd-1df440ed331d",
+              "leftValue": "={{ $json.ups }}",
+              "rightValue": "={{ 5 }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "340d1aa6-f63c-441e-ac62-8bab4fdb2082",
+              "leftValue": "={{ $json.selftext }}",
+              "rightValue": "={{ $('Variables').item.json.min_selftext_len }}",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "a4b3b058-7773-4760-b419-2f8ea1c9ce4f",
+              "leftValue": "={{ $json.num_comments }}",
+              "rightValue": "={{ $('Variables').item.json.min_comments }}",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2336,
+        288
+      ],
+      "id": "11f31279-944f-4e45-9d6f-0c537b5b7e35",
+      "name": "Filter: Quality (ups/comments/text)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5c7940e6-467e-4a53-89af-b8d0e09bdd1e",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "3ba3c0aa-35dc-4abc-8784-b3afcfb074f3",
+              "name": "selftext",
+              "value": "={{ $json.selftext }}",
+              "type": "string"
+            },
+            {
+              "id": "157c3b24-4563-41da-8848-0b0c58188377",
+              "name": "ups",
+              "value": "={{ $json.ups }}",
+              "type": "number"
+            },
+            {
+              "id": "67f4018c-0694-4412-a5aa-129d0d132c48",
+              "name": "created_utc",
+              "value": "={{ $json.created_utc }}",
+              "type": "number"
+            },
+            {
+              "id": "1a9d5a0b-2d3b-46d7-9d3c-814096dd90f6",
+              "name": "url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            },
+            {
+              "id": "2af4808f-6747-4ea1-afc5-b91e284f376b",
+              "name": "subreddit",
+              "value": "={{ $json.subreddit }}",
+              "type": "string"
+            },
+            {
+              "id": "d2af7e77-18b6-4b6a-9442-b2cf51cb70fd",
+              "name": "num_comments",
+              "value": "={{ $json.num_comments }}",
+              "type": "number"
+            },
+            {
+              "id": "4bc0d3cd-7dd5-4c51-a7e6-fa2734d0e4e8",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d29135ef-21c6-4fc1-95f9-49908586b0a0",
+              "name": "keyword",
+              "value": "={{ $('Attach Target Params').item.json.keyword }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2576,
+        288
+      ],
+      "id": "4accdb00-dbb7-4907-af63-678cc944e90f",
+      "name": "Map Post Fields"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2800,
+        288
+      ],
+      "id": "3925cbc2-e925-4842-9aa1-516842e43653",
+      "name": "Iterate Posts (batches)"
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        800
+      ],
+      "id": "1512eabf-1a90-4a5a-b14a-b334c4e2c7e9",
+      "name": "Pass-through Post Meta"
+    },
+    {
+      "parameters": {
+        "resource": "postComment",
+        "operation": "getAll",
+        "subreddit": "={{ $json.subreddit }}",
+        "postId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.reddit",
+      "typeVersion": 1,
+      "position": [
+        992,
+        800
+      ],
+      "id": "0b938d1d-de21-429a-ad8a-220da0bd2272",
+      "name": "Fetch Comments (by post id)"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        688
+      ],
+      "id": "3d09eef8-bee0-46ba-af33-66dbf2b960fe",
+      "name": "Aggregate Comments (for top pick)"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        864
+      ],
+      "id": "95e7adc2-12d6-4eea-823e-b6ef4c821d93",
+      "name": "LLM (OpenRouter) – Evaluator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You evaluate Reddit posts for business opportunities (not limited to tech). Output SHORT, DECISION-READY fields for a Google Sheet.\n\nReturn STRICT JSON (no prose, no code fences) with ALL keys present (use empty string \"\" or false if unknown):\n{\n  \"id\": string,\n  \"subreddit_keyword\": string,\n  \"problem\": \"one-sentence pain\",\n  \"idea_solution\": \"one-sentence solution\",\n  \"difficulty\": \"beginner|medium|hard\",\n  \"top_comment\": \"single highest-upvoted comment, <= 220 chars\",\n  \"post_url\": string,\n  \"startup_title\": \"3–7 words\",\n  \"is_startup_idea\": true|false,\n  \"confidence\": number,\n  \"reason\": \"why / why not\",\n  \"possible_direction\": \"one-line product direction\"\n}\n\nRules:\n- Always include every key above; never add extra keys.\n- No markdown, no backticks, no explanations—JSON only.\n- If a value is unknown, use \"\" (empty string) or false; still include the key.\n- difficulty must be exactly one of: beginner, medium, hard.\n- confidence must be a number in [0,1].\n- top_comment must come from the highest-upvoted comment (trim to 220 chars).\n- Keep outputs concise: each string value ≤ 220 chars. Truncate respectfully; never omit required keys.\n\n\nDifficulty rubric:\n- beginner = low capital, simple ops, low compliance, low competition\n- medium   = moderate capital/ops, some competition\n- hard     = high capital or complex ops/compliance, entrenched competitors\n\nDecision rule:\n- is_startup_idea = true only if the post exposes a recurring pain or unmet need that users would plausibly pay to solve; otherwise false.\n\nContent:\nid: {{ $('Pass-through Post Meta').item.json.id }}\nTitle: {{ $('Pass-through Post Meta').item.json.title }}\nText: {{ $('Pass-through Post Meta').item.json.selftext }}\nSubreddit: {{ $('Pass-through Post Meta').item.json.subreddit }}\nKeyword: {{ $('Pass-through Post Meta').item.json.keyword }}\nPost URL: {{ $('Pass-through Post Meta').item.json.url }}\nStats: ups={{ $('Pass-through Post Meta').item.json.ups }}, comments={{ $('Pass-through Post Meta').item.json.num_comments }}\n\nHighest-upvoted comment (for selection only):\n{{ (($json.data || []).sort((a,b) => (b.ups || 0) - (a.ups || 0))[0]?.body || \"\") }}\n\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1408,
+        688
+      ],
+      "id": "05936e2d-5b06-4443-bb7c-4bbdbe799b70",
+      "name": "Evaluate Post → Startup Idea JSON",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": { \"type\": \"string\" },\n    \"subreddit_keyword\": { \"type\": \"string\" },\n    \"problem\": { \"type\": \"string\" },\n    \"idea_solution\": { \"type\": \"string\" },\n    \"difficulty\": { \"type\": \"string\", \"enum\": [\"beginner\", \"medium\", \"hard\"] },\n    \"top_comment\": { \"type\": \"string\" },\n    \"post_url\": { \"type\": \"string\" },\n    \"startup_title\": { \"type\": \"string\" },\n    \"is_startup_idea\": { \"type\": \"boolean\" },\n    \"confidence\": { \"type\": \"number\" },\n    \"reason\": { \"type\": \"string\" },\n    \"possible_direction\": { \"type\": \"string\" }\n  },\n  \"required\": [\n    \"id\",\n    \"subreddit_keyword\",\n    \"problem\",\n    \"idea_solution\",\n    \"difficulty\",\n    \"top_comment\",\n    \"post_url\",\n    \"startup_title\",\n    \"is_startup_idea\",\n    \"confidence\",\n    \"reason\",\n    \"possible_direction\"\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1568,
+        880
+      ],
+      "id": "79639753-8fe4-403f-963c-f9e953a92b15",
+      "name": "Idea Output Parser (Strict JSON)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b3dbcdc6-021a-4d37-818d-a3f429dff1e6",
+              "name": "id",
+              "value": "={{ $json.output.id }}",
+              "type": "string"
+            },
+            {
+              "id": "e0f9c1ea-320f-4023-bdf4-22e879251f85",
+              "name": "subreddit_keyword",
+              "value": "={{ $json.output.subreddit_keyword }}",
+              "type": "string"
+            },
+            {
+              "id": "3d536d90-cf6a-4d0c-84c7-59e02660361b",
+              "name": "problem",
+              "value": "={{ $json.output.problem }}",
+              "type": "string"
+            },
+            {
+              "id": "37b28905-700e-4523-ad0f-762ed0d89c03",
+              "name": "idea_solution",
+              "value": "={{ $json.output.idea_solution }}",
+              "type": "string"
+            },
+            {
+              "id": "32ea8963-aca7-4d7e-9556-27ccc8a2c6a1",
+              "name": "difficulty",
+              "value": "={{ $json.output.difficulty }}",
+              "type": "string"
+            },
+            {
+              "id": "70939a79-a606-4589-8cd0-78c94a7e31c2",
+              "name": "top_comment",
+              "value": "={{ $json.output.top_comment }}",
+              "type": "string"
+            },
+            {
+              "id": "cdef03e5-7d48-485f-b832-c4e3331243d1",
+              "name": "post_url",
+              "value": "={{ $json.output.post_url }}",
+              "type": "string"
+            },
+            {
+              "id": "3a9c88c7-e6f4-4c99-a4bf-1e098b64a0b6",
+              "name": "startup_title",
+              "value": "={{ $json.output.startup_title }}",
+              "type": "string"
+            },
+            {
+              "id": "3bb6a9f4-8ab7-42b2-a1f1-b2a19382063d",
+              "name": "is_startup_idea",
+              "value": "={{ $json.output.is_startup_idea }}",
+              "type": "boolean"
+            },
+            {
+              "id": "a247457f-4dd4-4e5d-b6de-e2b5e4ea2496",
+              "name": "confidence",
+              "value": "={{ $json.output.confidence }}",
+              "type": "number"
+            },
+            {
+              "id": "57cf794f-bed7-4c08-af69-4af83dea7f16",
+              "name": "reason",
+              "value": "={{ $json.output.reason }}",
+              "type": "string"
+            },
+            {
+              "id": "52f3da9f-4b60-465c-b2ef-ff906071b06d",
+              "name": "possible_direction",
+              "value": "={{ $json.output.possible_direction }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1792,
+        688
+      ],
+      "id": "254a44cc-5b4f-4683-bebc-428c796a0a04",
+      "name": "Prepare Row for Sheets"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1968,
+        784
+      ],
+      "id": "cccc7e75-8cff-4ea0-b461-2acddf118139",
+      "name": "Merge Post + Idea by id"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3a7d44e5-212b-4eed-b7b0-91495d8cab0f",
+              "leftValue": "={{ $json.is_startup_idea }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "a13107e1-a2d3-4fca-a626-0aa7172f79f3",
+              "leftValue": "={{ $json.confidence }}",
+              "rightValue": 0.65,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2304,
+        784
+      ],
+      "id": "a360ac31-4124-4683-bf01-dd72f2c58c6e",
+      "name": "Filter strong confidence > 0.65"
+    },
+    {
+      "parameters": {
+        "formTitle": "Reddit Target Generator",
+        "formDescription": "<p><b>Purpose:</b> Configure a run of the Reddit startup-idea finder. You can optionally steer the search with your own subreddits/keywords, or leave them blank and let the AI choose. Then click <b>Execute</b>—no node editing required.</p>\n\n<p><b>Target inputs (optional):</b><br>\n<b>Custom subreddits</b> — comma-separated bare names, lowercase, no <code>r/</code> prefix (e.g., <code>smallbusiness, personalfinance, parenting</code>). Leave empty to let the AI pick communities.<br>\n<b>Custom keywords</b> — comma-separated short phrases (1–3 words), lowercase, letters/numbers/spaces only (e.g., <code>shipping delays</code>, <code>budget help</code>, <code>tantrums</code>). Leave empty to let the AI decide focus terms.<br>\nIf you provide either field, the AI will prioritize and combine the values you entered.</p>\n\n<p><b>Search size & freshness:</b><br>\n<b>Post per Target</b> — how many posts to fetch for each subreddit+keyword (typical 25–50).<br>\n<b>Recency (days)</b> — keep posts newer than this many days (common values 180–365).</p>\n\n<p><b>Quality gate (light filters):</b><br>\nA post qualifies if <i>any one</i> is true: upvotes ≥ <b>Min Upvotes</b>, comments ≥ <b>Min Comments</b>, or body length (characters) ≥ <b>Min selftext length</b>. Good defaults are 5 upvotes, 3 comments, 120 characters.</p>\n\n<p><b>Routing to Sheets:</b><br>\n<b>Confidence threshold</b> (0–1) — items with <code>is_startup_idea = true</code> and confidence ≥ threshold go to <b>Strong</b>; the rest go to <b>Weak</b>. A practical default is <b>0.65</b>.</p>\n\n<p><b>Tips:</b><br>\nUse bare subreddit names like <code>smallbusiness</code> (no <code>r/</code>). Keep keywords short and problem-focused. You can leave the optional target fields empty to run fully on AI selection.</p>\n\n<p><b>Before you run:</b><br>\nEnsure Reddit, OpenRouter, and Google Sheets credentials are connected. Red nodes indicate missing credentials.</p>",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Custom subreddits (comma-separated)",
+              "placeholder": "smallbusiness, personalfinance, Parenting"
+            },
+            {
+              "fieldLabel": "Custom Keywords (comma-separated)",
+              "placeholder": "shipping delays, budget help, tantrums"
+            },
+            {
+              "fieldLabel": "Post per Target",
+              "fieldType": "number",
+              "placeholder": "50",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Recency (days)",
+              "fieldType": "number",
+              "placeholder": "365",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Min Upvotes",
+              "fieldType": "number",
+              "placeholder": "5",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Min Comments",
+              "fieldType": "number",
+              "placeholder": "3",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Confidence threshold",
+              "fieldType": "number",
+              "placeholder": "0.65",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Min selftext length",
+              "fieldType": "number",
+              "placeholder": "120",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        832,
+        192
+      ],
+      "id": "4063404f-92be-425c-b033-ac19d138e9c1",
+      "name": "Target Generator",
+      "webhookId": "c665447a-57b8-4f78-8d0b-6d18d5ae8caf"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7183c31d-f670-4e78-837e-305edd4a5daf",
+              "name": "limit_per_target",
+              "value": "={{$json[\"Post per Target\"] ?? 50}}",
+              "type": "number"
+            },
+            {
+              "id": "0a89c6d4-cf8f-4f48-a003-975f0bda93fd",
+              "name": "recency_days",
+              "value": "={{$json[\"Recency (days)\"] ?? 365}}",
+              "type": "number"
+            },
+            {
+              "id": "c05f10dc-79e4-4e32-8b7e-0d5d68506922",
+              "name": "min_ups",
+              "value": "={{$json[\"Min Upvotes\"] ?? 5}}\n",
+              "type": "number"
+            },
+            {
+              "id": "39aa20a0-87c6-4a1f-bfca-6a2f17d200d7",
+              "name": "min_comments",
+              "value": "={{$json[\"Min Comments\"] ?? 3}}\n",
+              "type": "number"
+            },
+            {
+              "id": "c4d562d7-853a-4d23-a81d-6681e2ea8e6f",
+              "name": "min_selftext_len",
+              "value": "={{$json[\"Min selftext length\"] ?? 120}}\n",
+              "type": "number"
+            },
+            {
+              "id": "bb43484f-31f0-4357-b94d-27f2228ad14a",
+              "name": "confidence_threshold",
+              "value": "={{$json[\"Confidence threshold\"] ?? 0.65}}",
+              "type": "number"
+            },
+            {
+              "id": "c8e8b99c-19eb-4038-a000-4d76e415a0b8",
+              "name": "subreddits_raw",
+              "value": "={{($json[\"Custom subreddits (comma-separated)\"] || \"\").trim()}}",
+              "type": "string"
+            },
+            {
+              "id": "636e6c72-10ba-4507-8f3c-3e0d5e55e2d9",
+              "name": "keywords_raw",
+              "value": "={{($json[\"Custom Keywords (comma-separated)\"] || \"\").trim()}}",
+              "type": "string"
+            },
+            {
+              "id": "dab15bbb-ab93-4ae5-818b-9c7549abce0c",
+              "name": "subreddits",
+              "value": "={{   ($json.subreddits_raw || \"\")     .split(\",\")     .map(s => s.trim().toLowerCase().replace(/^r\\//,\"\").replace(/\\/.*$/,\"\"))     .filter(s => s.length > 0) }}",
+              "type": "array"
+            },
+            {
+              "id": "060cfa66-2eb7-4bca-b9cd-aea3421f3690",
+              "name": "keywords",
+              "value": "={{   ($json.keywords_raw || \"\")     .split(\",\")     .map(k => k.trim().toLowerCase().replace(/[^a-z0-9 ]+/g,\"\").replace(/\\s+/g,\" \"))     .filter(k => k.length > 0) }}",
+              "type": "array"
+            },
+            {
+              "id": "93eed9b9-6814-44a8-a5c1-a973e597a8aa",
+              "name": "has_user_targets",
+              "value": "={{ Array.isArray($json.subreddits) && $json.subreddits.length > 0 || Array.isArray($json.keywords) && $json.keywords.length > 0 }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1008,
+        192
+      ],
+      "id": "d8b7d933-eb3f-4b4c-8496-fc08bc093ca3",
+      "name": "Variables"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "aa80ebdd-f242-469c-b5a9-fee4b641e721",
+              "leftValue": "={{$json.created_utc}}",
+              "rightValue": "={{ $now.minus({ days: $('Variables').item.json.recency_days || 365 }).toSeconds() }}\n",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "302fec87-8e9b-4a64-a10f-581c304eecd8",
+              "leftValue": "={{$json.over_18}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2064,
+        288
+      ],
+      "id": "e9f7c574-539c-47ac-a3f2-17b7bf6e7610",
+      "name": "Filter: SFW & Recency (≤365d)"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 816507138,
+          "mode": "list",
+          "cachedResultName": "Weak Results",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xHuN8k7XizTx2VuvGYyDGlZVEwyPNRmjOZDweSHFOe4/edit#gid=816507138"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Reason": "={{ $json.reason }}",
+            "Problem": "={{ $json.problem }}",
+            "Difficulty": "={{ $json.difficulty }}",
+            "Post url": "={{ $json.post_url }}",
+            "Subreddit|keyword": "={{ $json.subreddit }}|{{ $json.subreddit_keyword }}",
+            "Startup Title": "={{ $json.startup_title }}",
+            "Possible direction": "={{ $json.possible_direction }}",
+            "post title": "={{ $json.title }}",
+            "top comment": "={{ $json.top_comment }}",
+            "Solution": "={{ $json.idea_solution }}",
+            "Confidence": "={{ $json.confidence }}",
+            "time stamp": "={{ $json.created_utc ? new Date($json.created_utc * 1000).toISOString() : '' }}\n"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "Problem",
+              "displayName": "Problem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Difficulty",
+              "displayName": "Difficulty",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Startup Title",
+              "displayName": "Startup Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Possible direction",
+              "displayName": "Possible direction",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Post url",
+              "displayName": "Post url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post title",
+              "displayName": "post title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "top comment",
+              "displayName": "top comment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Subreddit|keyword",
+              "displayName": "Subreddit|keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Confidence",
+              "displayName": "Confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "time stamp",
+              "displayName": "time stamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2496,
+        864
+      ],
+      "id": "7055da2b-6c8f-4206-946d-925491dca9f0",
+      "name": "Post in weak results"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Strong Results",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oeqaASjzvBiRpvdNw3wQYQO4t-3ebFaHFJABGGMkpf0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Startup Title": "={{ $json.startup_title }}",
+            "Problem": "={{ $json.problem }}",
+            "Solution": "={{ $json.idea_solution }}",
+            "Reason": "={{ $json.reason }}",
+            "Possible direction": "={{ $json.reason }}",
+            "Difficulty": "={{ $json.difficulty }}",
+            "Confidence": "={{ $json.confidence }}",
+            "Subreddit|keyword": "={{ $json.subreddit }}|{{ $json.subreddit_keyword }}",
+            "post title": "={{ $json.title }}",
+            "top comment": "={{ $json.top_comment }}",
+            "Post url": "={{ $json.post_url }}",
+            "time stamp": "={{ $json.created_utc ? new Date($json.created_utc * 1000).toISOString() : '' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Startup Title",
+              "displayName": "Startup Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Problem",
+              "displayName": "Problem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Possible direction",
+              "displayName": "Possible direction",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Difficulty",
+              "displayName": "Difficulty",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confidence",
+              "displayName": "Confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subreddit|keyword",
+              "displayName": "Subreddit|keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "post title",
+              "displayName": "post title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "top comment",
+              "displayName": "top comment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post url",
+              "displayName": "Post url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "time stamp",
+              "displayName": "time stamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2496,
+        704
+      ],
+      "id": "088fe852-468a-4252-b92d-071a85d7830b",
+      "name": "Post in strong results"
+    },
+    {
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json.post_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        2112,
+        784
+      ],
+      "id": "bf62c620-441a-4e74-9ec7-ced652f8f1e3",
+      "name": "Remove Duplicates"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Iterate Posts (batches)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Target Generator (subreddit + keyword)": {
+      "main": [
+        [
+          {
+            "node": "Split Targets (3 items)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM (OpenRouter) – Target Gen": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Target Generator (subreddit + keyword)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Target Output Parser (JSON)": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Target Generator (subreddit + keyword)",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Targets (3 items)": {
+      "main": [
+        [
+          {
+            "node": "Attach Target Params",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Target Params": {
+      "main": [
+        [
+          {
+            "node": "Reddit Search (per target)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reddit Search (per target)": {
+      "main": [
+        [
+          {
+            "node": "Filter: SFW & Recency (≤365d)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: Quality (ups/comments/text)": {
+      "main": [
+        [
+          {
+            "node": "Map Post Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map Post Fields": {
+      "main": [
+        [
+          {
+            "node": "Iterate Posts (batches)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iterate Posts (batches)": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Pass-through Post Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pass-through Post Meta": {
+      "main": [
+        [
+          {
+            "node": "Fetch Comments (by post id)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Post + Idea by id",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Fetch Comments (by post id)": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Comments (for top pick)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Comments (for top pick)": {
+      "main": [
+        [
+          {
+            "node": "Evaluate Post → Startup Idea JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM (OpenRouter) – Evaluator": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Evaluate Post → Startup Idea JSON",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate Post → Startup Idea JSON": {
+      "main": [
+        [
+          {
+            "node": "Prepare Row for Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Idea Output Parser (Strict JSON)": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Evaluate Post → Startup Idea JSON",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Row for Sheets": {
+      "main": [
+        [
+          {
+            "node": "Merge Post + Idea by id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Post + Idea by id": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter strong confidence > 0.65": {
+      "main": [
+        [
+          {
+            "node": "Post in strong results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post in weak results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Target Generator": {
+      "main": [
+        [
+          {
+            "node": "Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Variables": {
+      "main": [
+        [
+          {
+            "node": "Target Generator (subreddit + keyword)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter: SFW & Recency (≤365d)": {
+      "main": [
+        [
+          {
+            "node": "Filter: Quality (ups/comments/text)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post in weak results": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post in strong results": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Filter strong confidence > 0.65",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "53942a27-4000-4549-917f-753f3bcedc7f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2baf34c010bba56e1fc9c05b0e3469be88ef539db09a83b806a10cd72e1b340c"
+  },
+  "id": "S3aO9BLXjlZB6o65",
+  "tags": []
+}

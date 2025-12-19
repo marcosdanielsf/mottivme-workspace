@@ -1,0 +1,58 @@
+{
+  "_INSTRUCOES": {
+    "1": "Copie APENAS o objeto dentro de 'node_para_importar'",
+    "2": "No n8n, vá em Settings > Import from JSON",
+    "3": "Cole o JSON do nó",
+    "4": "Conecte a saída do último agent da FASE 1B (ex: '6C. Synthesis and Strategic Analysis') a este nó",
+    "5": "Configure a credencial Postgres clicando no nó e selecionando 'Supabase Postgres'"
+  },
+
+  "node_para_importar": {
+    "parameters": {
+      "operation": "executeQuery",
+      "query": "=INSERT INTO clone_experts (\n  project_id,\n  analise_concorrentes,\n  concorrentes_internacionais,\n  concorrentes_brasileiros,\n  sintese_estrategica,\n  status,\n  updated_at\n)\nVALUES (\n  '{{ $('🔄 Transform Expert Context').item.json.project_id }}'::uuid,\n  '{{ ($('5. Agent 5: Identity Mapper').item.json.text || '').toString().replace(/'/g, \"''\").replace(/\\\\/g, \"\\\\\\\\\") }}',\n  '{{ ($('6A. Perplexity Internacional').item.json.choices[0].message.content || '').toString().replace(/'/g, \"''\").replace(/\\\\/g, \"\\\\\\\\\") }}',\n  '{{ ($('6B. Perplexity Brasil').item.json.choices[0].message.content || '').toString().replace(/'/g, \"''\").replace(/\\\\/g, \"\\\\\\\\\") }}',\n  '{{ ($('6C. Synthesis and Strategic Analysis').item.json.text || '').toString().replace(/'/g, \"''\").replace(/\\\\/g, \"\\\\\\\\\") }}',\n  'ready',\n  NOW()\n)\nON CONFLICT (project_id) DO UPDATE SET\n  analise_concorrentes = EXCLUDED.analise_concorrentes,\n  concorrentes_internacionais = EXCLUDED.concorrentes_internacionais,\n  concorrentes_brasileiros = EXCLUDED.concorrentes_brasileiros,\n  sintese_estrategica = EXCLUDED.sintese_estrategica,\n  status = 'ready',\n  updated_at = NOW()\nRETURNING *;",
+      "options": {}
+    },
+    "id": "fase1b-postgres-final-001",
+    "name": "💾 Update Posicionamento - FASE 1B",
+    "type": "n8n-nodes-base.postgres",
+    "typeVersion": 2.5,
+    "position": [1800, 500],
+    "credentials": {
+      "postgres": {
+        "id": "YOUR_CREDENTIAL_ID",
+        "name": "Supabase Postgres"
+      }
+    }
+  },
+
+  "_ALTERNATIVA_SE_DER_ERRO": {
+    "descricao": "Se ainda der erro, use esta versão com Code Node antes",
+    "code_node": {
+      "parameters": {
+        "jsCode": "// Prepara os dados para o Postgres com escape correto\nfunction escapeSQL(str) {\n  if (!str) return '';\n  return str.toString()\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/'/g, \"''\")\n    .replace(/\\x00/g, '');\n}\n\nconst transformContext = $('🔄 Transform Expert Context').item.json;\nconst identityMapper = $('5. Agent 5: Identity Mapper').item.json;\nconst perplexityInternacional = $('6A. Perplexity Internacional').item.json;\nconst perplexityBrasil = $('6B. Perplexity Brasil').item.json;\nconst synthesis = $('6C. Synthesis and Strategic Analysis').item.json;\n\nreturn [{\n  json: {\n    project_id: transformContext.project_id,\n    analise_concorrentes: escapeSQL(identityMapper.text),\n    concorrentes_internacionais: escapeSQL(perplexityInternacional.choices?.[0]?.message?.content),\n    concorrentes_brasileiros: escapeSQL(perplexityBrasil.choices?.[0]?.message?.content),\n    sintese_estrategica: escapeSQL(synthesis.text)\n  }\n}];"
+      },
+      "name": "🔧 Prepare FASE 1B Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1600, 500]
+    },
+    "postgres_node_simplificado": {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO clone_experts (\n  project_id,\n  analise_concorrentes,\n  concorrentes_internacionais,\n  concorrentes_brasileiros,\n  sintese_estrategica,\n  status,\n  updated_at\n)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  '{{ $json.analise_concorrentes }}',\n  '{{ $json.concorrentes_internacionais }}',\n  '{{ $json.concorrentes_brasileiros }}',\n  '{{ $json.sintese_estrategica }}',\n  'ready',\n  NOW()\n)\nON CONFLICT (project_id) DO UPDATE SET\n  analise_concorrentes = EXCLUDED.analise_concorrentes,\n  concorrentes_internacionais = EXCLUDED.concorrentes_internacionais,\n  concorrentes_brasileiros = EXCLUDED.concorrentes_brasileiros,\n  sintese_estrategica = EXCLUDED.sintese_estrategica,\n  status = 'ready',\n  updated_at = NOW()\nRETURNING *;",
+        "options": {}
+      },
+      "name": "💾 Update Posicionamento - FASE 1B",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1800, 500],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,606 @@
+{
+  "name": "Linkedin_Scraper_2",
+  "nodes": [
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "id": "982ef3dd-78e6-4715-8fb3-36f009c7630b",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        -64,
+        192
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f8cedb5f-ed1d-40de-bd23-4b4f9688f32d",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        160,
+        192
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "formTitle": "1.0 S_LG_Find LinkedIn Accounts by keywords and Write personal message for contact",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Keywords to find Company / Professional"
+            },
+            {
+              "fieldLabel": "Purpose of Contact"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5518c511-e359-4924-a14a-54a5c571a08f",
+      "name": "Form submit",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -784,
+        144
+      ],
+      "webhookId": "1bd6594d-7541-4e65-a2fe-0311eca49001",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/customsearch/v1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "xxxx"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "cx",
+              "value": "xxxxxx"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2a158f01-fbe7-4f81-af27-dd5ba9593bbc",
+      "name": "Get Linkedin Company",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -272,
+        192
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1sjbLS24WMaIe0TjVK1KGvXBpMVkAYO8tYSprFgG_HJ4",
+          "mode": "list",
+          "cachedResultName": "LinkedinLeadScraper",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sjbLS24WMaIe0TjVK1KGvXBpMVkAYO8tYSprFgG_HJ4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tabellenblatt1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sjbLS24WMaIe0TjVK1KGvXBpMVkAYO8tYSprFgG_HJ4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": 0,
+            "link": "={{ $('Append or update row in sheet').item.json.link }}",
+            "outboundMsg": "={{ $json.output }}"
+          },
+          "matchingColumns": [
+            "link"
+          ],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "htmlTitle",
+              "displayName": "htmlTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "displayLink",
+              "displayName": "displayLink",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "snippet",
+              "displayName": "snippet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "htmlSnippet",
+              "displayName": "htmlSnippet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "formattedUrl",
+              "displayName": "formattedUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "htmlFormattedUrl",
+              "displayName": "htmlFormattedUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pagemap",
+              "displayName": "pagemap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "outboundMsg",
+              "displayName": "outboundMsg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "cbff9aac-4033-433a-acee-e7271958f061",
+      "name": "Update sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        960,
+        208
+      ],
+      "typeVersion": 4.7,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "jl7xtIhIuErFXCNL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Overview\n1. Collect keywords & purpose from a form  \n2. Generate Boolean LinkedIn search queries with AI  \n3. Search LinkedIn profiles/companies via Google Custom Search  \n4. Save results (name, URL, description) into Google Sheets  \n5. Generate personalized outreach messages with AI  \n6. Update the sheet with the message and send notification email  \n",
+        "height": 240,
+        "width": 448,
+        "color": 3
+      },
+      "id": "16116677-7661-4b93-9b1f-f34cde590238",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -768,
+        432
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Setup Required\n1. Configure Google Sheets OAuth2 credentials  \n2. Configure Gemini API credentials  \n3. Configure SMTP credentials (for email notifications)  \n4. Update Custom Search Engine ID (`cx`) and API Key  \n5. Adjust `hl` & `gl` parameters for your location  \n",
+        "height": 176,
+        "width": 448,
+        "color": 6
+      },
+      "id": "460c1e1f-2493-4856-85ea-260b72511d6a",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -768,
+        704
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a tool that generates Boolean search strings for Google, in order to search for companies or professionals on LinkedIn.  \n\n# Task:\n- Based on the keyword and the purpose, generate a suitable keyword string for searching on LinkedIn.  \n- Only return the keyword string, without any explanation or additional information.  \n- Always add site:linkedin.com to the keyword string.  \n\n# Input:\nKeyword: {{ $json['Keywords to find Company / Professional'] }}\nPurpose: {{ $json['Purpose of Contact'] }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -576,
+        144
+      ],
+      "id": "b72de57a-66e0-4f09-856c-7ad40e5b7260",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -592,
+        320
+      ],
+      "id": "16269295-577c-4146-9135-f157f903c213",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "rnt98gE7HvqfgBVY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1sjbLS24WMaIe0TjVK1KGvXBpMVkAYO8tYSprFgG_HJ4",
+          "mode": "list",
+          "cachedResultName": "LinkedinLeadScraper",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sjbLS24WMaIe0TjVK1KGvXBpMVkAYO8tYSprFgG_HJ4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TlZ5uDYJAWm_hx_wkI7HXvXwuOL5WBdxRIMwjQ1kpEU/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "des": "={{ $json.pagemap.metatags[0][\"og:description\"] }}",
+            "name": "={{ $json.title }}",
+            "linkedin_url": "={{ $json.link }}"
+          },
+          "schema": [
+            {
+              "id": "id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "id",
+              "defaultMatch": true,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "des",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "des",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "message",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "linkedin_url"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f205c8ec-b630-4ba9-b1a4-deb0096255a2",
+      "name": "Append or update row in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        416,
+        208
+      ],
+      "typeVersion": 4.7,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "jl7xtIhIuErFXCNL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI that drafts outreach messages.\n\n# Requirements\nBased on the purpose: {{ $('Form submit').item.json['Purpose of Contact'] }}\nand the company information:  \nname: {{ $json.name }}  \ndescription: {{ $json.des }}  \n\nWrite a suitable and personalized outreach message for that specific company.  \n\nOnly return the outreach message, without any explanation or additional text.  \nIf some information is missing, use placeholders.  ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        208
+      ],
+      "id": "54a4c065-0fb0-486e-8be0-d362312e7e83",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        416
+      ],
+      "id": "b002d7d4-f42f-4f4d-915c-dbcd4c2b914b",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "rnt98gE7HvqfgBVY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "REPLACE THE KEY:\n\nxxxxxx.. => your API KEY\n\nget your cx here:\nhttps://programmablesearchengine.google.com/controlpanel/all\n\nRequest the key here and keep it secret!\nhttps://developers.google.com/custom-search/v1/overview?hl=de\n",
+        "height": 240,
+        "width": 400,
+        "color": 3
+      },
+      "id": "b8fbe974-232c-48db-84a9-bb3b59776ede",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -384,
+        -128
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Form submit": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Linkedin Company": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Get Linkedin Company",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Update sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "197f692d-91c0-49f0-8113-1660844a2feb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "32e39908afbcb49d79cc3b05576c030ecc2871395b7aec4e0fdc88778498f80e"
+  },
+  "id": "Zvl7rCPJ4atZQSQv",
+  "tags": []
+}

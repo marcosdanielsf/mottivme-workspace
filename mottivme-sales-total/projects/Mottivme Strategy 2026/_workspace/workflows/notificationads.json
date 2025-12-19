@@ -1,0 +1,2623 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "0ed78a6e-007a-43bc-a1b2-69488dc3f939",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -5856,
+        -800
+      ],
+      "name": "Schedule Trigger",
+      "typeVersion": 1.2,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "id": "000b3175-c71c-4ba3-81e1-ec2194a12e35",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        -5200,
+        -800
+      ],
+      "name": "Split Out13",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "id": "83342eb2-eb89-4425-8574-4d70e2d95fc0",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        -4304,
+        -800
+      ],
+      "name": "Split Out14",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "id": "97b17d8b-4680-47de-b23e-1b096b4149a2",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        -3648,
+        -512
+      ],
+      "name": "Split Out15",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -3200,
+        -496
+      ],
+      "id": "1f782079-b196-442e-a722-39a58eb96ac8",
+      "name": "Wait2",
+      "webhookId": "627a9f05-6a54-4197-a97f-dffd8c184f73"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4ae9d184-693b-49c1-a971-fc91e1a90522",
+              "leftValue": "={{ $json.effective_status }}",
+              "rightValue": "ACTIVE",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4080,
+        -496
+      ],
+      "id": "83fc743a-b09a-4e4a-b4f1-29fffbd8dec1",
+      "name": "If14"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4ae9d184-693b-49c1-a971-fc91e1a90522",
+              "leftValue": "={{ $json.effective_status }}",
+              "rightValue": "ACTIVE",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3408,
+        -800
+      ],
+      "id": "a423f0fe-6290-414b-bc37-a1041f65d974",
+      "name": "If15"
+    },
+    {
+      "parameters": {
+        "content": "## Daily Facebook Ads Report - CORRIGIDO",
+        "height": 680,
+        "width": 5764
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -5968,
+        -992
+      ],
+      "typeVersion": 1,
+      "id": "8aa5becb-8928-4644-bff8-b44edffd5e8e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "graphApiVersion": "v23.0",
+        "node": "me",
+        "edge": "adaccounts",
+        "options": {
+          "fields": {
+            "field": [
+              {
+                "name": "id"
+              },
+              {
+                "name": "name"
+              },
+              {
+                "name": "account_status"
+              }
+            ]
+          }
+        }
+      },
+      "id": "a1dfc08e-5cdf-465d-885e-2452bb08dc68",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        -5456,
+        -512
+      ],
+      "name": "Get FB Ad Accounts2",
+      "typeVersion": 1,
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "JGQy45kpcae2O5I7",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "graphApiVersion": "v22.0",
+        "node": "={{ $json.id }}",
+        "edge": "campaigns",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "fields",
+                "value": "id,name,effective_status,account_name"
+              }
+            ]
+          }
+        }
+      },
+      "id": "12ed2f18-4062-4983-a421-f201905b660f",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        -4512,
+        -512
+      ],
+      "name": "Get Ad Campaigns2",
+      "typeVersion": 1,
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "JGQy45kpcae2O5I7",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "graphApiVersion": "v22.0",
+        "node": "={{$json.id}}",
+        "edge": "adsets",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "fields",
+                "value": "id,name,effective_status,budget,currency"
+              }
+            ]
+          }
+        }
+      },
+      "id": "9f8a75b5-bd2d-4625-abab-513bc702c0f0",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        -3856,
+        -800
+      ],
+      "name": "Get FB Ad Sets2",
+      "typeVersion": 1,
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "JGQy45kpcae2O5I7",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "graphApiVersion": "v22.0",
+        "node": "={{$json.id}}",
+        "edge": "ads",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "fields",
+                "value": "id,name,effective_status,creative{video_id,image_url,object_story_spec},insights.date_preset(yesterday){ctr,cpm,cpc,spend,actions,action_values,cost_per_action_type,impressions,clicks},campaign{name},adset{name}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "9e1e569b-601d-4d84-8ec0-f7a8aa655f7d",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        -2960,
+        -800
+      ],
+      "name": "Get FB Ad Contents2",
+      "typeVersion": 1,
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "JGQy45kpcae2O5I7",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.id }}",
+                    "rightValue": "=act_594452103743956",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "5b9bd618-c83f-4f71-a9d0-14236e2e9af4"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "[MOTTIVME] Renata Vieira"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "98e54e9e-1800-4810-882e-4ae6b4454a86",
+                    "leftValue": "={{ $json.id }}",
+                    "rightValue": "act_467656524158999",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Dra Gabriela Rossmam "
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5bbcbe29-f3a4-45a4-96ae-bc0117041c16",
+                    "leftValue": "={{ $json.id }}",
+                    "rightValue": "act_1242910680913498",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "[MOTTIVME] LAPPE FINANCE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "712e6279-42f6-4725-97ca-fe25cdd20dca",
+                    "leftValue": "={{ $json.id }}",
+                    "rightValue": "=act_903049021624083",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "[MOTTIVME] ANDRÉ ROSA"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -4976,
+        -688
+      ],
+      "id": "090fd3f5-5805-422d-b9de-a5012967b518",
+      "name": "Switch3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1334eb7a-1d63-4710-821d-af01f6ac6824",
+              "name": "account_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4752,
+        -800
+      ],
+      "id": "1624b5c8-8d57-4be3-89bd-fa2a5ec11ea2",
+      "name": "Add Account Name2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nitems.forEach(item => {\n  const insights = item.json.insights?.data?.[0];\n  console.log('===== DEBUG AD =====');\n  console.log('Ad ID:', item.json.id);\n  console.log('Ad Name:', item.json.name);\n  console.log('date_start:', insights?.date_start);\n  console.log('date_stop:', insights?.date_stop);\n  console.log('====================');\n});\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2736,
+        -512
+      ],
+      "id": "6d4830b6-1765-404a-b3c8-713c43a5dacf",
+      "name": "Code in JavaScript11"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4ae9d184-693b-49c1-a971-fc91e1a90522",
+              "leftValue": "={{ $json.effective_status }}",
+              "rightValue": "ACTIVE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "86d803d1-ea76-4821-95bc-5d067020578a",
+              "leftValue": "={{ $json.insights }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2320,
+        -528
+      ],
+      "id": "e28ba0a7-87d7-4ad7-a38e-a87149b722c0",
+      "name": "Filtrar Ativos1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "119650e0-fb37-48e1-bb87-efd4cdd29434",
+              "leftValue": "={{ $json.creative.object_story_spec.video_data.video_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2064,
+        -800
+      ],
+      "id": "2dbdd2c5-c32e-45b1-b2f0-1f61451f4b49",
+      "name": "Tem Vídeo?1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Processar TODOS os itens e formatar para Airtable\nconst items = $input.all();\n\nreturn items.map((item, index) => {\n  const data = item.json;\n  \n  // Usar date_start do insight como data do ad\n  const dataAd = data.insights?.data?.[0]?.date_start || new Date().toISOString().split('T')[0];\n  \n  // BUSCAR O ACCOUNT NAME DO NÓ \"Add Account Name2\"\n  const accountName = $('Add Account Name2').first().json.account_name;\n  \n  return {\n    json: {\n      \"Ad ID\": data.id,\n      \"Ad Name\": data.name,\n      \"Campaign Name\": data.campaign?.name || 'N/A',\n      \"AdSet Name\": data.adset?.name || 'N/A',\n      \"Active Status\": data.effective_status,\n      \"Impressions\": data.insights?.data?.[0]?.impressions || '0',\n      \"Clicks\": data.insights?.data?.[0]?.clicks || '0',\n      \"Spend\": data.insights?.data?.[0]?.spend || '0',\n      \"CPC\": data.insights?.data?.[0]?.cpc || '0',\n      \"CPM\": data.insights?.data?.[0]?.cpm || '0',\n      \"Conversions\": data.insights?.data?.[0]?.actions?.find(a => a.action_type === 'omni_purchase')?.value || '0',\n      \"Conversion Value\": data.insights?.data?.[0]?.action_values?.find(a => a.action_type === 'omni_purchase')?.value || '0',\n      \"Video ID\": data.creative?.object_story_spec?.video_data?.video_id || 'N/A',\n      \"Conversas Iniciadas\": data.insights?.data?.[0]?.actions?.find(a => a.action_type === 'onsite_conversion.messaging_conversation_started_7d')?.value || '0',\n      \"Custo por Conversa\": data.insights?.data?.[0]?.cost_per_action_type?.find(c => c.action_type === 'onsite_conversion.messaging_conversation_started_7d')?.value || '0',\n      \"Mensagens com Profundidade 2 (usuário enviou 2+ mensagens)\": data.insights?.data?.[0]?.actions?.find(a => a.action_type === 'onsite_conversion.messaging_user_depth_2_message_send')?.value || '0',\n      \"Primeira Resposta (você respondeu)\": data.insights?.data?.[0]?.actions?.find(a => a.action_type === 'onsite_conversion.messaging_first_reply')?.value || '0',\n      \"Custo por Mensagem Profundidade 2\": data.insights?.data?.[0]?.cost_per_action_type?.find(c => c.action_type === 'onsite_conversion.messaging_user_depth_2_message_send')?.value || '0',\n      \"Custo por Primeira Resposta\": data.insights?.data?.[0]?.cost_per_action_type?.find(c => c.action_type === 'onsite_conversion.messaging_first_reply')?.value || '0',\n      \"Date\": dataAd,\n      \"Account Name\": accountName  // ← Usando o valor do Add Account Name2\n    },\n    pairedItem: { item: index }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1840,
+        -528
+      ],
+      "id": "25db2c54-f300-4339-a7af-65011ca74873",
+      "name": "Formatar Campos Facebook1"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "appSPnZynb2jGYGRv",
+          "mode": "list",
+          "cachedResultName": "AI VSL Demo"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblq56TF4aT0Zz1sN",
+          "mode": "list",
+          "cachedResultName": "Ads Performance",
+          "cachedResultUrl": "https://airtable.com/appSPnZynb2jGYGRv/tblq56TF4aT0Zz1sN"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Best Ads?": false,
+            "Ad Name": "={{ $json[\"Ad Name\"] }}",
+            "Spend": "={{ $json.Spend }}",
+            "Conversions": "={{ $json.Conversions }}",
+            "Conversion Value": "={{ $json[\"Conversion Value\"] }}",
+            "CPC": "={{ $json.CPC }}",
+            "CPM": "={{ $json.CPM }}",
+            "Video ID": "={{ $json[\"Video ID\"] }}",
+            "Ad ID": "={{ $json[\"Ad ID\"] }}",
+            "Campaign Name": "={{ $json[\"Campaign Name\"] }}",
+            "AdSet Name": "={{ $json[\"AdSet Name\"] }}",
+            "Active Status": "={{ $json[\"Active Status\"] }}",
+            "Impressions": "={{ $json.Impressions }}",
+            "Clicks": "={{ $json.Clicks }}",
+            "Custo por Conversa": "={{ $json['Custo por Conversa'] }}",
+            "Conversas Iniciadas": "={{ $json['Conversas Iniciadas'] }}",
+            "Custo Primeira Resposta": "={{ $json['Custo por Primeira Resposta'] }}",
+            "Custo Mensagem Depth 2": "={{ $json['Custo por Mensagem Profundidade 2'] }}",
+            "Primeira Resposta": "={{ $json['Primeira Resposta (você respondeu)'] }}",
+            "Mensagens Depth 2": "={{ $json['Mensagens com Profundidade 2 (usuário enviou 2+ mensagens)'] }}",
+            "Account Name": "={{ $json['Account Name'] }}",
+            "Date": "={{ $json.Date }}"
+          },
+          "matchingColumns": [
+            "Ad ID",
+            "Date",
+            "Video ID"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Ad ID",
+              "displayName": "Ad ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Best Ads?",
+              "displayName": "Best Ads?",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Video Script",
+              "displayName": "Video Script",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Video ID",
+              "displayName": "Video ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Active Status",
+              "displayName": "Active Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "ACTIVE",
+                  "value": "ACTIVE"
+                },
+                {
+                  "name": "PAUSED",
+                  "value": "PAUSED"
+                },
+                {
+                  "name": "DELETED",
+                  "value": "DELETED"
+                },
+                {
+                  "name": "ARCHIVED",
+                  "value": "ARCHIVED"
+                },
+                {
+                  "name": "IN_PROCESS",
+                  "value": "IN_PROCESS"
+                },
+                {
+                  "name": "WITH_ISSUES",
+                  "value": "WITH_ISSUES"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Impressions",
+              "displayName": "Impressions",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Clicks",
+              "displayName": "Clicks",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Spend",
+              "displayName": "Spend",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Conversas Iniciadas",
+              "displayName": "Conversas Iniciadas",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Mensagens Depth 2",
+              "displayName": "Mensagens Depth 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Primeira Resposta",
+              "displayName": "Primeira Resposta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Custo por Conversa",
+              "displayName": "Custo por Conversa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Custo Mensagem Depth 2",
+              "displayName": "Custo Mensagem Depth 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Custo Primeira Resposta",
+              "displayName": "Custo Primeira Resposta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Conversions",
+              "displayName": "Conversions",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Conversion Value",
+              "displayName": "Conversion Value",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CPC",
+              "displayName": "CPC",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "CPM",
+              "displayName": "CPM",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "ROAS",
+              "displayName": "ROAS",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Engagement Rate [progress]",
+              "displayName": "Engagement Rate [progress]",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Last Updated",
+              "displayName": "Last Updated",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ad Name",
+              "displayName": "Ad Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Account Name",
+              "displayName": "Account Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Campaign Name",
+              "displayName": "Campaign Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "AdSet Name",
+              "displayName": "AdSet Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Associate to New Product",
+              "displayName": "Associate to New Product",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Created",
+              "displayName": "Created",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Projects",
+              "displayName": "Projects",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "id": "0f05ce2c-1cb3-4453-ad18-42576dad8ea9",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        -1616,
+        -800
+      ],
+      "name": "Salvar no Airtable1",
+      "typeVersion": 2.1,
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appSPnZynb2jGYGRv",
+          "mode": "list",
+          "cachedResultName": "AI VSL Demo"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblq56TF4aT0Zz1sN",
+          "mode": "list",
+          "cachedResultName": "Ads Performance"
+        },
+        "filterByFormula": "=AND(\n  {Date} = DATEADD(TODAY(), -1, 'days'),\n  {Active Status} = 'ACTIVE'\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -1200,
+        -528
+      ],
+      "id": "3218194c-f752-42e6-90c9-af28c89ac76c",
+      "name": "Buscar Dados Período1",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega todos os itens\nconst items = $input.all();\n\n// Calcula as datas dinamicamente\nconst today = new Date();\nconst yesterday = new Date(today);\nyesterday.setDate(yesterday.getDate() - 1);\n\nconst startDate = yesterday.toISOString().split('T')[0];\nconst endDate = yesterday.toISOString().split('T')[0];\n\n// Verifica se há dados\nif (!items || items.length === 0) {\n  console.log(`Aviso: Nenhum dado no período ${startDate} a ${endDate}`);\n  \n  // Retorna array vazio ao invés de dar erro\n  return [];\n}\n\n// Se chegou aqui, há dados - continua com a agregação\nconst aggregated = {};\n\nfor (const item of items) {\n  const adId = item.json['Ad ID'];\n  \n  if (!aggregated[adId]) {\n    aggregated[adId] = {\n      ...item.json,\n      totalImpressions: 0,\n      totalClicks: 0,\n      totalSpend: 0\n    };\n  }\n  \n  aggregated[adId].totalImpressions += item.json.Impressions || 0;\n  aggregated[adId].totalClicks += item.json.Clicks || 0;\n  aggregated[adId].totalSpend += item.json.Spend || 0;\n}\n\n// Retorna dados agregados\nreturn Object.values(aggregated).map(data => ({ json: data }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        -512
+      ],
+      "id": "497b4b15-b41d-4248-8f02-8dcf70bc425c",
+      "name": "Agregar Dados1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega todos os itens\nconst items = $input.all();\n\n// VERIFICA SE HÁ DADOS\nif (!items || items.length === 0) {\n  return [{\n    json: {\n      message: \"⚠️ Nenhum dado disponível para o período selecionado.\\n\\nExecute o workflow completo (desde o início) para buscar dados novos do Facebook Ads.\"\n    }\n  }];\n}\n\n// Extrai os dados do json\nconst data = items.map(item => item.json);\n\n// Pega o nome do cliente (assume que todos são da mesma conta)\nconst clientName = data[0]['Account Name'] || 'N/A';\n\n// Calcula o período (pega a menor e maior data)\nconst dates = data.map(item => item.Date).filter(d => d);\nconst startDate = dates.length > 0 ? dates.sort()[0] : 'N/A';\nconst endDate = dates.length > 0 ? dates.sort()[dates.length - 1] : 'N/A';\n\n// Calcula totais\nconst totalSpend = data.reduce((sum, ad) => sum + (parseFloat(ad.Spend) || 0), 0);\nconst totalImpressions = data.reduce((sum, ad) => sum + (parseInt(ad.Impressions) || 0), 0);\nconst totalClicks = data.reduce((sum, ad) => sum + (parseInt(ad.Clicks) || 0), 0);\nconst totalConversas = data.reduce((sum, ad) => sum + (parseInt(ad['Conversas Iniciadas']) || 0), 0);\n\n// Calcula métricas\nconst custoMensagem = totalConversas > 0 ? totalSpend / totalConversas : 0;\nconst cpm = totalImpressions > 0 ? (totalSpend / totalImpressions) * 1000 : 0;\nconst ctr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;\nconst taxaConversao = totalClicks > 0 ? (totalConversas / totalClicks) * 100 : 0;\n\n// Ordena por spend (maior para menor) e pega TOP 3\nconst top3 = data\n  .sort((a, b) => (parseFloat(b.Spend) || 0) - (parseFloat(a.Spend) || 0))\n  .slice(0, 3);\n\n// Monta a mensagem\nlet message = `Bom dia, pessoal! Report atualizado das campanhas\\n`;\nmessage += `CLIENTE: ${clientName}\\n\\n`;\nmessage += `📅 RELATÓRIO DIÁRIO\\n`;\nmessage += `📅 Período: ${startDate} até ${endDate}\\n`;\nmessage += `━━━━━━━━━━━━━━━━━━━━\\n`;\nmessage += `Valor Investido: $ ${totalSpend.toFixed(2)}\\n`;\nmessage += `Conversas Iniciadas: ${totalConversas}\\n`;\nmessage += `Custo por mensagem: $ ${custoMensagem.toFixed(2)}\\n`;\nmessage += `CPM: $ ${cpm.toFixed(2)}\\n`;\nmessage += `CTR: ${ctr.toFixed(2)}%\\n`;\nmessage += `Taxa de Conversão: ${taxaConversao.toFixed(2)}%\\n`;\nmessage += `━━━━━━━━━━━━━━━━━━━━\\n`;\nmessage += `TOP 3 ADS POR GASTO:\\n`;\n\n// Adiciona TOP 3\ntop3.forEach((ad, index) => {\n  const adName = ad['Ad Name'] || 'N/A';\n  const adSpend = parseFloat(ad.Spend) || 0;\n  const adConversas = parseInt(ad['Conversas Iniciadas']) || 0;\n  const custoPorConv = adConversas > 0 ? adSpend / adConversas : 0;\n  \n  message += `${index + 1}. ${adName}\\n`;\n  message += `   Gasto: $ ${adSpend.toFixed(2)} | Conversões: ${adConversas} | Custo/Conv: $${custoPorConv.toFixed(2)}\\n`;\n});\n\nreturn [{\n  json: {\n    message: message\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -512,
+        -800
+      ],
+      "id": "cc4b1a16-41d7-47b2-975e-e448063800a8",
+      "name": "Formatar Mensagem1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "id": "b69d6aab-cdac-4c89-8b6c-1c30c180374a",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        -2512,
+        -800
+      ],
+      "name": "Split Out2",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Remove duplicatas baseado no Ad ID\nconst uniqueItems = [];\nconst seenIds = new Set();\n\nfor (const item of items) {\n  const adId = item.json['Ad ID'];\n  if (!seenIds.has(adId)) {\n    seenIds.add(adId);\n    uniqueItems.push(item);\n  }\n}\n\nreturn uniqueItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        -800
+      ],
+      "id": "7a06ee6d-4b69-41ab-a3e3-ee08388a914f",
+      "name": "Code in JavaScript13"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bd867f63-78b2-48ba-afac-143f79fe5589",
+              "name": "contactId",
+              "value": "zW9CbEIUzNXr9XV8q43V",
+              "type": "string"
+            },
+            {
+              "id": "ff292e77-fb5e-4f13-a59a-cf260cf3c6d5",
+              "name": "telefone",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "f9564cdf-d039-451d-9f4c-271bb2cef359",
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -288,
+        -512
+      ],
+      "id": "9f6b88b4-15e2-46d4-9d14-0425f5710acf",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.contactId }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "77146556-50a3-4ce9-b498-9af71ca8b674",
+      "name": "Send WhatsApp Report2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        -784
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1408,
+        -800
+      ],
+      "id": "f06e9bdd-1cf2-4772-804d-ff0481b434cf",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        -800
+      ],
+      "id": "e2bcb142-0eb5-46ba-8449-f5856df1ae0a"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get FB Ad Accounts2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out13": {
+      "main": [
+        [
+          {
+            "node": "Switch3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out14": {
+      "main": [
+        [
+          {
+            "node": "If14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out15": {
+      "main": [
+        [
+          {
+            "node": "If15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Get FB Ad Contents2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If14": {
+      "main": [
+        [
+          {
+            "node": "Get FB Ad Sets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If15": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get FB Ad Accounts2": {
+      "main": [
+        [
+          {
+            "node": "Split Out13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Ad Campaigns2": {
+      "main": [
+        [
+          {
+            "node": "Split Out14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get FB Ad Sets2": {
+      "main": [
+        [
+          {
+            "node": "Split Out15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get FB Ad Contents2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch3": {
+      "main": [
+        [
+          {
+            "node": "Add Account Name2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Account Name2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Account Name2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Account Name2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Account Name2": {
+      "main": [
+        [
+          {
+            "node": "Get Ad Campaigns2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript11": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Ativos1": {
+      "main": [
+        [
+          {
+            "node": "Tem Vídeo?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Vídeo?1": {
+      "main": [
+        [
+          {
+            "node": "Formatar Campos Facebook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Campos Facebook1": {
+      "main": [
+        [
+          {
+            "node": "Salvar no Airtable1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar no Airtable1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Dados Período1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agregar Dados1": {
+      "main": [
+        [
+          {
+            "node": "Formatar Mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Mensagem1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Ativos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript13": {
+      "main": [
+        [
+          {
+            "node": "Agregar Dados1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Report2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Buscar Dados Período1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "timestamp": "2025-11-17T06:24:46.597-03:00",
+        "Readable date": "November 17th 2025, 6:24:46 am",
+        "Readable time": "6:24:46 am",
+        "Day of week": "Monday",
+        "Year": "2025",
+        "Month": "November",
+        "Day of month": "17",
+        "Hour": "06",
+        "Minute": "24",
+        "Second": "46",
+        "Timezone": "America/Sao_Paulo (UTC-03:00)"
+      }
+    ],
+    "Get FB Ad Accounts2": [
+      {
+        "data": [
+          {
+            "id": "act_754997984525255",
+            "name": "Gabriel Thiede",
+            "account_status": 1
+          },
+          {
+            "id": "act_467656524158999",
+            "name": "Dra Gabriela Rossmam - 467656524158999",
+            "account_status": 1
+          },
+          {
+            "id": "act_730812947715716",
+            "name": "730812947715716",
+            "account_status": 1
+          },
+          {
+            "id": "act_801205514013339",
+            "name": "Gabriel Finanças",
+            "account_status": 3
+          },
+          {
+            "id": "act_225855615752518",
+            "name": "Valorize suas finanças",
+            "account_status": 3
+          },
+          {
+            "id": "act_5582318085159322",
+            "name": "CA 01 Gabriel 01",
+            "account_status": 1
+          },
+          {
+            "id": "act_865147424655704",
+            "name": "[BPOSS]Conta de anúncios Vivian 01",
+            "account_status": 1
+          },
+          {
+            "id": "act_806793080451173",
+            "name": "CONTA - ADS ANTIGOS",
+            "account_status": 1
+          },
+          {
+            "id": "act_627098262618316",
+            "name": "CA1",
+            "account_status": 1
+          },
+          {
+            "id": "act_255887693565167",
+            "name": "Marcos Daniel",
+            "account_status": 101
+          },
+          {
+            "id": "act_1014810709626666",
+            "name": "Marcos Daniel",
+            "account_status": 1
+          },
+          {
+            "id": "act_1086199736033976",
+            "name": "Barbara Brum",
+            "account_status": 1
+          },
+          {
+            "id": "act_362401083407331",
+            "name": "✓ CA01 - Gladson Almeida",
+            "account_status": 3
+          },
+          {
+            "id": "act_3254645981505447",
+            "name": "CA - Julia Supa",
+            "account_status": 1
+          },
+          {
+            "id": "act_903049021624083",
+            "name": "[MOTTIVME] APEX PRO - André Rosa",
+            "account_status": 1
+          },
+          {
+            "id": "act_1540038973523313",
+            "name": "✓ CA01 - Instituto Percurso da Vida",
+            "account_status": 1
+          },
+          {
+            "id": "act_403828868743769",
+            "name": "✓ CA01 - Dr. Fabiana",
+            "account_status": 1
+          },
+          {
+            "id": "act_2504227403301688",
+            "name": "✓ CA01 - Aline Morais",
+            "account_status": 1
+          },
+          {
+            "id": "act_514521651535464",
+            "name": "Nexos",
+            "account_status": 1
+          },
+          {
+            "id": "act_965110142090661",
+            "name": "CTG 02 Thiago Anjos",
+            "account_status": 1
+          },
+          {
+            "id": "act_1068737508256980",
+            "name": "CA- Gustavo Couto",
+            "account_status": 1
+          },
+          {
+            "id": "act_2031473757323260",
+            "name": "✓ CA01 - Ana Benotti",
+            "account_status": 1
+          },
+          {
+            "id": "act_1915414282322765",
+            "name": "CA-01 CLAUDIA FEHRIBACH",
+            "account_status": 1
+          },
+          {
+            "id": "act_594452103743956",
+            "name": "[MOTTIVME] Renata Vieira",
+            "account_status": 1
+          },
+          {
+            "id": "act_1242910680913498",
+            "name": "[MOTTIVME] LAPPE FINANCE",
+            "account_status": 1
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "NjAxMTYwMDI1NDI2MQZDZD",
+            "after": "MTIwMjI5ODE5NDIxMzUwMTc2"
+          },
+          "next": "https://graph.facebook.com/v24.0/765088223179505/adaccounts?access_token=EAAK4y09hlzABPm2hIj9WjfZCT8pQYIctXGPeAhBkNRApyPT3S0BFGZAQAgsXo13ttGRhBy7B1M64VFQpcY8WjXSnfZC0KszoZCVDZAOFiyCdULaduGCSC5nrkFLjEFkZBUtDjDIf61CnmiNXA2oUIQlSe1EfyjYScjgDJBChUJLDB5GXzpimdBtjsG4k88az6ZB4pEzOIwN&fields=id%2Cname%2Caccount_status&limit=25&after=MTIwMjI5ODE5NDIxMzUwMTc2"
+        }
+      }
+    ],
+    "Get Ad Campaigns2": [
+      {
+        "data": [
+          {
+            "id": "120233127505960527",
+            "name": "[MOTTIVME] [ENGAJAMENTO] [LEADS] [ANÚNCIOS] [CONSULTORIA]",
+            "effective_status": "PAUSED"
+          },
+          {
+            "id": "120230539249580527",
+            "name": "🪽 Anjos | engajamento| Carreira | 20-08-25 - Renata",
+            "effective_status": "PAUSED"
+          },
+          {
+            "id": "120230138473460527",
+            "name": "🪽 Anjos | engajamento | 15-08-25 - Renata",
+            "effective_status": "PAUSED"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU2hHOVBkRGt6Ry1uYjhpVnQ3N3FBMHBoMkNuZAmM0d1pWMHJES2gwcVZAXMi1KLTFYR0dxZA3Nqa2taOW9LMW9ieDFUVUVTT2drVThwR3U1RWU2QVA2V1N3",
+            "after": "QVFIU2RfMEtnYURseVdOSjhTQVRZAT2NBOURiZAGkwMHpjNDFxQ3hOSFdfd3IyR040VzgtTjJJUFYzVld0Q1NXS0pxc0t1OXdDYjE5SWkwRUszT19RbktyNE9n"
+          }
+        }
+      }
+    ],
+    "Get FB Ad Sets2": [
+      {
+        "data": [
+          {
+            "id": "120235624433350213",
+            "name": "Instagram Post",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU0plc2t5MHZAOWDFvX2lRZAEEzR0RtUW94VUJQUWtyQjJ5YUFoc0RSSlkzN180NnNxOG5ROGNMeDQwb2VLQ0wzeG8wRzlDSnI2YkhXQXF1M2szOEdGX3ZAB",
+            "after": "QVFIU0plc2t5MHZAOWDFvX2lRZAEEzR0RtUW94VUJQUWtyQjJ5YUFoc0RSSlkzN180NnNxOG5ROGNMeDQwb2VLQ0wzeG8wRzlDSnI2YkhXQXF1M2szOEdGX3ZAB"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120235529569650213",
+            "name": "Instagram Post",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU21HeDdlNnlhcS1uZA1FfaHpoYjVobnFSamVjMUtfZAFYwTWhCTW91Rzd4OUgyS1dvQjNQQ29WR2hpOFR6U3U4YzJMQnlfXzlVV0hRWHRYcGN2VE1Nd25n",
+            "after": "QVFIU21HeDdlNnlhcS1uZA1FfaHpoYjVobnFSamVjMUtfZAFYwTWhCTW91Rzd4OUgyS1dvQjNQQ29WR2hpOFR6U3U4YzJMQnlfXzlVV0hRWHRYcGN2VE1Nd25n"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120234811294450213",
+            "name": "[CJ 1] | IDADE 22-57",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU3c4Mks5am5xZAHlxVnd4T1BJQktyTWp3YjR0MDAyb29JaHlublNmeUZAOU1N0eE4wMVRpUHpjclBSVkFHX09mdnVwSm9YdVY1VHVyLV91YTZAFLThXOEF3",
+            "after": "QVFIU3c4Mks5am5xZAHlxVnd4T1BJQktyTWp3YjR0MDAyb29JaHlublNmeUZAOU1N0eE4wMVRpUHpjclBSVkFHX09mdnVwSm9YdVY1VHVyLV91YTZAFLThXOEF3"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120233812901520213",
+            "name": "Instagram Post",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU3JDeEdiOVUtMXVJZAzV4VmxValNSTUJxeFBOdlpoLXV4QUlvTXZAjRl9sMFEtUl9SQVJLbzkzUVdxcFFzaERsZAk5pVjd2cEp1N0pFQktHRW0wZAUppUHVn",
+            "after": "QVFIU3JDeEdiOVUtMXVJZAzV4VmxValNSTUJxeFBOdlpoLXV4QUlvTXZAjRl9sMFEtUl9SQVJLbzkzUVdxcFFzaERsZAk5pVjd2cEp1N0pFQktHRW0wZAUppUHVn"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120233628224090213",
+            "name": "Novo conjunto de anúncios de Reconhecimento",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU0laa0NrWTZA6NGVDRFhlT3phbnB1NUE4ZADE0NmNOV1pDMFRTMm5sTHlqaXpqWUFxNXB3SlYwV2Fab1BoYVZAsM1ZAnSVRNQkhTX0JpaVVaNHZA4aExkREJB",
+            "after": "QVFIU0laa0NrWTZA6NGVDRFhlT3phbnB1NUE4ZADE0NmNOV1pDMFRTMm5sTHlqaXpqWUFxNXB3SlYwV2Fab1BoYVZAsM1ZAnSVRNQkhTX0JpaVVaNHZA4aExkREJB"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120215373779690213",
+            "name": "Instagram Post",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIUzNnaFBCMkJfSFI4UUhURWFSNDJGaDNLQjNoZAnNjR2tiZAU5yU3RDNmRfQjlINDNUUm9Fa3lidHRubGd5bDQ4eFhrSUVYdGMxSGJPZAHRFWE5iWk4tWmJ3",
+            "after": "QVFIUzNnaFBCMkJfSFI4UUhURWFSNDJGaDNLQjNoZAnNjR2tiZAU5yU3RDNmRfQjlINDNUUm9Fa3lidHRubGd5bDQ4eFhrSUVYdGMxSGJPZAHRFWE5iWk4tWmJ3"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120215373741320213",
+            "name": "Instagram Post",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU19ZAZA1hLaUN5dEdQME5yanN3RGUtUWJXYXMwWDY5eVVXcVRLTVhZAM29pRTNJRTEtNFNVMmZAjODV5b2tNLU1hS1ZAQUDBjSFVxSW9ZAN04zNUVwRGdoZAmx3",
+            "after": "QVFIU19ZAZA1hLaUN5dEdQME5yanN3RGUtUWJXYXMwWDY5eVVXcVRLTVhZAM29pRTNJRTEtNFNVMmZAjODV5b2tNLU1hS1ZAQUDBjSFVxSW9ZAN04zNUVwRGdoZAmx3"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "23857076178030212",
+            "name": "Instagram Post",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU0cyQ1pvMWxSYXpkWDV0ZA2k2SnMyZA1pxYkVuMFR2VTZAxWERkS0V4alQ2S1lnOXg3cV9HeWd4ZA3hJc3NjNmZApU0NMbjhuM05VYzFSX2dqLVd2WjFkenZAR",
+            "after": "QVFIU0cyQ1pvMWxSYXpkWDV0ZA2k2SnMyZA1pxYkVuMFR2VTZAxWERkS0V4alQ2S1lnOXg3cV9HeWd4ZA3hJc3NjNmZApU0NMbjhuM05VYzFSX2dqLVd2WjFkenZAR"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "23856694049230212",
+            "name": "Instagram Post",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU1RMdS1WbEFEdGdzbmYzUHdUZAGlrT2RWWVM5QmhyN2htSXhDQjVIeF96WDFSNVZArNnE4djVkYlFRVnZAsaEpyLUpKa3JpRnJyaGg2aFNYemN5QzY0MmdR",
+            "after": "QVFIU1RMdS1WbEFEdGdzbmYzUHdUZAGlrT2RWWVM5QmhyN2htSXhDQjVIeF96WDFSNVZArNnE4djVkYlFRVnZAsaEpyLUpKa3JpRnJyaGg2aFNYemN5QzY0MmdR"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "23856694025320212",
+            "name": "Instagram Post",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU00wenhYVS04cnBOMUVkaWI5d1ZAtb0pkcVRvTmVZAaHgtTXZAsLUZA2Vl9md3dYc2I5WGtOQW96U3VEUFVIdXYtQzNrc1RPcjl6SG5PUW5PcTJoUGE3aTVR",
+            "after": "QVFIU00wenhYVS04cnBOMUVkaWI5d1ZAtb0pkcVRvTmVZAaHgtTXZAsLUZA2Vl9md3dYc2I5WGtOQW96U3VEUFVIdXYtQzNrc1RPcjl6SG5PUW5PcTJoUGE3aTVR"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "23856693990470212",
+            "name": "Instagram Post",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIUzBUZAi1CN3ZAFeXJtX0ViVGR4d05KNlpWaDBtQTlRSlBab21lSWZApOXplaFpZAQ2xFNW5rNGFKbEZAsMDY1WTc5dXZAhS3dtTENQVkpHdHhkdkRfRUpHOFdn",
+            "after": "QVFIUzBUZAi1CN3ZAFeXJtX0ViVGR4d05KNlpWaDBtQTlRSlBab21lSWZApOXplaFpZAQ2xFNW5rNGFKbEZAsMDY1WTc5dXZAhS3dtTENQVkpHdHhkdkRfRUpHOFdn"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "23856071558780212",
+            "name": "Instagram Post",
+            "effective_status": "ACTIVE"
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIUzJ3WFJFdVhBMDVJQUUydUFRRjFQcmtZAOHJqSlZAtVncwYXdtQzkzamc3LWhjaF95YkdXdGhMWlZAEVUE0NWVDNDVLcWV4SFNULXdmdWpacGlEZAkJVRW9R",
+            "after": "QVFIUzJ3WFJFdVhBMDVJQUUydUFRRjFQcmtZAOHJqSlZAtVncwYXdtQzkzamc3LWhjaF95YkdXdGhMWlZAEVUE0NWVDNDVLcWV4SFNULXdmdWpacGlEZAkJVRW9R"
+          }
+        }
+      }
+    ],
+    "Get FB Ad Contents2": [
+      {
+        "data": [
+          {
+            "id": "120235624433890213",
+            "name": "Post do Instagram: Meu trabalho não é vender...",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "1839056400312992",
+              "id": "1605525353750704"
+            },
+            "campaign": {
+              "name": "Post do Instagram: Meu trabalho não é vender...",
+              "id": "120235624433310213"
+            },
+            "adset": {
+              "name": "Instagram Post",
+              "id": "120235624433350213"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU1J2UnpZAdWM1LU81RFY5dTM5SDQ2MXphbWFRUTFla1VjVHdtbm9OdmlHTFprRDZAHUndIekV1X3RBUEJVTjktQ1RjYXlUMGZA0d3VpN3ktSU5pZAHdmaERn",
+            "after": "QVFIU1J2UnpZAdWM1LU81RFY5dTM5SDQ2MXphbWFRUTFla1VjVHdtbm9OdmlHTFprRDZAHUndIekV1X3RBUEJVTjktQ1RjYXlUMGZA0d3VpN3ktSU5pZAHdmaERn"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120235529570410213",
+            "name": "Post do Instagram: Aqui, você não recebe só uma...",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "1340078191127349",
+              "id": "1206641871518810"
+            },
+            "campaign": {
+              "name": "Post do Instagram: Aqui, você não recebe só uma...",
+              "id": "120235529569040213"
+            },
+            "adset": {
+              "name": "Instagram Post",
+              "id": "120235529569650213"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU0hzcmRKc1M2cDZAXbUs0NVFLeW5EYW1KZAHpYSDBxOWZANTjNjSnVSMXYxOXk4d3VuSnAwWlQwVzZA2ZAEpDTHJqaTZAiMmZAVQkhMTGU3NlpiMjU4OFZARcGZAn",
+            "after": "QVFIU0hzcmRKc1M2cDZAXbUs0NVFLeW5EYW1KZAHpYSDBxOWZANTjNjSnVSMXYxOXk4d3VuSnAwWlQwVzZA2ZAEpDTHJqaTZAiMmZAVQkhMTGU3NlpiMjU4OFZARcGZAn"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120236638001030213",
+            "name": "AD03 - [teste] mudança na mensagem do lead - 17.11",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "1091021376297586",
+              "id": "844958937945976"
+            },
+            "insights": {
+              "data": [
+                {
+                  "ctr": "0.455927",
+                  "cpm": "33.115502",
+                  "cpc": "7.263333",
+                  "spend": "21.79",
+                  "actions": [
+                    {
+                      "action_type": "onsite_conversion.total_messaging_connection",
+                      "value": "6"
+                    },
+                    {
+                      "action_type": "page_engagement",
+                      "value": "55"
+                    },
+                    {
+                      "action_type": "post_engagement",
+                      "value": "55"
+                    },
+                    {
+                      "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+                      "value": "3"
+                    },
+                    {
+                      "action_type": "post_interaction_gross",
+                      "value": "2"
+                    },
+                    {
+                      "action_type": "video_view",
+                      "value": "53"
+                    },
+                    {
+                      "action_type": "post_reaction",
+                      "value": "2"
+                    }
+                  ],
+                  "cost_per_action_type": [
+                    {
+                      "action_type": "onsite_conversion.total_messaging_connection",
+                      "value": "3.631667"
+                    },
+                    {
+                      "action_type": "video_view",
+                      "value": "0.411132"
+                    },
+                    {
+                      "action_type": "post_interaction_gross",
+                      "value": "10.895"
+                    },
+                    {
+                      "action_type": "onsite_conversion.messaging_user_depth_2_message_send",
+                      "value": "7.263333"
+                    },
+                    {
+                      "action_type": "post_engagement",
+                      "value": "0.396182"
+                    },
+                    {
+                      "action_type": "page_engagement",
+                      "value": "0.396182"
+                    }
+                  ],
+                  "impressions": "658",
+                  "clicks": "3",
+                  "date_start": "2025-11-18",
+                  "date_stop": "2025-11-18"
+                }
+              ],
+              "paging": {
+                "cursors": {
+                  "before": "MAZDZD",
+                  "after": "MAZDZD"
+                }
+              }
+            },
+            "campaign": {
+              "name": "ENG | TRATAMENTO ENDOVENOSO",
+              "id": "120234811294440213"
+            },
+            "adset": {
+              "name": "[CJ 1] | IDADE 22-57",
+              "id": "120234811294450213"
+            }
+          },
+          {
+            "id": "120235112667460213",
+            "name": "AD02",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "4158178554469811",
+              "id": "850522404811326"
+            },
+            "insights": {
+              "data": [
+                {
+                  "spend": "0",
+                  "actions": [
+                    {
+                      "action_type": "onsite_conversion.total_messaging_connection",
+                      "value": "1"
+                    }
+                  ],
+                  "cost_per_action_type": [
+                    {
+                      "action_type": "onsite_conversion.total_messaging_connection",
+                      "value": "0"
+                    }
+                  ],
+                  "date_start": "2025-11-18",
+                  "date_stop": "2025-11-18"
+                }
+              ],
+              "paging": {
+                "cursors": {
+                  "before": "MAZDZD",
+                  "after": "MAZDZD"
+                }
+              }
+            },
+            "campaign": {
+              "name": "ENG | TRATAMENTO ENDOVENOSO",
+              "id": "120234811294440213"
+            },
+            "adset": {
+              "name": "[CJ 1] | IDADE 22-57",
+              "id": "120234811294450213"
+            }
+          },
+          {
+            "id": "120234811294430213",
+            "name": "AD 1",
+            "effective_status": "WITH_ISSUES",
+            "creative": {
+              "video_id": "1151077546469092",
+              "object_story_spec": {
+                "page_id": "112360416806360",
+                "instagram_user_id": "17841419150651393",
+                "video_data": {
+                  "video_id": "1106677634787707",
+                  "title": "Agende sua avaliação agora mesmo!",
+                  "message": "Com orientação médica e protocolos seguros, o tratamento intravenoso promove resultados reais para o seu bem-estar.",
+                  "call_to_action": {
+                    "type": "WHATSAPP_MESSAGE",
+                    "value": {
+                      "app_destination": "WHATSAPP",
+                      "link": "https://api.whatsapp.com/send"
+                    }
+                  },
+                  "image_url": "https://www.facebook.com/ads/image/?d=AQJqSMUgFbKdUotaPzWgRsBm0BgbCvRB64vIOXyIA-W--IJGlv1lHIuh1a2njGe1gtWXUjsvQmIGFlFfXBmm8QEIeZ3ZgA_2u8TJ_ycY2ytaueUQXmSu3MgVvLhWoUkPK4vHKkQ-Mwe1YSeeKjnjMK-_",
+                  "image_hash": "2cdba5c6d34aad6091e6d1de993a398c",
+                  "page_welcome_message": "{\"type\":\"VISUAL_EDITOR\",\"version\":2,\"landing_screen_type\":\"welcome_message\",\"media_type\":\"text\",\"text_format\":{\"customer_action_type\":\"autofill_message\",\"message\":{\"autofill_message\":{\"content\":\"Olá! Quero saber mais sobre o tratamento endovenoso e como agendar.\"},\"text\":\"Olá! Aqui cuidamos de você com conforto e segurança. Como podemos te ajudar hoje?\"}},\"image_format\":{\"customer_action_type\":\"quick_replies\",\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"template_type\":\"generic\",\"elements\":[{\"title\":\"\",\"buttons\":[]}]}},\"quick_replies\":[{\"title\":\"Gostaria de obter mais informações\",\"content_type\":\"text\"}],\"text\":\"Olá! Aqui cuidamos de você com conforto e segurança. Como podemos te ajudar hoje?\"}},\"video_format\":{\"customer_action_type\":\"quick_replies\",\"message\":{\"attachment\":{\"type\":\"video\",\"payload\":{\"attachment_id\":\"\"}},\"quick_replies\":[{\"title\":\"Gostaria de obter mais informações\",\"content_type\":\"text\"}],\"text\":\"Olá! Aqui cuidamos de você com conforto e segurança. Como podemos te ajudar hoje?\"}},\"ai_generated_icebreaker_toggle_enabled\":null,\"user_edit\":true,\"surface\":\"visual_editor_new\",\"welcome_message_edited\":true,\"has_ai_generated_welcome_message\":false,\"autofill_message_edited\":true,\"template_id\":\"1587013832269647\"}"
+                }
+              },
+              "id": "1523906745465554"
+            },
+            "campaign": {
+              "name": "ENG | TRATAMENTO ENDOVENOSO",
+              "id": "120234811294440213"
+            },
+            "adset": {
+              "name": "[CJ 1] | IDADE 22-57",
+              "id": "120234811294450213"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIUzVCc3Jud1RwdmdPaWZAEd0hOY2djem5oVjBSdVFqaTlTcS1RTDNUb0VrSkY2RjlTaXJDd2Q2ZAWo0bUp1YUhzakhwVnRqZA2xOcWt4aWhraE1YQU94X25n",
+            "after": "QVFIU0I2akowR3VWbW9DMDNJdVBrV0tMVk1ldkZAjMkd4QURUMjBwdkJNWFdMMjI3V2c5WTJzbHVWQ2xSNWVxTnhlWi11cW41X1llMjJYUmpOTk5oSHA1ZAEVn"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120233812901930213",
+            "name": "Post do Instagram: 💇🏻‍♀️ QUEDA DE CABELO NA...",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "1986676062083395",
+              "id": "844599528241111"
+            },
+            "campaign": {
+              "name": "Post do Instagram: 💇🏻‍♀️ QUEDA DE CABELO NA...",
+              "id": "120233812901460213"
+            },
+            "adset": {
+              "name": "Instagram Post",
+              "id": "120233812901520213"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU25odWtSNEtkQ3YyZAlVEYmFkY0RHbEdrb3lGQXdUaUNCWU5MUllhRi1yc0RqalUxR0J3RzBhYUtPZAnBsSUJoUU8wcF9pVjhBRXV3dVlDUThqTFdoajJR",
+            "after": "QVFIU25odWtSNEtkQ3YyZAlVEYmFkY0RHbEdrb3lGQXdUaUNCWU5MUllhRi1yc0RqalUxR0J3RzBhYUtPZAnBsSUJoUU8wcF9pVjhBRXV3dVlDUThqTFdoajJR"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120235126273860213",
+            "name": "🔴 - POUCA VEICULAÇÃO - [1]",
+            "effective_status": "PAUSED",
+            "creative": {
+              "video_id": "862440866441530",
+              "id": "1160634068760918"
+            },
+            "campaign": {
+              "name": "ALC | publi insta",
+              "id": "120233628224080213"
+            },
+            "adset": {
+              "name": "Novo conjunto de anúncios de Reconhecimento",
+              "id": "120233628224090213"
+            }
+          },
+          {
+            "id": "120235126511490213",
+            "name": "[2]",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "2456489228079200",
+              "id": "1306878614451589"
+            },
+            "insights": {
+              "data": [
+                {
+                  "ctr": "0.123077",
+                  "cpm": "1.476923",
+                  "cpc": "1.2",
+                  "spend": "2.4",
+                  "actions": [
+                    {
+                      "action_type": "link_click",
+                      "value": "2"
+                    },
+                    {
+                      "action_type": "page_engagement",
+                      "value": "38"
+                    },
+                    {
+                      "action_type": "post_engagement",
+                      "value": "38"
+                    },
+                    {
+                      "action_type": "video_view",
+                      "value": "36"
+                    }
+                  ],
+                  "cost_per_action_type": [
+                    {
+                      "action_type": "video_view",
+                      "value": "0.066667"
+                    },
+                    {
+                      "action_type": "link_click",
+                      "value": "1.2"
+                    },
+                    {
+                      "action_type": "post_engagement",
+                      "value": "0.063158"
+                    },
+                    {
+                      "action_type": "page_engagement",
+                      "value": "0.063158"
+                    }
+                  ],
+                  "impressions": "1625",
+                  "clicks": "2",
+                  "date_start": "2025-11-18",
+                  "date_stop": "2025-11-18"
+                }
+              ],
+              "paging": {
+                "cursors": {
+                  "before": "MAZDZD",
+                  "after": "MAZDZD"
+                }
+              }
+            },
+            "campaign": {
+              "name": "ALC | publi insta",
+              "id": "120233628224080213"
+            },
+            "adset": {
+              "name": "Novo conjunto de anúncios de Reconhecimento",
+              "id": "120233628224090213"
+            }
+          },
+          {
+            "id": "120234700482400213",
+            "name": "institucional",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "2392076561249786",
+              "id": "2221822681575876"
+            },
+            "insights": {
+              "data": [
+                {
+                  "ctr": "0.082015",
+                  "cpm": "1.443468",
+                  "cpc": "1.76",
+                  "spend": "12.32",
+                  "actions": [
+                    {
+                      "action_type": "link_click",
+                      "value": "6"
+                    },
+                    {
+                      "action_type": "page_engagement",
+                      "value": "248"
+                    },
+                    {
+                      "action_type": "post_engagement",
+                      "value": "248"
+                    },
+                    {
+                      "action_type": "post_interaction_gross",
+                      "value": "5"
+                    },
+                    {
+                      "action_type": "video_view",
+                      "value": "237"
+                    },
+                    {
+                      "action_type": "post_reaction",
+                      "value": "5"
+                    }
+                  ],
+                  "cost_per_action_type": [
+                    {
+                      "action_type": "video_view",
+                      "value": "0.051983"
+                    },
+                    {
+                      "action_type": "link_click",
+                      "value": "2.053333"
+                    },
+                    {
+                      "action_type": "post_interaction_gross",
+                      "value": "2.464"
+                    },
+                    {
+                      "action_type": "post_engagement",
+                      "value": "0.049677"
+                    },
+                    {
+                      "action_type": "page_engagement",
+                      "value": "0.049677"
+                    }
+                  ],
+                  "impressions": "8535",
+                  "clicks": "7",
+                  "date_start": "2025-11-18",
+                  "date_stop": "2025-11-18"
+                }
+              ],
+              "paging": {
+                "cursors": {
+                  "before": "MAZDZD",
+                  "after": "MAZDZD"
+                }
+              }
+            },
+            "campaign": {
+              "name": "ALC | publi insta",
+              "id": "120233628224080213"
+            },
+            "adset": {
+              "name": "Novo conjunto de anúncios de Reconhecimento",
+              "id": "120233628224090213"
+            }
+          },
+          {
+            "id": "120233628224100213",
+            "name": "4 exames que voce nunca fez",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "1023290113169855",
+              "id": "1107414948257832"
+            },
+            "campaign": {
+              "name": "ALC | publi insta",
+              "id": "120233628224080213"
+            },
+            "adset": {
+              "name": "Novo conjunto de anúncios de Reconhecimento",
+              "id": "120233628224090213"
+            }
+          },
+          {
+            "id": "120233629153710213",
+            "name": "QUER EMAGRECER?  Esses 3 exames são fundamentais para",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "3701279900173943",
+              "id": "1933501697225782"
+            },
+            "insights": {
+              "data": [
+                {
+                  "cpm": "1.574803",
+                  "spend": "0.2",
+                  "actions": [
+                    {
+                      "action_type": "page_engagement",
+                      "value": "14"
+                    },
+                    {
+                      "action_type": "post_engagement",
+                      "value": "14"
+                    },
+                    {
+                      "action_type": "video_view",
+                      "value": "14"
+                    }
+                  ],
+                  "cost_per_action_type": [
+                    {
+                      "action_type": "video_view",
+                      "value": "0.014286"
+                    },
+                    {
+                      "action_type": "post_engagement",
+                      "value": "0.014286"
+                    },
+                    {
+                      "action_type": "page_engagement",
+                      "value": "0.014286"
+                    }
+                  ],
+                  "impressions": "127",
+                  "date_start": "2025-11-18",
+                  "date_stop": "2025-11-18"
+                }
+              ],
+              "paging": {
+                "cursors": {
+                  "before": "MAZDZD",
+                  "after": "MAZDZD"
+                }
+              }
+            },
+            "campaign": {
+              "name": "ALC | publi insta",
+              "id": "120233628224080213"
+            },
+            "adset": {
+              "name": "Novo conjunto de anúncios de Reconhecimento",
+              "id": "120233628224090213"
+            }
+          },
+          {
+            "id": "120233629250590213",
+            "name": "QUER EMAGRECER?  Esses 3 exames são fundamentais para — Cópia",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "782708754724891",
+              "id": "765429409646250"
+            },
+            "insights": {
+              "data": [
+                {
+                  "cpm": "2.058824",
+                  "spend": "0.07",
+                  "actions": [
+                    {
+                      "action_type": "page_engagement",
+                      "value": "4"
+                    },
+                    {
+                      "action_type": "post_engagement",
+                      "value": "4"
+                    },
+                    {
+                      "action_type": "video_view",
+                      "value": "4"
+                    }
+                  ],
+                  "cost_per_action_type": [
+                    {
+                      "action_type": "video_view",
+                      "value": "0.0175"
+                    },
+                    {
+                      "action_type": "post_engagement",
+                      "value": "0.0175"
+                    },
+                    {
+                      "action_type": "page_engagement",
+                      "value": "0.0175"
+                    }
+                  ],
+                  "impressions": "34",
+                  "date_start": "2025-11-18",
+                  "date_stop": "2025-11-18"
+                }
+              ],
+              "paging": {
+                "cursors": {
+                  "before": "MAZDZD",
+                  "after": "MAZDZD"
+                }
+              }
+            },
+            "campaign": {
+              "name": "ALC | publi insta",
+              "id": "120233628224080213"
+            },
+            "adset": {
+              "name": "Novo conjunto de anúncios de Reconhecimento",
+              "id": "120233628224090213"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIUzFKNGtyZA21rZAHFXRzhaQUdWWU5Na1VIZAUJTNUl6TmRhT0NJMGFFcXJoR2xGTlAyd3dCT3d0Q3ZAIQTdpbWdxTUhKVV9GbnhzRjdLSUozTzU0WTV6bkVB",
+            "after": "QVFIU1kzTlFLcGJkOEdoWDhaWDloLXNfWTRtMXZAHb2Y2ZAU85VGtPWEg3N092Y2toSXE0UERQYndvVXA5S1d4MnF6ZAlRseEFJVUlwNkotejBXaUUzZADNuTUFB"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120215373780230213",
+            "name": "Publicação do Instagram: 👉 Você sabia que pode...",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "627903839781677",
+              "id": "1136685707838596"
+            },
+            "campaign": {
+              "name": "Publicação do Instagram: 👉 Você sabia que pode...",
+              "id": "120215373779570213"
+            },
+            "adset": {
+              "name": "Instagram Post",
+              "id": "120215373779690213"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIUzNELVhVcndDOWFYbDB0REVuYi1aZAU9IYXBCaWwtbnBuRUUtcnQzTVN0QU9EWmk1U1A5U2MtdzZAZAdEV3ZAHBNbVp2dmZAmQ0t0MDZAFTFVZALXhoWlZAhWWxB",
+            "after": "QVFIUzNELVhVcndDOWFYbDB0REVuYi1aZAU9IYXBCaWwtbnBuRUUtcnQzTVN0QU9EWmk1U1A5U2MtdzZAZAdEV3ZAHBNbVp2dmZAmQ0t0MDZAFTFVZALXhoWlZAhWWxB"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "120215373741950213",
+            "name": "Publicação do Instagram: VOCÊ NÃO VAI EMAGRECER...",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "1344382456700750",
+              "id": "3880688702179837"
+            },
+            "campaign": {
+              "name": "Publicação do Instagram: VOCÊ NÃO VAI EMAGRECER...",
+              "id": "120215373741240213"
+            },
+            "adset": {
+              "name": "Instagram Post",
+              "id": "120215373741320213"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU1Fad2tYLVlZAb0YyUDZAFLWJDdG9wRDVVVDVTemo3c1ppamV6YnpqeUx3V1V4TkJBaGM4VE5aNEoyRTlXcWs0RVp6TUNkWDVrVHdMMXBNNU1jenUwN2dR",
+            "after": "QVFIU1Fad2tYLVlZAb0YyUDZAFLWJDdG9wRDVVVDVTemo3c1ppamV6YnpqeUx3V1V4TkJBaGM4VE5aNEoyRTlXcWs0RVp6TUNkWDVrVHdMMXBNNU1jenUwN2dR"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "23857076178120212",
+            "name": "Publicação do Instagram: Você tem ou conhece...",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "3398828837094843",
+              "id": "23857076176770212"
+            },
+            "campaign": {
+              "name": "Publicação do Instagram: Você tem ou conhece...",
+              "id": "23857076177960212"
+            },
+            "adset": {
+              "name": "Instagram Post",
+              "id": "23857076178030212"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU0ZAqTTBOMDUwd1lOOWZAoY0xpSFBRb2ZAoejZA0V3NBU0FIRE9pMHpObEZACWHJGUlAwNllmUkRsanV5ZAWpKQTZAZAQXVDTlp3SEQxeUc4VFhzOHhzQmR2Mi1B",
+            "after": "QVFIU0ZAqTTBOMDUwd1lOOWZAoY0xpSFBRb2ZAoejZA0V3NBU0FIRE9pMHpObEZACWHJGUlAwNllmUkRsanV5ZAWpKQTZAZAQXVDTlp3SEQxeUc4VFhzOHhzQmR2Mi1B"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "23856694049280212",
+            "name": "Publicação do Instagram: 𝗖𝗨𝗜𝗗𝗔𝗗𝗢 𝖼𝗈𝗆 𝗈𝗌 𝖾𝖿𝖾𝗂𝗍𝗈𝗌...",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "983885743027313",
+              "id": "23856694048690212"
+            },
+            "campaign": {
+              "name": "Publicação do Instagram: 𝗖𝗨𝗜𝗗𝗔𝗗𝗢 𝖼𝗈𝗆 𝗈𝗌 𝖾𝖿𝖾𝗂𝗍𝗈𝗌...",
+              "id": "23856694049180212"
+            },
+            "adset": {
+              "name": "Instagram Post",
+              "id": "23856694049230212"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU00zMk9ocVdKZAnFpTmFuQzZApc3hzSlU1UkF3akREa1IxWEE1RVJLTzlnNFdySnRpWUxMaFlqVmhiTXJEOEktZAlg1OFkxZAlpqZA3M2T3JPdDRuUFJNYk5B",
+            "after": "QVFIU00zMk9ocVdKZAnFpTmFuQzZApc3hzSlU1UkF3akREa1IxWEE1RVJLTzlnNFdySnRpWUxMaFlqVmhiTXJEOEktZAlg1OFkxZAlpqZA3M2T3JPdDRuUFJNYk5B"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "23856694025520212",
+            "name": "Publicação do Instagram: Repor nutrientes,...",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "id": "23856694023410212"
+            },
+            "campaign": {
+              "name": "Publicação do Instagram: Repor nutrientes,...",
+              "id": "23856694025230212"
+            },
+            "adset": {
+              "name": "Instagram Post",
+              "id": "23856694025320212"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU2lpTFozWXFwYXZA3R2NWeG5pS2NCb0ZAlTVpVbmFUbHptVkpyeElLY0xsRzRNTjZAKdEtXdHd2OC1Uci1kRHVUcF9NeUZAqa2o4MlRrTGxsWi1waGZAlRE13",
+            "after": "QVFIU2lpTFozWXFwYXZA3R2NWeG5pS2NCb0ZAlTVpVbmFUbHptVkpyeElLY0xsRzRNTjZAKdEtXdHd2OC1Uci1kRHVUcF9NeUZAqa2o4MlRrTGxsWi1waGZAlRE13"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "23856693990550212",
+            "name": "Publicação do Instagram: Repor TESTOSTERONA em...",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "218302377368872",
+              "id": "23856693990210212"
+            },
+            "campaign": {
+              "name": "Publicação do Instagram: Repor TESTOSTERONA em...",
+              "id": "23856693990430212"
+            },
+            "adset": {
+              "name": "Instagram Post",
+              "id": "23856693990470212"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU3gxMVhjb2hWdTVESVVERWtHRUprTDFCYUw1Q3ZANSjQ3SURQSXlodHktMTVleVVNSGN6UXZA4UjBYN0J0aTktSk82Y2ZAKUEx3eFZAidXdHbmlmdmJ1VmVB",
+            "after": "QVFIU3gxMVhjb2hWdTVESVVERWtHRUprTDFCYUw1Q3ZANSjQ3SURQSXlodHktMTVleVVNSGN6UXZA4UjBYN0J0aTktSk82Y2ZAKUEx3eFZAidXdHbmlmdmJ1VmVB"
+          }
+        }
+      },
+      {
+        "data": [
+          {
+            "id": "23856071558840212",
+            "name": "Publicação do Instagram: Esquece o mito de que...",
+            "effective_status": "ACTIVE",
+            "creative": {
+              "video_id": "830552488598408",
+              "id": "23856071556610212"
+            },
+            "campaign": {
+              "name": "Publicação do Instagram: Esquece o mito de que...",
+              "id": "23856071558480212"
+            },
+            "adset": {
+              "name": "Instagram Post",
+              "id": "23856071558780212"
+            }
+          }
+        ],
+        "paging": {
+          "cursors": {
+            "before": "QVFIU0h6WWEyU05kNGZAJazNaT3dWSnZAQaXZANYzJIZAFBfZAVdkWmdfNUZAoT1JKRFJwaWFveUpkQ1dtamgyX2VKTkdUcHhfbUhtV2xEcmgwUjJUMzJKS0VfYVdR",
+            "after": "QVFIU0h6WWEyU05kNGZAJazNaT3dWSnZAQaXZANYzJIZAFBfZAVdkWmdfNUZAoT1JKRFJwaWFveUpkQ1dtamgyX2VKTkdUcHhfbUhtV2xEcmgwUjJUMzJKS0VfYVdR"
+          }
+        }
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  }
+}

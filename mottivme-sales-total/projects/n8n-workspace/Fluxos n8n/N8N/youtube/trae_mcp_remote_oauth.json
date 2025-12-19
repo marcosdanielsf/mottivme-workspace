@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "monday-api-mcp-hosted": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "-p",
+        "node@20",
+        "-p",
+        "mcp-remote@latest",
+        "mcp-remote",
+        "https://mcp.monday.com/sse"
+      ]
+    }
+  }
+}

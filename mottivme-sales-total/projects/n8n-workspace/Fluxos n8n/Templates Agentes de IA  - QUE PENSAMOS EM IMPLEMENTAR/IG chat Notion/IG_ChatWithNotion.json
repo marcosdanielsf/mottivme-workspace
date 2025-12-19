@@ -1,0 +1,556 @@
+{
+  "name": "IG_ChatWithNotion",
+  "nodes": [
+    {
+      "parameters": {
+        "sessionKey": "=chat_with_{{ $('Listen for incoming events').first().json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "id": "d8a3595d-79d9-48ac-b8cf-943972e2e06f",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        -880,
+        200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "updates": [
+          "*"
+        ],
+        "additionalFields": {}
+      },
+      "id": "30da4c97-2467-4154-a7c6-e0b47765cbbc",
+      "name": "Listen for incoming events",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -2020,
+        0
+      ],
+      "webhookId": "d63cdf55-1ec9-4688-8a40-023fc3239630",
+      "typeVersion": 1,
+      "credentials": {
+        "telegramApi": {
+          "id": "OAwHKJMP7VU2KFgm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{$json.message.voice.file_id}}"
+      },
+      "id": "0feab63a-7c43-4c71-b048-4eef4df80c66",
+      "name": "Download voice file",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -1540,
+        80
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "9a5c2041-43e7-4a12-a1ed-8ee05fdc2dcb",
+      "credentials": {
+        "telegramApi": {
+          "id": "OAwHKJMP7VU2KFgm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bccbce0a-7786-49c9-979a-7a285cb69f78",
+              "name": "CombinedMessage",
+              "type": "string",
+              "value": "={{ $json.message && $json.message.text ? $json.message.text : ($json.text ? $json.text : '') }}"
+            },
+            {
+              "id": "5b1fc9f5-1408-4099-88cc-a23725c9eddb",
+              "name": "Message Type ",
+              "type": "string",
+              "value": "={{ $json?.message?.text && !$json?.text ? \"text query\" : (!$json?.message?.text && $json?.text ? \"voice message\" : \"unknown type message\") }}"
+            },
+            {
+              "id": "1e9a17fa-ec5d-49dc-9ff6-1f28b57fb02e",
+              "name": "Source Type",
+              "type": "string",
+              "value": "={{ $('Listen for incoming events').item.json.message.forward_origin ? \" forwarded\" : \"\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8b32ca15-8afa-4656-8847-c91f68749bab",
+      "name": "Combine content and set properties",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -1160,
+        -60
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for incoming events').first().json.message.from.id }}",
+        "text": "=Sorry, {{ $('Listen for incoming events').first().json.message.from.first_name }}! This command is not supported yet. Please send text or voice messages.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "d4c30574-aa15-4e07-add7-ed52d6310353",
+      "name": "Send error message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -1540,
+        -220
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "814a2a70-f9a1-4c51-bc5b-23c8e477b0b3",
+      "credentials": {
+        "telegramApi": {
+          "id": "OAwHKJMP7VU2KFgm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "",
+          "temperature": 0.7
+        }
+      },
+      "id": "fc69dcfc-42ab-402c-b686-894143b7b614",
+      "name": "Convert audio to text",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        -1360,
+        80
+      ],
+      "typeVersion": 1.5,
+      "credentials": {
+        "openAiApi": {
+          "id": "rnt98gE7HvqfgBVY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $('Listen for incoming events').first().json.message.from.id }}"
+      },
+      "id": "e5ac934f-2dd7-48f4-a526-03d6a8a27c4e",
+      "name": "Send Typing action",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -1780,
+        -220
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "08fc01ff-6c77-4099-87f9-a362a5673524",
+      "credentials": {
+        "telegramApi": {
+          "id": "OAwHKJMP7VU2KFgm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/",
+                    "id": "d68f5557-eaf3-430c-b3e0-4c0bbb147c45"
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "dd41bbf0-bee0-450b-9160-b769821a4abc",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.message.voice}}",
+                    "rightValue": ""
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "2bc25ce6-796c-4c1e-be6f-63ced129c7c3",
+      "name": "Determine content type",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        -1740,
+        0
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Request: {{ $json.CombinedMessage }}\n\nYou are a Notion Chat helper, help query notion and deliver results.\n\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -960,
+        -60
+      ],
+      "id": "d6f419e4-7211-433f-a70f-b90288aa2169",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "o3",
+        "options": {}
+      },
+      "id": "79b1fd03-7ba1-4ca7-babc-904ee7a1f66d",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -960,
+        120
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "rnt98gE7HvqfgBVY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for incoming events').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -580,
+        -60
+      ],
+      "id": "ab286564-348a-41af-8845-d03929324cee",
+      "name": "Telegram",
+      "webhookId": "af3d2e5c-6e31-4881-b715-dc2f3c9db5d2",
+      "credentials": {
+        "telegramApi": {
+          "id": "OAwHKJMP7VU2KFgm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consume Notion API (page)",
+        "operation": "search",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Text', ``, 'string') }}",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        -780,
+        280
+      ],
+      "id": "cbd2b19b-299a-478e-b438-b6752eca6374",
+      "name": "Notion",
+      "credentials": {
+        "notionApi": {
+          "id": "3Vacs5lYnSphJPlH",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consume Notion API (database)",
+        "resource": "database",
+        "operation": "search",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Text', ``, 'string') }}",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        -700,
+        280
+      ],
+      "id": "b8635f8d-1a8e-4c9a-a1c3-f5898303ff95",
+      "name": "Notion1",
+      "credentials": {
+        "notionApi": {
+          "id": "3Vacs5lYnSphJPlH",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consume Notion API (block)",
+        "resource": "block",
+        "blockId": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Block', `by id`, 'string') }}",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        -620,
+        280
+      ],
+      "id": "52509170-9e4d-4982-8130-0efcc4212384",
+      "name": "Notion2",
+      "credentials": {
+        "notionApi": {
+          "id": "3Vacs5lYnSphJPlH",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consume Notion API (user)",
+        "resource": "user",
+        "userId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('User_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        -540,
+        280
+      ],
+      "id": "bef8d85f-699d-4f43-b0e0-cc0dd0ff3c8a",
+      "name": "Notion3",
+      "credentials": {
+        "notionApi": {
+          "id": "3Vacs5lYnSphJPlH",
+          "name": "Notion account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listen for incoming events": {
+      "main": [
+        [
+          {
+            "node": "Determine content type",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Typing action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download voice file": {
+      "main": [
+        [
+          {
+            "node": "Convert audio to text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine content and set properties": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert audio to text": {
+      "main": [
+        [
+          {
+            "node": "Combine content and set properties",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determine content type": {
+      "main": [
+        [
+          {
+            "node": "Combine content and set properties",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download voice file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notion": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notion1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notion3": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notion2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "464018dc-f79a-4e3f-aab0-3cd5389cc9eb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "32e39908afbcb49d79cc3b05576c030ecc2871395b7aec4e0fdc88778498f80e"
+  },
+  "id": "ICqZPpWFhKaWLMjB",
+  "tags": []
+}

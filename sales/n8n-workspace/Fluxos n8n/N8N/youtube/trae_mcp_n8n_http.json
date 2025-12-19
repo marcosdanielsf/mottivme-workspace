@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "n8n-mcp-http-local": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "-p",
+        "node@20",
+        "-p",
+        "mcp-remote@latest",
+        "mcp-remote",
+        "http://localhost:3000/mcp"
+      ]
+    }
+  }
+}

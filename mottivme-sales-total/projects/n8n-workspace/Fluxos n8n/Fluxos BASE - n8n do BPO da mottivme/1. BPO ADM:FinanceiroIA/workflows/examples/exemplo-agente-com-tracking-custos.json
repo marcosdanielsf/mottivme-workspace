@@ -1,0 +1,130 @@
+{
+  "name": "Exemplo - Agente com Tracking de Custos",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 400],
+      "id": "chat-trigger",
+      "name": "Chat Trigger",
+      "webhookId": "exemplo-chat"
+    },
+    {
+      "parameters": {
+        "options": {
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [680, 400],
+      "id": "ai-agent",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [460, 600],
+      "id": "gemini-model",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googleGeminiApi": {
+          "id": "SEU_CREDENTIAL_ID",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSetup": "=[\n  { \"name\": \"ai_languageModel\", \"required\": true },\n  { \"name\": \"ai_tool\", \"required\": true }\n]",
+        "outputSetup": "=[\n  { \"name\": \"ai_languageModel\", \"required\": true }\n]",
+        "executeCode": false,
+        "supplyData": true,
+        "code": "// LangChain Code - Intercepta chamadas LLM e registra tokens\n\n// Pega a LLM e a ferramenta conectadas\nconst llm = await this.getInputConnectionData('ai_languageModel', 0);\nconst tool = await this.getInputConnectionData('ai_tool', 0);\n\n// Obtém os IDs do workflow e da execução\nconst workflowId = $workflow.id;\nconst executionId = $execution.id;\n\n// Define o callback para registrar o uso de tokens\nllm.callbacks = [{\n  handleLLMEnd: async ({ generations }) => {\n    try {\n      const gen = generations[0][0];\n\n      // Extrai usage_metadata de diferentes formatos de resposta\n      const usage = gen.message?.usage_metadata\n        || gen.message?.additional_kwargs?.usage_metadata\n        || gen.generationInfo?.usage_metadata\n        || {\n            input_tokens: gen.generationInfo?.promptTokenCount || gen.generationInfo?.input_tokens || 0,\n            output_tokens: gen.generationInfo?.candidatesTokenCount || gen.generationInfo?.output_tokens || 0,\n            total_tokens: gen.generationInfo?.totalTokenCount || gen.generationInfo?.total_tokens || 0\n        };\n\n      const input_tokens = usage.input_tokens || 0;\n      const output_tokens = usage.output_tokens || 0;\n      const total_tokens = usage.total_tokens || (input_tokens + output_tokens);\n\n      // Chama a tool para registrar o custo\n      await tool.func({\n        date: new Date().toISOString(),\n        model: llm.modelName || llm.model || 'gemini-2.0-flash',\n        input_tokens,\n        output_tokens,\n        total_tokens,\n        workflowId,\n        executionId\n      });\n    } catch (err) {\n      console.error('Erro ao registrar uso da LLM:', err);\n    }\n  }\n}];\n\nreturn llm;"
+      },
+      "type": "@n8n/n8n-nodes-langchain.code",
+      "typeVersion": 1,
+      "position": [460, 400],
+      "id": "langchain-interceptor",
+      "name": "LangChain Interceptor"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [300, 600],
+      "id": "tool-registrar-custo",
+      "name": "Registrar Custo LLM"
+    }
+  ],
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "LangChain Interceptor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LangChain Interceptor": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Custo LLM": {
+      "ai_tool": [
+        [
+          {
+            "node": "LangChain Interceptor",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "v1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "n8n-bpo-financeiro"
+  },
+  "id": "exemplo-agente-tracking",
+  "tags": []
+}

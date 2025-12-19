@@ -1,0 +1,383 @@
+{
+  "name": "Sync GoHighLevel → Supabase (Diário)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Executar a Cada Hora",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Configurar datas para busca\nconst hoje = new Date();\nconst inicio = new Date(hoje);\ninicio.setHours(0, 0, 0, 0);\n\nconst fim = new Date(hoje);\nfim.setHours(23, 59, 59, 999);\n\nreturn {\n  data_hoje: hoje.toISOString().split('T')[0],\n  inicio_iso: inicio.toISOString(),\n  fim_iso: fim.toISOString(),\n  empresa_id: '00000000-0000-0000-0000-000000000001',\n  produto_id: '00000000-0000-0000-0000-000000000001'\n};"
+      },
+      "id": "configurar-datas",
+      "name": "Configurar Datas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/contacts/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $credentials.httpHeaderAuth.value }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "SEU_LOCATION_ID"
+            },
+            {
+              "name": "startAfter",
+              "value": "={{ $json.inicio_iso }}"
+            },
+            {
+              "name": "startBefore",
+              "value": "={{ $json.fim_iso }}"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "buscar-leads-ghl",
+      "name": "Buscar Leads GHL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [650, 200],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SEU_CREDENTIAL_GHL",
+          "name": "GoHighLevel API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/calendars/events",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $credentials.httpHeaderAuth.value }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "locationId",
+              "value": "SEU_LOCATION_ID"
+            },
+            {
+              "name": "startTime",
+              "value": "={{ $('Configurar Datas').item.json.inicio_iso }}"
+            },
+            {
+              "name": "endTime",
+              "value": "={{ $('Configurar Datas').item.json.fim_iso }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "buscar-agendamentos-ghl",
+      "name": "Buscar Agendamentos GHL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [650, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SEU_CREDENTIAL_GHL",
+          "name": "GoHighLevel API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://services.leadconnectorhq.com/opportunities/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $credentials.httpHeaderAuth.value }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"SEU_LOCATION_ID\",\n  \"status\": \"won\",\n  \"startAfter\": \"{{ $('Configurar Datas').item.json.inicio_iso }}\",\n  \"startBefore\": \"{{ $('Configurar Datas').item.json.fim_iso }}\"\n}",
+        "options": {}
+      },
+      "id": "buscar-vendas-ghl",
+      "name": "Buscar Vendas GHL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [650, 400],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SEU_CREDENTIAL_GHL",
+          "name": "GoHighLevel API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "merge-dados",
+      "name": "Merge Dados",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Consolidar dados do dia\nconst items = $input.all();\n\n// Dados vindos do GHL\nconst leadsData = items.find(i => i.json.contacts)?.json || { contacts: [] };\nconst eventsData = items.find(i => i.json.events)?.json || { events: [] };\nconst salesData = items.find(i => i.json.opportunities)?.json || { opportunities: [] };\n\n// Configuração\nconst config = $('Configurar Datas').item.json;\n\n// Contar métricas\nconst leads_gerados = leadsData.contacts?.length || 0;\n\n// Filtrar MQLs (leads com tag específica ou score alto)\nconst mqls_gerados = leadsData.contacts?.filter(c => \n  c.tags?.includes('MQL') || c.score >= 50\n).length || 0;\n\n// Agendamentos\nconst events = eventsData.events || [];\nconst calls_agendadas = events.length;\n\n// Calls realizadas (status confirmed ou completed)\nconst calls_realizadas = events.filter(e => \n  e.status === 'confirmed' || e.status === 'completed' || e.appointmentStatus === 'showed'\n).length;\n\n// No shows\nconst no_shows = events.filter(e => \n  e.appointmentStatus === 'noshow' || e.status === 'cancelled'\n).length;\n\n// Vendas\nconst opportunities = salesData.opportunities || [];\nconst vendas_fechadas = opportunities.filter(o => o.status === 'won').length;\n\n// Faturamento\nconst faturamento_dia = opportunities\n  .filter(o => o.status === 'won')\n  .reduce((sum, o) => sum + (parseFloat(o.monetaryValue) || 0), 0);\n\nreturn {\n  empresa_id: config.empresa_id,\n  produto_id: config.produto_id,\n  data: config.data_hoje,\n  \n  // Métricas\n  leads_gerados,\n  mqls_gerados,\n  calls_agendadas,\n  calls_realizadas,\n  no_shows,\n  vendas_fechadas,\n  faturamento_dia,\n  \n  // Meta\n  fonte: 'gohighlevel',\n  sincronizado_em: new Date().toISOString()\n};"
+      },
+      "id": "consolidar-metricas",
+      "name": "Consolidar Métricas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1100, 300]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "tableId": "resultados_diarios",
+        "fieldsToSend": "defineBelow",
+        "fieldList": {
+          "values": [
+            {
+              "fieldName": "empresa_id",
+              "fieldValue": "={{ $json.empresa_id }}"
+            },
+            {
+              "fieldName": "produto_id",
+              "fieldValue": "={{ $json.produto_id }}"
+            },
+            {
+              "fieldName": "data",
+              "fieldValue": "={{ $json.data }}"
+            },
+            {
+              "fieldName": "leads_gerados",
+              "fieldValue": "={{ $json.leads_gerados }}"
+            },
+            {
+              "fieldName": "mqls_gerados",
+              "fieldValue": "={{ $json.mqls_gerados }}"
+            },
+            {
+              "fieldName": "calls_agendadas",
+              "fieldValue": "={{ $json.calls_agendadas }}"
+            },
+            {
+              "fieldName": "calls_realizadas",
+              "fieldValue": "={{ $json.calls_realizadas }}"
+            },
+            {
+              "fieldName": "no_shows",
+              "fieldValue": "={{ $json.no_shows }}"
+            },
+            {
+              "fieldName": "vendas_fechadas",
+              "fieldValue": "={{ $json.vendas_fechadas }}"
+            },
+            {
+              "fieldName": "faturamento_dia",
+              "fieldValue": "={{ $json.faturamento_dia }}"
+            },
+            {
+              "fieldName": "fonte",
+              "fieldValue": "={{ $json.fonte }}"
+            },
+            {
+              "fieldName": "sincronizado_em",
+              "fieldValue": "={{ $json.sincronizado_em }}"
+            }
+          ]
+        },
+        "conflictFields": "empresa_id,produto_id,data"
+      },
+      "id": "salvar-supabase",
+      "name": "Salvar no Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1300, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "SEU_CREDENTIAL_ID",
+          "name": "Supabase Mottivme"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "SEU_WEBHOOK_SLACK_OU_DISCORD",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"✅ Sync GHL concluído!\\n📊 Leads: {{ $('Consolidar Métricas').item.json.leads_gerados }}\\n📞 Calls: {{ $('Consolidar Métricas').item.json.calls_realizadas }}\\n💰 Vendas: {{ $('Consolidar Métricas').item.json.vendas_fechadas }}\\n💵 Faturamento: R$ {{ $('Consolidar Métricas').item.json.faturamento_dia }}\"\n}",
+        "options": {}
+      },
+      "id": "notificar-sucesso",
+      "name": "Notificar Sucesso",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1500, 300]
+    }
+  ],
+  "connections": {
+    "Executar a Cada Hora": {
+      "main": [
+        [
+          {
+            "node": "Configurar Datas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configurar Datas": {
+      "main": [
+        [
+          {
+            "node": "Buscar Leads GHL",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Buscar Agendamentos GHL",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Buscar Vendas GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Leads GHL": {
+      "main": [
+        [
+          {
+            "node": "Merge Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Agendamentos GHL": {
+      "main": [
+        [
+          {
+            "node": "Merge Dados",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Buscar Vendas GHL": {
+      "main": [
+        [
+          {
+            "node": "Merge Dados",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge Dados": {
+      "main": [
+        [
+          {
+            "node": "Consolidar Métricas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidar Métricas": {
+      "main": [
+        [
+          {
+            "node": "Salvar no Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar no Supabase": {
+      "main": [
+        [
+          {
+            "node": "Notificar Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["sync", "gohighlevel", "supabase", "metricas"],
+  "triggerCount": 0,
+  "pinData": {}
+}

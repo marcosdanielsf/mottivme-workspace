@@ -1,0 +1,427 @@
+{
+  "name": "PROPOSTAL - Follow-up 24h",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1216,
+        208
+      ],
+      "id": "7049d4ea-373a-4a72-8e3c-bcac0e64f9f7",
+      "name": "A cada 1 hora",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "supabase-url",
+              "name": "supabase_url",
+              "value": "https://bfumywvwubvernvhjehk.supabase.co",
+              "type": "string"
+            },
+            {
+              "id": "supabase-key",
+              "name": "supabase_key",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTQwMzc5OSwiZXhwIjoyMDY2OTc5Nzk5fQ.fdTsdGlSqemXzrXEU4ov1SUpeDn_3bSjOingqkSAWQE",
+              "type": "string"
+            },
+            {
+              "id": "ghl-location",
+              "name": "ghl_location_id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1008,
+        208
+      ],
+      "id": "c5441d07-55b1-4982-8ebd-b835384ff248",
+      "name": "⚙️ Configurações"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.supabase_url }}/rest/v1/leads",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "select",
+              "value": "*,proposals(title,client_name)"
+            },
+            {
+              "name": "status",
+              "value": "eq.viewed"
+            },
+            {
+              "name": "last_activity",
+              "value": "lt.{{ $now.minus({hours: 24}).toISO() }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.supabase_key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.supabase_key }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -784,
+        208
+      ],
+      "id": "64047405-f4d0-41cd-9ee7-7b20670f2ac3",
+      "name": "Supabase - Buscar Leads sem Follow-up"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-leads",
+              "leftValue": "={{ $json.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -560,
+        208
+      ],
+      "id": "7348e017-9635-4070-b849-5f9f6c5a0cf1",
+      "name": "Tem Leads para Follow-up?"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        112
+      ],
+      "id": "b0ee1c6f-40bb-4da7-9cd3-1eb5906d00ac",
+      "name": "Separar cada Lead"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('⚙️ Configurações').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $('⚙️ Configurações').item.json.ghl_location_id }}\",\n  \"query\": \"{{ $json.email }}\",\n  \"pageLimit\": 1\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -128,
+        112
+      ],
+      "id": "51c4f177-9292-41f2-9015-02223c8c6f0f",
+      "name": "GHL - Buscar Contato"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-contact",
+              "leftValue": "={{ $json.contacts.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        112
+      ],
+      "id": "9c99203c-84e4-42b8-9221-ee827f6f9b2a",
+      "name": "Contato Existe?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('⚙️ Configurações').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $json.contacts[0].id }}\",\n  \"message\": \"Oi {{ $('Separar cada Lead').item.json.name }}! Passando para saber se você teve tempo de analisar a proposta \\\"{{ $('Separar cada Lead').item.json.proposals.title }}\\\". Alguma dúvida que eu possa ajudar? 😊\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "072dc265-ee9f-4a7e-8d50-c158be906792",
+      "name": "GHL - Enviar Follow-up WhatsApp"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $('⚙️ Configurações').item.json.supabase_url }}/rest/v1/leads",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $('Separar cada Lead').item.json.id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('⚙️ Configurações').item.json.supabase_key }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('⚙️ Configurações').item.json.supabase_key }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"status\": \"engaged\",\n  \"last_activity\": \"{{ $now.toISO() }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        544,
+        0
+      ],
+      "id": "44da9926-32ec-463a-baf3-de3b3fb4c822",
+      "name": "Supabase - Atualizar Status Lead"
+    },
+    {
+      "parameters": {
+        "content": "## ⏰ PROPOSTAL - Follow-up 24h\n\n### O que este workflow faz:\n1. Roda a cada 1 hora\n2. Busca leads que visualizaram proposta há mais de 24h\n3. Para cada lead, busca contato no GHL\n4. Envia mensagem de follow-up via WhatsApp\n5. Atualiza status do lead no Supabase\n\n### Configuração:\n- Altere as variáveis no nó \"⚙️ Configurações\"\n- Ajuste o intervalo conforme necessário\n\n### Importante:\n- Não envia follow-up para leads já \"engaged\" ou \"hot\"",
+        "height": 320,
+        "width": 400,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1408,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "a3ee5d5d-05b2-42a0-83ff-aba40b1e03e2",
+      "name": "📌 Documentação"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "A cada 1 hora": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Configurações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Configurações": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Buscar Leads sem Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Buscar Leads sem Follow-up": {
+      "main": [
+        [
+          {
+            "node": "Tem Leads para Follow-up?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Leads para Follow-up?": {
+      "main": [
+        [
+          {
+            "node": "Separar cada Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar cada Lead": {
+      "main": [
+        [
+          {
+            "node": "GHL - Buscar Contato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Buscar Contato": {
+      "main": [
+        [
+          {
+            "node": "Contato Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contato Existe?": {
+      "main": [
+        [
+          {
+            "node": "GHL - Enviar Follow-up WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Enviar Follow-up WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Atualizar Status Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "a348a811-6cf2-47ba-a5ff-91a555bc6fba",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "2XlpBVEyD0EJLrZq",
+  "tags": []
+}

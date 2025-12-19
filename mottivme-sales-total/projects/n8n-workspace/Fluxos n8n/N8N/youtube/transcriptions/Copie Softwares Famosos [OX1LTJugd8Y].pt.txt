@@ -1,0 +1,344 @@
+Tudo bom pessoal? Meu nome é Davidon,
+esse Vivendo de SAS no canal em
+português para quem quer aprender sobre
+software como serviço, sobre gestão de
+empresa de software como serviço. E
+esses dias eu fiz um vídeo com ideias de
+SAS, vi que fez sucesso, acho que o
+pessoal tem interesse no assunto,
+resolvi fazer outro aqui. O título do
+vídeo é: Copie os SAS famosos e venda no
+Brasil, né? Então tem um monte de SAS
+famoso aí pelo mundo que tu pode
+simplesmente copiar e vender no Brasil.
+Então, vamos conversar sobre isso. Eh,
+exatamente isso. Agora se é a primeira
+vez que tu acessa esse canal aqui, já se
+inscreve aqui embaixo. Clica aqui para
+se inscrever, tá? Eh, comenta aqui
+embaixo. Tu tem alguma ideia de SAS
+diferente aqui, um SAS que tu acha que
+daria para copiar? Então, fala aí para
+mim. Então, o primeiro aqui que eu quero
+falar para vocês é este daqui, ó. Pera
+aí, deixa eu fechar. Isso daqui é o
+base, basicamp.com. Quem que são esses
+caras aqui e por que eu acho que vocês
+deveriam copiar? Pessoal do Basic Camp.
+Eles foram os mesmos que criaram aquele
+framework lá, o aquela linguagem lá, o
+Ruben Rails, tá? Pessoal é famoso. Eles
+têm esse livro aqui, Getting Real, que é
+um livro sobre software como serviço,
+que te ensina é como tu pensar a tua
+empresa de SAS de uma maneira deixá-la
+bem limpa, simples, sem muita loucura. E
+eles um um dos softwares que eles
+criaram, né, que hoje é o principal,
+eles mataram todos os outros softwares
+deles e estão focados nesse basic camp.
+Até onde eu sei, parece que agora eles
+criaram um segundo lá relacionado
+e-mails, mas esse aqui é o carro chefe
+deles. Eles mataram outros softwares que
+eles tinham no passado e se dedicaram a
+esse software aqui. Então o que que eu
+te digo? Tentar copiar esse software
+aqui. Por quê? Porque se tu for ver, não
+tem versão em português. Eu não tô
+dizendo que vai ser algo fácil de fazer,
+que tu vai ali ligeirinho, vai com vibe
+codem copiar o software deles. Inclusive
+eu te digo, leia esses esse livro aqui,
+Getting Real. Procura aí na internet,
+ali, ó, a URL, tá ali, ó,
+basecamp.com/gettingre.
+Tem esse livro disponível em português.
+Se tu procurar no meu grupo do Facebook
+lá, tem um PDF lá traduzido, ou vai no
+Google Tradutor ali, traduz. se tu não
+sabe inglês e leia esse livro aqui para
+te entender a filosofia deles de criação
+de produtos, né? Então é interessante tu
+saber isso daqui antes de sair fazendo.
+Esse software aqui é um software para
+gerenciamento de projetos e até onde eu
+sei, não tem nada parecido em português.
+Tu vê aqui, ó, um monte de software de
+gerenciamento de projeto e ele falando
+mal desse monte de software aqui que tu
+pode usar o basic camp para fazer a
+gestão dos teus projetos, tá? Então,
+olhem esse software aqui, entendam a
+filosofia deles, porque de repente vocês
+vão conseguir criar um produto muito
+legal, bonito, legal, que as pessoas vão
+querer usar e que até o momento não está
+eh sendo explorado no Brasil, né? Só tem
+versão em inglês desse software aqui e
+eles são muito bem falados, né? Como eu
+disse, não é algo simples de fazer,
+porque realmente o software deles é
+muito bom, mas de repente tu consegue
+algo parecido, algo eh bom o suficiente
+para conseguir clientes e começar a
+ganhar dinheiro com software como
+serviço, tá? Então vamos e seguindo essa
+mesma filosofia aqui do Getting Real, eu
+quero falar sobre esse outro software
+aqui, este daqui, Button Down. Esse é um
+outro software que é um software para
+gerenciamento de news leaders. Tá, eu já
+tive uma newsleter lá no pelos anos
+2000, eh, se tu não conheceu e muito
+provavelmente não conheceu, se chamava
+Notícias Linux, né? Então, era um site
+com notícia sobre Linux, mantive durante
+uns 7, 8 anos e tinha bastante
+assinante. Depois eu parei, não consegui
+mais dar atenção, até porque nem dava
+dinheiro, eu nem sabia como monetizar
+aquela newslether na época e nem tinha
+muito essa ideia de monetizar coisas na
+internet. Não sei se você sabe, mas lá
+pelo pelo início dos anos 2000, internet
+era significado de coisas grátis, né?
+Então era esse o pensamento. Mas
+voltando aqui, esse aqui é um software
+que o cara que desenvolveu esse software
+aqui leu o Getting Real e tentou usar a
+filosofia do Getting Real para
+desenvolver um software para controle de
+newsleaders. Então aí entra em
+butondown.com se tu quiser conhecer, se
+inspirar, de repente copiar
+descaradamente
+este software aqui, tá? Butondown.com.
+Inclusive eu falando isso sobre outras
+ideias que eu não coloquei aqui, há uns
+anos atrás eu vi um software que ele era
+uma imitação do Mail Chimp, só que
+simplificado. Simplificado em que
+sentido? Ele não tinha aquele monte de
+opções que temimp, era só para mandar
+texto comum, mas com as opções de tu ter
+uma lista de e-mails para enviar. E eu
+vejo por aí que tem softwares que são
+equivalentes ao Mail Timp, mas eles caem
+nessa ideia de fazer um software muito
+complexo, cheio de opções. Pensa que a
+tua newsleter no teu software vai ser
+simples, vai ser o assunto, o texto
+simples, como se tu estivesse enviando
+pelo Gmail um texto e tendo algumas
+outras opções, né, de envio, fazer a
+lista, o se inscrever, cancelar. Então,
+daria para fazer algo assim. Eu já falei
+sobre esse software no passado, nos meus
+vídeos, mas não lembro qual era esse
+esse esse esse SAS específico, mas a
+minha ideia aqui é que tu pode copiar
+softwares como serviço já estabelecidos,
+porque tem mercado ali, tá? Tem mercado,
+já tem cliente usando. Explorar esse
+mercado aqui no Brasil, né? Vamos
+aproveitar o Brasil aqui e aproveitar
+essa barreira de língua que muito
+brasileiro tem, vender no Brasil e
+ganhar dinheiro. E eu já fiz um vídeo
+falando exatamente sobre isso, sobre a
+ideia de copiar outros softwares, né? É
+porque as pessoas têm muito a ideia de
+eu vou criar algo novo, algo eu vou
+totalmente do zero que nunca ninguém
+fez. carta não precisa isso. Tu pode
+muito bem copiar os outros e ganhar
+dinheiro. Outro software aqui que eu te
+dou dei ideia para te copiar, eu uso
+esse software aqui, Calendly. É assim,
+ó. Às vezes eu vendo mentoria pros meus
+alunos aqui do Vivendo de SAS, né? O
+cara tem uma empresa de SAS, precisa de
+uma mentoria, eu vendo e daí ele precisa
+eh marcar um horário comigo, né? compra
+a uma hora e tem que marcar um horário
+comigo. Daí eu dou acesso a esse
+software aqui. Então, e até eu tive que
+usar ele de uma maneira diferente,
+porque dentro ali do sistema eu queria
+colocar para a pessoa poder escolher
+horário e comprar a hora, né? Então ela
+escolheria um horário e compra a hora e
+daí todo mundo poderia ver a minha
+agenda.
+Só que isso tem um problema dentro do
+calendito
+que eu quero, porque eu posso integrar o
+stripe, mas se eu entregar integrar ao
+stripe, tô gago agora, é, tu só pode
+cobrar em dólares, não dá para cobrar em
+real. Daí eu inverti, eu fiz um post, eu
+fiz um no stripe, uma página no stripe
+de de pagamento e daí depois mando pro
+Calendley, né? Mas tu poderia fazer um
+software que faça isso em real, né?
+Então cobrar em real que não dá para
+fazer hoje. Então é um software simples,
+né? Aqui que dá para ganhar dinheiro,
+colocar disponível. Esse aqui é muito
+famoso, tá? Então e se for ver, muita
+gente usa esse software aqui
+internacionalmente, ele tá integrado com
+um monte de coisa. Então é bem
+interessante esse software aqui, bem
+simples, nada demais. Vamos ver os
+preços aqui. Os preços aqui, só para
+vocês terem uma noção, $ por mês, ó, o
+plano mais barato pro, né, que teria
+seria paga $ por mês. Então, é uma ideia
+que eu até dou calendly.com.
+Outro software aqui que vocês podem
+muito bem fazer e que é muito simples,
+pode, não precisa ter todos os recursos,
+mas é fazer uma cópia descarada do
+Trelo. Todo mundo usa Trelo, né? Então,
+tu pode fazer é um camban. É bem
+simples. Tu coloca tuas ideias ali no
+camban e vai mudando de coluna. É só
+isso, não é nada demais, né? Então tu
+pode muito bem fazer um microSAS e
+imitando o Trelo. E já tem vários no
+mercado, tá? Mas isso não é motivo para
+não copiar, não colocar na internet e de
+repente conseguir vender para alguns
+clientes e ter um dinheiro a mais ali,
+uma fonte de renda extra ali, é fazer
+uma cópia descarada do Trelo, tá? Então
+é uma ideia que eu dou para vocês.
+Outro software aqui é o Zendesk. Eu sei
+que o Zendesk é muito maior do que de
+repente tu conseguiria fazer do dia
+paraa noite, mas deixa eu te dizer que o
+Zendesk fala para ninguém, mas o Zendesk
+é muito ruim. é um software muito ruim.
+Eu não entendo como que eles conseguiram
+tanto mercado, porque é um software
+muito ruim. Tu sabe que a gente usava um
+software bem simples anos atrás, feito
+internamente aqui pela nossa empresa. E
+daí eu briguei dentro da empresa pra
+gente usar um software profissional, né,
+pra gente não depender de programador,
+usar ferramentas que já estão no
+mercado, pagar para ter acesso à
+ferramenta. E eu fui uma das pessoas que
+defendeu o Zendesc aqui dentro da
+empresa. A gente assinou, ele começou a
+usar. Cara, como é ruim. E eu tive que
+dar o braço a torcida e que é muito
+ruim. Daí, como a gente não achou nenhum
+software equivalente no mercado que
+fosse bom da maneira que a gente queria,
+eh, a gente acabou tendo que desenvolver
+um software do zero aqui para dentro da
+empresa e acabamos desenvolvendo um
+software do zero, né? Então, eu acho que
+tem mercado, os softwares que tem por aí
+não são tão bons, não. Eh, resolve as
+coisas que eu acho que daria para
+resolver num software de suporte para
+empresas, além de que eles são bem
+caros. Deixa eu ver aqui os preços se
+tem preços. Olha o quão cara o Zandesk.
+Olha aqui, ó. Eh, deixa eu fechar aqui.
+R$ 135.
+Eu vamos ver. Eu acho que é por usuário,
+né? Por agente, por mês. R$ 135 por
+agente, por mês. É muito caro e vai,
+conforme os recursos vai se tornando
+cada vez mais caro. E além de que se
+fosse bom, né, daí daria valer a pena,
+valeria a pena pagar. Mas nem bom é, né,
+o Zendesk. Então, eh, que daria para eh
+copiar softwares assim e ganhar
+dinheiro. Tem um outro software aqui que
+vocês também poderiam muito bem copiar e
+esse software cresceu muito, né? Cresceu
+muito quando foi lançado. É o Slack.
+Slack, tudo que a grande corporação hoje
+em dia usa, eles foram comprados pela
+Sales Force depois. E é basicamente um
+chat interno no estilo IRK, para quem é
+mais velho, mais velho, conhece o IRK,
+paraa comunicação interna. Eu desenvolvi
+há muitos anos atrás aqui é uma uma
+imitação descarada do Slack pra nossa
+empresa. A gente usou por muitos anos.
+Depois meu sócio fez uma versão melhor e
+a gente usa até hoje esse software aqui
+para comunicação interna, mas tu tem que
+saber que projeto assim tem alguns
+problemas, principalmente no Brasil. O
+primeiro que seria os grupos de
+WhatsApp, as empresas usam muito grupo
+de WhatsApp, né? E também existe o chat
+gratuito do Gmail, né? Então, a as
+empresas também usam e isso como
+comunicação interna. Então, para te
+vender, tu teria que quebrar isso, por
+exemplo, um slack, uma imitação de slack
+que não funciona em determinados
+horários. Por que isso? para não ter
+problema trabalhista, porque imagina se
+eu for mandar uma mensagem para ti em
+horário comercial, em horário fora de
+horário comercial, o funcionário pode me
+processar porque eu tô pedindo para
+trabalhar fora de horário. Então, de
+repente é um recurso,
+algo, um argumento de venda que tu pode
+ter pras empresas, usem o meu software,
+porque daí tu não vai ter processo
+trabalhista, porque não vai funcionar
+fora de horário. É uma ideia que eu dou
+para te explorar esse mercado aqui
+parecido com o Slack. Mas desse daí
+software como esse aqui, tu também tem
+que ter app, né? Tu não basta não basta
+fazer o, tu vai ter que desenvolver o
+app dele também, tá? É um, esse vídeo
+aqui é um vídeo simples, só para dar
+umas ideias de SAS para vocês
+desenvolverem. Eu sei que não é simples.
+Ah, vou ali, copio rapidamente e tá tudo
+feito. Mas é para inspirar vocês, né? De
+repente vocês pegam um software desses
+aqui, simplificam e depois com o tempo
+vocês vão incrementando novas coisas
+para tentar concorrer eh lado a lado com
+esses softwares mais antigos, mais
+complexos. Mas o que eu quero dizer é
+que dá muito bem para te copiar software
+de empresas mais estabelecidas, porque
+tu sabe que tem mercado, tu sabe que
+esse software já foi validado, que tem
+cliente interessado e é muito melhor do
+que tu ficar tentando imaginar um
+software que só faz sentido na tua
+cabeça, que nunca ninguém usou. Eu não
+tô dizendo que de repente não funciona,
+mas aqui entre nós é muito mais difícil
+funcionar esse tipo de software que
+nunca ninguém usou, né? A internet já
+está aí desde 1996, 97 mais ou menos. E
+até hoje nunca ninguém teve a ideia
+brilhante que tu teve, né? De repente
+não, alguém já teve, já testou, não deu
+certo ou realmente ninguém tem
+interesse. Então copia, copia
+descaradamente porque dá para ganhar
+dinheiro dessa forma, sim. Tá? Gostou
+desse conteúdo aqui? Curte aqui que isso
+me ajuda bastante. Comenta aqui embaixo
+e se inscreve no canal. Muito obrigado e
+até os próximos vídeos.

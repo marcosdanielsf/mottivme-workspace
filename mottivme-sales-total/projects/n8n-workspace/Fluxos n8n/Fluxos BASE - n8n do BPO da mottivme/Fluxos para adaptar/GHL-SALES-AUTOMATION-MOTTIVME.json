@@ -1,0 +1,920 @@
+{
+  "name": "GHL - Sales Automation Mottivme",
+  "meta": {
+    "instanceId": "mottivme-production",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Sales Automation - Mottivme\n\n## Workflows Incluidos:\n1. **New Lead** - Novo lead entra no sistema\n2. **Appointment Created** - Agendamento criado\n3. **Appointment Reminder** - Lembrete 1 dia antes\n4. **Appointment Cancelled** - Cancelamento/Reagendamento\n5. **Proposta Enviada** - Apos call de vendas\n\n## Integracoes:\n- GHL Calendar (substitui Cal.com)\n- GHL Email API (substitui Gmail)\n- GHL Custom Fields (substitui Google Sheets)\n- Link da Agenda: sessao-estrategica-mottivmesales",
+        "height": 400,
+        "width": 600,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-400, -800],
+      "id": "sticky-main",
+      "name": "INSTRUCOES GERAIS"
+    },
+    {
+      "parameters": {
+        "content": "## 1. NEW LEAD WORKFLOW\nQuando um novo lead entra via formulario ou API",
+        "height": 80,
+        "width": 800,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-400, -300],
+      "id": "sticky-new-lead",
+      "name": "Sticky New Lead"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ghl-new-lead-mottivme",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-300, -200],
+      "id": "webhook-new-lead",
+      "name": "Webhook New Lead",
+      "webhookId": "ghl-new-lead-mottivme"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "contact-id",
+              "name": "contact_id",
+              "value": "={{ $json.body?.contact?.id || $json.body?.contactId || $json.body?.id }}",
+              "type": "string"
+            },
+            {
+              "id": "location-id",
+              "name": "location_id",
+              "value": "={{ $json.body?.contact?.locationId || $json.body?.locationId }}",
+              "type": "string"
+            },
+            {
+              "id": "first-name",
+              "name": "first_name",
+              "value": "={{ $json.body?.contact?.firstName || $json.body?.firstName || $json.body?.first_name || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "last-name",
+              "name": "last_name",
+              "value": "={{ $json.body?.contact?.lastName || $json.body?.lastName || $json.body?.last_name || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "value": "={{ $json.body?.contact?.email || $json.body?.email }}",
+              "type": "string"
+            },
+            {
+              "id": "phone",
+              "name": "phone",
+              "value": "={{ $json.body?.contact?.phone || $json.body?.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "api-key",
+              "name": "api_key",
+              "value": "={{ $json.body?.api_key || 'pit-7f333e6f-a839-4f58-b371-778fed9dc2ea' }}",
+              "type": "string"
+            },
+            {
+              "id": "source",
+              "name": "source",
+              "value": "={{ $json.body?.source || 'website' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-100, -200],
+      "id": "extrair-new-lead",
+      "name": "Extrair Dados Lead"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contact_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    {\n      \"key\": \"status_lead\",\n      \"value\": \"New Lead\"\n    },\n    {\n      \"key\": \"data_entrada\",\n      \"value\": \"{{ $now.toFormat('dd/MM/yyyy HH:mm') }}\"\n    },\n    {\n      \"key\": \"origem\",\n      \"value\": \"{{ $json.source }}\"\n    }\n  ],\n  \"tags\": [\"new_lead\", \"{{ $json.source }}\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [100, -200],
+      "id": "atualizar-status-new-lead",
+      "name": "Atualizar Status GHL"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Extrair Dados Lead').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"Email\",\n  \"contactId\": {{ JSON.stringify($('Extrair Dados Lead').first().json.contact_id) }},\n  \"subject\": \"Bem-vindo a Mottivme Sales!\",\n  \"html\": \"<p>Ola <strong>{{ $('Extrair Dados Lead').first().json.first_name }}</strong>,</p><p>Obrigado pelo seu interesse na Mottivme Sales!</p><p>Estamos ansiosos para ajudar voce a transformar seu comercial.</p><p><a href='https://client.socialfy.me/widget/bookings/sessao-estrategica-mottivmesales' style='background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 15px 0;'>AGENDAR SESSAO ESTRATEGICA</a></p><p>Abs,<br>Equipe Mottivme Sales</p>\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, -200],
+      "id": "enviar-email-boas-vindas",
+      "name": "Email Boas-Vindas GHL"
+    },
+    {
+      "parameters": {
+        "content": "## 2. APPOINTMENT WORKFLOW\nQuando agendamento e criado no GHL Calendar",
+        "height": 80,
+        "width": 1400,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-400, 100],
+      "id": "sticky-appointment",
+      "name": "Sticky Appointment"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ghl-appointment-created-mottivme",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-300, 200],
+      "id": "webhook-appointment-created",
+      "name": "Webhook Appointment Created",
+      "webhookId": "ghl-appointment-created-mottivme",
+      "notes": "Configure no GHL: Settings > Webhooks > Appointment Created"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "appointment-id",
+              "name": "appointment_id",
+              "value": "={{ $json.body?.id || $json.body?.appointmentId }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-id",
+              "name": "contact_id",
+              "value": "={{ $json.body?.contact?.id || $json.body?.contactId }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-name",
+              "name": "contact_name",
+              "value": "={{ $json.body?.contact?.firstName || $json.body?.contact?.name?.split(' ')[0] || 'Cliente' }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-email",
+              "name": "contact_email",
+              "value": "={{ $json.body?.contact?.email }}",
+              "type": "string"
+            },
+            {
+              "id": "start-time",
+              "name": "start_time",
+              "value": "={{ $json.body?.startTime || $json.body?.selectedTimeslot?.startTime }}",
+              "type": "string"
+            },
+            {
+              "id": "calendar-name",
+              "name": "calendar_name",
+              "value": "={{ $json.body?.calendar?.name || $json.body?.calendarName || 'Sessao Estrategica' }}",
+              "type": "string"
+            },
+            {
+              "id": "location-id",
+              "name": "location_id",
+              "value": "={{ $json.body?.locationId }}",
+              "type": "string"
+            },
+            {
+              "id": "api-key",
+              "name": "api_key",
+              "value": "={{ $json.body?.api_key || 'pit-7f333e6f-a839-4f58-b371-778fed9dc2ea' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-100, 200],
+      "id": "extrair-appointment",
+      "name": "Extrair Dados Appointment"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contact_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    {\n      \"key\": \"status_lead\",\n      \"value\": \"Appointment Scheduled\"\n    },\n    {\n      \"key\": \"appointment_date\",\n      \"value\": \"{{ $json.start_time }}\"\n    },\n    {\n      \"key\": \"appointment_id\",\n      \"value\": \"{{ $json.appointment_id }}\"\n    }\n  ],\n  \"tags\": [\"appointment_scheduled\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [100, 200],
+      "id": "atualizar-status-appointment",
+      "name": "Atualizar Status Agendado"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Extrair Dados Appointment').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"Email\",\n  \"contactId\": {{ JSON.stringify($('Extrair Dados Appointment').first().json.contact_id) }},\n  \"subject\": \"Confirmacao de Agendamento - {{ $('Extrair Dados Appointment').first().json.calendar_name }}\",\n  \"html\": \"<p>Ola <strong>{{ $('Extrair Dados Appointment').first().json.contact_name }}</strong>,</p><p>Seu agendamento foi confirmado!</p><p><strong>Data/Hora:</strong> {{ DateTime.fromISO($('Extrair Dados Appointment').first().json.start_time).setZone('America/New_York').toFormat('dd/MM/yyyy HH:mm') }} (Horario de NY)</p><p><strong>Reuniao:</strong> {{ $('Extrair Dados Appointment').first().json.calendar_name }}</p><p>Voce recebera o link do Zoom por email antes da reuniao.</p><p>Caso precise reagendar ou cancelar, clique abaixo:</p><p><a href='https://client.socialfy.me/widget/bookings/sessao-estrategica-mottivmesales' style='background: #6b7280; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; display: inline-block;'>REAGENDAR</a></p><p>Ate la!</p><p>Equipe Mottivme Sales</p>\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 200],
+      "id": "enviar-confirmacao-appointment",
+      "name": "Email Confirmacao GHL"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Calcular data do lembrete (1 dia antes)\nconst startTime = $('Extrair Dados Appointment').first().json.start_time;\nconst appointmentDate = new Date(startTime);\nconst reminderDate = new Date(appointmentDate.getTime() - (24 * 60 * 60 * 1000)); // -1 dia\n\n// Se a data do lembrete ja passou, nao agendar\nconst now = new Date();\nif (reminderDate <= now) {\n  return {\n    json: {\n      should_schedule_reminder: false,\n      reason: 'Appointment is less than 24h away'\n    }\n  };\n}\n\nreturn {\n  json: {\n    should_schedule_reminder: true,\n    reminder_date: reminderDate.toISOString(),\n    appointment_date: appointmentDate.toISOString(),\n    appointment_formatted: appointmentDate.toLocaleString('pt-BR', { timeZone: 'America/New_York' })\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 200],
+      "id": "calcular-data-lembrete",
+      "name": "Calcular Data Lembrete"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "deve-agendar",
+              "leftValue": "={{ $json.should_schedule_reminder }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [700, 200],
+      "id": "verificar-agendar-lembrete",
+      "name": "Agendar Lembrete?"
+    },
+    {
+      "parameters": {
+        "resume": "specificTime",
+        "dateTime": "={{ $('Calcular Data Lembrete').first().json.reminder_date }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [900, 100],
+      "id": "wait-lembrete",
+      "name": "Wait 1 Dia Antes",
+      "webhookId": "wait-lembrete-mottivme"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Extrair Dados Appointment').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"Email\",\n  \"contactId\": {{ JSON.stringify($('Extrair Dados Appointment').first().json.contact_id) }},\n  \"subject\": \"Lembrete: Sua reuniao e AMANHA!\",\n  \"html\": \"<p>Ola <strong>{{ $('Extrair Dados Appointment').first().json.contact_name }}</strong>,</p><p>Passando para lembrar que nossa reuniao e <strong>AMANHA</strong>!</p><p><strong>Data/Hora:</strong> {{ $('Calcular Data Lembrete').first().json.appointment_formatted }} (Horario de NY)</p><p>Preparamos tudo para uma conversa produtiva sobre como podemos ajudar seu comercial.</p><p>Confirma sua presenca?</p><p>Ate amanha!</p><p>Equipe Mottivme Sales</p>\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1100, 100],
+      "id": "enviar-lembrete-email",
+      "name": "Email Lembrete GHL"
+    },
+    {
+      "parameters": {
+        "content": "## 3. APPOINTMENT CANCELLED WORKFLOW\nQuando cancelamento acontece no GHL Calendar",
+        "height": 80,
+        "width": 1200,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-400, 500],
+      "id": "sticky-cancelled",
+      "name": "Sticky Cancelled"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ghl-appointment-cancelled-mottivme",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-300, 600],
+      "id": "webhook-appointment-cancelled",
+      "name": "Webhook Cancelled",
+      "webhookId": "ghl-appointment-cancelled-mottivme"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "contact-id",
+              "name": "contact_id",
+              "value": "={{ $json.body?.contact?.id || $json.body?.contactId }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-name",
+              "name": "contact_name",
+              "value": "={{ $json.body?.contact?.firstName || 'Cliente' }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-email",
+              "name": "contact_email",
+              "value": "={{ $json.body?.contact?.email }}",
+              "type": "string"
+            },
+            {
+              "id": "api-key",
+              "name": "api_key",
+              "value": "={{ $json.body?.api_key || 'pit-7f333e6f-a839-4f58-b371-778fed9dc2ea' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-100, 600],
+      "id": "extrair-cancelled",
+      "name": "Extrair Dados Cancelled"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contact_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    {\n      \"key\": \"status_lead\",\n      \"value\": \"Cancelled\"\n    }\n  ],\n  \"tags\": [\"appointment_cancelled\", \"reagendar\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [100, 600],
+      "id": "atualizar-status-cancelled",
+      "name": "Atualizar Status Cancelled"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Extrair Dados Cancelled').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"Email\",\n  \"contactId\": {{ JSON.stringify($('Extrair Dados Cancelled').first().json.contact_id) }},\n  \"subject\": \"Cancelamento recebido - Reagende quando puder\",\n  \"html\": \"<p>Ola <strong>{{ $('Extrair Dados Cancelled').first().json.contact_name }}</strong>,</p><p>Vi que voce cancelou nossa reuniao - obrigado por avisar!</p><p>Espero que esteja tudo bem por ai.</p><p>Quando puder, reagende para um horario mais conveniente:</p><p><a href='https://client.socialfy.me/widget/bookings/sessao-estrategica-mottivmesales' style='background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 15px 0;'>REAGENDAR AGORA</a></p><p>Ate breve!</p><p>Equipe Mottivme Sales</p>\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 600],
+      "id": "enviar-email-cancelled",
+      "name": "Email Cancelamento GHL"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "days"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [500, 600],
+      "id": "wait-followup-cancelled",
+      "name": "Wait 1 Dia",
+      "webhookId": "wait-followup-cancelled-mottivme"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Extrair Dados Cancelled').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"Email\",\n  \"contactId\": {{ JSON.stringify($('Extrair Dados Cancelled').first().json.contact_id) }},\n  \"subject\": \"Ainda podemos conversar?\",\n  \"html\": \"<p>Ola <strong>{{ $('Extrair Dados Cancelled').first().json.contact_name }}</strong>,</p><p>Passando rapidamente para ver se conseguiu um novo horario.</p><p>Continuo com disponibilidade essa semana para conversarmos sobre como podemos ajudar seu comercial a escalar.</p><p><a href='https://client.socialfy.me/widget/bookings/sessao-estrategica-mottivmesales' style='background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 15px 0;'>VER HORARIOS DISPONIVEIS</a></p><p>Abs,</p><p>Equipe Mottivme Sales</p>\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [700, 600],
+      "id": "enviar-followup-cancelled",
+      "name": "Email Follow-up GHL"
+    },
+    {
+      "parameters": {
+        "content": "## 4. SALES CALL - GERAR PROPOSTA\nApos call de vendas, gerar e enviar proposta",
+        "height": 80,
+        "width": 1000,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-400, 900],
+      "id": "sticky-sales-call",
+      "name": "Sticky Sales Call"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ghl-sales-call-mottivme",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-300, 1000],
+      "id": "webhook-sales-call",
+      "name": "Webhook Sales Call",
+      "webhookId": "ghl-sales-call-mottivme"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "contact-id",
+              "name": "contact_id",
+              "value": "={{ $json.body?.contact_id || $json.body?.contactId }}",
+              "type": "string"
+            },
+            {
+              "id": "first-name",
+              "name": "first_name",
+              "value": "={{ $json.body?.first_name || $json.body?.firstName || 'Cliente' }}",
+              "type": "string"
+            },
+            {
+              "id": "last-name",
+              "name": "last_name",
+              "value": "={{ $json.body?.last_name || $json.body?.lastName || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "value": "={{ $json.body?.email }}",
+              "type": "string"
+            },
+            {
+              "id": "company",
+              "name": "company",
+              "value": "={{ $json.body?.company || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "problema",
+              "name": "problem",
+              "value": "={{ $json.body?.problem || $json.body?.problema || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "solucao",
+              "name": "solution",
+              "value": "={{ $json.body?.solution || $json.body?.solucao || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "servico",
+              "name": "service",
+              "value": "={{ $json.body?.service || $json.body?.servico || 'Consultoria Comercial' }}",
+              "type": "string"
+            },
+            {
+              "id": "preco",
+              "name": "price",
+              "value": "={{ $json.body?.price || $json.body?.preco || 5000 }}",
+              "type": "number"
+            },
+            {
+              "id": "desconto",
+              "name": "discount",
+              "value": "={{ $json.body?.discount || $json.body?.desconto || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "prazo",
+              "name": "deadline",
+              "value": "={{ $json.body?.deadline || $json.body?.prazo || '30 dias' }}",
+              "type": "string"
+            },
+            {
+              "id": "api-key",
+              "name": "api_key",
+              "value": "={{ $json.body?.api_key || 'pit-7f333e6f-a839-4f58-b371-778fed9dc2ea' }}",
+              "type": "string"
+            },
+            {
+              "id": "location-id",
+              "name": "location_id",
+              "value": "={{ $json.body?.location_id || $json.body?.locationId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-100, 1000],
+      "id": "extrair-sales-call",
+      "name": "Extrair Dados Sales Call"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contact_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    {\n      \"key\": \"status_lead\",\n      \"value\": \"Proposal Sent\"\n    },\n    {\n      \"key\": \"problema_identificado\",\n      \"value\": \"{{ $json.problem }}\"\n    },\n    {\n      \"key\": \"solucao_proposta\",\n      \"value\": \"{{ $json.solution }}\"\n    },\n    {\n      \"key\": \"valor_proposta\",\n      \"value\": \"{{ $json.price }}\"\n    },\n    {\n      \"key\": \"servico\",\n      \"value\": \"{{ $json.service }}\"\n    }\n  ],\n  \"tags\": [\"proposal_sent\", \"follow_up_proposta\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [100, 1000],
+      "id": "atualizar-status-sales-call",
+      "name": "Atualizar Status Proposta"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.N8N_WEBHOOK_URL || 'https://seu-n8n.com' }}/webhook/ghl-gerar-proposta-mottivme",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contact_id\": \"{{ $('Extrair Dados Sales Call').first().json.contact_id }}\",\n  \"first_name\": \"{{ $('Extrair Dados Sales Call').first().json.first_name }}\",\n  \"last_name\": \"{{ $('Extrair Dados Sales Call').first().json.last_name }}\",\n  \"email\": \"{{ $('Extrair Dados Sales Call').first().json.email }}\",\n  \"company\": \"{{ $('Extrair Dados Sales Call').first().json.company }}\",\n  \"problem\": \"{{ $('Extrair Dados Sales Call').first().json.problem }}\",\n  \"solution\": \"{{ $('Extrair Dados Sales Call').first().json.solution }}\",\n  \"service\": \"{{ $('Extrair Dados Sales Call').first().json.service }}\",\n  \"price\": {{ $('Extrair Dados Sales Call').first().json.price }},\n  \"discount\": {{ $('Extrair Dados Sales Call').first().json.discount }},\n  \"deadline\": \"{{ $('Extrair Dados Sales Call').first().json.deadline }}\",\n  \"api_key\": \"{{ $('Extrair Dados Sales Call').first().json.api_key }}\",\n  \"location_id\": \"{{ $('Extrair Dados Sales Call').first().json.location_id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 1000],
+      "id": "chamar-gerador-proposta",
+      "name": "Chamar Gerador PDF",
+      "notes": "Chama o workflow GHL-GERADOR-PDF-PROPOSTA"
+    }
+  ],
+  "connections": {
+    "Webhook New Lead": {
+      "main": [
+        [
+          {
+            "node": "Extrair Dados Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Dados Lead": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Status GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Status GHL": {
+      "main": [
+        [
+          {
+            "node": "Email Boas-Vindas GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Appointment Created": {
+      "main": [
+        [
+          {
+            "node": "Extrair Dados Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Dados Appointment": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Status Agendado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Status Agendado": {
+      "main": [
+        [
+          {
+            "node": "Email Confirmacao GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Confirmacao GHL": {
+      "main": [
+        [
+          {
+            "node": "Calcular Data Lembrete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Data Lembrete": {
+      "main": [
+        [
+          {
+            "node": "Agendar Lembrete?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agendar Lembrete?": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Dia Antes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Wait 1 Dia Antes": {
+      "main": [
+        [
+          {
+            "node": "Email Lembrete GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Cancelled": {
+      "main": [
+        [
+          {
+            "node": "Extrair Dados Cancelled",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Dados Cancelled": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Status Cancelled",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Status Cancelled": {
+      "main": [
+        [
+          {
+            "node": "Email Cancelamento GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Cancelamento GHL": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Dia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 Dia": {
+      "main": [
+        [
+          {
+            "node": "Email Follow-up GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Sales Call": {
+      "main": [
+        [
+          {
+            "node": "Extrair Dados Sales Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Dados Sales Call": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Status Proposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Status Proposta": {
+      "main": [
+        [
+          {
+            "node": "Chamar Gerador PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "active": false
+}

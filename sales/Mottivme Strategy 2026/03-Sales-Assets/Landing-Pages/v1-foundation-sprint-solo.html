@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundation Sprint - Estruturação Completa em 30 Dias | Mottivme Sales</title>
+    <meta name="description" content="Transforme seu negócio em uma máquina comercial em 30 dias. 8 entregáveis garantidos. Investimento: R$ 53.982 à vista.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Cores oficiais Mottivme Design System */
+            --bg-primary: #0D1117;
+            --bg-card: #161B22;
+            --bg-card-hover: #1C2128;
+            --bg-featured: #0D2847;
+
+            --border-subtle: #30363D;
+            --border-blue: #1F6FEB;
+
+            --blue-primary: #2F81F7;
+            --blue-electric: #58A6FF;
+            --blue-hover: #79C0FF;
+
+            --green-success: #3FB950;
+            --red-negative: #F85149;
+            --yellow-warning: #D29922;
+            --yellow-gold: #F0B429;
+
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B949E;
+            --text-tertiary: #6E7681;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 45px;
+            width: auto;
+        }
+
+        .cta-header {
+            background: var(--blue-primary);
+            color: var(--text-primary);
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .cta-header:hover {
+            background: var(--blue-electric);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-card) 50%, var(--bg-primary) 100%);
+            padding: 6rem 0 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(47, 129, 247, 0.1) 0%, transparent 70%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(47, 129, 247, 0.15);
+            border: 1px solid var(--blue-primary);
+            color: var(--blue-electric);
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            color: var(--text-primary);
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-primary {
+            background: var(--blue-primary);
+            color: var(--text-primary);
+            padding: 1.2rem 3rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: var(--blue-electric);
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--blue-electric);
+            padding: 1.2rem 3rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--blue-electric);
+        }
+
+        /* Problem Section */
+        .problem-section {
+            padding: 5rem 0;
+            background: var(--bg-card);
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .problem-box {
+            background: rgba(248, 81, 73, 0.1);
+            border: 2px solid rgba(248, 81, 73, 0.3);
+            border-radius: 12px;
+            padding: 2.5rem;
+        }
+
+        .problem-box h3 {
+            color: var(--red-negative);
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .problem-box ul {
+            list-style: none;
+        }
+
+        .problem-box li {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        .problem-box li::before {
+            content: '❌';
+            position: absolute;
+            left: 0;
+        }
+
+        .solution-box {
+            background: rgba(63, 185, 80, 0.1);
+            border: 2px solid rgba(63, 185, 80, 0.3);
+            border-radius: 12px;
+            padding: 2.5rem;
+        }
+
+        .solution-box h3 {
+            color: var(--green-success);
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .solution-box ul {
+            list-style: none;
+        }
+
+        .solution-box li {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        .solution-box li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+        }
+
+        /* Section Title */
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .section-title p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        /* Deliverables Section */
+        .deliverables {
+            padding: 5rem 0;
+            background: var(--bg-primary);
+        }
+
+        .deliverables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .deliverable-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .deliverable-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--blue-electric);
+            background: var(--bg-card-hover);
+        }
+
+        .deliverable-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .deliverable-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--blue-electric);
+        }
+
+        .deliverable-card .value {
+            color: var(--yellow-gold);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .deliverable-card ul {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .deliverable-card li {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .deliverable-card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--blue-electric);
+        }
+
+        /* Timeline Section */
+        .timeline {
+            padding: 5rem 0;
+            background: var(--bg-card);
+        }
+
+        .timeline-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 2rem;
+            top: 5rem;
+            bottom: -3rem;
+            width: 2px;
+            background: linear-gradient(180deg, var(--blue-primary) 0%, transparent 100%);
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-week {
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+            background: var(--blue-primary);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 2rem;
+            border-left: 3px solid var(--blue-primary);
+        }
+
+        .timeline-content h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--blue-electric);
+        }
+
+        .timeline-content ul {
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-content li {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .timeline-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--blue-electric);
+        }
+
+        .timeline-content .delivery {
+            background: rgba(47, 129, 247, 0.15);
+            border: 1px solid var(--blue-primary);
+            color: var(--blue-electric);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 5rem 0;
+            background: var(--bg-primary);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--blue-primary);
+            background: linear-gradient(135deg, var(--bg-featured) 0%, var(--bg-card) 100%);
+        }
+
+        .pricing-card.featured::before {
+            content: '⭐ RECOMENDADO';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--blue-primary);
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--blue-electric);
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--blue-electric);
+        }
+
+        .pricing-card .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 1.5rem 0;
+            color: var(--text-primary);
+        }
+
+        .pricing-card .price-note {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-card .discount {
+            background: rgba(63, 185, 80, 0.15);
+            border: 1px solid var(--green-success);
+            color: var(--green-success);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            text-align: left;
+            margin: 2rem 0;
+        }
+
+        .pricing-card li {
+            margin: 0.8rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .pricing-card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--blue-electric);
+            font-weight: 700;
+        }
+
+        /* Guarantee Section */
+        .guarantee {
+            padding: 5rem 0;
+            background: var(--bg-card);
+        }
+
+        .guarantee-box {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-primary);
+            border: 3px solid var(--blue-primary);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .guarantee-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .guarantee-box h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--blue-electric);
+        }
+
+        .guarantee-list {
+            list-style: none;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .guarantee-list li {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        .guarantee-list li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+        }
+
+        .guarantee-highlight {
+            background: rgba(47, 129, 247, 0.15);
+            border: 1px solid var(--blue-primary);
+            color: var(--blue-electric);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 2rem;
+        }
+
+        /* Cases Section */
+        .cases {
+            padding: 5rem 0;
+            background: var(--bg-primary);
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .case-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .case-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--blue-electric);
+        }
+
+        .case-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--blue-electric);
+        }
+
+        .case-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .metric {
+            background: rgba(47, 129, 247, 0.1);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--blue-electric);
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+        }
+
+        /* Bonus Section */
+        .bonus {
+            padding: 5rem 0;
+            background: var(--bg-card);
+        }
+
+        .bonus-container {
+            background: var(--bg-primary);
+            border: 3px solid var(--blue-primary);
+            border-radius: 12px;
+            padding: 3rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .bonus-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .bonus-header h3 {
+            font-size: 2rem;
+            color: var(--blue-electric);
+            margin-bottom: 0.5rem;
+        }
+
+        .bonus-deadline {
+            background: rgba(248, 81, 73, 0.15);
+            border: 1px solid var(--red-negative);
+            color: var(--red-negative);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: 700;
+        }
+
+        .bonus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .bonus-item {
+            background: rgba(47, 129, 247, 0.1);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .bonus-item .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .bonus-item h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .bonus-item .value {
+            color: var(--yellow-gold);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .bonus-total {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-subtle);
+        }
+
+        .bonus-total .total-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--yellow-gold);
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 5rem 0;
+            background: var(--bg-primary);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: var(--blue-electric);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 0;
+            background: var(--bg-card);
+            text-align: center;
+        }
+
+        .cta-box {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-box h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-box p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .urgency {
+            background: rgba(248, 81, 73, 0.15);
+            border: 2px solid var(--red-negative);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .urgency h3 {
+            color: var(--red-negative);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .urgency .deadline {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-subtle);
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer-logo {
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .footer-contact {
+            margin: 1.5rem 0;
+        }
+
+        .footer-contact a {
+            color: var(--blue-electric);
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-contact a:hover {
+            color: var(--blue-hover);
+        }
+
+        .footer-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .problem-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .timeline-item::before {
+                display: none;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="https://mottivme.com.br/wp-content/uploads/2023/11/company-7-1.webp" alt="Mottivme Sales">
+                </div>
+                <a href="#investimento" class="cta-header">AGENDAR CALL</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-tag">🎯 FOUNDATION SPRINT - 30 DIAS</div>
+                <h1>Transforme Seu Negócio em Uma<br>Máquina Comercial</h1>
+                <p class="subtitle">8 entregáveis completos. Estruturação total em 30 dias.<br>Garantia 100%. Zero risco.</p>
+                <div class="hero-cta">
+                    <a href="#investimento" class="btn-primary">VER INVESTIMENTO</a>
+                    <a href="#entregaveis" class="btn-secondary">O QUE VOCÊ RECEBE</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem/Solution Section -->
+    <section class="problem-section">
+        <div class="container">
+            <div class="problem-grid">
+                <div class="problem-box">
+                    <h3>😰 VOCÊ HOJE (CAOS)</h3>
+                    <ul>
+                        <li>Oferta fraca que não converte</li>
+                        <li>Funil quebrado ou inexistente</li>
+                        <li>CRM bagunçado (ou não existe)</li>
+                        <li>Sem scripts de vendas prontos</li>
+                        <li>Cada venda é uma batalha diferente</li>
+                        <li>Vendas imprevisíveis</li>
+                    </ul>
+                </div>
+                <div class="solution-box">
+                    <h3>🚀 VOCÊ EM 30 DIAS (MÁQUINA)</h3>
+                    <ul>
+                        <li>Oferta irresistível estruturada</li>
+                        <li>3 funis completos funcionando</li>
+                        <li>CRM configurado e automático</li>
+                        <li>20 scripts prontos pra usar</li>
+                        <li>Processo de vendas previsível</li>
+                        <li>Máquina comercial rodando</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deliverables Section -->
+    <section id="entregaveis" class="deliverables">
+        <div class="container">
+            <div class="section-title">
+                <h2>8 Entregáveis Garantidos</h2>
+                <p>Tudo que você precisa pra estruturar seu negócio</p>
+            </div>
+
+            <div class="deliverables-grid">
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">📘</div>
+                    <h3>BRAND BOOK</h3>
+                    <div class="value">Valor: R$ 15.000</div>
+                    <p>40 páginas de posicionamento completo</p>
+                    <ul>
+                        <li>ICP detalhado</li>
+                        <li>Avatar 360°</li>
+                        <li>Diferenciação competitiva</li>
+                        <li>Identidade visual</li>
+                        <li>Tom de voz</li>
+                    </ul>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">💰</div>
+                    <h3>OFFER STACK</h3>
+                    <div class="value">Valor: R$ 10.000</div>
+                    <p>Método Hormozi aplicado</p>
+                    <ul>
+                        <li>Stack completo</li>
+                        <li>Precificação estratégica</li>
+                        <li>Garantias fortes</li>
+                        <li>Urgência e escassez</li>
+                        <li>Proposta high-ticket</li>
+                    </ul>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">🎯</div>
+                    <h3>3 FUNIS</h3>
+                    <div class="value">Valor: R$ 12.000</div>
+                    <p>Completos e prontos pra rodar</p>
+                    <ul>
+                        <li>Funil orgânico</li>
+                        <li>Funil tráfego pago</li>
+                        <li>Funil outbound</li>
+                        <li>Landing pages</li>
+                        <li>Emails automatizados</li>
+                    </ul>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">📝</div>
+                    <h3>20 SCRIPTS</h3>
+                    <div class="value">Valor: R$ 8.000</div>
+                    <p>Testados e validados</p>
+                    <ul>
+                        <li>5 scripts virais</li>
+                        <li>5 copys anúncio</li>
+                        <li>5 scripts SDR</li>
+                        <li>5 scripts vendas</li>
+                        <li>Prontos pra usar</li>
+                    </ul>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">📅</div>
+                    <h3>CONTEÚDO 90 DIAS</h3>
+                    <div class="value">Valor: R$ 6.000</div>
+                    <p>3 meses sem ter que pensar</p>
+                    <ul>
+                        <li>90 posts planejados</li>
+                        <li>3 posts por dia</li>
+                        <li>Mix completo</li>
+                        <li>Calendário semanal</li>
+                        <li>Pronto pra publicar</li>
+                    </ul>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">🎁</div>
+                    <h3>3 LEAD MAGNETS</h3>
+                    <div class="value">Valor: R$ 4.000</div>
+                    <p>Iscas digitais estruturadas</p>
+                    <ul>
+                        <li>Quiz interativo</li>
+                        <li>PDF/Guia prático</li>
+                        <li>Webinar completo</li>
+                        <li>Estruturados</li>
+                        <li>Alta conversão</li>
+                    </ul>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">💻</div>
+                    <h3>CRM SOCIALFY</h3>
+                    <div class="value">Valor: R$ 5.000</div>
+                    <p>Configurado e funcionando</p>
+                    <ul>
+                        <li>Snapshot personalizado</li>
+                        <li>Pipelines criados</li>
+                        <li>Automações ativas</li>
+                        <li>Confirmações L-24h</li>
+                        <li>GoLive 7 dias</li>
+                    </ul>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-icon">📊</div>
+                    <h3>MESSAGING MATRIX</h3>
+                    <div class="value">Valor: R$ 3.000</div>
+                    <p>Arsenal de mensagens</p>
+                    <ul>
+                        <li>Headlines testadas</li>
+                        <li>CTAs conversão</li>
+                        <li>Respostas objeções</li>
+                        <li>FAQs estruturados</li>
+                        <li>Pronto pra usar</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="timeline">
+        <div class="container">
+            <div class="section-title">
+                <h2>Timeline - 4 Semanas</h2>
+                <p>Passo a passo do que acontece em cada semana</p>
+            </div>
+
+            <div class="timeline-container">
+                <div class="timeline-item">
+                    <div class="timeline-week">
+                        <span>SEMANA</span>
+                        <span>1</span>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>Diagnóstico + Posicionamento</h3>
+                        <ul>
+                            <li>Diagnóstico completo do negócio</li>
+                            <li>Definição ICP detalhada</li>
+                            <li>Criação Avatar 360°</li>
+                            <li>Identidade de marca</li>
+                        </ul>
+                        <div class="delivery">📘 Entrega: Brand Book v1</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-week">
+                        <span>SEMANA</span>
+                        <span>2</span>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>Oferta + Preço + Garantias</h3>
+                        <ul>
+                            <li>Estruturação oferta completa</li>
+                            <li>Definição estratégica de preço</li>
+                            <li>Criação de garantias fortes</li>
+                            <li>Montagem do stack</li>
+                        </ul>
+                        <div class="delivery">💰 Entrega: Offer Stack completo</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-week">
+                        <span>SEMANA</span>
+                        <span>3</span>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>Funis + Scripts + Conteúdo</h3>
+                        <ul>
+                            <li>Criação dos 3 funis completos</li>
+                            <li>20 scripts prontos</li>
+                            <li>Calendário 90 dias</li>
+                            <li>3 lead magnets estruturados</li>
+                        </ul>
+                        <div class="delivery">🎯 Entrega: Funis + Scripts + Conteúdo</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-week">
+                        <span>SEMANA</span>
+                        <span>4</span>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>CRM + Automações + Finalização</h3>
+                        <ul>
+                            <li>Setup CRM Socialfy completo</li>
+                            <li>Automações configuradas</li>
+                            <li>Revisão final de tudo</li>
+                            <li>Playback e entrega</li>
+                        </ul>
+                        <div class="delivery">💻 Entrega: Tudo pronto pra vender</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="investimento" class="pricing">
+        <div class="container">
+            <div class="section-title">
+                <h2>Investimento - Oferta Especial</h2>
+                <p>Valor total entregue: R$ 63.000 | Você paga muito menos</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card featured">
+                    <h3>💳 À VISTA</h3>
+                    <div class="price">R$ 53.982</div>
+                    <div class="price-note">Pagamento único</div>
+                    <div class="discount">Economia de R$ 9.018 (14%)</div>
+                    <ul>
+                        <li>Todos os 8 entregáveis</li>
+                        <li>30 dias de estruturação</li>
+                        <li>Garantia 100%</li>
+                        <li>Bônus R$ 12.700</li>
+                        <li>Suporte dedicado</li>
+                    </ul>
+                    <a href="#contato" class="btn-primary">ESCOLHER À VISTA</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>📅 PARCELADO</h3>
+                    <div class="price">4x R$ 15.495</div>
+                    <div class="price-note">Total: R$ 61.980</div>
+                    <ul>
+                        <li>Todos os 8 entregáveis</li>
+                        <li>30 dias de estruturação</li>
+                        <li>Garantia 100%</li>
+                        <li>Bônus R$ 12.700</li>
+                        <li>Suporte dedicado</li>
+                        <li>Sem juros</li>
+                    </ul>
+                    <a href="#contato" class="btn-primary">ESCOLHER PARCELADO</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guarantee Section -->
+    <section class="guarantee">
+        <div class="container">
+            <div class="guarantee-box">
+                <div class="guarantee-icon">🛡️</div>
+                <h3>Garantia 100% - Zero Risco</h3>
+                <p>Se ao final de 30 dias você NÃO receber:</p>
+                <ul class="guarantee-list">
+                    <li>Brand Book completo (40 páginas)</li>
+                    <li>Offer Stack estruturado</li>
+                    <li>3 funis completos e funcionais</li>
+                    <li>20 scripts prontos pra usar</li>
+                    <li>90 dias de conteúdo planejado</li>
+                    <li>3 lead magnets estruturados</li>
+                    <li>CRM Socialfy configurado</li>
+                    <li>Messaging Matrix completa</li>
+                </ul>
+                <div class="guarantee-highlight">
+                    = REEMBOLSO 100% SEM PERGUNTAS
+                </div>
+                <p style="margin-top: 1rem; color: var(--text-secondary);">Zero risco. Tudo garantido. Você só tem a ganhar.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cases Section -->
+    <section class="cases">
+        <div class="container">
+            <div class="section-title">
+                <h2>Resultados Reais de Clientes</h2>
+                <p>Cases validados com números comprovados</p>
+            </div>
+
+            <div class="cases-grid">
+                <div class="case-card">
+                    <h3>🏆 Case #1: Agentes Financeiros</h3>
+                    <p>Recrutamento acelerado com estrutura comercial</p>
+                    <div class="case-metrics">
+                        <div class="metric">
+                            <div class="metric-value">50 → 130</div>
+                            <div class="metric-label">Agentes ativos</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">+160%</div>
+                            <div class="metric-label">Crescimento</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">5 meses</div>
+                            <div class="metric-label">Timeline</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">4.2x</div>
+                            <div class="metric-label">ROI</div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">Show-Rate: 35% → 72% | Conversão: 12% → 28%</p>
+                </div>
+
+                <div class="case-card">
+                    <h3>🏆 Case #2: Recrutamento Acelerado</h3>
+                    <p>De operação pequena para máquina escalável</p>
+                    <div class="case-metrics">
+                        <div class="metric">
+                            <div class="metric-value">+40</div>
+                            <div class="metric-label">Agentes novos</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">&lt;3 meses</div>
+                            <div class="metric-label">Timeline</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">3.8x</div>
+                            <div class="metric-label">ROI</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">-58%</div>
+                            <div class="metric-label">Tempo líder</div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">Show-Rate: 28% → 68% | Tempo: 60h → 25h/semana</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="https://academy.mottivme.com.br/cadastro" target="_blank" class="btn-secondary">VER CASES COMPLETOS</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bonus Section -->
+    <section class="bonus">
+        <div class="container">
+            <div class="bonus-container">
+                <div class="bonus-header">
+                    <h3>🎁 Bônus Limitados</h3>
+                    <div class="bonus-deadline">⏰ EXPIRA: 12 DEZEMBRO 2025</div>
+                </div>
+
+                <p style="text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">
+                    Se fechar até 12/dezembro, você GANHA:
+                </p>
+
+                <div class="bonus-grid">
+                    <div class="bonus-item">
+                        <div class="icon">🤝</div>
+                        <h4>Conexão Estratégica</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0;">Parceiro direto</p>
+                        <div class="value">R$ 5.000</div>
+                    </div>
+
+                    <div class="bonus-item">
+                        <div class="icon">📦</div>
+                        <h4>Produto Validado</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0;">Estrutura completa</p>
+                        <div class="value">R$ 3.000</div>
+                    </div>
+
+                    <div class="bonus-item">
+                        <div class="icon">💎</div>
+                        <h4>Socialfy Premium</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0;">3 meses grátis</p>
+                        <div class="value">R$ 2.700</div>
+                    </div>
+
+                    <div class="bonus-item">
+                        <div class="icon">🔍</div>
+                        <h4>Auditoria Completa</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0;">5 concorrentes</p>
+                        <div class="value">R$ 2.000</div>
+                    </div>
+                </div>
+
+                <div class="bonus-total">
+                    <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">TOTAL EM BÔNUS:</p>
+                    <div class="total-value">R$ 12.700</div>
+                    <p style="color: var(--text-secondary); margin-top: 1rem; font-size: 0.9rem;">
+                        ❌ Esses bônus EXPIRAM em 12/12/2025 às 23h59
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="container">
+            <div class="section-title">
+                <h2>Perguntas Frequentes</h2>
+                <p>Tire suas dúvidas sobre o Foundation Sprint</p>
+            </div>
+
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Por que Foundation ANTES de rodar tráfego?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        Rodar anúncio sem oferta estruturada = jogar dinheiro fora. Foundation garante que cada lead vale a pena. Você precisa ter ICP claro, oferta irresistível, funis funcionando e scripts prontos ANTES de investir em tráfego.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Quanto tempo do MEU tempo isso toma?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        12-15h no mês total (3-4h/semana em workshops). Nós fazemos 90% do trabalho pesado. Você só precisa participar dos workshops estratégicos e fornecer informações sobre seu negócio.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        E se eu não souber definir meu ICP?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        Esse é exatamente o problema que resolvemos na Semana 1. Chegamos com framework pronto e te guiamos passo a passo na definição do seu cliente ideal. É uma das principais entregas do Brand Book.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        O CRM é difícil de usar?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        Não. Entregamos configurado e com treinamento completo. Em 7 dias você está operando. O Socialfy é intuitivo e criamos automações que rodam sozinhas (confirmações, follow-ups, etc).
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Posso fazer sozinho?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        Pode. Vai levar 6-12 meses e muito erro (tentativa e erro custa caro). Ou 30 dias com método testado e validado. A escolha é sua: tempo + erros OU velocidade + certeza.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        E se eu não tiver produto ainda?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        Perfeito! Foundation estrutura do zero. Não precisa ter nada pronto. Na verdade, é melhor assim - evitamos vícios e criamos do jeito certo desde o início.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Qual a diferença do parcelado pro à vista?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        À vista: R$ 53.982 (economia de R$ 9.018). Parcelado: 4x de R$ 15.495 sem juros (total R$ 61.980). Mesmos entregáveis, mesma garantia, mesmos bônus. Só muda a forma de pagamento.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="contato" class="cta-section">
+        <div class="container">
+            <div class="cta-box">
+                <h2>Pronto pra Transformar Seu Negócio?</h2>
+                <p>Agende 15 minutos pra esclarecer dúvidas e garantir sua vaga</p>
+
+                <div class="urgency">
+                    <h3>⏰ OFERTA EXPIRA EM:</h3>
+                    <div class="deadline">12 DEZEMBRO 2025 (23h59)</div>
+                    <p style="color: var(--text-secondary); margin-top: 1rem; font-size: 0.95rem;">
+                        Depois: ❌ Bônus R$ 12.700 expiram | ❌ Vagas limitadas (5/mês)
+                    </p>
+                </div>
+
+                <a href="https://calendly.com/mottivme/15min" target="_blank" class="btn-primary" style="margin: 2rem 0;">
+                    📅 AGENDAR CALL 15MIN
+                </a>
+
+                <div style="margin-top: 2rem; color: var(--text-secondary);">
+                    <p><strong>OU ENTRE EM CONTATO:</strong></p>
+                    <p style="margin-top: 1rem;">
+                        📱 WhatsApp: [Seu número]<br>
+                        📧 Email: marcos@mottivme.com<br>
+                        🌐 Site: mottivme.com
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-logo">
+                <img src="https://mottivme.com.br/wp-content/uploads/2023/11/company-7-1.webp" alt="Mottivme Sales">
+            </div>
+            <div class="footer-contact">
+                <a href="mailto:marcos@mottivme.com">Email</a>
+                <a href="https://mottivme.com" target="_blank">Website</a>
+                <a href="https://academy.mottivme.com.br/cadastro" target="_blank">Cases</a>
+            </div>
+            <div class="footer-text">
+                <p>Mottivme Sales - Máquinas Comerciais Human+IA</p>
+                <p>Transformando Estrutura em Resultado</p>
+                <p style="margin-top: 1rem; font-size: 0.85rem;">© 2025 Mottivme. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

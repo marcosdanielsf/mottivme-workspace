@@ -1,0 +1,40 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n-local
+    restart: unless-stopped
+    ports:
+      - "5679:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5679/
+      - N8N_ENCRYPTION_KEY=a7f7e84aee9837bc74ae02310e9343ac7411083dba8b39a8e6d61fd6c88b7414
+      - N8N_LOG_LEVEL=info
+      - N8N_DIAGNOSTICS_ENABLED=true
+      - N8N_AI_ENABLED=true
+      - N8N_AI_OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Se tiver chave OpenAI, defina abaixo para recursos de IA assistiva
+      # - N8N_AI_OPENAI_API_KEY=coloque_sua_chave_aqui
+      - TZ=America/Sao_Paulo
+      - N8N_AUTH_MODE=basic
+      - N8N_USER_MANAGEMENT_DISABLED=true
+      # Proteção com Basic Auth
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-local
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  ollama_data:

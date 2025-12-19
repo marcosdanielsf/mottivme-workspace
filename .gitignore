@@ -1,0 +1,39 @@
+# Dependencias (IMPORTANTE - economiza GBs)
+**/node_modules/
+**/.npm/
+**/.pnpm/
+**/.next/
+**/dist/
+**/build/
+**/.turbo/
+**/.vercel/
+
+# Ambiente e credenciais
+.env
+.env.*
+*.env
+**/CREDENCIAIS-MASTER.md
+**/credentials*.json
+**/secrets*
+**/*secret*
+
+# Projetos temp/duplicados (muito pesados)
+**/dasboard-mottivme-sales-temp/
+**/sales-dashboard-temp/
+**/financeiro-mottivme-sales-temp/
+**/*-temp/
+**/*-temp
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log
+**/.cache/
+
+# IDEs
+.idea/
+.vscode/settings.json
+*.swp
+
+# Backups grandes
+**/SUPABASE_BACKUP*/

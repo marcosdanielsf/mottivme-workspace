@@ -1,0 +1,396 @@
+{
+  "name": "PROPOSTAL - Lead Quente Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "propostal-lead-alert",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        256
+      ],
+      "id": "84fbf04e-ad34-431f-a0d9-d65278df225a",
+      "name": "Webhook - Recebe Evento PROPOSTAL",
+      "webhookId": "propostal-lead-alert"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "event-type",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "cta_clicked",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -544,
+        256
+      ],
+      "id": "ba0ab4c5-bd75-4a34-b98d-d9c073e45d22",
+      "name": "É CTA Click ou Score Alto?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "lead-name",
+              "name": "leadName",
+              "value": "={{ $json.body.lead.name }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-email",
+              "name": "leadEmail",
+              "value": "={{ $json.body.lead.email }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-phone",
+              "name": "leadPhone",
+              "value": "={{ $json.body.lead.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "proposal-title",
+              "name": "proposalTitle",
+              "value": "={{ $json.body.proposal.title }}",
+              "type": "string"
+            },
+            {
+              "id": "event-type",
+              "name": "eventType",
+              "value": "={{ $json.body.event }}",
+              "type": "string"
+            },
+            {
+              "id": "score",
+              "name": "score",
+              "value": "={{ $json.body.lead.score }}",
+              "type": "number"
+            },
+            {
+              "id": "ghl-location",
+              "name": "ghl_location_id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        160
+      ],
+      "id": "6e61cf0f-82e5-4925-ac14-63f11c4d46f5",
+      "name": "Preparar Dados do Lead"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $json.ghl_location_id }}\",\n  \"query\": \"{{ $json.leadEmail }}\",\n  \"pageLimit\": 1\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -112,
+        160
+      ],
+      "id": "dc8a5b61-22f5-4318-a5b9-03a0f806f088",
+      "name": "GHL - Buscar Contato"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-contact",
+              "leftValue": "={{ $json.contacts.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        160
+      ],
+      "id": "40f1081e-71cd-4e82-9efc-8bdba4b20338",
+      "name": "Contato Existe no GHL?"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contacts[0].id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Preparar Dados do Lead').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"tags\": [\"propostal\", \"lead-quente\", \"clicou-cta\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        336,
+        48
+      ],
+      "id": "e915bb5b-a7c9-4832-bb69-c6ef53ff8c12",
+      "name": "GHL - Adicionar Tags Lead Quente"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Preparar Dados do Lead').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $('GHL - Buscar Contato').item.json.contacts[0].id }}\",\n  \"message\": \"{{ $('Preparar Dados do Lead').item.json.leadName }}, que ótimo! Vi que você clicou para agendar. Vou te chamar em instantes para confirmarmos o melhor horário. 📅\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        48
+      ],
+      "id": "31f7b8b8-e880-4dc4-8e60-9472ad468b36",
+      "name": "GHL - Enviar WhatsApp"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Preparar Dados do Lead').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $('Preparar Dados do Lead').item.json.ghl_location_id }}\",\n  \"email\": \"{{ $('Preparar Dados do Lead').item.json.leadEmail }}\",\n  \"phone\": \"{{ $('Preparar Dados do Lead').item.json.leadPhone }}\",\n  \"name\": \"{{ $('Preparar Dados do Lead').item.json.leadName }}\",\n  \"source\": \"propostal\",\n  \"tags\": [\"propostal\", \"lead-quente\", \"clicou-cta\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        336,
+        256
+      ],
+      "id": "a2b319c3-5153-43cd-ae2d-309b6a481b41",
+      "name": "GHL - Criar Contato"
+    },
+    {
+      "parameters": {
+        "content": "## 🔥 PROPOSTAL - Lead Quente Alert\n\n### O que este workflow faz:\n1. Recebe webhook do PROPOSTAL quando lead clica no CTA\n2. Busca contato no GHL pelo email\n3. Se existe: adiciona tags de lead quente\n4. Se não existe: cria novo contato\n5. Envia mensagem WhatsApp automática\n\n### Configuração:\n- Altere `ghl_location_id` e `ghl_api_key` no nó \"Preparar Dados do Lead\"\n\n### URL do Webhook:\nCopie a URL gerada e configure no PROPOSTAL",
+        "height": 340,
+        "width": 400,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1056,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "ebf97a0c-ce29-493b-aa86-2d2bb2647779",
+      "name": "📌 Documentação"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Recebe Evento PROPOSTAL": {
+      "main": [
+        [
+          {
+            "node": "É CTA Click ou Score Alto?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É CTA Click ou Score Alto?": {
+      "main": [
+        [
+          {
+            "node": "Preparar Dados do Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Dados do Lead": {
+      "main": [
+        [
+          {
+            "node": "GHL - Buscar Contato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Buscar Contato": {
+      "main": [
+        [
+          {
+            "node": "Contato Existe no GHL?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contato Existe no GHL?": {
+      "main": [
+        [
+          {
+            "node": "GHL - Adicionar Tags Lead Quente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GHL - Criar Contato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Adicionar Tags Lead Quente": {
+      "main": [
+        [
+          {
+            "node": "GHL - Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "versionId": "6e8c918c-4161-4013-af04-7f7ea5a28660",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "SImxQrdZjlm6fcPk",
+  "tags": []
+}

@@ -1,0 +1,228 @@
+{
+  "name": "8. Consolidar Custos IA (Diário)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 23 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 400],
+      "id": "schedule-trigger",
+      "name": "Todo dia às 23h"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Buscar custos não consolidados do dia\nWITH custos_dia AS (\n  SELECT\n    DATE(created_at) as data,\n    COUNT(*) as execucoes,\n    SUM(tokens_input + tokens_output) as total_tokens,\n    SUM(custo_usd) as custo_usd\n  FROM llm_costs\n  WHERE \n    consolidado = false\n    AND DATE(created_at) < CURRENT_DATE -- Só consolida dias completos\n  GROUP BY DATE(created_at)\n)\nSELECT \n  data,\n  execucoes,\n  total_tokens,\n  custo_usd,\n  ROUND(custo_usd * 6.0, 2) as custo_brl -- Taxa aproximada USD->BRL\nFROM custos_dia\nWHERE custo_usd > 0\nORDER BY data;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [460, 400],
+      "id": "query-custos",
+      "name": "Buscar Custos Pendentes",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-data",
+              "leftValue": "={{ $json.data }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [680, 400],
+      "id": "check-custos",
+      "name": "Tem Custos?"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Buscar ID da categoria 'Custos de IA'\nSELECT id FROM fin_categorias WHERE nome = 'Custos de IA' AND tipo = 'despesa' LIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [900, 300],
+      "id": "get-categoria",
+      "name": "Buscar Categoria IA",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preparar dados para inserção\nconst custos = $('Buscar Custos Pendentes').all();\nconst categoriaResult = $('Buscar Categoria IA').first();\nconst categoriaId = categoriaResult?.json?.id || null;\n\nconst resultado = custos.map(item => {\n  const data = item.json.data;\n  const dataFormatada = new Date(data).toLocaleDateString('pt-BR');\n  \n  return {\n    json: {\n      data: data,\n      descricao: `Custos de IA - ${dataFormatada} (${item.json.execucoes} execuções, ${item.json.total_tokens} tokens)`,\n      valor_brl: parseFloat(item.json.custo_brl) || 0,\n      categoria_id: categoriaId,\n      execucoes: item.json.execucoes,\n      custo_usd: item.json.custo_usd\n    }\n  };\n});\n\nreturn resultado;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300],
+      "id": "preparar-dados",
+      "name": "Preparar Dados"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Inserir despesa consolidada\nINSERT INTO fin_movimentacoes (\n  tipo,\n  descricao,\n  valor_previsto,\n  valor_realizado,\n  data_vencimento,\n  categoria_id,\n  quitado,\n  observacao\n)\nVALUES (\n  'despesa',\n  '{{ $json.descricao.replace(/'/g, \"''\") }}',\n  {{ $json.valor_brl }},\n  {{ $json.valor_brl }},\n  '{{ $json.data }}'::date,\n  {{ $json.categoria_id ? \"'\" + $json.categoria_id + \"'::uuid\" : 'NULL' }},\n  true,\n  'Consolidado automaticamente. USD: ${{ $json.custo_usd }}'\n)\nRETURNING id;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1340, 300],
+      "id": "inserir-movimentacao",
+      "name": "Criar Despesa",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Marcar custos como consolidados\nUPDATE llm_costs\nSET \n  consolidado = true,\n  consolidado_em = NOW()\nWHERE \n  DATE(created_at) = '{{ $('Preparar Dados').item.json.data }}'::date\n  AND consolidado = false;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1560, 300],
+      "id": "marcar-consolidado",
+      "name": "Marcar Consolidados",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [900, 500],
+      "id": "noop-sem-custos",
+      "name": "Sem Custos Pendentes"
+    }
+  ],
+  "connections": {
+    "Todo dia às 23h": {
+      "main": [
+        [
+          {
+            "node": "Buscar Custos Pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Custos Pendentes": {
+      "main": [
+        [
+          {
+            "node": "Tem Custos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Custos?": {
+      "main": [
+        [
+          {
+            "node": "Buscar Categoria IA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sem Custos Pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Categoria IA": {
+      "main": [
+        [
+          {
+            "node": "Preparar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Dados": {
+      "main": [
+        [
+          {
+            "node": "Criar Despesa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Despesa": {
+      "main": [
+        [
+          {
+            "node": "Marcar Consolidados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "v1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "n8n-bpo-financeiro"
+  },
+  "id": "consolidar-custos-ia",
+  "tags": []
+}

@@ -1,0 +1,408 @@
+{
+  "name": "[KOMMO - APEXPRO] Atualizar Lead",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "04ebfb45-5c60-4cf3-9baa-b5a87ffc479f"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        256
+      ],
+      "id": "74af0501-7123-41db-8347-f9890fdf3aac",
+      "name": "MCP Kommo",
+      "webhookId": "24ebfb45-5c60-4cf3-9baa-b5a87ffc479f"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Atualiza os dados do lead no Kommo. data_hora_agendamento deve ser no formato ISO 8601 Y-m-d\\\\TH:i:sP",
+        "method": "PATCH",
+        "url": "=https://apexpro.kommo.com/api/v4/leads/{{ $fromAI('lead_id') }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "kommoOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": {{ $fromAI(\"lead_id\") }},\n  \"_embedded\": {},\n  \"status_id\": 77843928,\n  \"custom_fields_values\": [\n    {\n      \"field_id\": 2791521,\n      \"values\": [\n        { \"value\": \"{{ $fromAI('Carreira_ou_Consultoria') }}\" }\n      ]\n    },\n    {\n      \"field_id\": 2791617,\n      \"values\": [\n        { \"value\": \"I.A\" }\n      ]\n    },\n    {\n      \"field_id\": 2785530,\n      \"values\": [\n        { \"value\": \"EU ME COMPROMETO EM ALTERAR\" }\n      ]\n    },\n    {\n      \"field_id\": 2788093,\n      \"values\": [\n        { \"value\": \"{{ $fromAI('data_hora_agendamento') }}\" }\n      ]\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -688,
+        448
+      ],
+      "id": "873cdea8-1a05-4087-8845-5ebf072c9c4e",
+      "name": "Atualizar lead",
+      "retryOnFail": true,
+      "credentials": {
+        "kommoOAuth2Api": {
+          "id": "FoQopIcfFleo2ymy",
+          "name": "MottivmeAI - NV1 - Apex Pro"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Atualizar Lead KOMMO",
+        "height": 380,
+        "width": 1340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        224
+      ],
+      "id": "cf314dbb-dc99-4968-9da6-8bbe6eeb249e",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Atualiza as informações de contato no Kommo.",
+        "method": "PATCH",
+        "url": "=https://apexpro.kommo.com/api/v4/contacts/{{ $fromAI(\"contact_id\") }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "kommoOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"custom_fields_values\": [\n    {\n      \"field_id\": 30668,\n      \"values\": [\n        {\n          \"value\": \"{{ $fromAI('work_phone') }}\",\n          \"enum_code\": \"WORK\"\n        }\n      ]\n    },\n    {\n      \"field_id\": 30670,\n      \"values\": [\n        {\n          \"value\": \"{{ $fromAI('work_email') }}\",\n          \"enum_code\": \"WORK\"\n        }\n      ]\n    }\n  ]\n}\n",
+        "options": {},
+        "optimizeResponse": true
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -544,
+        448
+      ],
+      "id": "3663509f-1c57-4a94-9d17-c640412c2861",
+      "name": "Atualizar contato",
+      "retryOnFail": true,
+      "credentials": {
+        "kommoOAuth2Api": {
+          "id": "FoQopIcfFleo2ymy",
+          "name": "MottivmeAI - NV1 - Apex Pro"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Atualiza campos do lead no Kommo assim que cada resposta é recebida.\n\ntem_work_permit: \"Possui Work Permit\" ou \"Não possui Work Permit\" (carreira)",
+        "method": "PATCH",
+        "url": "=https://apexpro.kommo.com/api/v4/leads/{{ $fromAI('lead_id') }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "kommoOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": {{ $fromAI(\"lead_id\") }},\n  \"_embedded\": {},\n  \"custom_fields_values\": [\n    {\n      \"field_id\": 814630,\n      \"values\": [\n        {\n          \"value\": \"{{ $fromAI('tem_work_permit') }}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        448
+      ],
+      "id": "9600f8b3-0321-4e2f-81fa-cc93733b2983",
+      "name": "Atualizar work permit",
+      "retryOnFail": true,
+      "credentials": {
+        "kommoOAuth2Api": {
+          "id": "FoQopIcfFleo2ymy",
+          "name": "MottivmeAI - NV1 - Apex Pro"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Prioritariamente a data_msg_fup deve ser no formato ISO 8601 Y-m-d\\\\TH:i:sP e inserida primeiro, em seguida deverá preencher a mensagem_fup ",
+        "method": "PATCH",
+        "url": "=https://apexpro.kommo.com/api/v4/leads/{{ $fromAI('lead_id') }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "kommoOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": {{ $fromAI(\"lead_id\") }},\n  \"_embedded\": {},\n  \"status_id\": 91706024,\n  \"custom_fields_values\": [\n    {\n      \"field_id\": 2796271,\n      \"values\": [\n        { \"value\": \"{{ $fromAI('data_msg_fup') }}\" }\n      ]\n    },\n    {\n      \"field_id\": 2796273,\n      \"values\": [\n        { \"value\": \"{{ $fromAI('mensagem_fup') }}\" }\n      ]\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -240,
+        448
+      ],
+      "id": "4d94c252-fcf2-492d-a1dc-906fb4efe758",
+      "name": "Agendar followup",
+      "retryOnFail": true,
+      "credentials": {
+        "kommoOAuth2Api": {
+          "id": "FoQopIcfFleo2ymy",
+          "name": "MottivmeAI - NV1 - Apex Pro"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Prioritariamente a mensagem_fup deverá ser apagada e em seguida a data_msg_fup no formato ISO 8601 Y-m-d\\\\TH:i:sP deverá ser apagada para não fazer follow up desnecessário",
+        "method": "PATCH",
+        "url": "=https://apexpro.kommo.com/api/v4/leads/{{ $fromAI('lead_id') }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "kommoOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": {{ $fromAI(\"lead_id\") }},\n  \"_embedded\": {},\n  \"custom_fields_values\": [\n    {\n      \"field_id\": 2796271,\n      \"values\": [\n        { \"value\": \"{{ $fromAI('data_msg_fup') }}\" }\n      ]\n    },\n    {\n      \"field_id\": 2796273,\n      \"values\": [\n        { \"value\": \"{{ $fromAI('mensagem_fup') }}\" }\n      ]\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        -96,
+        448
+      ],
+      "id": "040496b0-4260-44f7-ab4a-33b8ff51b4dd",
+      "name": "Cancelar followup",
+      "retryOnFail": true,
+      "credentials": {
+        "kommoOAuth2Api": {
+          "id": "FoQopIcfFleo2ymy",
+          "name": "MottivmeAI - NV1 - Apex Pro"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Atualiza o Lead como perdido caso ele já seja cadastrado na Five Rings, já seja um Agente Financeiro, more no Brasil, informe que é um colega de trabalho, não tenha mais interesse ou não queira mais agendar uma reunião.",
+        "method": "PATCH",
+        "url": "=https://apexpro.kommo.com/api/v4/leads/{{ $fromAI('lead_id') }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "kommoOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": {{ $fromAI(\"lead_id\") }},\n  \"_embedded\": {},\n  \"status_id\": 143\n}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        64,
+        448
+      ],
+      "id": "f5affc47-c0cf-44f3-ab0f-c1b9f30034d5",
+      "name": "Atualizar_lead_perdido",
+      "retryOnFail": true,
+      "notesInFlow": false,
+      "credentials": {
+        "kommoOAuth2Api": {
+          "id": "FoQopIcfFleo2ymy",
+          "name": "MottivmeAI - NV1 - Apex Pro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Atualiza os dados do lead reagendado no KOMMO. data_hora_reaagendamento deve ser no formato ISO 8601 Y-m-d\\\\TH:i:sP",
+        "method": "PATCH",
+        "url": "=https://apexpro.kommo.com/api/v4/leads/{{ $fromAI('lead_id') }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "kommoOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": {{ $fromAI(\"lead_id\") }},\n  \"_embedded\": {},\n  \"status_id\": 77843936,\n  \"custom_fields_values\": [\n    {\n      \"field_id\": 2796721,\n      \"values\": [\n        { \"value\": \"{{ $fromAI('data_hora_reagendamento') }}\" }\n      ]\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        192,
+        448
+      ],
+      "id": "d8be52c8-6255-420c-baf8-8c3f777cff53",
+      "name": "Atualizar lead reagendado",
+      "retryOnFail": true,
+      "credentials": {
+        "kommoOAuth2Api": {
+          "id": "FoQopIcfFleo2ymy",
+          "name": "MottivmeAI - NV1 - Apex Pro"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Atualiza campos do lead no Kommo assim que cada resposta é recebida.",
+        "method": "PATCH",
+        "url": "=https://apexpro.kommo.com/api/v4/leads/{{ $fromAI('lead_id') }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "kommoOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": {{ $fromAI(\"lead_id\") }},\n  \"_embedded\": {},\n  \"custom_fields_values\": [\n    {\n      \"field_id\": 2796493,\n      \"values\": [\n        {\n          \"value\": \"{{ $fromAI('estado_onde_mora') }}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        448
+      ],
+      "id": "613e8976-a3d6-40b4-882d-d05135fb001f",
+      "name": "Atualizar estado onde mora",
+      "retryOnFail": true,
+      "credentials": {
+        "kommoOAuth2Api": {
+          "id": "FoQopIcfFleo2ymy",
+          "name": "MottivmeAI - NV1 - Apex Pro"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Atualiza campos do lead no Kommo assim que cada resposta é recebida.",
+        "method": "PATCH",
+        "url": "=https://apexpro.kommo.com/api/v4/leads/{{ $fromAI('lead_id') }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "kommoOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": {{ $fromAI(\"lead_id\") }},\n  \"_embedded\": {},\n  \"custom_fields_values\": [\n    {\n      \"field_id\": 2798553,\n      \"values\": [\n        {\n          \"value\": \"{{ $fromAI('profissao_cf') }}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        448
+      ],
+      "id": "80224634-a8c5-4266-8b4c-62a2b02917d4",
+      "name": "Atualizar_profissao",
+      "retryOnFail": true,
+      "credentials": {
+        "kommoOAuth2Api": {
+          "id": "FoQopIcfFleo2ymy",
+          "name": "MottivmeAI - NV1 - Apex Pro"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Atualizar lead": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Kommo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar contato": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Kommo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar work permit": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Kommo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agendar followup": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Kommo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancelar followup": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Kommo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar_lead_perdido": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Kommo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar lead reagendado": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Kommo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar estado onde mora": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Kommo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar_profissao": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Kommo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d0b107c6-e95f-4437-a755-17ec630d7a12",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "ybDPJk1rjmIzKB3c",
+  "tags": []
+}

@@ -1,0 +1,296 @@
+const agentOutput = $input.item.json.output;
+
+// Remove markdown code blocks
+let cleaned = typeof agentOutput === 'string'
+  ? agentOutput.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim()
+  : JSON.stringify(agentOutput);
+
+console.log('📝 Tamanho do output:', cleaned.length);
+console.log('📝 Primeiros 200 chars:', cleaned.substring(0, 200));
+
+// ✅ ESTRATÉGIA 1: Tentar parsear direto
+try {
+  const parsed = JSON.parse(cleaned);
+  console.log('✅ JSON válido - parse direto funcionou');
+  return processarTrilha(parsed);
+} catch (e1) {
+  console.log('⚠️ Parse direto falhou:', e1.message);
+}
+
+// ✅ ESTRATÉGIA 2: Limpar caracteres invisíveis e tentar novamente
+try {
+  const cleanedInvisible = cleaned
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove control chars
+    .replace(/\r\n/g, '\n') // Normaliza line breaks
+    .replace(/\t/g, ' '); // Normaliza tabs
+
+  const parsed = JSON.parse(cleanedInvisible);
+  console.log('✅ Parse após limpar caracteres invisíveis funcionou');
+  return processarTrilha(parsed);
+} catch (e2) {
+  console.log('⚠️ Parse após limpar invisíveis falhou:', e2.message);
+}
+
+// ✅ ESTRATÉGIA 3: Extrair apenas o primeiro objeto válido
+try {
+  console.log('🔧 Tentando extrair objeto válido...');
+
+  // Encontrar o primeiro { e tentar construir JSON válido
+  const firstBrace = cleaned.indexOf('{');
+  if (firstBrace === -1) {
+    throw new Error('Nenhum objeto JSON encontrado');
+  }
+
+  let jsonStr = cleaned.substring(firstBrace);
+
+  // Contar braces e fechar adequadamente
+  let openBraces = 0;
+  let closeBraces = 0;
+  let inString = false;
+  let escaped = false;
+  let validEndPos = -1;
+
+  for (let i = 0; i < jsonStr.length; i++) {
+    const char = jsonStr[i];
+    const prevChar = i > 0 ? jsonStr[i-1] : '';
+
+    // Handle escape sequences
+    if (char === '\\' && !escaped) {
+      escaped = true;
+      continue;
+    }
+
+    // Handle strings
+    if (char === '"' && !escaped) {
+      inString = !inString;
+    }
+
+    escaped = false;
+
+    // Count braces only outside strings
+    if (!inString) {
+      if (char === '{') openBraces++;
+      if (char === '}') closeBraces++;
+
+      // Se fechamos todos os braces, achamos um ponto válido
+      if (openBraces > 0 && openBraces === closeBraces) {
+        validEndPos = i + 1;
+        break;
+      }
+    }
+  }
+
+  if (validEndPos > 0) {
+    jsonStr = jsonStr.substring(0, validEndPos);
+    console.log('🔧 Extraído objeto até posição:', validEndPos);
+  } else {
+    // Não encontrou fim válido, tentar fechar manualmente
+    console.log('🔧 Fechando braces manualmente...');
+    const diff = openBraces - closeBraces;
+    if (diff > 0) {
+      // Remover última vírgula se existir
+      jsonStr = jsonStr.replace(/,\s*$/, '');
+      jsonStr += '\n' + '}'.repeat(diff);
+    }
+  }
+
+  const parsed = JSON.parse(jsonStr);
+  console.log('✅ Parse após extrair objeto válido funcionou');
+  return processarTrilha(parsed);
+} catch (e3) {
+  console.log('⚠️ Extração de objeto válido falhou:', e3.message);
+}
+
+// ✅ ESTRATÉGIA 4: Regex para extrair trilha_editorial como array
+try {
+  console.log('🔧 Tentando extrair trilha_editorial via regex...');
+
+  const trilhaMatch = cleaned.match(/"trilha_editorial"\s*:\s*\[([\s\S]*?)\]/);
+  if (trilhaMatch) {
+    const trilhaArray = `[${trilhaMatch[1]}]`;
+
+    // Tentar parsear o array
+    let dias;
+    try {
+      dias = JSON.parse(trilhaArray);
+    } catch (parseErr) {
+      // Se falhar, tentar fechar objetos incompletos
+      const fixed = trilhaArray.replace(/,\s*$/, '') + ']';
+      dias = JSON.parse(fixed);
+    }
+
+    console.log('✅ Extraído', dias.length, 'dias via regex');
+
+    // Montar objeto mínimo
+    const parsed = {
+      trilha_editorial: dias,
+      expert_id: cleaned.match(/"expert_id"\s*:\s*"([^"]+)"/)?.[1] || 'unknown',
+      expert_name: cleaned.match(/"expert_name"\s*:\s*"([^"]+)"/)?.[1] || 'Unknown',
+      estrategia_resumo: null,
+      insights_estrategicos: null
+    };
+
+    return processarTrilha(parsed);
+  }
+} catch (e4) {
+  console.log('⚠️ Extração via regex falhou:', e4.message);
+}
+
+// ✅ ESTRATÉGIA 5: Retornar erro estruturado com mais informações
+console.error('❌ TODAS AS ESTRATÉGIAS DE PARSE FALHARAM');
+console.error('📊 Análise do JSON:');
+console.error('   - Tamanho:', cleaned.length);
+console.error('   - Primeiro char:', cleaned[0]);
+console.error('   - Último char:', cleaned[cleaned.length - 1]);
+console.error('   - Braces:', (cleaned.match(/{/g) || []).length, 'abertos,', (cleaned.match(/}/g) || []).length, 'fechados');
+console.error('   - Brackets:', (cleaned.match(/\[/g) || []).length, 'abertos,', (cleaned.match(/\]/g) || []).length, 'fechados');
+
+// Salvar output completo para debug
+return {
+  json: {
+    parsing_status: 'error',
+    error_message: 'Todas as 5 estratégias de parse falharam',
+    error_type: 'JSON_PARSE_ERROR_CRITICAL',
+
+    // Debug info
+    output_full: cleaned, // ⚠️ Incluir output completo para análise
+    output_length: cleaned.length,
+    output_preview_start: cleaned.substring(0, 500),
+    output_preview_end: cleaned.substring(Math.max(0, cleaned.length - 500)),
+
+    // Análise estrutural
+    structure_analysis: {
+      open_braces: (cleaned.match(/{/g) || []).length,
+      close_braces: (cleaned.match(/}/g) || []).length,
+      open_brackets: (cleaned.match(/\[/g) || []).length,
+      close_brackets: (cleaned.match(/\]/g) || []).length,
+      quote_count: (cleaned.match(/"/g) || []).length
+    },
+
+    // Dados vazios
+    trilha_texto: 'ERRO: Parse falhou após 5 tentativas',
+    estrategia_texto: 'ERRO: Veja output_full para debug',
+    insights_texto: 'ERRO: Veja structure_analysis',
+    calendario_texto: '',
+    stats_texto: '',
+    trilha_json: '[]',
+    trilha_completa_json: '{}',
+    dias_reels_json: '[]',
+    expert_id: 'error',
+    expert_name: 'Error',
+    total_dias: 0,
+    total_reels: 0,
+    stats: {},
+    data_geracao: new Date().toISOString()
+  }
+};
+
+// ========================================
+// FUNÇÃO AUXILIAR: PROCESSAR TRILHA
+// ========================================
+function processarTrilha(parsed) {
+  console.log('✅ Processando trilha parseada...');
+  console.log(`📅 Dias encontrados: ${parsed.trilha_editorial?.length || 0}`);
+
+  // ✅ FORMATA TRILHA PARA AIRTABLE
+  const trilhaFormatada = (parsed.trilha_editorial || []).map(dia =>
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+    `📅 DIA ${dia.dia} | ${dia.dia_semana} ${dia.data_sugerida}\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `🎯 FASE: ${dia.fase}\n` +
+    `📌 PILAR: ${dia.pilar}\n` +
+    `🌡️ TEMPERATURA: ${dia.temperatura_lead}\n\n` +
+    `📝 TEMA:\n${dia.tema}\n\n` +
+    `🔍 ÂNGULO:\n${dia.angulo}\n\n` +
+    `🎬 FORMATO: ${dia.formato_primario}${dia.duracao_estimada ? ` (${dia.duracao_estimada})` : ''}\n\n` +
+    `🎪 GATILHO MENTAL: ${dia.gatilho_mental}\n\n` +
+    `🎯 OBJETIVO:\n${dia.objetivo}\n\n` +
+    `📊 MÉTRICA: ${dia.metrica_sucesso}\n\n` +
+    `💡 PONTOS-CHAVE:\n${(dia.pontos_chave || []).map((p, i) => `  ${i+1}. ${p}`).join('\n')}\n\n` +
+    `🪝 HOOK: "${dia.hook_sugerido || 'N/A'}"\n\n` +
+    `📣 CTA (${dia.cta_tipo}): ${dia.cta_texto || 'N/A'}\n`
+  ).join('\n\n');
+
+  // ✅ FORMATA ESTRATÉGIA
+  const estrategiaFormatada = parsed.estrategia_resumo ?
+    `📈 ESTRATÉGIA DO MÊS\n\n` +
+    `🎯 OBJETIVO:\n${parsed.estrategia_resumo.objetivo_mes || 'N/A'}\n\n` +
+    `📊 PILARES:\n${(parsed.estrategia_resumo.pilares_dominantes || []).map(p => `• ${p}`).join('\n')}\n\n` +
+    `🎬 FORMATOS:\n` +
+    `  • Reels: ${parsed.estrategia_resumo.distribuicao_formatos?.reels || 'N/A'}\n` +
+    `  • Stories: ${parsed.estrategia_resumo.distribuicao_formatos?.stories || 'N/A'}\n` +
+    `  • Carrosséis: ${parsed.estrategia_resumo.distribuicao_formatos?.carrosseis || 'N/A'}\n\n` +
+    `🎯 KPIs:\n${(parsed.estrategia_resumo.kpis_mes || []).map(k => `• ${k}`).join('\n')}`
+    : 'Estratégia não disponível';
+
+  // ✅ INSIGHTS
+  const insightsFormatados = parsed.insights_estrategicos ?
+    `💡 INSIGHTS\n\n` +
+    `S1: ${parsed.insights_estrategicos.semana_1 || 'N/A'}\n\n` +
+    `S2: ${parsed.insights_estrategicos.semana_2 || 'N/A'}\n\n` +
+    `S3: ${parsed.insights_estrategicos.semana_3 || 'N/A'}\n\n` +
+    `S4: ${parsed.insights_estrategicos.semana_4 || 'N/A'}`
+    : 'Insights não disponíveis';
+
+  // ✅ CALENDÁRIO
+  const calendarioSimples = (parsed.trilha_editorial || []).map(dia =>
+    `${dia.data_sugerida} (${dia.dia_semana}) | ${dia.formato_primario} | ${dia.tema}`
+  ).join('\n');
+
+  // ✅ REELS
+  const diasComReels = (parsed.trilha_editorial || []).filter(dia =>
+    dia.formato_primario === 'Reel'
+  );
+
+  // ✅ STATS
+  const trilhaArray = parsed.trilha_editorial || [];
+  const stats = {
+    total_dias: trilhaArray.length,
+    total_reels: diasComReels.length,
+    total_stories: trilhaArray.filter(d => d.formato_primario === 'Story').length,
+    total_carrosseis: trilhaArray.filter(d => d.formato_primario === 'Carrossel').length,
+    total_posts: trilhaArray.filter(d => d.formato_primario === 'Post').length,
+    por_fase: {
+      awareness: trilhaArray.filter(d => d.fase === 'Awareness').length,
+      educacao: trilhaArray.filter(d => d.fase === 'Educação').length,
+      diferenciacao: trilhaArray.filter(d => d.fase === 'Diferenciação').length,
+      conversao: trilhaArray.filter(d => d.fase === 'Conversão').length
+    }
+  };
+
+  const statsFormatadas =
+    `📊 ESTATÍSTICAS\n\n` +
+    `📅 Total: ${stats.total_dias} dias\n\n` +
+    `🎬 FORMATOS:\n` +
+    `  • Reels: ${stats.total_reels}\n` +
+    `  • Stories: ${stats.total_stories}\n` +
+    `  • Carrosséis: ${stats.total_carrosseis}\n` +
+    `  • Posts: ${stats.total_posts}\n\n` +
+    `🌡️ POR FASE:\n` +
+    `  • Awareness: ${stats.por_fase.awareness}\n` +
+    `  • Educação: ${stats.por_fase.educacao}\n` +
+    `  • Diferenciação: ${stats.por_fase.diferenciacao}\n` +
+    `  • Conversão: ${stats.por_fase.conversao}`;
+
+  console.log('✅ PROCESSAMENTO COMPLETO');
+
+  return {
+    json: {
+      trilha_texto: trilhaFormatada,
+      estrategia_texto: estrategiaFormatada,
+      insights_texto: insightsFormatados,
+      calendario_texto: calendarioSimples,
+      stats_texto: statsFormatadas,
+      trilha_json: JSON.stringify(trilhaArray, null, 2),
+      trilha_completa_json: JSON.stringify(parsed, null, 2),
+      dias_reels_json: JSON.stringify(diasComReels, null, 2),
+      expert_id: parsed.expert_id || 'unknown',
+      expert_name: parsed.expert_name || 'Unknown',
+      total_dias: stats.total_dias,
+      total_reels: stats.total_reels,
+      stats: stats,
+      data_geracao: new Date().toISOString(),
+      parsing_status: 'success'
+    }
+  };
+}

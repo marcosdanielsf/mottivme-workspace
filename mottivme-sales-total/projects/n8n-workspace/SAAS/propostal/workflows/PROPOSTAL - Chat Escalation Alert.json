@@ -1,0 +1,402 @@
+{
+  "name": "PROPOSTAL - Chat Escalation Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "propostal-chat-escalation",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        256,
+        -16
+      ],
+      "id": "dacc1537-904c-4b8c-b175-f112bcc2ba7c",
+      "name": "Webhook - Chat Escalado",
+      "webhookId": "propostal-chat-escalation"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "lead-name",
+              "name": "leadName",
+              "value": "={{ $json.body.lead.name }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-email",
+              "name": "leadEmail",
+              "value": "={{ $json.body.lead.email }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-phone",
+              "name": "leadPhone",
+              "value": "={{ $json.body.lead.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "message",
+              "name": "userMessage",
+              "value": "={{ $json.body.message }}",
+              "type": "string"
+            },
+            {
+              "id": "proposal-title",
+              "name": "proposalTitle",
+              "value": "={{ $json.body.proposal.title }}",
+              "type": "string"
+            },
+            {
+              "id": "owner-phone",
+              "name": "ownerPhone",
+              "value": "={{ $json.body.company.owner_phone }}",
+              "type": "string"
+            },
+            {
+              "id": "ghl-location",
+              "name": "ghl_location_id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        -16
+      ],
+      "id": "c94823a3-97bb-43a9-abce-13ae78e129d9",
+      "name": "Preparar Dados"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $json.ghl_location_id }}\",\n  \"query\": \"{{ $json.leadEmail }}\",\n  \"pageLimit\": 1\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        704,
+        -16
+      ],
+      "id": "a85d43e1-ee7c-4478-bd34-98c3ebc401e4",
+      "name": "GHL - Buscar Lead"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contacts[0].id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Preparar Dados').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"tags\": [\"propostal\", \"chat-escalado\", \"urgente\", \"lead-quente\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        912,
+        -16
+      ],
+      "id": "6be89c08-f147-4d92-a047-efdf6d306984",
+      "name": "GHL - Adicionar Tags Urgente"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Preparar Dados').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $('GHL - Buscar Lead').item.json.contacts[0].id }}\",\n  \"message\": \"{{ $('Preparar Dados').item.json.leadName }}, entendi! Vou pedir para um especialista entrar em contato com você agora mesmo. 🙌\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1136,
+        -16
+      ],
+      "id": "8c1a6c9a-d5fd-4625-a966-adc296bd0b95",
+      "name": "GHL - Mensagem para Lead"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Preparar Dados').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $('Preparar Dados').item.json.ghl_location_id }}\",\n  \"query\": \"{{ $('Preparar Dados').item.json.ownerPhone }}\",\n  \"pageLimit\": 1\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1360,
+        -16
+      ],
+      "id": "5bfcf6da-8261-4fee-9b54-2be2d17008a5",
+      "name": "GHL - Buscar Vendedor"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-owner",
+              "leftValue": "={{ $json.contacts.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1584,
+        -16
+      ],
+      "id": "95e73d58-144d-4069-9eed-aabd9ff5d53d",
+      "name": "Vendedor Existe?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Preparar Dados').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $json.contacts[0].id }}\",\n  \"message\": \"🚨 URGENTE - Lead Quente!\\n\\nNome: {{ $('Preparar Dados').item.json.leadName }}\\nProposta: {{ $('Preparar Dados').item.json.proposalTitle }}\\nMensagem: {{ $('Preparar Dados').item.json.userMessage }}\\n\\nO lead pediu para falar com um humano! Entre em contato AGORA.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1792,
+        -112
+      ],
+      "id": "47ed6477-3508-4c3d-9274-454336690943",
+      "name": "GHL - Notificar Vendedor WhatsApp"
+    },
+    {
+      "parameters": {
+        "content": "## 🚨 PROPOSTAL - Chat Escalation Alert\n\n### O que este workflow faz:\n1. Recebe webhook quando chat é escalado (lead quer falar com humano)\n2. Adiciona tags urgentes no contato\n3. Envia mensagem automática para o lead\n4. Notifica o vendedor via WhatsApp com os detalhes\n\n### Triggers de Escalação:\n- \"quero fechar\"\n- \"desconto\"\n- \"falar com alguém\"\n- \"muito caro\"\n- etc.\n\n### Configuração:\n- Altere as variáveis no nó \"Preparar Dados\"",
+        "height": 340,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -16,
+        -384
+      ],
+      "typeVersion": 1,
+      "id": "82dfacc4-1742-4009-bfd8-fa2c343252e1",
+      "name": "📌 Documentação"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Chat Escalado": {
+      "main": [
+        [
+          {
+            "node": "Preparar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Dados": {
+      "main": [
+        [
+          {
+            "node": "GHL - Buscar Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Buscar Lead": {
+      "main": [
+        [
+          {
+            "node": "GHL - Adicionar Tags Urgente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Adicionar Tags Urgente": {
+      "main": [
+        [
+          {
+            "node": "GHL - Mensagem para Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Mensagem para Lead": {
+      "main": [
+        [
+          {
+            "node": "GHL - Buscar Vendedor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Buscar Vendedor": {
+      "main": [
+        [
+          {
+            "node": "Vendedor Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vendedor Existe?": {
+      "main": [
+        [
+          {
+            "node": "GHL - Notificar Vendedor WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "versionId": "cddc9f3a-e9f7-4ef5-bee6-486da23115fc",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "JwXxbG3tw2bT7ERl",
+  "tags": []
+}

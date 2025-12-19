@@ -1,0 +1,232 @@
+{
+  "_meta": {
+    "description": "Nós Postgres para migrar de Airtable para Supabase no workflow Assembly Line APP",
+    "version": "2.0",
+    "date": "2024-12-04",
+    "instructions": [
+      "1. Crie uma credencial 'Postgres' no n8n com os dados do Supabase",
+      "2. Delete os nós Airtable listados",
+      "3. Importe estes nós Postgres",
+      "4. Reconecte as connections"
+    ]
+  },
+
+  "credential_setup": {
+    "name": "Supabase Postgres",
+    "type": "postgres",
+    "config": {
+      "host": "db.bfumywvwubvernvhjehk.supabase.co",
+      "port": 5432,
+      "database": "postgres",
+      "user": "postgres",
+      "password": "[SUA DATABASE PASSWORD DO SUPABASE]",
+      "ssl": true
+    }
+  },
+
+  "environment_variables": {
+    "APP_CALLBACK_URL": "https://assembly-line-deploy-vercel.vercel.app",
+    "N8N_WEBHOOK_SECRET": "assembly-line-secret-2024"
+  },
+
+  "nodes_to_delete": [
+    "Get Product1",
+    "Get Expert Record",
+    "Get Expert Record1",
+    "Get Expert Record - FASE 3A",
+    "Get Expert DNA",
+    "Get Expert DNA2",
+    "💾 Update Airtable - FASE ",
+    "💾 Update Airtable - FASE 1B2",
+    "💾 Update Airtable - FASE 2",
+    "💾 Update Airtable - FASE 3",
+    "💾 Update Airtable - FASE 4",
+    "💾 Update Airtable - FASE 5",
+    "💾 Update Airtable - Reels",
+    "💾 Update Airtable - Carrossel",
+    "💾 Update Airtable - Stories",
+    "💾 Update Airtable - FASE 1",
+    "💾 Update Airtable - FASE 8",
+    "💾 Update Airtable - FASE 9"
+  ],
+
+  "replacement_nodes": [
+    {
+      "name": "📖 Get Expert Data (Postgres)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-12192, -3576],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT get_expert_data('{{ $json.query?.recordId || $json.body?.project_id }}'::uuid) as data;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Substitui: Get Product1, Get Expert Record. Busca todos os dados via função RPC."
+    },
+    {
+      "name": "🔄 Transform Expert Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-11892, -3576],
+      "parameters": {
+        "jsCode": "// Extrai os dados do resultado da query\nconst result = $input.first().json;\nconst data = typeof result.data === 'string' ? JSON.parse(result.data) : result.data;\n\nconst project = data.project || {};\nconst briefing = data.briefing || {};\nconst clone = data.clone || {};\nconst offers = data.offers || {};\n\nfunction getValue(obj, field) {\n  if (!obj || !obj[field]) return null;\n  if (obj[field] === '') return null;\n  return obj[field];\n}\n\nfunction formatSection(title, content) {\n  if (!content || (typeof content === 'string' && content.trim() === '')) return '';\n  if (typeof content === 'object') content = JSON.stringify(content, null, 2);\n  return `\\n### ${title}\\n${content}\\n`;\n}\n\nlet context = `# 🧬 PERFIL COMPLETO DO EXPERT\\n`;\ncontext += `Este é o perfil detalhado extraído do briefing e dados do projeto.\\n`;\ncontext += `\\n---\\n`;\n\ncontext += `\\n## 📋 DADOS BÁSICOS DO EXPERT\\n`;\ncontext += `\\n**Nome:** ${project.name || 'Não informado'}\\n`;\ncontext += `**Nicho:** ${getValue(briefing, 'nicho') || 'Não informado'}\\n`;\ncontext += `**Produto:** ${getValue(briefing, 'produto') || 'Não informado'}\\n`;\n\ncontext += `\\n---\\n`;\ncontext += `\\n## 🎯 BRIEFING\\n`;\ncontext += formatSection('Avatar/Público-Alvo', getValue(briefing, 'avatar_descricao'));\ncontext += formatSection('Dor Principal', getValue(briefing, 'dor_principal'));\ncontext += formatSection('Desejo Principal', getValue(briefing, 'desejo_principal'));\ncontext += formatSection('Transformação Prometida', getValue(briefing, 'transformacao'));\ncontext += formatSection('Diferencial', getValue(briefing, 'diferencial'));\ncontext += formatSection('Ticket Médio', getValue(briefing, 'ticket_medio'));\ncontext += formatSection('Tipo de Funil', getValue(briefing, 'tipo_funil'));\ncontext += formatSection('Tom de Comunicação', getValue(briefing, 'tom_comunicacao'));\n\nif (clone && clone.system_prompt) {\n  context += `\\n---\\n`;\n  context += `\\n## 🧬 CLONE SYSTEM PROMPT (EXISTENTE)\\n`;\n  context += `\\n\\`\\`\\`\\n${clone.system_prompt}\\n\\`\\`\\`\\n`;\n}\n\nif (clone && clone.dna_psicologico) {\n  context += formatSection('DNA Psicológico', clone.dna_psicologico);\n}\n\nif (clone && clone.engenharia_reversa) {\n  context += formatSection('Engenharia Reversa', clone.engenharia_reversa);\n}\n\nif (clone && clone.sintese_estrategica) {\n  context += `\\n---\\n`;\n  context += `\\n## 📊 POSICIONAMENTO ESTRATÉGICO\\n`;\n  context += formatSection('Síntese Estratégica', clone.sintese_estrategica);\n  context += formatSection('Análise de Concorrentes', clone.analise_concorrentes);\n}\n\nif (offers && offers.avatar) {\n  context += `\\n---\\n`;\n  context += `\\n## 💰 ECOSSISTEMA DE OFERTAS\\n`;\n  context += formatSection('Avatar Detalhado', offers.avatar);\n  context += formatSection('Promessas', offers.promessas);\n  context += formatSection('Big Idea', offers.big_idea);\n  context += formatSection('High Ticket', offers.high_ticket);\n  context += formatSection('Frontend', offers.frontend);\n}\n\ncontext += `\\n---\\n`;\ncontext += `\\n*Contexto gerado automaticamente a partir do Supabase.*\\n`;\n\nreturn [{\n  json: {\n    expert_context: context,\n    expert_name: project.name,\n    expert_id: project.id,\n    project_id: project.id,\n    nicho: getValue(briefing, 'nicho'),\n    clone_system_prompt: clone?.system_prompt || null,\n    has_clone: !!clone?.system_prompt,\n    has_posicionamento: !!clone?.sintese_estrategica,\n    has_ofertas: !!offers?.avatar,\n    context_length: context.length,\n    timestamp: new Date().toISOString(),\n    _project: project,\n    _briefing: briefing,\n    _clone: clone,\n    _offers: offers\n  }\n}];"
+      },
+      "notes": "Transforma os dados do Supabase no formato esperado pelos agentes de IA."
+    },
+    {
+      "name": "💾 Update Clone - FASE 1A (Postgres)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-9824, -3576],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE clone_experts SET\n  dna_psicologico = '{{ $('1. Agent 1: DNA Psicológico1').item.json.output }}',\n  engenharia_reversa = '{{ $('2. Agent 2: Engenheiro Reverso2').item.json.output }}',\n  configuracao_clone = '{{ $('3. Agent 3: Configurador1').item.json.output }}',\n  system_prompt = '{{ $json.output }}',\n  status = 'ready',\n  updated_at = NOW()\nWHERE project_id = '{{ $json.project_id }}'::uuid\nRETURNING *;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE. Salva resultados da FASE 1A (Clone)."
+    },
+    {
+      "name": "💾 Update Posicionamento - FASE 1B (Postgres)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-9824, -3176],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE clone_experts SET\n  analise_concorrentes = '{{ $('5. Agent 5: Identity Mapper').item.json.text }}',\n  concorrentes_internacionais = '{{ $('6A. Perplexity Internacional').item.json.choices[0].message.content }}',\n  concorrentes_brasileiros = '{{ $('6B. Perplexity Brasil').item.json.choices[0].message.content }}',\n  sintese_estrategica = '{{ $('6C. Synthesis and Strategic Analysis').item.json.text }}',\n  updated_at = NOW()\nWHERE project_id = '{{ $json.project_id }}'::uuid\nRETURNING *;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE 1B2. Salva resultados da FASE 1B (Posicionamento)."
+    },
+    {
+      "name": "💾 Upsert Offers - FASE 2 (Postgres)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-10112, -2688],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO offers (project_id, avatar, avatar_detalhado, promessas, big_idea, mecanismo_unico, high_ticket, mid_ticket, frontend, status, created_at, updated_at)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  '{{ $('7. Agent: Avatar Creator').item.json.text }}',\n  '{{ $('7B. Agent: Avatar Detalhado').item.json.text }}',\n  '{{ $('8. Agent: Promise Generator').item.json.text }}',\n  '{{ $('9. Agent: Big Idea Creator').item.json.text }}',\n  '{{ $('9B. Agent: Mecanismo Único').item.json.text }}',\n  '{{ $json[\"High Ticket Ofertas - IA\"] }}',\n  '{{ $json[\"Back End Ofertas - IA\"] }}',\n  '{{ $json[\"Ofertas Front End - IA\"] }}',\n  'ready',\n  NOW(),\n  NOW()\n)\nON CONFLICT (project_id) DO UPDATE SET\n  avatar = EXCLUDED.avatar,\n  avatar_detalhado = EXCLUDED.avatar_detalhado,\n  promessas = EXCLUDED.promessas,\n  big_idea = EXCLUDED.big_idea,\n  mecanismo_unico = EXCLUDED.mecanismo_unico,\n  high_ticket = EXCLUDED.high_ticket,\n  mid_ticket = EXCLUDED.mid_ticket,\n  frontend = EXCLUDED.frontend,\n  status = 'ready',\n  updated_at = NOW()\nRETURNING *;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE 2. Cria/atualiza ofertas com UPSERT."
+    },
+    {
+      "name": "💾 Insert Content - Reel (Postgres)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-9856, -2368],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO contents (project_id, type, title, body, hook, cta, generated_by, status, created_at)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  'reel',\n  '{{ $json.title || \"Reel gerado\" }}',\n  '{{ $json.script || $json.content }}',\n  '{{ $json.hook }}',\n  '{{ $json.cta }}',\n  'generateMarketingeGeracaodeDemanda',\n  'draft',\n  NOW()\n)\nRETURNING *;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Substitui: 💾 Update Airtable - Reels. Insere conteúdo tipo reel."
+    },
+    {
+      "name": "💾 Insert Content - Carrossel (Postgres)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-9856, -2168],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO contents (project_id, type, title, body, hook, cta, generated_by, status, created_at)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  'carousel',\n  '{{ $json.title || \"Carrossel gerado\" }}',\n  '{{ $json.script || $json.content }}',\n  '{{ $json.hook }}',\n  '{{ $json.cta }}',\n  'generateMarketingeGeracaodeDemanda',\n  'draft',\n  NOW()\n)\nRETURNING *;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Substitui: 💾 Update Airtable - Carrossel. Insere conteúdo tipo carrossel."
+    },
+    {
+      "name": "💾 Insert Content - Stories (Postgres)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [-9856, -1968],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO contents (project_id, type, title, body, hook, cta, generated_by, status, created_at)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  'story',\n  '{{ $json.title || \"Story gerado\" }}',\n  '{{ $json.script || $json.content }}',\n  '{{ $json.hook }}',\n  '{{ $json.cta }}',\n  'generateMarketingeGeracaodeDemanda',\n  'draft',\n  NOW()\n)\nRETURNING *;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Substitui: 💾 Update Airtable - Stories. Insere conteúdo tipo story."
+    },
+    {
+      "name": "📤 Callback App - Fase Completa",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9500, -3576],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.callback_url || $env.APP_CALLBACK_URL }}/api/webhook/n8n",
+        "authentication": "noAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "x-webhook-secret", "value": "={{$env.N8N_WEBHOOK_SECRET}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  generation_id: $('Webhook').item.json.body.generation_id,\n  project_id: $('Webhook').item.json.body.project_id,\n  agent_name: $('Webhook').item.json.body.action,\n  phase: 'clone',\n  status: 'complete',\n  output: {\n    dna_psicologico: $('1. Agent 1: DNA Psicológico1').item.json.output,\n    engenharia_reversa: $('2. Agent 2: Engenheiro Reverso2').item.json.output,\n    configuracao_clone: $('3. Agent 3: Configurador1').item.json.output,\n    system_prompt: $json.output\n  }\n}) }}",
+        "options": {}
+      },
+      "notes": "Callback para o App notificando conclusão da fase."
+    }
+  ],
+
+  "updated_connections": {
+    "Webhook": {
+      "main": [[{"node": "📖 Get Expert Data (Postgres)", "type": "main", "index": 0}]]
+    },
+    "📖 Get Expert Data (Postgres)": {
+      "main": [[{"node": "🔄 Transform Expert Context", "type": "main", "index": 0}]]
+    },
+    "🔄 Transform Expert Context": {
+      "main": [[{"node": "1. Agent 1: DNA Psicológico1", "type": "main", "index": 0}]]
+    },
+    "4. Agent 4: Integrador1": {
+      "main": [[{"node": "💾 Update Clone - FASE 1A (Postgres)", "type": "main", "index": 0}]]
+    },
+    "💾 Update Clone - FASE 1A (Postgres)": {
+      "main": [[{"node": "📤 Callback App - Fase Completa", "type": "main", "index": 0}]]
+    }
+  }
+}

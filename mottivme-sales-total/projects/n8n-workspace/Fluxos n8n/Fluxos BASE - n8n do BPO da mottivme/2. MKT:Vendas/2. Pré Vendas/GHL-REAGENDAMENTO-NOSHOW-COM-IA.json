@@ -1,0 +1,610 @@
+{
+  "name": "GHL - Reagendamento No-Show com IA",
+  "meta": {
+    "instanceId": "mottivme-production",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Fluxo de Reagendamento Automatico por TAG\n\n## Como funciona:\n1. GHL adiciona TAG 'reagendar' ao lead (manual ou automacao)\n2. Webhook dispara este fluxo\n3. IA gera mensagem UNICA e personalizada\n4. Mensagem e enviada ao lead\n5. Tracking e ativado para Follow Up Eterno continuar\n\n## Anti-Bloqueio:\n- Cada mensagem e gerada pela IA de forma unica\n- Variacao de estilo, tom e abordagem\n- Personalizacao com dados do lead\n- Nunca a mesma mensagem duas vezes",
+        "height": 350,
+        "width": 600,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-1400, -11600],
+      "id": "sticky-instrucoes-reagendamento",
+      "name": "INSTRUCOES"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ghl-tag-reagendar-mottivme",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-1300, -11200],
+      "id": "webhook-tag-reagendar",
+      "name": "Webhook TAG Reagendar",
+      "webhookId": "ghl-tag-reagendar-mottivme",
+      "notes": "Configure no GHL: Automation > Tag Added 'reagendar' > Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "verificar-tag-reagendar",
+              "leftValue": "={{ $json.body?.tags || $json.body?.contact?.tags?.join(',') || '' }}",
+              "rightValue": "reagendar",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-1100, -11200],
+      "id": "verificar-tag-if",
+      "name": "TAG e Reagendar?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "contact-id",
+              "name": "contact_id",
+              "value": "={{ $json.body?.contact?.id || $json.body?.contactId || $json.body?.id }}",
+              "type": "string"
+            },
+            {
+              "id": "location-id",
+              "name": "location_id",
+              "value": "={{ $json.body?.contact?.locationId || $json.body?.locationId }}",
+              "type": "string"
+            },
+            {
+              "id": "first-name",
+              "name": "first_name",
+              "value": "={{ $json.body?.contact?.firstName || $json.body?.firstName || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "phone",
+              "name": "telefone",
+              "value": "={{ $json.body?.contact?.phone || $json.body?.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "value": "={{ $json.body?.contact?.email || $json.body?.email }}",
+              "type": "string"
+            },
+            {
+              "id": "source",
+              "name": "source",
+              "value": "={{ $json.body?.contact?.attributionSource?.medium === 'instagram' ? 'instagram' : 'whatsapp' }}",
+              "type": "string"
+            },
+            {
+              "id": "api-key",
+              "name": "api_key",
+              "value": "={{ $json.body?.api_key || 'pit-7f333e6f-a839-4f58-b371-778fed9dc2ea' }}",
+              "type": "string"
+            },
+            {
+              "id": "tags",
+              "name": "tags",
+              "value": "={{ $json.body?.contact?.tags?.join(',') || $json.body?.tags || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-900, -11200],
+      "id": "extrair-info-lead",
+      "name": "Extrair Info Lead"
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contact_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-700, -11200],
+      "id": "buscar-lead-ghl",
+      "name": "Buscar Lead GHL",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $('Extrair Info Lead').first().json.contact_id }}/appointments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Extrair Info Lead').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-500, -11200],
+      "id": "buscar-appointments",
+      "name": "Buscar Appointments",
+      "retryOnFail": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_historico_mensagens",
+          "mode": "list"
+        },
+        "limit": 20,
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $('Extrair Info Lead').first().json.contact_id }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "created_at",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [-500, -11000],
+      "id": "buscar-historico",
+      "name": "Buscar Historico",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [-300, -11100],
+      "id": "merge-dados",
+      "name": "Merge Dados"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "nome-lead",
+              "name": "nome",
+              "value": "={{ $('Buscar Lead GHL').first().json.contact?.firstName || $('Extrair Info Lead').first().json.first_name || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "responsavel",
+              "name": "responsavel",
+              "value": "={{ $('Buscar Lead GHL').first().json.contact?.assignedTo || 'o especialista' }}",
+              "type": "string"
+            },
+            {
+              "id": "ultimo-appointment",
+              "name": "ultimo_appointment",
+              "value": "={{ $('Buscar Appointments').first().json.events?.[0]?.startTime || 'nao encontrado' }}",
+              "type": "string"
+            },
+            {
+              "id": "historico-resumo",
+              "name": "historico_resumo",
+              "value": "={{ $('Buscar Historico').all().slice(0, 10).map(h => h.json.message?.content || '').filter(m => m).join(' | ') || 'Sem historico' }}",
+              "type": "string"
+            },
+            {
+              "id": "tentativa-numero",
+              "name": "tentativa_numero",
+              "value": "={{ ($('Buscar Historico').all().filter(h => (h.json.message?.content || '').toLowerCase().includes('nao deu pra') || (h.json.message?.content || '').toLowerCase().includes('vi que')).length || 0) + 1 }}",
+              "type": "number"
+            },
+            {
+              "id": "hora-atual",
+              "name": "hora_atual",
+              "value": "={{ $now.hour }}",
+              "type": "number"
+            },
+            {
+              "id": "dia-semana",
+              "name": "dia_semana",
+              "value": "={{ $now.weekday }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-100, -11100],
+      "id": "preparar-contexto",
+      "name": "Preparar Contexto"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {
+          "temperature": 0.9
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [300, -10800],
+      "id": "modelo-gemini",
+      "name": "Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Gere UMA mensagem de abertura para recuperar este lead que deu no-show.\n\nContexto:\n- Nome: {{ $('Preparar Contexto').first().json.nome || 'Lead' }}\n- Tentativa: {{ $('Preparar Contexto').first().json.tentativa_numero }}\n- Hora atual: {{ $('Preparar Contexto').first().json.hora_atual }}h\n- Historico resumido: {{ $('Preparar Contexto').first().json.historico_resumo }}",
+        "options": {
+          "systemMessage": "# GERADOR DE MENSAGENS DE REAGENDAMENTO - ANTI-BLOQUEIO\n\nVoce e um especialista em criar mensagens UNICAS para recuperar leads que deram no-show.\n\n## OBJETIVO\nGerar UMA mensagem curta, casual e personalizada para abordar o lead.\nCADA mensagem deve ser DIFERENTE - nunca repita padroes.\n\n## REGRAS ABSOLUTAS\n\n1. **VARIACAO OBRIGATORIA**: Cada mensagem deve ser unica\n2. **MAX 80 CARACTERES**: Mensagem curta para WhatsApp\n3. **TOM CASUAL**: Use vc, ta, pra, to, q, tb\n4. **SEM DOIS PONTOS**: Nunca use \":\"\n5. **SEM EMOJIS EXCESSIVOS**: Maximo 1 emoji (ou nenhum)\n6. **NAO MENCIONE NO-SHOW DIRETAMENTE**: Seja sutil\n7. **NUNCA DIGA 'REUNIAO' NA PRIMEIRA MSG**: Seja casual primeiro\n\n## VARIACOES DE ABERTURA (escolha aleatorio)\n\n### ESTILO 1 - Checagem casual\n- \"Oi [nome], tudo bem por ai?\"\n- \"E ai [nome], como ta?\"\n- \"Oi [nome]! Sumiu rs\"\n- \"Fala [nome], beleza?\"\n\n### ESTILO 2 - Mencao sutil ao compromisso\n- \"Oi [nome], vi que nao deu pra gente se falar\"\n- \"E ai [nome], ficou tudo bem ontem?\"\n- \"Oi [nome], aconteceu algo?\"\n\n### ESTILO 3 - Preocupacao genuina\n- \"Oi [nome], ta tudo certo?\"\n- \"[nome], tudo bem com vc?\"\n- \"Oi! Fiquei preocupada, ta bem?\"\n\n### ESTILO 4 - Retomada direta (tentativa 2+)\n- \"Oi [nome], consegui um horario especial pra vc\"\n- \"[nome], ainda consigo te encaixar essa semana\"\n- \"Oi! Sobrou uma vaga, pensei em vc\"\n\n## PERSONALIZACAO POR HORA\n\n- Manha (6-12h): \"Bom dia [nome]...\"\n- Tarde (12-18h): \"Oi [nome]...\" ou \"E ai [nome]...\"\n- Noite (18-22h): \"Boa noite [nome]...\" ou \"Oi [nome]...\"\n\n## PERSONALIZACAO POR TENTATIVA\n\n- Tentativa 1: Apenas checagem casual, sem mencionar reuniao\n- Tentativa 2: Pode mencionar que viu que nao deu pra falar\n- Tentativa 3: Pode ser mais direto com oferta de horario\n\n## EXEMPLOS DE OUTPUT\n\n\"Oi Maria, tudo bem por ai?\"\n\"E ai Joao, como ta?\"\n\"Boa noite Ana! Sumiu rs\"\n\"Oi Pedro, vi que nao deu ontem. Ta tudo certo?\"\n\"Fala Carlos, beleza?\"\n\"Oi Lucia, aconteceu algo? Fiquei preocupada\"\n\n## FORMATO DE SAIDA\n\nRetorne APENAS a mensagem, sem explicacoes.\nNao use aspas na saida.\nNao inclua [nome] - substitua pelo nome real.",
+          "maxIterations": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [100, -11100],
+      "id": "ia-gerador-mensagem",
+      "name": "IA Gerador Mensagem",
+      "retryOnFail": true,
+      "maxTries": 3
+    },
+    {
+      "parameters": {
+        "jsCode": "// Limpar e validar a mensagem gerada\nlet mensagem = $('IA Gerador Mensagem').first().json.output || '';\n\n// Remover aspas, quebras de linha, espacos extras\nmensagem = mensagem\n  .replace(/^\"|\"$/g, '')  // Remove aspas no inicio/fim\n  .replace(/^'|'$/g, '')  // Remove aspas simples\n  .replace(/\\n/g, ' ')    // Remove quebras de linha\n  .replace(/\\s+/g, ' ')   // Remove espacos duplos\n  .replace(/:/g, '')      // Remove dois pontos\n  .trim();\n\n// Validacoes\nconst valida = mensagem.length > 5 && mensagem.length < 150;\nconst contemTools = mensagem.toLowerCase().includes('tool');\nconst contemError = mensagem.toLowerCase().includes('error');\n\n// Se invalida, usar fallback\nif (!valida || contemTools || contemError) {\n  const nome = $('Preparar Contexto').first().json.nome || '';\n  const hora = $('Preparar Contexto').first().json.hora_atual;\n  \n  const fallbacks = [\n    `Oi${nome ? ' ' + nome : ''}, tudo bem por ai?`,\n    `E ai${nome ? ' ' + nome : ''}, como ta?`,\n    `Oi${nome ? ' ' + nome : ''}! Sumiu rs`,\n    `Fala${nome ? ' ' + nome : ''}, beleza?`,\n    `${nome || 'Oi'}, ta tudo certo?`\n  ];\n  \n  // Escolher aleatoriamente\n  mensagem = fallbacks[Math.floor(Math.random() * fallbacks.length)];\n}\n\nreturn {\n  json: {\n    mensagem_final: mensagem,\n    mensagem_original: $('IA Gerador Mensagem').first().json.output,\n    validacao: {\n      tamanho: mensagem.length,\n      valida: mensagem.length > 5 && mensagem.length < 150\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [300, -11100],
+      "id": "validar-mensagem",
+      "name": "Validar e Limpar Mensagem"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Extrair Info Lead').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"{{ $('Extrair Info Lead').first().json.source === 'instagram' ? 'IG' : 'SMS' }}\",\n  \"contactId\": {{ JSON.stringify($('Extrair Info Lead').first().json.contact_id) }},\n  \"message\": {{ JSON.stringify($json.mensagem_final) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, -11100],
+      "id": "enviar-mensagem-ghl",
+      "name": "Enviar Mensagem GHL",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Ativar tracking para follow-up continuar\nUPDATE n8n_schedule_tracking\nSET \n  ativo = true,\n  source = '{{ $('Extrair Info Lead').first().json.source || 'whatsapp' }}',\n  last_message_at = NOW(),\n  last_message_from = 'ia',\n  follow_up_count = 0\nWHERE unique_id = '{{ $('Extrair Info Lead').first().json.contact_id }}';\n\n-- Se nao existir, inserir\nINSERT INTO n8n_schedule_tracking (unique_id, location_id, ativo, source, last_message_from, created_at)\nSELECT \n  '{{ $('Extrair Info Lead').first().json.contact_id }}', \n  '{{ $('Extrair Info Lead').first().json.location_id }}', \n  true, \n  '{{ $('Extrair Info Lead').first().json.source || 'whatsapp' }}', \n  'ia', \n  NOW()\nWHERE NOT EXISTS (\n  SELECT 1 FROM n8n_schedule_tracking \n  WHERE unique_id = '{{ $('Extrair Info Lead').first().json.contact_id }}'\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [700, -11100],
+      "id": "ativar-tracking",
+      "name": "Ativar Tracking",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_historico_mensagens",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={\n  \"type\": \"ai\",\n  \"content\": {{ JSON.stringify($('Validar e Limpar Mensagem').first().json.mensagem_final) }},\n  \"tool_calls\": [],\n  \"additional_kwargs\": { \"source\": \"reagendamento_noshow\" }\n}",
+            "session_id": "={{ $('Extrair Info Lead').first().json.contact_id }}"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [900, -11100],
+      "id": "salvar-historico",
+      "name": "Salvar no Historico",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "lead_id",
+              "value": "={{ $('Extrair Info Lead').first().json.contact_id }}"
+            },
+            {
+              "key": "mensagem_enviada",
+              "value": "={{ $('Validar e Limpar Mensagem').first().json.mensagem_final }}"
+            },
+            {
+              "key": "tentativa",
+              "value": "={{ $('Preparar Contexto').first().json.tentativa_numero }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1.1,
+      "position": [1100, -11100],
+      "id": "salvar-execution-data",
+      "name": "Salvar Execution Data"
+    }
+  ],
+  "connections": {
+    "Webhook TAG Reagendar": {
+      "main": [
+        [
+          {
+            "node": "TAG e Reagendar?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TAG e Reagendar?": {
+      "main": [
+        [
+          {
+            "node": "Extrair Info Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Extrair Info Lead": {
+      "main": [
+        [
+          {
+            "node": "Buscar Lead GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Lead GHL": {
+      "main": [
+        [
+          {
+            "node": "Buscar Appointments",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Buscar Historico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Appointments": {
+      "main": [
+        [
+          {
+            "node": "Merge Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Historico": {
+      "main": [
+        [
+          {
+            "node": "Merge Dados",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Dados": {
+      "main": [
+        [
+          {
+            "node": "Preparar Contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Contexto": {
+      "main": [
+        [
+          {
+            "node": "IA Gerador Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IA Gerador Mensagem",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA Gerador Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Validar e Limpar Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar e Limpar Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Enviar Mensagem GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Mensagem GHL": {
+      "main": [
+        [
+          {
+            "node": "Ativar Tracking",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ativar Tracking": {
+      "main": [
+        [
+          {
+            "node": "Salvar no Historico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar no Historico": {
+      "main": [
+        [
+          {
+            "node": "Salvar Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "active": false
+}

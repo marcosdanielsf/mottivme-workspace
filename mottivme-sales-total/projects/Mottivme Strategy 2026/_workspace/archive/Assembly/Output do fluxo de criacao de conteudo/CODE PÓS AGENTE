@@ -1,0 +1,154 @@
+const agentOutput = $input.item.json.output;
+
+// Remove markdown code blocks
+let cleaned = typeof agentOutput === 'string' 
+  ? agentOutput.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim()
+  : JSON.stringify(agentOutput);
+
+try {
+  // Parse JSON
+  const parsed = JSON.parse(cleaned);
+  
+  // ✅ FORMATA TRILHA PARA AIRTABLE (calendário visual)
+  const trilhaFormatada = parsed.trilha_editorial.map(dia => 
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+    `📅 DIA ${dia.dia} | ${dia.dia_semana} ${dia.data_sugerida}\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `🎯 FASE: ${dia.fase}\n` +
+    `📌 PILAR: ${dia.pilar}\n` +
+    `🌡️ TEMPERATURA: ${dia.temperatura_lead}\n\n` +
+    `📝 TEMA:\n${dia.tema}\n\n` +
+    `🔍 ÂNGULO:\n${dia.angulo}\n\n` +
+    `🎬 FORMATO: ${dia.formato_primario}${dia.duracao_estimada ? ` (${dia.duracao_estimada})` : ''}\n\n` +
+    `🎪 GATILHO MENTAL: ${dia.gatilho_mental}\n\n` +
+    `🎯 OBJETIVO:\n${dia.objetivo}\n\n` +
+    `📊 MÉTRICA DE SUCESSO: ${dia.metrica_sucesso}\n\n` +
+    `💡 PONTOS-CHAVE:\n${dia.pontos_chave.map((p, i) => `  ${i+1}. ${p}`).join('\n')}\n\n` +
+    `🪝 HOOK SUGERIDO:\n"${dia.hook_sugerido}"\n\n` +
+    `📣 CTA (${dia.cta_tipo}):\n${dia.cta_texto}\n`
+  ).join('\n\n');
+  
+  // ✅ FORMATA ESTRATÉGIA RESUMO
+  const estrategiaFormatada = 
+    `📈 ESTRATÉGIA DO MÊS\n\n` +
+    `🎯 OBJETIVO:\n${parsed.estrategia_resumo.objetivo_mes}\n\n` +
+    `📊 PILARES DOMINANTES:\n${parsed.estrategia_resumo.pilares_dominantes.map(p => `• ${p}`).join('\n')}\n\n` +
+    `🎬 DISTRIBUIÇÃO DE FORMATOS:\n` +
+    `  • Reels: ${parsed.estrategia_resumo.distribuicao_formatos.reels}\n` +
+    `  • Stories: ${parsed.estrategia_resumo.distribuicao_formatos.stories}\n` +
+    `  • Carrosséis: ${parsed.estrategia_resumo.distribuicao_formatos.carrosseis}\n` +
+    `  • Posts: ${parsed.estrategia_resumo.distribuicao_formatos.posts}\n\n` +
+    `🎯 KPIs DO MÊS:\n${parsed.estrategia_resumo.kpis_mes.map(k => `• ${k}`).join('\n')}`;
+  
+  // ✅ FORMATA INSIGHTS POR SEMANA
+  const insightsFormatados = 
+    `💡 INSIGHTS ESTRATÉGICOS\n\n` +
+    `📅 SEMANA 1 (Awareness):\n${parsed.insights_estrategicos.semana_1}\n\n` +
+    `📅 SEMANA 2 (Educação):\n${parsed.insights_estrategicos.semana_2}\n\n` +
+    `📅 SEMANA 3 (Diferenciação):\n${parsed.insights_estrategicos.semana_3}\n\n` +
+    `📅 SEMANA 4 (Conversão):\n${parsed.insights_estrategicos.semana_4}`;
+  
+  // ✅ CRIA CALENDÁRIO SIMPLIFICADO (1 linha por dia)
+  const calendarioSimples = parsed.trilha_editorial.map(dia => 
+    `${dia.data_sugerida} (${dia.dia_semana}) | ${dia.formato_primario} | ${dia.tema}`
+  ).join('\n');
+  
+  // ✅ SEPARA APENAS OS DIAS COM REELS (para o próximo agente)
+  const diasComReels = parsed.trilha_editorial.filter(dia => 
+    dia.formato_primario === 'Reel'
+  );
+  
+  // ✅ ESTATÍSTICAS DA TRILHA
+  const stats = {
+    total_dias: parsed.trilha_editorial.length,
+    total_reels: diasComReels.length,
+    total_stories: parsed.trilha_editorial.filter(d => d.formato_primario === 'Story').length,
+    total_carrosseis: parsed.trilha_editorial.filter(d => d.formato_primario === 'Carrossel').length,
+    total_posts: parsed.trilha_editorial.filter(d => d.formato_primario === 'Post').length,
+    por_fase: {
+      awareness: parsed.trilha_editorial.filter(d => d.fase === 'Awareness').length,
+      educacao: parsed.trilha_editorial.filter(d => d.fase === 'Educação').length,
+      diferenciacao: parsed.trilha_editorial.filter(d => d.fase === 'Diferenciação').length,
+      conversao: parsed.trilha_editorial.filter(d => d.fase === 'Conversão').length
+    }
+  };
+  
+  const statsFormatadas = 
+    `📊 ESTATÍSTICAS DA TRILHA\n\n` +
+    `📅 Total de dias: ${stats.total_dias}\n\n` +
+    `🎬 FORMATOS:\n` +
+    `  • Reels: ${stats.total_reels}\n` +
+    `  • Stories: ${stats.total_stories}\n` +
+    `  • Carrosséis: ${stats.total_carrosseis}\n` +
+    `  • Posts: ${stats.total_posts}\n\n` +
+    `🌡️ POR FASE:\n` +
+    `  • Awareness: ${stats.por_fase.awareness} dias\n` +
+    `  • Educação: ${stats.por_fase.educacao} dias\n` +
+    `  • Diferenciação: ${stats.por_fase.diferenciacao} dias\n` +
+    `  • Conversão: ${stats.por_fase.conversao} dias`;
+  
+  console.log('✅ TRILHA EDITORIAL PARSEADA COM SUCESSO');
+  console.log(`📅 Total: ${stats.total_dias} dias`);
+  console.log(`🎬 Reels: ${stats.total_reels}`);
+  console.log(`👤 Expert: ${parsed.expert_name}`);
+  
+  return {
+    json: {
+      // Para Airtable - texto formatado
+      trilha_texto: trilhaFormatada,
+      estrategia_texto: estrategiaFormatada,
+      insights_texto: insightsFormatados,
+      calendario_texto: calendarioSimples,
+      stats_texto: statsFormatadas,
+      
+      // Para uso programático - JSON
+      trilha_json: JSON.stringify(parsed.trilha_editorial, null, 2),
+      trilha_completa_json: JSON.stringify(parsed, null, 2),
+      
+      // ✅ APENAS OS DIAS COM REELS (para próximo agente)
+      dias_reels_json: JSON.stringify(diasComReels, null, 2),
+      
+      // Metadata
+      expert_id: parsed.expert_id,
+      expert_name: parsed.expert_name,
+      total_dias: stats.total_dias,
+      total_reels: stats.total_reels,
+      stats: stats,
+      data_geracao: new Date().toISOString()
+    }
+  };
+  
+} catch (error) {
+  console.error('❌ ERRO NO PARSE:', error.message);
+  console.error('Output (primeiros 500 chars):', cleaned.substring(0, 500));
+  
+  throw new Error(`Parse falhou: ${error.message}`);
+}
+
+OUTPUT DO CODE 
+
+{
+  "errorMessage": "Unterminated string in JSON at position 5735 (line 143 column 35) [line 125]",
+  "errorDescription": "Parse falhou",
+  "errorDetails": {},
+  "n8nDetails": {
+    "nodeName": "Parse Trilha Editorial",
+    "nodeType": "n8n-nodes-base.code",
+    "nodeVersion": 2,
+    "n8nVersion": "1.119.1 (Self Hosted)",
+    "binaryDataMode": "default",
+    "stackTrace": [
+      "Error: Parse falhou: Unterminated string in JSON at position 5735 (line 143 column 35)",
+      "    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file+packages+nodes-base_@aws-sdk+credential-providers@3.808.0_asn1.js@5_afd197edb2c1f848eae21a96a97fab23/node_modules/n8n-nodes-base/dist/nodes/Code:125:9",
+      "    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file+packages+nodes-base_@aws-sdk+credential-providers@3.808.0_asn1.js@5_afd197edb2c1f848eae21a96a97fab23/node_modules/n8n-nodes-base/dist/nodes/Code:127:2",
+      "    at VM2 Wrapper.apply (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/@n8n+vm2@3.9.25/node_modules/@n8n/vm2/lib/bridge.js:490:11)",
+      "    at NodeVM.run (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/@n8n+vm2@3.9.25/node_modules/@n8n/vm2/lib/nodevm.js:497:23)",
+      "    at JavaScriptSandbox.runCodeAllItems (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file+packages+nodes-base_@aws-sdk+credential-providers@3.808.0_asn1.js@5_afd197edb2c1f848eae21a96a97fab23/node_modules/n8n-nodes-base/nodes/Code/JavaScriptSandbox.ts:73:36)",
+      "    at ExecuteContext.execute (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file+packages+nodes-base_@aws-sdk+credential-providers@3.808.0_asn1.js@5_afd197edb2c1f848eae21a96a97fab23/node_modules/n8n-nodes-base/nodes/Code/Code.node.ts:210:28)",
+      "    at WorkflowExecute.executeNode (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+sdk-trace-base@1.30_08b575bec2313d5d8a4cc75358971443/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:1093:31)",
+      "    at WorkflowExecute.runNode (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+sdk-trace-base@1.30_08b575bec2313d5d8a4cc75358971443/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:1274:22)",
+      "    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+sdk-trace-base@1.30_08b575bec2313d5d8a4cc75358971443/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:1708:38",
+      "    at processTicksAndRejections (node:internal/process/task_queues:105:5)"
+    ]
+  }
+}

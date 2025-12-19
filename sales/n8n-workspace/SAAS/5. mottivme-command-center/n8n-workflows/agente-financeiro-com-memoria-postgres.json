@@ -1,0 +1,294 @@
+{
+  "name": "Agente Financeiro IA - Com Memoria Postgres",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {"name": "mensagem", "type": "string"},
+            {"name": "telefone", "type": "string"},
+            {"name": "nome", "type": "string"},
+            {"name": "mensagens_antigas_firstitem", "type": "string"}
+          ]
+        }
+      },
+      "id": "start-trigger",
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [200, 400]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "01",
+              "name": "input_text",
+              "value": "={{ $json.mensagem }}",
+              "type": "string"
+            },
+            {
+              "id": "02",
+              "name": "telefone",
+              "value": "={{ $json.telefone }}",
+              "type": "string"
+            },
+            {
+              "id": "03",
+              "name": "session_id",
+              "value": "={{ 'bpo_financeiro_' + $json.telefone.replace(/[^0-9]/g, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "04",
+              "name": "user_name",
+              "value": "={{ $json.nome || 'Usuario' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "preparar-entrada",
+      "name": "Preparar Entrada",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [400, 400]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, session_id, role, content, created_at FROM chat_messages WHERE session_id = $1 ORDER BY created_at DESC LIMIT 10",
+        "options": {
+          "queryReplacement": "={{ $json.session_id }}"
+        }
+      },
+      "id": "buscar-historico",
+      "name": "Buscar Historico Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [600, 400],
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Buscar dados do input original\nconst inputData = $('Preparar Entrada').item.json;\nconst historico = $input.all();\n\n// Formatar historico para contexto\nlet contextoHistorico = '';\nconst mensagensOrdenadas = historico.reverse();\n\nfor (const msg of mensagensOrdenadas) {\n  if (msg.json.role === 'user') {\n    contextoHistorico += `Usuario: ${msg.json.content}\\n`;\n  } else if (msg.json.role === 'assistant') {\n    contextoHistorico += `Assistente: ${msg.json.content}\\n`;\n  }\n}\n\nreturn {\n  input_text: inputData.input_text,\n  session_id: inputData.session_id,\n  telefone: inputData.telefone,\n  user_name: inputData.user_name,\n  historico_contexto: contextoHistorico,\n  mensagens_count: historico.length\n};"
+      },
+      "id": "formatar-contexto",
+      "name": "Formatar Contexto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [800, 400]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list"
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "openai-model",
+      "name": "OpenAI GPT-4o",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [1000, 600],
+      "credentials": {
+        "openAiApi": {
+          "id": "SEU_CREDENTIAL_OPENAI",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.input_text }}",
+        "options": {
+          "systemMessage": "=# PAPEL\n\nVoce e a assistente financeira IA da Mottivme Sales, especializada em BPO Financeiro completo.\n\n# CONTEXTO DO USUARIO\n- Nome: {{ $json.user_name }}\n- Telefone: {{ $json.telefone }}\n- Session ID: {{ $json.session_id }}\n\n# HISTORICO DA CONVERSA (ultimas {{ $json.mensagens_count }} mensagens)\n{{ $json.historico_contexto }}\n\n# FERRAMENTAS DISPONIVEIS (14 tools)\n\n## Cadastros e Consultas\n1. **buscar_cliente_fornecedor** - Busca clientes/fornecedores\n2. **criar_cliente_fornecedor** - Cria novo cliente/fornecedor\n3. **listar_categorias** - Lista categorias financeiras\n\n## Movimentacoes\n4. **buscar_movimentacoes** - Consulta movimentacoes com filtros\n5. **salvar_movimentacao** - Salva nova movimentacao (apos confirmacao)\n\n## Parcelamentos e Recorrencias\n6. **criar_parcelamento** - Cria compra/venda parcelada\n7. **criar_recorrencia** - Cria despesa/receita mensal recorrente\n\n## Relatorios e Analises\n8. **fluxo_caixa_projetado** - Projecao de caixa 30 dias\n9. **relatorio_inadimplencia** - Clientes inadimplentes\n10. **dashboard_kpis** - Visao geral/resumo financeiro\n11. **dre_simplificado** - DRE dos ultimos meses\n12. **orcamento_realizado** - Planejado vs executado\n13. **centros_custo** - Despesas por centro de custo\n14. **conciliacao_bancaria** - Conciliacao bancaria\n\n# REGRAS\n1. SEMPRE use o historico para manter contexto\n2. SEMPRE confirme antes de salvar\n3. Respostas curtas (maximo 300 caracteres quando possivel)\n4. Use emojis para feedback: OK, X, ALERTA\n\n# DATA ATUAL\n{{ $now.format('DD/MM/YYYY HH:mm') }}"
+        }
+      },
+      "id": "agente-financeiro",
+      "name": "Agente Financeiro IA",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [1000, 400]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO chat_messages (session_id, role, content, created_at) VALUES ($1, 'user', $2, NOW())",
+        "options": {
+          "queryReplacement": "={{ $('Formatar Contexto').item.json.session_id }},${{ $('Formatar Contexto').item.json.input_text }}"
+        }
+      },
+      "id": "salvar-msg-usuario",
+      "name": "Salvar Msg Usuario",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1300, 300],
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO chat_messages (session_id, role, content, created_at) VALUES ($1, 'assistant', $2, NOW())",
+        "options": {
+          "queryReplacement": "={{ $('Formatar Contexto').item.json.session_id }},${{ $('Agente Financeiro IA').item.json.output }}"
+        }
+      },
+      "id": "salvar-msg-assistente",
+      "name": "Salvar Msg Assistente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1300, 500],
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "output-01",
+              "name": "output",
+              "value": "={{ $('Agente Financeiro IA').item.json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "formatar-saida",
+      "name": "Formatar Saida",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1500, 400]
+    },
+    {
+      "parameters": {
+        "name": "buscar_cliente_fornecedor",
+        "description": "Use esta ferramenta para consultar dados de clientes ou fornecedores no banco de dados.",
+        "workflowId": {
+          "__rl": true,
+          "value": "Uq3cdvnPIDwT2F8T",
+          "mode": "list"
+        }
+      },
+      "id": "tool-buscar-cliente",
+      "name": "Buscar Cliente/Fornecedor",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [800, 700]
+    },
+    {
+      "parameters": {
+        "name": "dashboard_kpis",
+        "description": "Dashboard com indicadores financeiros: resultado do mes, contas a pagar/receber, inadimplencia, projecoes.",
+        "workflowId": {
+          "__rl": true,
+          "value": "s6HIkSZxkKL90B18",
+          "mode": "list"
+        }
+      },
+      "id": "tool-dashboard",
+      "name": "Dashboard KPIs",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [920, 700]
+    },
+    {
+      "parameters": {
+        "name": "salvar_movimentacao",
+        "description": "Salva nova movimentacao financeira. IMPORTANTE: Use APENAS apos confirmacao do usuario.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UZSQ0ovulSKyfbfL",
+          "mode": "list"
+        }
+      },
+      "id": "tool-salvar-mov",
+      "name": "Salvar Movimentacao",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [1040, 700]
+    },
+    {
+      "parameters": {
+        "name": "listar_categorias",
+        "description": "Lista todas as categorias financeiras disponiveis.",
+        "workflowId": {
+          "__rl": true,
+          "value": "Acllbvk5jMEMDzd7",
+          "mode": "list"
+        }
+      },
+      "id": "tool-categorias",
+      "name": "Listar Categorias",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [1160, 700]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [[{"node": "Preparar Entrada", "type": "main", "index": 0}]]
+    },
+    "Preparar Entrada": {
+      "main": [[{"node": "Buscar Historico Postgres", "type": "main", "index": 0}]]
+    },
+    "Buscar Historico Postgres": {
+      "main": [[{"node": "Formatar Contexto", "type": "main", "index": 0}]]
+    },
+    "Formatar Contexto": {
+      "main": [[{"node": "Agente Financeiro IA", "type": "main", "index": 0}]]
+    },
+    "OpenAI GPT-4o": {
+      "ai_languageModel": [[{"node": "Agente Financeiro IA", "type": "ai_languageModel", "index": 0}]]
+    },
+    "Buscar Cliente/Fornecedor": {
+      "ai_tool": [[{"node": "Agente Financeiro IA", "type": "ai_tool", "index": 0}]]
+    },
+    "Dashboard KPIs": {
+      "ai_tool": [[{"node": "Agente Financeiro IA", "type": "ai_tool", "index": 0}]]
+    },
+    "Salvar Movimentacao": {
+      "ai_tool": [[{"node": "Agente Financeiro IA", "type": "ai_tool", "index": 0}]]
+    },
+    "Listar Categorias": {
+      "ai_tool": [[{"node": "Agente Financeiro IA", "type": "ai_tool", "index": 0}]]
+    },
+    "Agente Financeiro IA": {
+      "main": [[
+        {"node": "Salvar Msg Usuario", "type": "main", "index": 0},
+        {"node": "Salvar Msg Assistente", "type": "main", "index": 0}
+      ]]
+    },
+    "Salvar Msg Usuario": {
+      "main": [[{"node": "Formatar Saida", "type": "main", "index": 0}]]
+    },
+    "Salvar Msg Assistente": {
+      "main": [[{"node": "Formatar Saida", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {"executionOrder": "v1"},
+  "tags": ["agente", "financeiro", "memoria", "postgres"]
+}

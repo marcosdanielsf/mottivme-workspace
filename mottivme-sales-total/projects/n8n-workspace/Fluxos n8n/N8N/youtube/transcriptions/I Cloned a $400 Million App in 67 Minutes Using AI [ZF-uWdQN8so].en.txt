@@ -1,0 +1,530 @@
+Today, I'm going to clone a $400 million
+app alone without writing a single line
+of code. And I know that sounds crazy,
+but my goal is to prove to you that you
+can build your own app and that building
+an original idea can be a little
+overrated. So, in this video, I'm going
+to show you how to build it with just
+one tool. I'm also going to show you the
+exact thought process to go and build a
+business on top of existing demand.
+Let's get started.
+Now, the app I chose to clone for this
+challenge is a company that's been able
+to rack up more than 50 million active
+users before they actually sold for $425
+million to Atlassian. Now, you might
+have already guessed this, but yes, we
+will be building the most popular
+project management tool out there called
+Trello. Your next question is probably
+why are we going to try to compete
+against this huge company? So, let me
+quickly break down the strategy we're
+going to be using today.
+Now you see as companies start growing
+and maturing they start all using a very
+similar strategy which is to add
+additional features on top of their core
+feature set. Now the problem is that
+over time as you employ this strategy it
+can often also mean an increase in price
+but also just having kind of clunky
+cumbersome and totally bloated software.
+And so the strategy we're going to use
+today is to simply simplify the app to
+its core functionalities. again have a
+competitive pricing model and then
+target people who are frustrated with
+this software. Think of Calendarly. It's
+a billion-dollar company that literally
+just does one feature that so many other
+features already do. And the cool thing
+from there is that over time you can
+also identify a smaller segment that
+you're catering to and really fine-tune
+and differentiate by adding features
+specifically for those individuals.
+That's enough for strategy. Let's jump
+into the tool we're going to use to make
+this magic happen.
+This, my friends, is Emergent, and it's
+an AI coding platform that racked up
+more than $700,000 users in the first
+two months and reached $10 million in
+annual revenue in that same time period.
+$10 million a year in 2 months. Can't
+believe this is the world we live in
+right now. Anyway, they graduated from Y
+Combinator and have put together
+something that's really interesting. The
+ability to easily build MVPs like Vibe
+Coding and the ability to have
+enterprise level apps as well. And they
+are what nerds call full stack. Meaning
+that you can build the front end, the
+design, the visuals, buttons, etc. The
+back end, meaning all the
+functionalities, the database,
+integrations, authentication,
+storage, all of these things in one. And
+so now, let's jump in and start
+building.
+I'm going to hop into the platform. And
+the first thing I'm going to do is
+create a starter prompt. Now, the way I
+usually do this is actually by creating
+a full PRD, which is a product
+requirement document. It basically
+documents everything, all of the user
+flows, exactly how you want all the
+functionalities of your app to work as
+well as how you want it designed. But
+when I build clones, there is actually
+so much publicly available information
+about what we're actually building. I
+find that for apps that are popular, we
+don't have to go through that because
+there's a lot of publicly available
+information. And these agentic platforms
+are great at finding that and building
+exactly what we're talking about. So
+I'll have a much simpler prompt. So I'll
+just start by just saying, please build
+a simplified clone of Trello. Now the
+first thing it does here is run a web
+search query to figure out what it
+actually has to do right and when we say
+agentic platform what it means is that
+you have many different agents inside a
+platform that are responsible for
+different things. So one will go out
+right now and search the web and find
+out all the information about Trello it
+needs to then give it to a planning one
+which will start planning how it's done
+that'll send it to a different one
+that'll do the product requirement
+document that we talked about. And so if
+you hear people saying agentic, it just
+means there's lots of agents. And
+usually there's going to be some kind of
+a supervisor on top that gives
+instructions to those agents. And what
+it started opening up right now is the
+app preview. But if I close this, I can
+actually come back to seeing the code,
+previewing the app or deploying that
+app. So let's see what it's done here.
+It's now created a number of different
+files here, which is amazing. a board
+file, an app file, a list file, a card
+file, which are all the things or the
+elements we're going to need for a
+Trello board if you guys are familiar.
+And it also tells me here that it has
+agent will continue working after a
+reply. So, it's given me all this
+information and it recommends the next
+steps. But first, let's see what's
+actually being created here. Okay, look
+at this. As you can see here, you have
+basically a full Trello board, right?
+This is pretty cool. So, let's check it
+out because I'm guessing that a lot of
+this is simply just design. Ultimately,
+you have different categories. To-do, in
+progress, review, done, and it's showing
+us that each one of these cards also has
+additional information about them. So,
+let's go ahead and add a card. Hello.
+How are you? Let's see. Add this card.
+We now see that the cards themselves
+don't have all the features that it's
+showing here, but it's giving us
+examples of uh what you could have as
+features. Now, let's see if we can grab
+a card and we can shift it over. We can.
+So, the drag and drop works as well. And
+what if I add another list here? Let's
+call it test list. Perfect. So, that
+works. And if I put this inside here, it
+also should work. Perfect. Okay. So, it
+seems like the drag and drop
+functionalities work pretty well. Let's
+see what's up here. Okay, these buttons
+don't actually work yet, but it's pretty
+impressive what it's been able to do
+with just one shot. So, now let's come
+back here inside of the platform and
+continue to work. Now the
+recommendations here are to proceed with
+back-end development full stack
+application with database persistence.
+This now is building out the full
+backend functionalities including the
+ability to connect to APIs. It seems
+like it ran into a little bit of an
+issue here, but it identified its issue
+before I even had to say anything and
+started actually fixing it, which is
+really cool. And it's working on making
+the functionalities for the board, the
+lists, and also the individual cards to
+work properly. So remember on the front
+end we build user experience on the back
+end we're building out the
+functionalities that power those and
+then we have to start thinking about
+data where do you store the data in a
+database right but then if we create
+authentication which is each person
+creates their account we need to
+associate that data of that specific
+account to the account right so that
+when you log in you're going to find the
+information that you had right your
+project is going to be here and so those
+are going to be things we're going to
+have to test out here. So now it's
+finished working. It tells us it has
+successfully built out this app. And
+let's see whether or not that's true. So
+here we now see that these cards also
+work. It's full stack. Let's see add an
+additional card. So we see that it's
+pretty much working, but there are
+plenty of things in the app that don't
+work yet. So now that we have a full
+stack app, we're going to start to tweak
+the functionalities of it. Now the key
+here is to do element by element, not to
+try to solve everything at the same time
+and to fix the important things first.
+So, I'm going to start off with the
+cards. Please add more functionality to
+the cards. Each card when created should
+give us the ability to assign those to
+someone, priority level, deadline, etc.,
+etc. So, I'm basically telling it to add
+categories to the cards. Now, as it's
+working on that, let me show you
+something that you can also do. You can
+access the code here, but this is where
+it becomes really great for kind of
+enterprise level uh software is that
+that code you actually get access to
+within Visual Studio. And the reason why
+that's cool is that if you're working
+with a programmer, they'll quickly get
+access to something that they're very
+familiar with already. I don't want to
+spend too much time here, but here is
+the full app structure built out. And
+now, if I come back here, we can go
+ahead and check out the preview of the
+new app that has added. So, let's go
+ahead and add detailed cards. Now, we
+have the ability to add a card. We can
+call it hello world. And now the
+description priority level um low high
+priority date of accomplishment. We can
+choose the date tomorrow. We can choose
+a member. So this is obviously not yet
+functional. And then we can choose a
+category too. And now we can create the
+card. And boom, just like that, it
+creates the card. And we have the
+ability to move that card. So this is
+really cool. It's actually fixed that
+entire thing. And now we're just going
+to step by step continue to fine-tune
+this app exactly the way that we'd like
+it. Now, I recommend that you finish off
+this card fully before you move on to
+the next step. Right? If you want to add
+an additional category that's not here,
+make sure to do that before you jump
+into fixing other things. And because I
+don't want to bore you too too much with
+all the small details, I'm going to
+continue working on this and then I'm
+going to show you the next step.
+Okay, so now I'm happy with the board
+view. I'm happy with all the features
+inside of it. And I'm now going to
+create a whole different page, the
+experience, which is basically going to
+be the dashboard where if you haven't
+yet created a board, you can create new
+boards. If you do have boards, you can
+check them out there. And if you click
+on one of those boards, you're going to
+be able to open up this view that we
+have created here. The dashboard will
+also be the place where I want people to
+land once they sign up or sign into the
+app. And so I'm going to tell it exactly
+what I've just told you right here in
+one prompt. So that's the process. Once
+you've created all the functionalities
+inside one view or it could be a
+specific tab inside of a dashboard, you
+can move to adapting the functionalities
+in that next tab start to finish. So
+let's click on go and let this cook.
+Okay, so I see it only allows me to
+create very simple cards here. Okay, I
+would like for these cards to actually
+uh be more like the other cards that we
+had before. I'm going to ask it to
+actually change that. So I just put in a
+prompt here to fix that and now it's
+telling me you're absolutely right.
+We're going to fix that for you. Isn't
+it amazing when AI tells you what you
+want to hear? Okay, now it tells me it's
+done it. Let's check it out. Let's
+create a new board. This time we're
+going to call it Ian. We're going to
+select the color and we're going to
+create a new board. This board is now
+called Ian. I love how it's kind of like
+rearranged this. I click on Ian. Let's
+see if we add um another list. Add list.
+If I add a card here,
+add card. We give it a due date and then
+um attachment. No. Save changes. Boom.
+Error. Okay. Well, let's just screenshot
+this error here. And then we're going to
+upload it here.
+This is something that's pretty good
+practice. When you run into an error,
+boom, you just grab that error. You take
+a screenshot, upload it. I really love
+this Aentic infrastructure. No wonder
+they already have a million users. It's
+done. Let's see what is cooked up. Go
+ahead and add a new one. Christian
+create board.
+Click inside Christian. Add a new list
+to do. Add list. And then add a card. My
+card. Excellent. Add the card. Perfect.
+Now, if I click on this, excellent. I
+can do all this stuff.
+Due date. Select a due date. label
+design. Excellent. Save changes. And now
+it has saved them. This is really cool.
+And now I can add another list uh in
+progress.
+Add. Boom. Excellent. And then add a
+card here. Uh or just drag this card.
+Oh, sorry. This was I shouldn't be doing
+that, but it works perfectly. Boom. Drag
+it over. Guys, it works. But even before
+this, we need to have a landing page.
+And we then need to have people log in
+to be able to have access to this
+information. So let's go ahead and ask
+for it to do authentication. Now
+authentication is not just about letting
+people inside your app. It's also about
+connecting those individuals to the data
+they've created inside the app so that
+if you log in, you're not going to find
+someone else's boards. You also need to
+consider sign up, sign in, forgot
+password, reset password, all of these
+different scenarios and they're all
+going to be included inside of the
+authentication. Bang bang, here we are.
+are my friends. Let's check out what
+they've built out in full screen. So,
+it's created a landing page, Prello
+clone. Maybe I'm going to change the
+name of this. Organize your work and
+life finally. Turn your team's chaos
+into organized workflows. Collaborate,
+manage project, and reach your new
+productivity peaks. Excellent. So,
+everything you need, team collaboration,
+lightning fast, secure, and private.
+Love it. But the more important thing
+here is that if I want to sign up, it
+should have a full signup experience.
+Let's go ahead and put in a uh password
+here. And I am inside of my boards.
+Okay, let's create a new board. We'll
+call it test board.
+Let's go ahead and uh click on one of
+these colors. Test board. Open that up.
+I unfortunately have not yet done my
+taxes. And that's okay because there was
+a an extension here. And let's go ahead
+and save that. Boom. Tax documentation.
+It progresses. And the next step here is
+to actually implement real
+authentication because now it's telling
+me exactly what to do. I'm going to just
+tell it to do these one by one. Go ahead
+and allow it to do them one by one.
+Okay, so it's finished cooking. Now
+let's check it out. Now let's go ahead
+and sign up. This time we're going to be
+signing up with let's see a different
+email address. Let's go ahead and close
+this here. Check it out. Now we even
+have a an entire thing. I know that it's
+working because I can sign out. Can also
+potentially even enter settings,
+profile. Okay, these I can't yet get
+access to. I would have to build these
+out as well. But yeah, now this thing
+works.
+Okay, so Emergent actually has its own
+native backend, meaning that it already
+has built-in database, authentication,
+payments, deployment, and scaling as
+well. That pretty much eliminates the
+reliance for thirdparty tools like
+Superbase. And the next step here, we're
+just going to follow it. It's going to
+say to just basically um connect the
+database basically. Okay, so this is it.
+The moment of truth. If this works, it
+means that we should not have any data
+in the database. It should have cleared
+the database because now we're going to
+be able to actually have data that
+works. So, let's see if this actually
+worked out. Boom. We don't have any
+data. That is great news. Let's go ahead
+and create our first board here. So, my
+project is going to be build your app.
+And we're going to go ahead and create
+this. Now, we're going to open this up.
+Add list
+in progress. Boom. Add card. Um, start
+researching
+app ideas. Add this card. Now, let's go
+ahead and add the details to this card.
+go to Reddit and do research on pain
+points. And then we're going to go ahead
+and add a member. We're going to label
+it design. We're going to go ahead and
+grab a due date um 11th. And we're going
+to save this. Now, let's create a new
+one. So, this list is going to be to-do.
+Here, we're going to add a card. Hello.
+Add card. Now, we're going to create
+another one. See if this drag and drop
+works. In progress.
+Add list.
+Hey, it now works, my friends. Okay, so
+now let's come back to the boards here.
+And we're going to want to do two more
+things as I just mentioned before we
+launch this. First of all, let me just
+log out. Sign out. Boom. Look at that.
+Works perfectly. Log back in. Let's go
+ahead and do that. Boom. Just like that.
+Close. Testing is everything here, my
+friends. So, I highly recommend that you
+get a couple people to sign in, sign
+out, create new accounts, create boards,
+start using these boards, my friends.
+We're not yet ready to launch this
+platform. Why? Because we're not ready
+to publish this app until we've debugged
+it. And that's one of the things that
+Emer is really good at. So, I'm going to
+write, please debug this app and prepare
+it to be published. Boom. Now, after we
+do the debugging, but before we launch,
+there are two final steps. The first one
+is going to be for us to actually
+publish this. The second thing is going
+to be to connect it to a domain. I'm
+going to show you how you can do that.
+But we're almost there, my friends.
+About an hour into the build here, and
+hopefully we'll be done before 2 hours.
+It all really depends on how easy it is
+now. So, let's go back and check out
+what it's built out for us. Okay, so it
+just finished debugging. Now, let's
+check out what it's telling us.
+Essentially, over here, it's telling us
+everything that it actually did in terms
+of the test that we passed pretty much
+everything. 21 total features tested,
+100% success rate. Excellent. So now I
+think we are going to be ready for
+production, meaning that we can deploy
+this app. There's a couple steps in
+deployment, building the package,
+migrating the database, exporting the
+secrets, which are basically the API uh
+keys, deploy, and then run a health
+check. So let's allow it to do its
+magic. It says here that it's going to
+take a couple of minutes and then we're
+going to see where we are at.
+Sign up. Full sign up experience. Log
+in. Same thing. If we go a bit further
+down and we choose to start the free
+trial, it's going to make us create an
+account, which is great. Let's go for
+this. Boom. We are logged in. And now,
+my friends, we can create our first
+board here or here. Once we do have a
+first board created, this will fully
+work. Christian's
+uh board.
+Let's go ahead and enter that. Perfect.
+Now we can come in here and again we
+will be able to create all this. Hey
+then the second one will be
+and the third one will be
+let's see hi. Let's be absolutely
+innovative here. Let's create a new
+card. Uh try pancakes.
+I'm not even spelling any of this stuff
+right. But it doesn't matter. The goal
+is that we see that all of this stuff
+now works. Uh we can adapt stuff as we
+wish. We can now make it work. You can
+share. It's absolutely amazing my
+friends. We have deployed our first app.
+But one thing that people always ask me
+for is Christian, how do I connect my
+custom domain? So let's check it out.
+Right here underneath there is a way to
+link a domain. Custom domain link it
+right here. And here if I put a custom
+domain, for example, we are no code to
+next. It's going to try to find that
+domain and help you connect it. It's
+going to give you instructions right
+here how to connect your domain. And in
+this case, I'm going to be able to then
+check the status once I've updated that.
+So you would have to go inside of your
+domain registar. So maybe you bought
+this under GoDaddy or Namecheep or any
+other platform like that for that
+matter. You're going to have to direct
+that so that every time that people come
+and click on this, they have it
+connected to your website. And once
+you've connected this, you're going to
+see this being green and you can click
+on redeploy. Now, if you enjoyed this
+video, but want to watch me build a full
+microsass from scratch and get first
+paying customers, then check out this
+video, my friends, because that's
+exactly what I'm going to do in there.
+And if you like this, subscribe to the
+channel. Let's go.

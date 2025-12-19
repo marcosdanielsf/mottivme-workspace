@@ -1,0 +1,70 @@
+{
+  "name": "Registrar Custo IA",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Sub-Workflow: Registrar Custo IA\n\nChame este workflow passando:\n- workflow_name\n- contact_id, contact_name\n- location_id, location_name\n- canal (whatsapp/instagram)\n- tipo_acao (reagendamento, follow_up, etc)\n- modelo_ia (gemini-2.0-flash, groq, etc)\n- tokens_input, tokens_output (opcional)\n- mensagem_entrada, mensagem_saida (opcional)",
+        "height": 300,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-200, -100],
+      "id": "note-001",
+      "name": "Instrucoes"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 200],
+      "id": "trigger-001",
+      "name": "Receber Dados"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Tabela de preços por modelo (USD por 1M tokens)\nconst precos = {\n  'gemini-2.0-flash': { input: 0.10, output: 0.40 },\n  'gemini-2.5-flash': { input: 0.075, output: 0.30 },\n  'gemini-1.5-flash': { input: 0.075, output: 0.30 },\n  'gemini-1.5-pro': { input: 1.25, output: 5.00 },\n  'gpt-4o': { input: 2.50, output: 10.00 },\n  'gpt-4o-mini': { input: 0.15, output: 0.60 },\n  'claude-3-sonnet': { input: 3.00, output: 15.00 },\n  'claude-3-haiku': { input: 0.25, output: 1.25 },\n  'groq-llama3-70b': { input: 0.59, output: 0.79 },\n  'groq-llama3-8b': { input: 0.05, output: 0.08 },\n  'groq-mixtral-8x7b': { input: 0.24, output: 0.24 },\n  'default': { input: 0.10, output: 0.40 }\n};\n\n// Pegar modelo ou usar default\nconst modelo = input.modelo_ia || 'gemini-2.0-flash';\nconst preco = precos[modelo] || precos['default'];\n\n// Tokens (usar valores passados ou estimativas)\nconst tokens_input = parseInt(input.tokens_input) || 500;\nconst tokens_output = parseInt(input.tokens_output) || 50;\n\n// Calcular custo\nconst custo_input = (tokens_input / 1000000) * preco.input;\nconst custo_output = (tokens_output / 1000000) * preco.output;\nconst custo_total = custo_input + custo_output;\n\nreturn {\n  json: {\n    workflow_id: input.parent_workflow_id || $workflow.id,\n    workflow_name: input.parent_workflow_name || $workflow.name,\n    execution_id: input.parent_execution_id || $execution.id,\n    contact_id: input.contact_id || '',\n    contact_name: input.contact_name || '',\n    location_id: input.location_id || '',\n    location_name: input.location_name || '',\n    canal: input.canal || 'whatsapp',\n    tipo_acao: input.tipo_acao || 'ia_generica',\n    modelo_ia: modelo,\n    tokens_input: tokens_input,\n    tokens_output: tokens_output,\n    custo_usd: parseFloat(custo_total.toFixed(6)),\n    mensagem_entrada: (input.mensagem_entrada || '').substring(0, 1000),\n    mensagem_saida: (input.mensagem_saida || '').substring(0, 1000)\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 200],
+      "id": "calcular-001",
+      "name": "Calcular Custo"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://bfumywvwubvernvhjehk.supabase.co/rest/v1/n8n_custos_execucao",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "apikey", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao"},
+            {"name": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao"},
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Prefer", "value": "return=minimal"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 200],
+      "id": "inserir-001",
+      "name": "Inserir Supabase"
+    }
+  ],
+  "connections": {
+    "Receber Dados": {
+      "main": [[{"node": "Calcular Custo", "type": "main", "index": 0}]]
+    },
+    "Calcular Custo": {
+      "main": [[{"node": "Inserir Supabase", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {"executionOrder": "v1"},
+  "meta": {}
+}

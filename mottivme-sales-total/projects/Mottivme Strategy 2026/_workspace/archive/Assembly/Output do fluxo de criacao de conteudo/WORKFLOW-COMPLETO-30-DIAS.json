@@ -1,0 +1,160 @@
+{
+  "name": "Trilha Editorial 30 Dias - 2 Partes",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "start-node",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Crie uma trilha editorial estratégica de 15 dias (PRIMEIRA QUINZENA).\n\n**DADOS DO EXPERT:**\n\nNome: {{ $json.expert_name }}\nID: {{ $json.expert_id }}\nDATA: {{ $now.format('FFFF') }}  \n\n**CONFIGURAÇÃO:**\nFormalidade: {{ $json.formality }}/10\nArquétipo Principal: {{ $json.arquetipo_principal }} - {{ $json.expert_data.arquetipo_principal.percentage }}/100\nArquétipo Secundário: {{ $json.expert_data.arquetipo_secundario.name }} - {{ $json.expert_data.arquetipo_secundario.percentage }}/100\n\n**POSICIONAMENTO:**\nPromessa: {{ $json.promessa }}\nMecanismo: {{ $json.mecanismo }}\nDiferenciação: {{ $json.diferenciacao }}\nPropósito: {{ $json.proposito }}\nMissão: {{ $json.missao }}\n\n**VALORES CORE:**\n{{ $json.core_value_nome }} - {{ $json.core_value_manifestacao }}\nSupporting Values:\n{{ $json.supporting_values_formatados }}",
+        "options": {
+          "systemMessage": "Você é um estrategista de conteúdo especializado em criar trilhas editoriais para experts.\n\n**SUA MISSÃO:**\nCriar a PRIMEIRA QUINZENA (dias 1-15) de uma trilha editorial estratégica que:\n1. Posicione o expert como autoridade\n2. Eduque o público-alvo progressivamente\n3. Prepare para conversão\n4. Mantenha engajamento consistente\n\n⚠️ **IMPORTANTE**: Você está criando APENAS OS PRIMEIROS 15 DIAS. Haverá uma segunda parte (dias 16-30).\n\n---\n\n## FRAMEWORK: TRILHA EDITORIAL PARTE 1 (DIAS 1-15)\n\n### **Estrutura dos 15 Dias:**\n\n**Dias 1-4: AWARENESS (Consciência do Problema)**\n- Dias 1-2: Expor o problema que o avatar enfrece\n- Dias 3-4: Agitar a dor, mostrar consequências\n\n**Dias 5-8: EDUCAÇÃO (Mostrar o Novo Caminho)**\n- Dias 5-6: Introduzir conceitos-chave do método\n- Dias 7-8: Desconstruir crenças limitantes\n\n**Dias 9-12: DIFERENCIAÇÃO (Por Que Este Expert)**\n- Dias 9-10: Demonstrar diferenciação/único\n- Dias 11-12: Prova social, resultados, autoridade\n\n**Dias 13-15: TRANSIÇÃO PARA CONVERSÃO**\n- Dia 13: Mostrar caminho claro\n- Dia 14: Urgência suave\n- Dia 15: Preparar para segunda quinzena (conversão)\n\n---\n\n## FORMATO DE SAÍDA\n\nRetorne APENAS JSON válido COM OS 15 DIAS COMPLETOS:\n\n```json\n{\n  \"trilha_editorial\": [\n    {\n      \"dia\": 1,\n      \"data_sugerida\": \"2025-11-24\",\n      \"dia_semana\": \"Segunda\",\n      \"fase\": \"Awareness\",\n      \"pilar\": \"Problema/Dor\",\n      \"tema\": \"título descritivo do tema\",\n      \"angulo\": \"ângulo específico a abordar\",\n      \"formato_primario\": \"Reel / Story / Carrossel / Post\",\n      \"duracao_estimada\": \"15s / 30s / 60s / N/A\",\n      \"objetivo\": \"qual comportamento queremos\",\n      \"metrica_sucesso\": \"views / engajamento / saves / shares / agendamentos\",\n      \"gatilho_mental\": \"qual gatilho usar\",\n      \"cta_tipo\": \"suave / moderado / forte / nenhum\",\n      \"cta_texto\": \"texto do CTA\",\n      \"pontos_chave\": [\n        \"ponto 1 a abordar\",\n        \"ponto 2 a abordar\",\n        \"ponto 3 a abordar\"\n      ],\n      \"hook_sugerido\": \"exemplo de hook que funciona\",\n      \"temperatura_lead\": \"frio / morno / quente\"\n    }\n  ],\n  \"expert_id\": \"[id]\",\n  \"expert_name\": \"[nome]\",\n  \"estrategia_resumo\": {\n    \"objetivo_quinzena\": \"descrição do objetivo dos primeiros 15 dias\",\n    \"pilares_dominantes\": [\"pilar1\", \"pilar2\", \"pilar3\"],\n    \"distribuicao_formatos\": {\n      \"reels\": \"X%\",\n      \"stories\": \"X%\",\n      \"carrosseis\": \"X%\",\n      \"posts\": \"X%\"\n    },\n    \"kpis_quinzena\": [\n      \"KPI 1 esperado\",\n      \"KPI 2 esperado\",\n      \"KPI 3 esperado\"\n    ]\n  },\n  \"insights_estrategicos\": {\n    \"semana_1\": \"insight sobre a primeira semana (dias 1-7)\",\n    \"semana_2\": \"insight sobre primeira metade da segunda semana (dias 8-15)\"\n  },\n  \"parte\": 1,\n  \"total_partes\": 2\n}\n```\n\n⚠️ **CRÍTICO**: RETORNE OS 15 DIAS COMPLETOS. NÃO TRUNCAR. SE NECESSÁRIO, SEJA MAIS CONCISO NOS TEXTOS, MAS RETORNE TODOS OS 15 DIAS."
+        }
+      },
+      "id": "agente-parte-1",
+      "name": "Agente Parte 1 (Dias 1-15)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        460,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Crie a continuação da trilha editorial estratégica: dias 16-30 (SEGUNDA QUINZENA).\n\n**DADOS DO EXPERT:**\n\nNome: {{ $json.expert_name }}\nID: {{ $json.expert_id }}\nDATA: {{ $now.format('FFFF') }}  \n\n**CONFIGURAÇÃO:**\nFormalidade: {{ $json.formality }}/10\nArquétipo Principal: {{ $json.arquetipo_principal }} - {{ $json.expert_data.arquetipo_principal.percentage }}/100\nArquétipo Secundário: {{ $json.expert_data.arquetipo_secundario.name }} - {{ $json.expert_data.arquetipo_secundario.percentage }}/100\n\n**POSICIONAMENTO:**\nPromessa: {{ $json.promessa }}\nMecanismo: {{ $json.mecanismo }}\nDiferenciação: {{ $json.diferenciacao }}\nPropósito: {{ $json.proposito }}\nMissão: {{ $json.missao }}\n\n**VALORES CORE:**\n{{ $json.core_value_nome }} - {{ $json.core_value_manifestacao }}\nSupporting Values:\n{{ $json.supporting_values_formatados }}",
+        "options": {
+          "systemMessage": "Você é um estrategista de conteúdo especializado em criar trilhas editoriais para experts.\n\n**SUA MISSÃO:**\nCriar a SEGUNDA QUINZENA (dias 16-30) de uma trilha editorial estratégica que:\n1. Continue o aquecimento da primeira quinzena\n2. Intensifique a conversão\n3. Supere objeções\n4. Facilite a decisão\n\n⚠️ **IMPORTANTE**: Você está criando a CONTINUAÇÃO (dias 16-30). Os dias 1-15 já foram criados na primeira parte.\n\n---\n\n## FRAMEWORK: TRILHA EDITORIAL PARTE 2 (DIAS 16-30)\n\n### **Estrutura dos 15 Dias:**\n\n**Dias 16-18: REFORÇO DE DIFERENCIAÇÃO**\n- Dia 16: Comparação com abordagens tradicionais\n- Dia 17: Por que outros métodos falham\n- Dia 18: O que torna este método único\n\n**Dias 19-22: PROVA SOCIAL INTENSIVA**\n- Dia 19-20: Cases detalhados de transformação\n- Dia 21: Depoimentos/resultados específicos\n- Dia 22: Autoridade/credenciais\n\n**Dias 23-26: CONVERSÃO DIRETA**\n- Dia 23: Urgência (se genuíno)\n- Dia 24: Escassez (se genuíno)\n- Dia 25: Superar objeção #1\n- Dia 26: Superar objeção #2\n\n**Dias 27-30: FACILITAR DECISÃO**\n- Dia 27: Próximo passo claro\n- Dia 28: CTA forte\n- Dia 29: Último empurrão\n- Dia 30: Recapitulação + CTA final\n\n---\n\n## FORMATO DE SAÍDA\n\nRetorne APENAS JSON válido COM OS 15 DIAS COMPLETOS (16-30):\n\n```json\n{\n  \"trilha_editorial\": [\n    {\n      \"dia\": 16,\n      \"data_sugerida\": \"2025-12-08\",\n      \"dia_semana\": \"Segunda\",\n      \"fase\": \"Diferenciação\",\n      \"pilar\": \"Comparação/Contraste\",\n      \"tema\": \"título descritivo do tema\",\n      \"angulo\": \"ângulo específico a abordar\",\n      \"formato_primario\": \"Reel / Story / Carrossel / Post\",\n      \"duracao_estimada\": \"15s / 30s / 60s / N/A\",\n      \"objetivo\": \"qual comportamento queremos\",\n      \"metrica_sucesso\": \"views / engajamento / saves / shares / agendamentos\",\n      \"gatilho_mental\": \"qual gatilho usar\",\n      \"cta_tipo\": \"suave / moderado / forte\",\n      \"cta_texto\": \"texto do CTA\",\n      \"pontos_chave\": [\n        \"ponto 1 a abordar\",\n        \"ponto 2 a abordar\",\n        \"ponto 3 a abordar\"\n      ],\n      \"hook_sugerido\": \"exemplo de hook que funciona\",\n      \"temperatura_lead\": \"quente\",\n      \"objecao_abordada\": \"qual objeção este dia supera (se aplicável)\"\n    }\n  ],\n  \"expert_id\": \"[id]\",\n  \"expert_name\": \"[nome]\",\n  \"estrategia_resumo\": {\n    \"objetivo_quinzena\": \"descrição do objetivo dos últimos 15 dias\",\n    \"pilares_dominantes\": [\"pilar1\", \"pilar2\", \"pilar3\"],\n    \"distribuicao_formatos\": {\n      \"reels\": \"X%\",\n      \"stories\": \"X%\",\n      \"carrosseis\": \"X%\",\n      \"posts\": \"X%\"\n    },\n    \"kpis_quinzena\": [\n      \"Agendamentos\",\n      \"Taxa de conversão\",\n      \"Vendas geradas\"\n    ],\n    \"objecoes_superadas\": [\n      \"Objeção 1\",\n      \"Objeção 2\",\n      \"Objeção 3\"\n    ]\n  },\n  \"insights_estrategicos\": {\n    \"semana_3\": \"insight sobre segunda metade da segunda semana (dias 16-21)\",\n    \"semana_4\": \"insight sobre a última semana (dias 22-30)\"\n  },\n  \"parte\": 2,\n  \"total_partes\": 2\n}\n```\n\n⚠️ **CRÍTICO**: \n1. COMECE DO DIA 16 (não do dia 1!)\n2. RETORNE OS 15 DIAS COMPLETOS (16-30)\n3. NÃO TRUNCAR"
+        }
+      },
+      "id": "agente-parte-2",
+      "name": "Agente Parte 2 (Dias 16-30)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        460,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentOutput = $input.item.json.output;\n\nlet cleaned = typeof agentOutput === 'string'\n  ? agentOutput.replace(/```json\\s*/g, '').replace(/```\\s*/g, '').trim()\n  : JSON.stringify(agentOutput);\n\nconsole.log('📝 Tamanho do output:', cleaned.length);\n\nfunction forceCloseJSON(jsonStr) {\n  console.log('🔧 Forçando fechamento de JSON truncado...');\n  const lines = jsonStr.split('\\n');\n  let validJSON = '';\n  let lastValidLine = -1;\n\n  for (let i = lines.length - 1; i >= 0; i--) {\n    const line = lines[i].trim();\n    if (!line || line === '{' || line === '[' || line === ',') continue;\n    if (line.match(/[\",\\}\\]]$/)) {\n      lastValidLine = i;\n      break;\n    }\n  }\n\n  if (lastValidLine > 0) {\n    validJSON = lines.slice(0, lastValidLine + 1).join('\\n');\n    validJSON = validJSON.replace(/,(\\s*[\\}\\]])$/, '$1');\n  } else {\n    validJSON = jsonStr;\n  }\n\n  let openBraces = 0, closeBraces = 0, openBrackets = 0, closeBrackets = 0;\n  let inString = false, escaped = false;\n\n  for (let i = 0; i < validJSON.length; i++) {\n    const char = validJSON[i];\n    if (char === '\\\\' && !escaped) { escaped = true; continue; }\n    if (char === '\"' && !escaped) inString = !inString;\n    if (!inString) {\n      if (char === '{') openBraces++;\n      if (char === '}') closeBraces++;\n      if (char === '[') openBrackets++;\n      if (char === ']') closeBrackets++;\n    }\n    escaped = false;\n  }\n\n  let closers = '';\n  const quoteCount = (validJSON.match(/\"/g) || []).length;\n  if (quoteCount % 2 !== 0) closers += '\"';\n  if (openBrackets > closeBrackets) closers += '\\n' + '    ]'.repeat(openBrackets - closeBrackets);\n  if (openBraces > closeBraces) closers += '\\n' + '  }'.repeat(openBraces - closeBraces);\n\n  return validJSON + closers;\n}\n\ntry {\n  const fixed = forceCloseJSON(cleaned);\n  const parsed = JSON.parse(fixed);\n  console.log('✅ PARSE BEM-SUCEDIDO!');\n  console.log(`📅 Dias recuperados: ${parsed.trilha_editorial?.length || 0}`);\n  return processarTrilha(parsed);\n} catch (parseError) {\n  console.error('❌ Parse falhou:', parseError.message);\n  return {\n    json: {\n      parsing_status: 'error',\n      error_message: 'JSON truncado - agente não completou os 15 dias',\n      trilha_texto: '⚠️ ERRO: Veja logs',\n      trilha_json: '[]',\n      expert_id: 'error',\n      total_dias: 0,\n      data_geracao: new Date().toISOString()\n    }\n  };\n}\n\nfunction processarTrilha(parsed) {\n  const trilhaArray = parsed.trilha_editorial || [];\n  const diasComReels = trilhaArray.filter(d => d.formato_primario === 'Reel');\n\n  const trilhaFormatada = trilhaArray.map(dia =>\n    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n` +\n    `📅 DIA ${dia.dia} | ${dia.dia_semana} ${dia.data_sugerida}\\n` +\n    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n\\n` +\n    `🎯 FASE: ${dia.fase}\\n` +\n    `📌 PILAR: ${dia.pilar}\\n` +\n    `📝 TEMA: ${dia.tema}\\n` +\n    `🎬 FORMATO: ${dia.formato_primario}\\n` +\n    `🪝 HOOK: \"${dia.hook_sugerido || 'N/A'}\"\\n`\n  ).join('\\n\\n');\n\n  const stats = {\n    total_dias: trilhaArray.length,\n    total_reels: diasComReels.length,\n    total_stories: trilhaArray.filter(d => d.formato_primario === 'Story').length,\n    total_carrosseis: trilhaArray.filter(d => d.formato_primario === 'Carrossel').length\n  };\n\n  const aviso = trilhaArray.length < 15\n    ? `\\n\\n⚠️ Trilha incompleta! ${trilhaArray.length}/15 dias.`\n    : '';\n\n  return {\n    json: {\n      trilha_texto: trilhaFormatada + aviso,\n      trilha_json: JSON.stringify(trilhaArray, null, 2),\n      trilha_completa_json: JSON.stringify(parsed, null, 2),\n      dias_reels_json: JSON.stringify(diasComReels, null, 2),\n      expert_id: parsed.expert_id || 'unknown',\n      expert_name: parsed.expert_name || 'Unknown',\n      total_dias: stats.total_dias,\n      total_reels: stats.total_reels,\n      stats: stats,\n      data_geracao: new Date().toISOString(),\n      parsing_status: 'success',\n      parsing_warning: trilhaArray.length < 15 ? 'trilha_incompleta' : null\n    }\n  };\n}"
+      },
+      "id": "parse-parte-1",
+      "name": "Parse Trilha - Parte 1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentOutput = $input.item.json.output;\n\nlet cleaned = typeof agentOutput === 'string'\n  ? agentOutput.replace(/```json\\s*/g, '').replace(/```\\s*/g, '').trim()\n  : JSON.stringify(agentOutput);\n\nconsole.log('📝 Tamanho do output:', cleaned.length);\n\nfunction forceCloseJSON(jsonStr) {\n  console.log('🔧 Forçando fechamento de JSON truncado...');\n  const lines = jsonStr.split('\\n');\n  let validJSON = '';\n  let lastValidLine = -1;\n\n  for (let i = lines.length - 1; i >= 0; i--) {\n    const line = lines[i].trim();\n    if (!line || line === '{' || line === '[' || line === ',') continue;\n    if (line.match(/[\",\\}\\]]$/)) {\n      lastValidLine = i;\n      break;\n    }\n  }\n\n  if (lastValidLine > 0) {\n    validJSON = lines.slice(0, lastValidLine + 1).join('\\n');\n    validJSON = validJSON.replace(/,(\\s*[\\}\\]])$/, '$1');\n  } else {\n    validJSON = jsonStr;\n  }\n\n  let openBraces = 0, closeBraces = 0, openBrackets = 0, closeBrackets = 0;\n  let inString = false, escaped = false;\n\n  for (let i = 0; i < validJSON.length; i++) {\n    const char = validJSON[i];\n    if (char === '\\\\' && !escaped) { escaped = true; continue; }\n    if (char === '\"' && !escaped) inString = !inString;\n    if (!inString) {\n      if (char === '{') openBraces++;\n      if (char === '}') closeBraces++;\n      if (char === '[') openBrackets++;\n      if (char === ']') closeBrackets++;\n    }\n    escaped = false;\n  }\n\n  let closers = '';\n  const quoteCount = (validJSON.match(/\"/g) || []).length;\n  if (quoteCount % 2 !== 0) closers += '\"';\n  if (openBrackets > closeBrackets) closers += '\\n' + '    ]'.repeat(openBrackets - closeBrackets);\n  if (openBraces > closeBraces) closers += '\\n' + '  }'.repeat(openBraces - closeBraces);\n\n  return validJSON + closers;\n}\n\ntry {\n  const fixed = forceCloseJSON(cleaned);\n  const parsed = JSON.parse(fixed);\n  console.log('✅ PARSE BEM-SUCEDIDO!');\n  console.log(`📅 Dias recuperados: ${parsed.trilha_editorial?.length || 0}`);\n  return processarTrilha(parsed);\n} catch (parseError) {\n  console.error('❌ Parse falhou:', parseError.message);\n  return {\n    json: {\n      parsing_status: 'error',\n      error_message: 'JSON truncado - agente não completou os 15 dias',\n      trilha_texto: '⚠️ ERRO: Veja logs',\n      trilha_json: '[]',\n      expert_id: 'error',\n      total_dias: 0,\n      data_geracao: new Date().toISOString()\n    }\n  };\n}\n\nfunction processarTrilha(parsed) {\n  const trilhaArray = parsed.trilha_editorial || [];\n  const diasComReels = trilhaArray.filter(d => d.formato_primario === 'Reel');\n\n  const trilhaFormatada = trilhaArray.map(dia =>\n    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n` +\n    `📅 DIA ${dia.dia} | ${dia.dia_semana} ${dia.data_sugerida}\\n` +\n    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n\\n` +\n    `🎯 FASE: ${dia.fase}\\n` +\n    `📌 PILAR: ${dia.pilar}\\n` +\n    `📝 TEMA: ${dia.tema}\\n` +\n    `🎬 FORMATO: ${dia.formato_primario}\\n` +\n    `🪝 HOOK: \"${dia.hook_sugerido || 'N/A'}\"\\n`\n  ).join('\\n\\n');\n\n  const stats = {\n    total_dias: trilhaArray.length,\n    total_reels: diasComReels.length,\n    total_stories: trilhaArray.filter(d => d.formato_primario === 'Story').length,\n    total_carrosseis: trilhaArray.filter(d => d.formato_primario === 'Carrossel').length\n  };\n\n  const aviso = trilhaArray.length < 15\n    ? `\\n\\n⚠️ Trilha incompleta! ${trilhaArray.length}/15 dias.`\n    : '';\n\n  return {\n    json: {\n      trilha_texto: trilhaFormatada + aviso,\n      trilha_json: JSON.stringify(trilhaArray, null, 2),\n      trilha_completa_json: JSON.stringify(parsed, null, 2),\n      dias_reels_json: JSON.stringify(diasComReels, null, 2),\n      expert_id: parsed.expert_id || 'unknown',\n      expert_name: parsed.expert_name || 'Unknown',\n      total_dias: stats.total_dias,\n      total_reels: stats.total_reels,\n      stats: stats,\n      data_geracao: new Date().toISOString(),\n      parsing_status: 'success',\n      parsing_warning: trilhaArray.length < 15 ? 'trilha_incompleta' : null\n    }\n  };\n}"
+      },
+      "id": "parse-parte-2",
+      "name": "Parse Trilha - Parte 2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const parte1Input = $('Parse Trilha - Parte 1').first();\nconst parte2Input = $('Parse Trilha - Parte 2').first();\n\nconsole.log('📦 Juntando partes da trilha editorial...');\n\nif (!parte1Input || !parte2Input) {\n  throw new Error('❌ Uma das partes está faltando');\n}\n\nconst parte1 = parte1Input.json;\nconst parte2 = parte2Input.json;\n\nlet trilhaParte1 = JSON.parse(parte1.trilha_json);\nlet trilhaParte2 = JSON.parse(parte2.trilha_json);\n\nconst trilhaCompleta = [...trilhaParte1, ...trilhaParte2];\ntrilhaCompleta.sort((a, b) => a.dia - b.dia);\n\nconsole.log(`📅 Trilha completa: ${trilhaCompleta.length} dias`);\n\nconst totalReels = trilhaCompleta.filter(d => d.formato_primario === 'Reel').length;\nconst totalStories = trilhaCompleta.filter(d => d.formato_primario === 'Story').length;\nconst totalCarrosseis = trilhaCompleta.filter(d => d.formato_primario === 'Carrossel').length;\n\nconst statsCombinadas = {\n  total_dias: trilhaCompleta.length,\n  total_reels: totalReels,\n  total_stories: totalStories,\n  total_carrosseis: totalCarrosseis,\n  por_fase: {\n    awareness: trilhaCompleta.filter(d => d.fase === 'Awareness').length,\n    educacao: trilhaCompleta.filter(d => d.fase === 'Educação').length,\n    diferenciacao: trilhaCompleta.filter(d => d.fase === 'Diferenciação').length,\n    conversao: trilhaCompleta.filter(d => d.fase === 'Conversão').length\n  }\n};\n\nconst trilhaFormatada = trilhaCompleta.map(dia =>\n  `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n` +\n  `📅 DIA ${dia.dia} | ${dia.dia_semana} ${dia.data_sugerida}\\n` +\n  `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n\\n` +\n  `🎯 FASE: ${dia.fase}\\n` +\n  `📌 PILAR: ${dia.pilar}\\n` +\n  `🌡️ TEMPERATURA: ${dia.temperatura_lead}\\n\\n` +\n  `📝 TEMA:\\n${dia.tema}\\n\\n` +\n  `🔍 ÂNGULO:\\n${dia.angulo}\\n\\n` +\n  `🎬 FORMATO: ${dia.formato_primario}${dia.duracao_estimada ? ` (${dia.duracao_estimada})` : ''}\\n\\n` +\n  `🎪 GATILHO: ${dia.gatilho_mental}\\n` +\n  `🎯 OBJETIVO: ${dia.objetivo}\\n` +\n  `📊 MÉTRICA: ${dia.metrica_sucesso}\\n\\n` +\n  `💡 PONTOS:\\n${(dia.pontos_chave || []).map((p, i) => `  ${i+1}. ${p}`).join('\\n')}\\n\\n` +\n  `🪝 HOOK: \"${dia.hook_sugerido || 'N/A'}\"\\n` +\n  `📣 CTA (${dia.cta_tipo}): ${dia.cta_texto || 'N/A'}\\n` +\n  (dia.objecao_abordada ? `🚧 OBJEÇÃO: ${dia.objecao_abordada}\\n` : '')\n).join('\\n\\n');\n\nconst statsFormatadas =\n  `📊 ESTATÍSTICAS DA TRILHA COMPLETA (30 DIAS)\\n\\n` +\n  `📅 Total: ${statsCombinadas.total_dias} dias\\n` +\n  `🎬 Reels: ${statsCombinadas.total_reels} | Stories: ${statsCombinadas.total_stories} | Carrosséis: ${statsCombinadas.total_carrosseis}\\n\\n` +\n  `🌡️ POR FASE:\\n` +\n  `  • Awareness: ${statsCombinadas.por_fase.awareness}\\n` +\n  `  • Educação: ${statsCombinadas.por_fase.educacao}\\n` +\n  `  • Diferenciação: ${statsCombinadas.por_fase.diferenciacao}\\n` +\n  `  • Conversão: ${statsCombinadas.por_fase.conversao}\\n\\n` +\n  `✅ Parte 1: ${trilhaParte1.length} dias\\n` +\n  `✅ Parte 2: ${trilhaParte2.length} dias`;\n\nconst calendarioSimples = trilhaCompleta.map(dia =>\n  `${dia.data_sugerida} (${dia.dia_semana}) | ${dia.formato_primario} | ${dia.tema}`\n).join('\\n');\n\nconst diasComReels = trilhaCompleta.filter(d => d.formato_primario === 'Reel');\n\nconst aviso = trilhaCompleta.length < 30\n  ? `\\n\\n⚠️ Trilha incompleta! ${trilhaCompleta.length}/30 dias.`\n  : '\\n\\n✅ Trilha completa com 30 dias!';\n\nconsole.log('✅ TRILHA COMPLETA MONTADA!');\n\nreturn {\n  json: {\n    trilha_texto: trilhaFormatada + aviso,\n    calendario_texto: calendarioSimples,\n    stats_texto: statsFormatadas + aviso,\n    trilha_json: JSON.stringify(trilhaCompleta, null, 2),\n    dias_reels_json: JSON.stringify(diasComReels, null, 2),\n    expert_id: parte1.expert_id,\n    expert_name: parte1.expert_name,\n    total_dias: statsCombinadas.total_dias,\n    total_reels: statsCombinadas.total_reels,\n    stats: statsCombinadas,\n    data_geracao: new Date().toISOString(),\n    parsing_status: trilhaCompleta.length === 30 ? 'success' : 'partial',\n    parte1_dias: trilhaParte1.length,\n    parte2_dias: trilhaParte2.length\n  }\n};"
+      },
+      "id": "juntar-partes",
+      "name": "Juntar Partes (30 dias)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Agente Parte 1 (Dias 1-15)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Agente Parte 2 (Dias 16-30)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Parte 1 (Dias 1-15)": {
+      "main": [
+        [
+          {
+            "node": "Parse Trilha - Parte 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Parte 2 (Dias 16-30)": {
+      "main": [
+        [
+          {
+            "node": "Parse Trilha - Parte 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Trilha - Parte 1": {
+      "main": [
+        [
+          {
+            "node": "Juntar Partes (30 dias)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Trilha - Parte 2": {
+      "main": [
+        [
+          {
+            "node": "Juntar Partes (30 dias)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-11-25T01:30:00.000Z",
+  "versionId": "1"
+}

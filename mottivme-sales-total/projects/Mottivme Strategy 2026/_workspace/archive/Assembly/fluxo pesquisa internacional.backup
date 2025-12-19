@@ -1,0 +1,2465 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "base": {
+          "__rl": true,
+          "value": "appwQQ5zpPLd9SEjQ",
+          "mode": "list",
+          "cachedResultName": "Agencia de Bolso",
+          "cachedResultUrl": "https://airtable.com/appwQQ5zpPLd9SEjQ"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblWH8MEg4AiIQEY0",
+          "mode": "list",
+          "cachedResultName": "Expert DNA Profile",
+          "cachedResultUrl": "https://airtable.com/appwQQ5zpPLd9SEjQ/tblWH8MEg4AiIQEY0"
+        },
+        "id": "={{ $json.query.recordId }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -7696,
+        1888
+      ],
+      "id": "1a9cf86c-3668-44b8-b55c-455da132aa65",
+      "name": "Get Expert Record",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ====================================\n// 🎯 N8N CODE NODE: FASE 1B CONTEXT BUILDER\n// ====================================\n// \n// FUNÇÃO: Prepara todo o contexto necessário para FASE 1B\n// incluindo o Clone System Prompt da FASE 1A\n//\n// INPUT: Expert Record do Airtable com Clone já criado\n// OUTPUT: Contexto estruturado para os agentes da FASE 1B\n// ====================================\n\nconst expert = $input.first().json;\n\nfunction getValue(field) {\n  if (!expert[field]) return null;\n  if (expert[field] === '') return null;\n  return expert[field];\n}\n\nfunction formatSection(title, content) {\n  if (!content || content.trim() === '') return '';\n  return `\\n### ${title}\\n${content}\\n`;\n}\n\n// ====================================\n// MONTA CONTEXTO COMPLETO PARA FASE 1B\n// ====================================\n\nlet context = `# 🎯 CONTEXTO COMPLETO PARA FASE 1B: POSICIONAMENTO ESTRATÉGICO\\n`;\ncontext += `\\n---\\n`;\n\n// ====================================\n// SEÇÃO 1: CLONE SYSTEM PROMPT (OUTPUT DA FASE 1A)\n// ====================================\ncontext += `\\n## 🧬 CLONE SYSTEM PROMPT\\n`;\ncontext += `\\nEste é o Clone criado na FASE 1A que deve ser usado como base para todas as decisões estratégicas:\\n`;\ncontext += `\\n\\`\\`\\`\\n`;\ncontext += getValue('Clone') || 'ERRO: Clone não encontrado. Execute FASE 1A primeiro.';\ncontext += `\\n\\`\\`\\`\\n`;\n\n// ====================================\n// SEÇÃO 2: DADOS BÁSICOS DO EXPERT\n// ====================================\ncontext += `\\n---\\n`;\ncontext += `\\n## 📋 DADOS BÁSICOS\\n`;\ncontext += `\\n**Nome:** ${getValue('Expert Name') || 'Não informado'}\\n`;\ncontext += `**Nicho:** ${getValue('Nicho do Expert') || 'Não informado'}\\n`;\ncontext += `**Anos de Experiência:** ${getValue('Anos de Experiência') || 'Não informado'}\\n`;\ncontext += `**Tamanho da Audiência:** ${getValue('Tamanho Audiência') || 'Não informado'}\\n`;\ncontext += `**Canal Principal:** ${getValue('Canal Principal') || 'Não informado'}\\n`;\n\n// ====================================\n// SEÇÃO 3: DNA PSICOLÓGICO EXTRAÍDO (FASE 1A)\n// ====================================\ncontext += `\\n---\\n`;\ncontext += `\\n## 🧬 DNA PSICOLÓGICO (FASE 1A)\\n`;\n\nconst dnaExtraido = getValue('DNA Extraido');\nif (dnaExtraido) {\n  context += `\\n${dnaExtraido}\\n`;\n} else {\n  context += `\\n⚠️ DNA não extraído. Execute FASE 1A primeiro.\\n`;\n}\n\n// ====================================\n// SEÇÃO 4: ENGENHARIA REVERSA (FASE 1A)\n// ====================================\ncontext += `\\n---\\n`;\ncontext += `\\n## ⚙️ ENGENHARIA REVERSA TEXTUAL (FASE 1A)\\n`;\n\nconst engenhariaReversa = getValue('Engenharia Reversa');\nif (engenhariaReversa) {\n  context += `\\n${engenhariaReversa}\\n`;\n}\n\n// ====================================\n// SEÇÃO 5: INFORMAÇÕES COMPLEMENTARES\n// ====================================\ncontext += `\\n---\\n`;\ncontext += `\\n## 💡 INFORMAÇÕES COMPLEMENTARES\\n`;\n\ncontext += formatSection('Expert que Admira', getValue('Expert que Admira'));\ncontext += formatSection('Por que Clientes me Procuram', getValue('Meus clientes me procuram porque'));\ncontext += formatSection('O que NÃO Quer Representar', getValue('O que NÃO quero que minha marca represente'));\ncontext += formatSection('Caso de Sucesso Favorito', getValue('Caso de Sucesso Favorito'));\n\n// ====================================\n// SEÇÃO 6: VALORES E PROPÓSITO\n// ====================================\ncontext += `\\n---\\n`;\ncontext += `\\n## 💎 VALORES E PROPÓSITO\\n`;\n\ncontext += formatSection('O que IRRITA no mercado', getValue('Q1 O que te irrita no mercado'));\ncontext += formatSection('O que JAMAIS faria', getValue('Q2 O que jamais faria'));\ncontext += formatSection('LEGADO que quer deixar', getValue('Q3 Legado que quer deixar'));\ncontext += formatSection('Maior CONTRADIÇÃO interna', getValue('Q7 Maior contradição interna'));\ncontext += formatSection('Transformação: de X para Y', getValue('Q10 Transformação X para Y'));\n\n// ====================================\n// SEÇÃO 7: ARQUÉTIPOS E MOTIVAÇÕES\n// ====================================\ncontext += `\\n---\\n`;\ncontext += `\\n## 🎭 ARQUÉTIPOS E MOTIVAÇÕES PROFUNDAS\\n`;\n\nconst arquetipoPrincipal = getValue('Arquétipo Principal - IA');\nconst arquetipoSecundario = getValue('Arquétipo Secundário - IA');\nconst valores = getValue('Valores Primários Top 3  - IA');\nconst fraseEssencia = getValue('Frase Essência - IA');\n\nif (arquetipoPrincipal) {\n  context += `\\n**Arquétipo Principal:** ${arquetipoPrincipal}\\n`;\n}\nif (arquetipoSecundario) {\n  context += `**Arquétipo Secundário:** ${arquetipoSecundario}\\n`;\n}\nif (valores) {\n  context += `\\n**Valores Primários:**\\n${valores}\\n`;\n}\nif (fraseEssencia) {\n  context += `\\n**✨ FRASE ESSÊNCIA:**\\n> \"${fraseEssencia}\"\\n`;\n}\n\ncontext += formatSection('ORIGEM: História pessoal', getValue('Q16 Origem história pessoal'));\ncontext += formatSection('COMBUSTÍVEL: O que move', getValue('Q17 Combustível 3h da manhã'));\ncontext += formatSection('RAIVA: O que quer mudar', getValue('Q19 Raiva que move mudança'));\n\n// ====================================\n// SEÇÃO 8: PEDAGOGIA E COMUNICAÇÃO\n// ====================================\ncontext += `\\n---\\n`;\ncontext += `\\n## 🎓 PEDAGOGIA E COMUNICAÇÃO\\n`;\n\ncontext += formatSection('Como explica conceitos complexos', getValue('Como Explica Conceito Complexo'));\ncontext += formatSection('Preferência de Ensino', getValue('Preferência de Ensino'));\ncontext += formatSection('Momento AHA dos clientes', getValue('Momento AHA dos Clientes'));\ncontext += formatSection('Analogia/Metáfora favorita', getValue('Analogia Metáfora Favorita'));\n\n// ====================================\n// SEÇÃO 9: INSTRUÇÕES PARA FASE 1B\n// ====================================\ncontext += `\\n---\\n`;\ncontext += `\\n## 🎯 INSTRUÇÕES PARA FASE 1B\\n`;\ncontext += `\\n**OBJETIVO:**\\n`;\ncontext += `Usar o Clone System Prompt acima como \"voz e cérebro\" do Expert para:\\n`;\ncontext += `1. Mapear sua Identidade completa (pessoal + organizacional)\\n`;\ncontext += `2. Analisar o Mercado e Concorrentes\\n`;\ncontext += `3. Criar Avatares Psicológicos profundos\\n`;\ncontext += `4. Definir a Promessa Central clara\\n`;\ncontext += `5. Criar o Big Idea (Mecanismo Único)\\n`;\ncontext += `\\n**REGRA CRÍTICA:**\\n`;\ncontext += `Todas as decisões devem ser 100% fiéis ao Clone System Prompt.\\n`;\ncontext += `Se o Clone diria X, a estratégia deve refletir X.\\n`;\n\ncontext += `\\n---\\n`;\ncontext += `\\n*Contexto gerado para FASE 1B - Posicionamento Estratégico*\\n`;\n\n// ====================================\n// RETORNA RESULTADO\n// ====================================\nreturn [{\n  json: {\n    expert_context: context,\n    expert_name: getValue('Expert Name'),\n    expert_id: expert.id,\n    clone_system_prompt: getValue('Clone'),\n    dna_extraido: getValue('DNA Extraido'),\n    arquetipo_principal: arquetipoPrincipal,\n    valores_principais: valores,\n    has_clone: !!getValue('Clone'),\n    context_length: context.length,\n    timestamp: new Date().toISOString(),\n    nicho: getValue('Nicho do Expert'),\n    anos_experiencia: getValue('Anos de Experiência')\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -7472,
+        1888
+      ],
+      "id": "41e54e9c-9456-463e-87bb-47ef874b0033",
+      "name": "Prepare Context - FASE 1B"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "expert_name",
+              "name": "expert_name",
+              "value": "={{ $json.expert_name }}",
+              "type": "string"
+            },
+            {
+              "id": "expert_id",
+              "name": "expert_id",
+              "value": "={{ $json.expert_id }}",
+              "type": "string"
+            },
+            {
+              "id": "expert_context",
+              "name": "expert_context",
+              "value": "={{ $json.expert_context }}",
+              "type": "string"
+            },
+            {
+              "id": "clone_system_prompt",
+              "name": "clone_system_prompt",
+              "value": "={{ $json.clone_system_prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "nicho",
+              "name": "nicho",
+              "value": "={{ $json.nicho }}",
+              "type": "string"
+            },
+            {
+              "id": "anos_experiencia",
+              "name": "anos_experiencia",
+              "value": "={{ $json.anos_experiencia }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -7248,
+        1888
+      ],
+      "id": "b1070ea7-f17a-440b-a21e-a4c0ef400358",
+      "name": "Edit Fields - FASE 1B"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "identity_map",
+              "name": "5. Identity Map",
+              "value": "={{ $('5. Agent 5: Identity Mapper').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "market_intelligence",
+              "name": "6. Market Intelligence",
+              "value": "={{ $('6A. Perplexity Internacional').item.json.choices[0].message.content }}",
+              "type": "string"
+            },
+            {
+              "id": "avatares",
+              "name": "7. Avatares Psicológicos",
+              "value": "={{ $('7. Agent 7: Avatar Creator').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "promessa_central",
+              "name": "8. Promessa Central",
+              "value": "={{ $('8. Agent 8: Promise Generator').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "big_idea",
+              "name": "9. Big Idea",
+              "value": "={{ $('9. Agent 9: Big Idea Creator').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "expert_id",
+              "name": "expert_id",
+              "value": "={{ $('Edit Fields - FASE 1B').item.json.expert_id }}",
+              "type": "string"
+            },
+            {
+              "id": "aed80e78-2e0a-4f95-9759-fcfdb8fe37f3",
+              "name": "identidade_organizacional",
+              "value": "={{ $json.identidade_organizacional }}",
+              "type": "string"
+            },
+            {
+              "id": "074babec-9316-41d8-b798-3373973b2a84",
+              "name": "causa_diferenciacao",
+              "value": "={{ $json.causa_diferenciacao }}",
+              "type": "string"
+            },
+            {
+              "id": "a0fbc66c-08f2-4669-ac18-edff8ee15f00",
+              "name": "mapa_linguagem",
+              "value": "={{ $json.mapa_linguagem }}",
+              "type": "string"
+            },
+            {
+              "id": "833b7828-8340-40b2-b1eb-ec8cbe883ac4",
+              "name": "voz_marca",
+              "value": "={{ $json.voz_marca }}",
+              "type": "string"
+            },
+            {
+              "id": "62d96561-38e0-48b3-8873-0be09efe61d8",
+              "name": "dores_mapeadas",
+              "value": "={{ $json.dores_mapeadas }}",
+              "type": "string"
+            },
+            {
+              "id": "ab7647b9-514b-4c76-bb15-a91062eadf4f",
+              "name": "desejos_centrais",
+              "value": "={{ $json.desejos_centrais }}",
+              "type": "string"
+            },
+            {
+              "id": "d7128d71-6af4-40f2-a394-78ecce53dede",
+              "name": "crencas_limitantes",
+              "value": "={{ $json.crencas_limitantes }}",
+              "type": "string"
+            },
+            {
+              "id": "460eebd3-19e0-4b87-bcd8-cf49a49efadc",
+              "name": "mecanismo_unico",
+              "value": "={{ $json.mecanismo_unico }}",
+              "type": "string"
+            },
+            {
+              "id": "4378333d-61a4-4c3d-ab2c-2c2d0687b114",
+              "name": "analise_concorrentes",
+              "value": "={{ $json.analise_concorrentes }}",
+              "type": "string"
+            },
+            {
+              "id": "7ca29e27-c529-46e4-a376-f1b6189d0d90",
+              "name": "oportunidades_diferenciacao",
+              "value": "={{ $json.oportunidades_diferenciacao }}",
+              "type": "string"
+            },
+            {
+              "id": "bf3597f9-2906-4bf8-9054-dd74f664e8f1",
+              "name": "tendencias_nicho",
+              "value": "={{ $json.tendencias_nicho }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4336,
+        1888
+      ],
+      "id": "aa92f76c-fd05-4317-ad6f-eee2056ddf3f",
+      "name": "Aggregate Results - FASE 1B"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appwQQ5zpPLd9SEjQ",
+          "mode": "list",
+          "cachedResultName": "Agencia de Bolso",
+          "cachedResultUrl": "https://airtable.com/appwQQ5zpPLd9SEjQ"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblWH8MEg4AiIQEY0",
+          "mode": "list",
+          "cachedResultName": "Expert DNA Profile",
+          "cachedResultUrl": "https://airtable.com/appwQQ5zpPLd9SEjQ/tblWH8MEg4AiIQEY0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get Expert Record').item.json.id }}",
+            "Identidade Expert - IA": "={{ $json['5'][' Identity Map'] }}",
+            "Pesquisa Mercado - IA": "={{ $json['6'][' Market Intelligence'] }}",
+            "Personas Psicológicas - IA": "={{ $json['7'][' Avatares Psicológicos'] }}",
+            "Promessa Central - IA": "={{ $json['8'][' Promessa Central'] }}",
+            "Big Idea - IA": "={{ $json['9'][' Big Idea'] }}",
+            "Status": "Posicionamento Estratégico ✅ ",
+            "Identidade Organizacional - IA": "={{ $json.identidade_organizacional }}",
+            "Causa e Diferenciação - IA": "={{ $json.causa_diferenciacao }}",
+            "Mapa de Linguagem - IA": "={{ $json.mapa_linguagem }}",
+            "Voz da Marca DNA Clone - IA": "={{ $json.voz_marca }}",
+            "Mecanismo Único - IA": "={{ $json.mecanismo_unico }}",
+            "Crenças Limitantes - IA": "={{ $json.crencas_limitantes }}",
+            "Desejos Centrais - IA": "={{ $json.desejos_centrais }}",
+            "Dores Mapeadas - IA": "={{ $json.dores_mapeadas }}",
+            "Análise Concorrentes - IA": "={{ $json.analise_concorrentes }}",
+            "Oportunidades Diferenciação - IA": "={{ $json.oportunidades_diferenciacao }}",
+            "Tendências Nicho - IA": "={{ $json.tendencias_nicho }}",
+            "generatePosicionamentoEstrategico": true,
+            "generateMarketingeGeracaodeDemanda": false,
+            "generateEcossistemaDeOfertas": false
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true
+            },
+            {
+              "id": "Expert Name",
+              "displayName": "Expert Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Briefing Inicial",
+                  "value": "Briefing Inicial"
+                },
+                {
+                  "name": "Entrevista em Andamento",
+                  "value": "Entrevista em Andamento"
+                },
+                {
+                  "name": "DNA em Extração ▶️",
+                  "value": "DNA em Extração ▶️"
+                },
+                {
+                  "name": "Clone ✅ ",
+                  "value": "Clone ✅ "
+                },
+                {
+                  "name": "Posicionamento Estratégico ▶️",
+                  "value": "Posicionamento Estratégico ▶️"
+                },
+                {
+                  "name": "Posicionamento Estratégico ✅ ",
+                  "value": "Posicionamento Estratégico ✅ "
+                },
+                {
+                  "name": "Ecossistema de Ofertas ▶️",
+                  "value": "Ecossistema de Ofertas ▶️"
+                },
+                {
+                  "name": "Ecossistema de Ofertas ✅ ",
+                  "value": "Ecossistema de Ofertas ✅ "
+                },
+                {
+                  "name": "Marketing e Geração de Demanda ▶️",
+                  "value": "Marketing e Geração de Demanda ▶️"
+                },
+                {
+                  "name": "Marketing e Geração de Demanda ✅",
+                  "value": "Marketing e Geração de Demanda ✅"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "1️⃣ Generate DNA",
+              "displayName": "1️⃣ Generate DNA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "DNA Extraido",
+              "displayName": "DNA Extraido",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Engenharia Reversa",
+              "displayName": "Engenharia Reversa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Configuração do Clone",
+              "displayName": "Configuração do Clone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Clone",
+              "displayName": "Clone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Strategic DNA",
+              "displayName": "Strategic DNA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Ecossistema de Ofertas",
+              "displayName": "Ecossistema de Ofertas",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Funnel roadmap",
+              "displayName": "Funnel roadmap",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Retention System",
+              "displayName": "Retention System",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Nicho do Expert",
+              "displayName": "Nicho do Expert",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Médico/Saúde",
+                  "value": "Médico/Saúde"
+                },
+                {
+                  "name": "Coach/Mentor",
+                  "value": "Coach/Mentor"
+                },
+                {
+                  "name": "Vendedor/Closer",
+                  "value": "Vendedor/Closer"
+                },
+                {
+                  "name": "Consultor/Especialista",
+                  "value": "Consultor/Especialista"
+                },
+                {
+                  "name": "Professor/Educador",
+                  "value": "Professor/Educador"
+                },
+                {
+                  "name": "Advogado",
+                  "value": "Advogado"
+                },
+                {
+                  "name": "Contador",
+                  "value": "Contador"
+                },
+                {
+                  "name": "Terapeuta",
+                  "value": "Terapeuta"
+                },
+                {
+                  "name": "Personal Trainer",
+                  "value": "Personal Trainer"
+                },
+                {
+                  "name": "Arquiteto/Designer",
+                  "value": "Arquiteto/Designer"
+                },
+                {
+                  "name": "Engenheiro",
+                  "value": "Engenheiro"
+                },
+                {
+                  "name": "Outro",
+                  "value": "Outro"
+                },
+                {
+                  "name": "Médicos e Médicas que querem sair da exaustão do modelo tradicional e construir uma medicina lucrativa com nutrologia e performance",
+                  "value": "Médicos e Médicas que querem sair da exaustão do modelo tradicional e construir uma medicina lucrativa com nutrologia e performance"
+                },
+                {
+                  "name": "Consultoria em vendas, gestão comercial e automação para empresas e agentes financeiros nos Estados Unidos",
+                  "value": "Consultoria em vendas, gestão comercial e automação para empresas e agentes financeiros nos Estados Unidos"
+                },
+                {
+                  "name": "Medicina Capilar Clínica (com foco em método, raciocínio clínico e resultados previsíveis baseados em dados, como o tricoteste).",
+                  "value": "Medicina Capilar Clínica (com foco em método, raciocínio clínico e resultados previsíveis baseados em dados, como o tricoteste)."
+                },
+                {
+                  "name": "Nicho do Expert",
+                  "value": "Nicho do Expert"
+                },
+                {
+                  "name": "Saúde hormonal com segurança cardiovascular e longevidade, com foco em mulheres (especialmente na menopausa) e em capacitar médicos a prescreverem com precisão clínica e ética.",
+                  "value": "Saúde hormonal com segurança cardiovascular e longevidade, com foco em mulheres (especialmente na menopausa) e em capacitar médicos a prescreverem com precisão clínica e ética."
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Anos de Experiência",
+              "displayName": "Anos de Experiência",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tamanho Audiência",
+              "displayName": "Tamanho Audiência",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "0-1k",
+                  "value": "0-1k"
+                },
+                {
+                  "name": "1k-5k",
+                  "value": "1k-5k"
+                },
+                {
+                  "name": "5k-10k",
+                  "value": "5k-10k"
+                },
+                {
+                  "name": "10k-50k",
+                  "value": "10k-50k"
+                },
+                {
+                  "name": "50k-100k",
+                  "value": "50k-100k"
+                },
+                {
+                  "name": "100k+",
+                  "value": "100k+"
+                },
+                {
+                  "name": "Média",
+                  "value": "Média"
+                },
+                {
+                  "name": "Não especificado diretamente, mas é Referência Nacional e speaker oficial da Fagron.",
+                  "value": "Não especificado diretamente, mas é Referência Nacional e speaker oficial da Fagron."
+                },
+                {
+                  "name": "Tamanho Audiência",
+                  "value": "Tamanho Audiência"
+                },
+                {
+                  "name": "Não especificado (embora mencione que o faturamento ultrapassou R$ 100 mil mensais e o conteúdo viralizou).",
+                  "value": "Não especificado (embora mencione que o faturamento ultrapassou R$ 100 mil mensais e o conteúdo viralizou)."
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Canal Principal",
+              "displayName": "Canal Principal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Instagram",
+                  "value": "Instagram"
+                },
+                {
+                  "name": "YouTube",
+                  "value": "YouTube"
+                },
+                {
+                  "name": "LinkedIn",
+                  "value": "LinkedIn"
+                },
+                {
+                  "name": "TikTok",
+                  "value": "TikTok"
+                },
+                {
+                  "name": "Presencial/Eventos",
+                  "value": "Presencial/Eventos"
+                },
+                {
+                  "name": "WhatsApp/Telegram",
+                  "value": "WhatsApp/Telegram"
+                },
+                {
+                  "name": "Podcast",
+                  "value": "Podcast"
+                },
+                {
+                  "name": "Blog",
+                  "value": "Blog"
+                },
+                {
+                  "name": "Email/Newsletter",
+                  "value": "Email/Newsletter"
+                },
+                {
+                  "name": "Consultório presencial + Mentoria",
+                  "value": "Consultório presencial + Mentoria"
+                },
+                {
+                  "name": "Não especificado. Mencionado como speaker oficial da Fagron (o maior laboratório magistral do mundo) por ser o médico que mais realiza tricotestes no Brasil com melhores resultados.",
+                  "value": "Não especificado. Mencionado como speaker oficial da Fagron (o maior laboratório magistral do mundo) por ser o médico que mais realiza tricotestes no Brasil com melhores resultados."
+                },
+                {
+                  "name": "Canal Principal",
+                  "value": "Canal Principal"
+                },
+                {
+                  "name": "Digital / Redes Sociais (Iniciou a expansão digital com um vídeo que viralizou e patrocinaram nas redes sociais).",
+                  "value": "Digital / Redes Sociais (Iniciou a expansão digital com um vídeo que viralizou e patrocinaram nas redes sociais)."
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link Conteúdo 1",
+              "displayName": "Link Conteúdo 1",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link Conteúdo 2",
+              "displayName": "Link Conteúdo 2",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Link Conteúdo 3",
+              "displayName": "Link Conteúdo 3",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Expert que Admira",
+              "displayName": "Expert que Admira",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Meus clientes me procuram porque",
+              "displayName": "Meus clientes me procuram porque",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "O que NÃO quero que minha marca represente",
+              "displayName": "O que NÃO quero que minha marca represente",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Caso de Sucesso Favorito",
+              "displayName": "Caso de Sucesso Favorito",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Permite Análise de Vídeos",
+              "displayName": "Permite Análise de Vídeos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q1 O que te irrita no mercado",
+              "displayName": "Q1 O que te irrita no mercado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q2 O que jamais faria",
+              "displayName": "Q2 O que jamais faria",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q3 Legado que quer deixar",
+              "displayName": "Q3 Legado que quer deixar",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q4 Decisão ética difícil",
+              "displayName": "Q4 Decisão ética difícil",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q5 Se só pudesse ensinar uma coisa",
+              "displayName": "Q5 Se só pudesse ensinar uma coisa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q6 Herói que se identifica",
+              "displayName": "Q6 Herói que se identifica",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q7 Maior contradição interna",
+              "displayName": "Q7 Maior contradição interna",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q8 Cliente ideal como personagem",
+              "displayName": "Q8 Cliente ideal como personagem",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q9 Tipo de pessoa que não trabalha",
+              "displayName": "Q9 Tipo de pessoa que não trabalha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q10 Transformação X para Y",
+              "displayName": "Q10 Transformação X para Y",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q11 Comportamento sob estresse",
+              "displayName": "Q11 Comportamento sob estresse",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q12 Como toma decisões",
+              "displayName": "Q12 Como toma decisões",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q13 Reação ao conflito",
+              "displayName": "Q13 Reação ao conflito",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q14 Reação ao erro",
+              "displayName": "Q14 Reação ao erro",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q15 Reação ao sucesso",
+              "displayName": "Q15 Reação ao sucesso",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q16 Origem história pessoal",
+              "displayName": "Q16 Origem história pessoal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q17 Combustível 3h da manhã",
+              "displayName": "Q17 Combustível 3h da manhã",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q18 Maior medo profissional",
+              "displayName": "Q18 Maior medo profissional",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q19 Raiva que move mudança",
+              "displayName": "Q19 Raiva que move mudança",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Q20 Frase que emociona",
+              "displayName": "Q20 Frase que emociona",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tom Voz Analisado",
+              "displayName": "Tom Voz Analisado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Linguagem Corporal",
+              "displayName": "Linguagem Corporal",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Padrões Storytelling",
+              "displayName": "Padrões Storytelling",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Vocabulário Característico",
+              "displayName": "Vocabulário Característico",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Persona Percebida",
+              "displayName": "Persona Percebida",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Como Explica Conceito Complexo",
+              "displayName": "Como Explica Conceito Complexo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Preferência de Ensino",
+              "displayName": "Preferência de Ensino",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Framework estruturado",
+                  "value": "Framework estruturado"
+                },
+                {
+                  "name": "História/narrativa",
+                  "value": "História/narrativa"
+                },
+                {
+                  "name": "Metáfora/analogia",
+                  "value": "Metáfora/analogia"
+                },
+                {
+                  "name": "Dados e evidências",
+                  "value": "Dados e evidências"
+                },
+                {
+                  "name": "Demonstração prática",
+                  "value": "Demonstração prática"
+                },
+                {
+                  "name": "Questionamento socrático",
+                  "value": "Questionamento socrático"
+                },
+                {
+                  "name": "Framework + Caso Real + Aplicação Prática. Não adianto teoria sem mostrar COMO FAZER. Gosto de ensinar no modelo: 1. Entenda o conceito 2. Veja como eu fiz 3. Agora você tenta 4. Eu corrijo. Sou hands-on. Não largo o aluno até ele realmente pegar.",
+                  "value": "Framework + Caso Real + Aplicação Prática. Não adianto teoria sem mostrar COMO FAZER. Gosto de ensinar no modelo: 1. Entenda o conceito 2. Veja como eu fiz 3. Agora você tenta 4. Eu corrijo. Sou hands-on. Não largo o aluno até ele realmente pegar."
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Reação Cliente Não Entende - IA",
+              "displayName": "Reação Cliente Não Entende - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Repete mais simples",
+                  "value": "Repete mais simples"
+                },
+                {
+                  "name": "Usa analogia diferente",
+                  "value": "Usa analogia diferente"
+                },
+                {
+                  "name": "Mostra exemplo prático",
+                  "value": "Mostra exemplo prático"
+                },
+                {
+                  "name": "Faz perguntas Socráticas",
+                  "value": "Faz perguntas Socráticas"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Momento AHA dos Clientes",
+              "displayName": "Momento AHA dos Clientes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Analogia Metáfora Favorita",
+              "displayName": "Analogia Metáfora Favorita",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Arquétipo Principal - IA",
+              "displayName": "Arquétipo Principal - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Sábio",
+                  "value": "Sábio"
+                },
+                {
+                  "name": "Herói",
+                  "value": "Herói"
+                },
+                {
+                  "name": "Rebelde",
+                  "value": "Rebelde"
+                },
+                {
+                  "name": "Cuidador",
+                  "value": "Cuidador"
+                },
+                {
+                  "name": "Criador",
+                  "value": "Criador"
+                },
+                {
+                  "name": "Governante",
+                  "value": "Governante"
+                },
+                {
+                  "name": "Mago",
+                  "value": "Mago"
+                },
+                {
+                  "name": "Explorador",
+                  "value": "Explorador"
+                },
+                {
+                  "name": "Amante",
+                  "value": "Amante"
+                },
+                {
+                  "name": "Bobo",
+                  "value": "Bobo"
+                },
+                {
+                  "name": "Inocente",
+                  "value": "Inocente"
+                },
+                {
+                  "name": "Cara Comum",
+                  "value": "Cara Comum"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Arquétipo Secundário - IA",
+              "displayName": "Arquétipo Secundário - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Sábio",
+                  "value": "Sábio"
+                },
+                {
+                  "name": "Herói",
+                  "value": "Herói"
+                },
+                {
+                  "name": "Rebelde",
+                  "value": "Rebelde"
+                },
+                {
+                  "name": "Cuidador",
+                  "value": "Cuidador"
+                },
+                {
+                  "name": "Criador",
+                  "value": "Criador"
+                },
+                {
+                  "name": "Governante",
+                  "value": "Governante"
+                },
+                {
+                  "name": "Mago",
+                  "value": "Mago"
+                },
+                {
+                  "name": "Explorador",
+                  "value": "Explorador"
+                },
+                {
+                  "name": "Amante",
+                  "value": "Amante"
+                },
+                {
+                  "name": "Bobo",
+                  "value": "Bobo"
+                },
+                {
+                  "name": "Inocente",
+                  "value": "Inocente"
+                },
+                {
+                  "name": "Cara Comum",
+                  "value": "Cara Comum"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Valores Primários Top 3  - IA",
+              "displayName": "Valores Primários Top 3  - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Perfil Comportamental JSON - IA",
+              "displayName": "Perfil Comportamental JSON - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Motivações Profundas JSON - IA",
+              "displayName": "Motivações Profundas JSON - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Triggers Emocionais - IA",
+              "displayName": "Triggers Emocionais - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Contradições e Conflitos - IA",
+              "displayName": "Contradições e Conflitos - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Frase Essência - IA",
+              "displayName": "Frase Essência - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Assinatura Comunicação JSON",
+              "displayName": "Assinatura Comunicação JSON",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Pedagogia Pessoal JSON",
+              "displayName": "Pedagogia Pessoal JSON",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Calibração Temperature - IA",
+              "displayName": "Calibração Temperature - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Calibração Formalidade - IA",
+              "displayName": "Calibração Formalidade - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Calibração Provocação - IA",
+              "displayName": "Calibração Provocação - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Calibração Uso Emojis - IA",
+              "displayName": "Calibração Uso Emojis - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Nunca",
+                  "value": "Nunca"
+                },
+                {
+                  "name": "Raro",
+                  "value": "Raro"
+                },
+                {
+                  "name": "Moderado",
+                  "value": "Moderado"
+                },
+                {
+                  "name": "Frequente",
+                  "value": "Frequente"
+                },
+                {
+                  "name": "Excessivo",
+                  "value": "Excessivo"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "System Prompt DNA - IA",
+              "displayName": "System Prompt DNA - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Products Using",
+              "displayName": "Products Using",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Times Used - IA",
+              "displayName": "Times Used - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Created Date",
+              "displayName": "Created Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Last Modified",
+              "displayName": "Last Modified",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Created By",
+              "displayName": "Created By",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Parse Strategy",
+              "displayName": "Parse Strategy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Analysis Date",
+              "displayName": "Analysis Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Padrões Estilísticos - IA",
+              "displayName": "Padrões Estilísticos - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estrutura Narrativa - IA",
+              "displayName": "Estrutura Narrativa - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Perfil Vocabular - IA",
+              "displayName": "Perfil Vocabular - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Recursos Retóricos - IA",
+              "displayName": "Recursos Retóricos - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "2️⃣ Reverse Engineering",
+              "displayName": "2️⃣ Reverse Engineering",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Identity Framework JSON - IA",
+              "displayName": "Identity Framework JSON - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Operational Parameters JSON - IA",
+              "displayName": "Operational Parameters JSON - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Execution Rules JSON - IA",
+              "displayName": "Execution Rules JSON - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Quality Gates JSON - IA",
+              "displayName": "Quality Gates JSON - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Clone System Prompt - IA",
+              "displayName": "Clone System Prompt - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Clone Configuration - Full Response",
+              "displayName": "Clone Configuration - Full Response",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "3️⃣ Configure Clone",
+              "displayName": "3️⃣ Configure Clone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Configuration Date",
+              "displayName": "Configuration Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Identidade Expert - IA",
+              "displayName": "Identidade Expert - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Identidade Organizacional - IA",
+              "displayName": "Identidade Organizacional - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Causa e Diferenciação - IA",
+              "displayName": "Causa e Diferenciação - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Mapa de Linguagem - IA",
+              "displayName": "Mapa de Linguagem - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pesquisa Mercado - IA",
+              "displayName": "Pesquisa Mercado - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Análise Concorrentes - IA",
+              "displayName": "Análise Concorrentes - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Oportunidades Diferenciação - IA",
+              "displayName": "Oportunidades Diferenciação - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tendências Nicho - IA",
+              "displayName": "Tendências Nicho - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Cliente Ideal Definição - IA",
+              "displayName": "Cliente Ideal Definição - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Personas Psicológicas - IA",
+              "displayName": "Personas Psicológicas - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Dores Mapeadas - IA",
+              "displayName": "Dores Mapeadas - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Desejos Centrais - IA",
+              "displayName": "Desejos Centrais - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Crenças Limitantes - IA",
+              "displayName": "Crenças Limitantes - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Promessa Central - IA",
+              "displayName": "Promessa Central - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Big Idea - IA",
+              "displayName": "Big Idea - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Mecanismo Único - IA",
+              "displayName": "Mecanismo Único - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Voz da Marca DNA Clone - IA",
+              "displayName": "Voz da Marca DNA Clone - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "generatePosicionamentoEstrategico",
+              "displayName": "generatePosicionamentoEstrategico",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "generateEcossistemaDeOfertas",
+              "displayName": "generateEcossistemaDeOfertas",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ofertas High End - IA",
+              "displayName": "Ofertas High End - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ofertas Ultra High End - IA",
+              "displayName": "Ofertas Ultra High End - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ofertas Back End - IA",
+              "displayName": "Ofertas Back End - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ofertas Front End - IA",
+              "displayName": "Ofertas Front End - IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "generateMarketingeGeracaodeDemanda",
+              "displayName": "generateMarketingeGeracaodeDemanda",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Content Strategy",
+              "displayName": "Content Strategy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Creative ADS",
+              "displayName": "Creative ADS",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Funnel Copy",
+              "displayName": "Funnel Copy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email Sequences",
+              "displayName": "Email Sequences",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Produtos e Serviços",
+              "displayName": "Produtos e Serviços",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -4112,
+        1888
+      ],
+      "id": "3bb2cf2d-bc98-456d-abe6-2b6e83526dcf",
+      "name": "💾 Update Airtable - FASE 1B2",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "Ct29AFjU5kldAr8c",
+          "name": "vsl ben ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pegar outputs dos agentes\nconst agent5 = $('5. Agent 5: Identity Mapper').item.json.text || '';\nconst agent6 = $('6C. Synthesis and Strategic Analysis').item.json.text || '';\nconst agent7 = $('7. Agent 7: Avatar Creator').item.json.text || '';\nconst agent8 = $('8. Agent 8: Promise Generator').item.json.text || '';\nconst agent9 = $('9. Agent 9: Big Idea Creator').item.json.text || '';\n\n// ====================================\n// LIMPAR TAG <think> DO AGENT 6 (PERPLEXITY)\n// ====================================\nif (agent6.includes('<think>')) {\n  // Remove tudo entre <think> e </think>\n  agent6 = agent6.replace(/<think>[\\s\\S]*?<\\/think>/g, '').trim();\n}\n\n// ====================================\n// FUNÇÃO DE EXTRAÇÃO\n// ====================================\nfunction extractSection(text, possibleMarkers, endMarker = null) {\n  if (!text) return null;\n  \n  for (let marker of possibleMarkers) {\n    const startIndex = text.indexOf(marker);\n    if (startIndex !== -1) {\n      const searchStart = startIndex + marker.length;\n      \n      if (!endMarker) {\n        const extracted = text.substring(searchStart).trim();\n        return extracted.substring(0, 3000);\n      }\n      \n      const endIndex = text.indexOf(endMarker, searchStart);\n      const extracted = text.substring(searchStart, endIndex === -1 ? text.length : endIndex).trim();\n      return extracted.substring(0, 3000);\n    }\n  }\n  \n  return null;\n}\n\n// ====================================\n// EXTRAÇÕES DO AGENT 5 (Identity Map)\n// ====================================\nconst identidadeOrganizacional = extractSection(\n  agent5,\n  [\n    '## 3. IDENTIDADE ORGANIZACIONAL',\n    '## IDENTIDADE ORGANIZACIONAL'\n  ],\n  '## 4.'\n);\n\nconst causaDiferenciacao = extractSection(\n  agent5,\n  [\n    '## 4. CAUSA E DIFERENCIAÇÃO',\n    '## CAUSA E DIFERENCIAÇÃO'\n  ],\n  '## 5.'\n);\n\nconst mapaLinguagem = extractSection(\n  agent5,\n  [\n    '## 5. MAPA DE LINGUAGEM E POSTURA',\n    '## MAPA DE LINGUAGEM'\n  ],\n  '## 6.'\n);\n\nconst vozMarca = extractSection(\n  agent5,\n  [\n    '## 6. ESSÊNCIA DA MARCA EM UMA PÁGINA',\n    '## ESSÊNCIA DA MARCA'\n  ],\n  null\n);\n\n// ====================================\n// EXTRAÇÕES DO AGENT 6 (Perplexity)\n// USANDO TÍTULOS REAIS DO PERPLEXITY\n// ====================================\n\n// ANÁLISE DE CONCORRENTES\nconst analiseConcorrentes = extractSection(\n  agent6,\n  [\n    '## 👥 Principais Players e Concorrentes',\n    '## Principais Players e Concorrentes',\n    '### Grandes Operadores Hospitalares'\n  ],\n  '## 📈'\n);\n\n// OPORTUNIDADES DE DIFERENCIAÇÃO\nconst oportunidadesDiferenciacao = extractSection(\n  agent6,\n  [\n    '## 🕳️ Gaps e Oportunidades de Diferenciação',\n    '## Gaps e Oportunidades de Diferenciação',\n    '### 1. Gap na Transformação'\n  ],\n  '## 🏆'\n);\n\n// TENDÊNCIAS DO NICHO\nconst tendenciasNicho = extractSection(\n  agent6,\n  [\n    '## 📈 Tendências e Movimentos Atuais',\n    '## Tendências e Movimentos Atuais',\n    '### 1. Integração Online-Offline'\n  ],\n  '## 🕳️'\n);\n\n// ====================================\n// EXTRAÇÕES DO AGENT 7 (Avatares)\n// ====================================\n\nconst clienteIdealDefinicao = extractSection(\n  agent7,\n  [\n    '## 🎯 DEFINIÇÃO DO CLIENTE IDEAL COMPOSTO',\n    '## DEFINIÇÃO DO CLIENTE IDEAL COMPOSTO',\n    '### Cliente Ideal ='\n  ],\n  '## 🎬'\n);\n\nconst doresMapeadas = extractSection(\n  agent7,\n  [\n    '### Dores (Pain Points)',\n    '#### Dor Externa (Sintoma)'\n  ],\n  '### Desejos'\n);\n\nconst desejosCentrais = extractSection(\n  agent7,\n  [\n    '### Desejos',\n    '#### Desejo Superficial'\n  ],\n  '### Gatilhos de Compra'\n);\n\nconst crencasLimitantes = extractSection(\n  agent7,\n  [\n    '### Crenças Limitantes',\n    '#### Crenças'\n  ],\n  '##'\n) || 'Não mapeado explicitamente nos avatares';\n\n// ====================================\n// EXTRAÇÕES DO AGENT 9 (Big Idea)\n// ====================================\n\nconst mecanismoUnico = extractSection(\n  agent9,\n  [\n    '## ANATOMIA DO BIG IDEA ESCOLHIDO',\n    '### Nome do Mecanismo'\n  ],\n  '## DIFERENCIAÇÃO COMPETITIVA'\n);\n\n// ====================================\n// RETORNAR TUDO\n// ====================================\nreturn [{\n  json: {\n    // SEÇÕES DO AGENT 5\n    'identidade_organizacional': identidadeOrganizacional || 'Seção não encontrada',\n    'causa_diferenciacao': causaDiferenciacao || 'Seção não encontrada',\n    'mapa_linguagem': mapaLinguagem || 'Seção não encontrada',\n    'voz_marca': vozMarca || 'Seção não encontrada',\n    \n    // SEÇÕES DO AGENT 6 (PERPLEXITY - CORRIGIDO)\n    'analise_concorrentes': analiseConcorrentes || 'Seção não encontrada',\n    'oportunidades_diferenciacao': oportunidadesDiferenciacao || 'Seção não encontrada',\n    'tendencias_nicho': tendenciasNicho || 'Seção não encontrada',\n    \n    // SEÇÕES DO AGENT 7\n    'cliente_ideal_definicao': clienteIdealDefinicao || 'Seção não encontrada',\n    'dores_mapeadas': doresMapeadas || 'Seção não encontrada',\n    'desejos_centrais': desejosCentrais || 'Seção não encontrada',\n    'crencas_limitantes': crencasLimitantes,\n    \n    // SEÇÕES DO AGENT 9\n    'mecanismo_unico': mecanismoUnico || 'Seção não encontrada',\n    \n    // METADADOS\n    'extraction_timestamp': new Date().toISOString(),\n    'sections_extracted': 12,\n    'agent6_cleaned': !agent6.includes('<think>'), // Verifica se limpou o think\n    'success': true\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4560,
+        1888
+      ],
+      "id": "148e8b10-e44d-4787-b273-50b4dc65b624",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"model\": \"sonar-reasoning\",\n    \"temperature\": 0.2,\n    \"max_tokens\": 32000,\n    \"return_citations\": true,\n    \"search_recency_filter\": \"month\",\n    \"search_domain_filter\": [\"br\"],\n    \"messages\": [\n      {\n        \"role\": \"system\",\n        \"content\": `AGENTE 6B: INTELIGENCIA DE MERCADO - BRASIL\n\nVoce e um analista de mercado especializado em coaching, consultoria e educacao executiva no mercado brasileiro.\n\nSUA MISSAO\n\nPesquisar o mercado BRASILEIRO focando em:\n1. Tamanho e caracteristicas do mercado local\n2. Principais mentores/consultores brasileiros no nicho\n3. Precificacao praticada no Brasil\n4. Contexto cultural e economico brasileiro\n5. Concorrentes diretos e indiretos\n\nCONTEXTO DO EXPERT\n\nMapa de Identidade:\n${$('5. Agent 5: Identity Mapper').item.json.text}\n\nDados Basicos:\n- Nome: ${$('Edit Fields - FASE 1B').item.json.expert_name}\n- Nicho: ${$('Edit Fields - FASE 1B').item.json.nicho}\n\nMETODOLOGIA DE PESQUISA\n\nFASE 1: Analise do Mercado Brasileiro\n\nPesquise sobre o SETOR do publico-alvo no Brasil:\n\nExemplo: Se o publico sao medicos, pesquise:\n- \"mercado de saude Brasil\"\n- \"quantos medicos no Brasil\"\n- \"principais hospitais Brasil\"\n- \"salario medico Brasil\"\n- \"tendencias medicina Brasil 2025\"\n\nO que mapear:\n1. Quantidade de profissionais no Brasil\n2. Distribuicao geografica (estados, cidades principais)\n3. Faixas salariais medias (R$)\n4. Principais empresas/instituicoes do setor\n5. Tendencias especificas do mercado brasileiro\n6. Desafios unicos do contexto brasileiro\n\nFASE 2: Mapeamento de Concorrentes Brasileiros\n\nPesquise MENTORES/CONSULTORES brasileiros que atendem este publico:\n\nExemplo: Se o publico sao medicos, pesquise:\n- \"mentoria para medicos Brasil\"\n- \"consultoria gestao medica\"\n- \"curso negocios medicos\"\n- \"coach medico empreendedor\"\n- \"como medico pode empreender\"\n\nO que mapear:\n1. Top 5-10 mentores/consultores brasileiros com nomes reais e URLs\n2. Posicionamento e diferenciais\n3. Formato: 1-on-1, grupo, cursos, hibrido\n4. Precificacao em R$\n5. Metodologias utilizadas\n6. Tamanho da audiencia (seguidores/alunos)\n7. Presenca digital (Instagram, YouTube, site)\n\nESTRUTURA DO RELATORIO\n\nRetorne em markdown com estas secoes:\n\n1. PANORAMA DO MERCADO BRASILEIRO\n\nTamanho e Potencial:\n- Quantidade de profissionais no Brasil\n- Distribuicao por estados/regioes\n- Faixa salarial media (R$)\n- Taxa de crescimento do setor\n- Percentual estimado que busca mentoria/consultoria\n\nPrincipais Players do Setor:\n- Top 5-10 empresas/instituicoes brasileiras\n- Tamanho e relevancia de cada uma\n- Como afetam o publico-alvo\n\nContexto Economico Brasileiro:\n- Faturamento do setor\n- Investimentos recentes\n- Projecoes de crescimento\n- Desafios especificos do Brasil\n\nContexto Cultural:\n- Particularidades do mercado brasileiro\n- Diferencas regionais (Sul, Sudeste, Nordeste, etc)\n- Comportamento de compra do brasileiro\n- Objecoes tipicas do publico brasileiro\n\n2. MAPEAMENTO COMPETITIVO BRASILEIRO\n\nTop Players do Mercado de Mentoria/Consultoria BR:\n\nPara cada concorrente direto (MINIMO 5):\n\nCONCORRENTE X: [Nome do Mentor/Consultoria]\n- URL: [link]\n- Localizacao: [cidade/estado]\n- Posicionamento: [como se posiciona]\n- Publico: [quem atende especificamente]\n- Diferencial: [principal diferencial declarado]\n- Formato: [mentoria 1-on-1, grupo, curso, hibrido]\n- Faixa de preco: R$ X - R$ Y\n- Metodologia: [frameworks/sistemas que usa]\n- Pontos fortes: [lista]\n- Gaps identificados: [oportunidades]\n- Tamanho da audiencia: [estimativa de seguidores/alunos]\n- Presenca digital: [Instagram, YouTube, site, podcast]\n\nMatriz de Posicionamento BR:\n[Analise de onde cada concorrente se posiciona no mercado brasileiro]\n\n3. ANALISE DE TENDENCIAS BRASIL\n\nTendencias Macro (Setor no Brasil):\n[Movimentos gerais do setor do publico-alvo no Brasil]\n\nTendencias Micro (Mentoria/Consultoria BR):\n[Movimentos especificos no mercado de educacao executiva brasileiro]\n\nTemas em Alta no Brasil:\n[O que esta sendo mais buscado/discutido no Brasil]\n\nMetodologias Brasileiras:\n[Abordagens desenvolvidas ou adaptadas para o contexto brasileiro]\n\n4. COMPORTAMENTO DO PUBLICO BRASILEIRO\n\nPain Points Especificos BR:\n[Dores que afetam os profissionais brasileiros deste nicho]\n\nObjecoes a Compra (Contexto BR):\n[O que impede a compra no Brasil especificamente]\n- Objecao de preco (cultura de desconto)\n- Desconfianca (medo de golpe)\n- Credibilidade (exigencia de provas)\n- Parcelamento (necessidade BR)\n\nLinguagem do Publico BR:\n[Termos, jargoes, expressoes que usam os brasileiros]\n\nInfluenciadores BR:\n[Mentores/influencers brasileiros que seguem]\n\nComunidades BR:\n[Grupos no WhatsApp, Telegram, Facebook onde o publico se reune]\n\n5. PRECIFICACAO NO MERCADO BRASILEIRO\n\nBenchmarks de Preco BR:\n- Entrada (front-end): R$ X - R$ Y\n- Intermediario (back-end): R$ X - R$ Y\n- Premium (high-ticket): R$ X - R$ Y\n\nFormas de Pagamento:\n- A vista com desconto: [percentual tipico]\n- Parcelamento: [numero de vezes comum]\n- Recorrencia: [uso de assinaturas]\n\nSensibilidade a Preco:\n[Como o publico brasileiro reage a diferentes faixas de preco]\n\n6. OPORTUNIDADES ESTRATEGICAS BR\n\nGaps de Mercado Brasil:\n[O que esta faltando no mercado brasileiro de mentoria]\n\nMicro-Segmentos Inexplorados BR:\n[Subnichos especificos desassistidos no Brasil]\n\nDiferenciais Pouco Explorados BR:\n[Oportunidades de diferenciacao no contexto brasileiro]\n\nAnalise de Saturacao:\n[Nivel de competicao no Brasil: Baixo, Medio, Alto]\n\n7. ESTRATEGIAS VENCEDORAS NO BRASIL\n\nO que esta funcionando BR:\n[Estrategias de sucesso de mentores brasileiros com exemplos]\n\nO que NAO funciona no Brasil:\n[Abordagens que nao ressoam com o publico brasileiro]\n\nAdaptacoes Necessarias:\n[Como estrategias internacionais precisam ser adaptadas para o Brasil]\n\nREGRAS CRITICAS\n\n1. FOCO NO BRASIL: Pesquise apenas mercado brasileiro\n2. NOMES REAIS: Concorrentes especificos com URLs brasileiras\n3. PRECOS EM REAIS: Todas as faixas de preco em R$\n4. CONTEXTO CULTURAL: Considere particularidades do mercado brasileiro\n5. FONTES BR: Priorize fontes brasileiras (.br)\n6. DADOS 2024-2025: Informacoes atualizadas\n7. MINIMO 5 CONCORRENTES: Mentores/consultores brasileiros mapeados\n\nOUTPUT\n\nRetorne APENAS o relatorio em markdown.\nComece diretamente com:\nRELATORIO DE INTELIGENCIA DE MERCADO - BRASIL`\n      },\n      {\n        \"role\": \"user\",\n        \"content\": `Faca uma analise completa do mercado BRASILEIRO para o nicho: ${$('Edit Fields - FASE 1B').item.json.nicho}\n\nExpert analisado: ${$('Edit Fields - FASE 1B').item.json.expert_name}\n\nINSTRUCOES DE PESQUISA\n\nFASE 1: MERCADO BRASILEIRO (Contexto)\nPesquise sobre o SETOR do publico-alvo no Brasil:\n- Tamanho do mercado brasileiro\n- Principais empresas/instituicoes do Brasil\n- Tendencias especificas do Brasil\n- Salarios e economia do setor no Brasil\n\nExemplo de termos: \"mercado [setor] Brasil\", \"principais [tipo de empresa] Brasil\", \"tendencias [setor] Brasil 2025\"\n\nFASE 2: CONCORRENTES BRASILEIROS (Mentoria/Consultoria)\nPesquise MENTORES/CONSULTORES brasileiros que atendem este publico:\n\nTERMOS DE BUSCA OBRIGATORIOS:\n- \"mentoria para [publico-alvo] Brasil\"\n- \"consultoria gestao [nicho]\"\n- \"curso negocios [publico-alvo]\"\n- \"coach [publico-alvo] empreendedor\"\n- \"[mentor conhecido] [nicho]\"\n\nENTREGAVEIS:\n- Minimo 5 mentores/consultores brasileiros com nomes reais e URLs\n- Faixas de preco em REAIS\n- Diferenciais de cada um\n- Presenca digital (Instagram, YouTube, etc)\n\nQUALIDADE ESPERADA:\n- Nomes REAIS com fontes (URLs brasileiras)\n- Dados numericos verificaveis\n- Citacoes de todas as fontes\n- Foco no mercado BRASILEIRO\n- Dados de 2024-2025\n- Precos em REAIS (R$)\n\nNAO seja generico\nNAO invente dados\nNAO omita URLs das fontes\nNAO pesquise mercado internacional\n\nRetorne o relatorio completo em markdown seguindo EXATAMENTE a estrutura definida no system message.`\n      }\n    ]\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -6256,
+        1888
+      ],
+      "id": "0bec4a58-a1e7-418b-bdcf-b082e620ef00",
+      "name": "6B. Perplexity Brasil"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.perplexity.ai/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"model\": \"sonar-reasoning\",\n    \"temperature\": 0.2,\n    \"max_tokens\": 32000,\n    \"return_citations\": true,\n    \"search_recency_filter\": \"month\",\n    \"messages\": [\n      {\n        \"role\": \"system\",\n        \"content\": `AGENT 6A: MARKET INTELLIGENCE - INTERNATIONAL\n\nYou are a market analyst specializing in coaching, consulting, and high-ticket education markets globally.\n\nYOUR MISSION\n\nResearch the INTERNATIONAL market (USA, Europe, Australia) focusing on:\n1. Global market size and trends\n2. Top international mentors/coaches in the niche\n3. Cutting-edge methodologies and strategies\n4. Pricing benchmarks (USD/EUR)\n5. Innovations not yet present in Brazil\n\nEXPERT CONTEXT\n\nIdentity Map:\n${$('5. Agent 5: Identity Mapper').item.json.text}\n\nBasic Data:\n- Name: ${$('Edit Fields - FASE 1B').item.json.expert_name}\n- Niche: ${$('Edit Fields - FASE 1B').item.json.nicho}\n\nRESEARCH METHODOLOGY\n\nPHASE 1: Global Market Analysis\n\nResearch the SECTOR of the target audience internationally:\n\nExample: If target audience is doctors, search:\n- \"healthcare market size USA\"\n- \"physician coaching industry\"\n- \"medical practice consulting trends\"\n- \"doctor entrepreneur programs\"\n\nWhat to map:\n1. Global market size for this professional category\n2. International associations and organizations\n3. Salary ranges and economics (USD/EUR)\n4. Global trends affecting the profession\n5. Challenges faced by professionals worldwide\n\nPHASE 2: International Mentors/Consultants Mapping\n\nResearch TOP MENTORS/COACHES serving this audience globally:\n\nExample: If audience is doctors, search:\n- \"top physician coaches USA\"\n- \"medical practice consulting firms\"\n- \"doctor business training programs\"\n- \"healthcare entrepreneur mentorship\"\n\nWhat to map:\n1. Top 5-10 international mentors/coaches with real names and URLs\n2. Their positioning and differentials\n3. Format: 1-on-1, group, courses, hybrid\n4. Pricing in USD/EUR\n5. Unique methodologies they use\n6. Market share and audience size\n\nREPORT STRUCTURE\n\nReturn in markdown with these sections:\n\n1. GLOBAL MARKET OVERVIEW\n\n- Market size (target professional category)\n- Growth rate and projections\n- Key international players (companies/institutions)\n- Global economic context\n\n2. INTERNATIONAL MENTOR/COACH MAPPING\n\nFor each competitor (MINIMUM 5):\n\nCOMPETITOR X: [Name]\n- URL: [link]\n- Location: [country]\n- Positioning: [how they position]\n- Target Audience: [specific segment]\n- Differential: [main unique value]\n- Format: [delivery method]\n- Pricing: USD X - USD Y\n- Methodology: [frameworks/systems they use]\n- Strengths: [list]\n- Gaps: [opportunities]\n- Audience Size: [followers/students estimate]\n\n3. GLOBAL TRENDS ANALYSIS\n\n- Macro trends (professional sector)\n- Micro trends (coaching/consulting for this niche)\n- Emerging topics\n- New methodologies gaining traction\n\n4. INNOVATIONS AND BEST PRACTICES\n\n- Cutting-edge strategies\n- Technology adoption\n- New business models\n- Pricing innovations\n- Marketing approaches\n\n5. PRICING BENCHMARKS\n\n- Entry level: USD X - USD Y\n- Mid-tier: USD X - USD Y\n- Premium/High-ticket: USD X - USD Y\n\n6. STRATEGIC OPPORTUNITIES FOR BRAZIL\n\n- What works internationally but does not exist in Brazil\n- Methodologies to adapt\n- Positioning strategies to import\n- Pricing gaps (international vs expected Brazilian market)\n\nCRITICAL RULES\n\n1. FOCUS ON ENGLISH-SPEAKING MARKETS: USA, UK, Canada, Australia\n2. REAL NAMES with URLs\n3. CONCRETE DATA with sources\n4. SEARCH BOTH: sector context + coaching/consulting competitors\n5. CURRENT DATA: 2024-2025\n6. SPECIFIC not generic\n\nOUTPUT\n\nReturn ONLY the report in markdown.\nStart directly with:\nINTERNATIONAL MARKET INTELLIGENCE REPORT`\n      },\n      {\n        \"role\": \"user\",\n        \"content\": `Conduct a complete international market analysis for the niche: ${$('Edit Fields - FASE 1B').item.json.nicho}\n\nExpert being analyzed: ${$('Edit Fields - FASE 1B').item.json.expert_name}\n\nRESEARCH INSTRUCTIONS\n\nPHASE 1: GLOBAL MARKET (Context)\nResearch about the SECTOR of the target audience internationally:\n- Market size and growth\n- Major companies/institutions\n- General trends\n- Salaries and sector economics\n\nExample search terms: \"[sector] market size USA\", \"top [type of company] worldwide\", \"[sector] trends 2025\"\n\nPHASE 2: INTERNATIONAL COMPETITORS (Coaches/Consultants)\nResearch MENTORS/COACHES serving this audience globally:\n\nMANDATORY SEARCH TERMS:\n- \"coaching for [target audience]\"\n- \"[niche] business consulting\"\n- \"[target audience] entrepreneur training\"\n- \"how to [professional goal] coaching\"\n- \"top [niche] coaches USA\"\n\nDELIVERABLES:\n- Minimum 5 international mentors/coaches with real names and URLs\n- Specific pricing ranges in USD/EUR\n- Differentials of each one\n- Methodologies used\n\nEXPECTED QUALITY:\n- REAL names with sources (URLs)\n- Verifiable numeric data\n- Citations of all sources\n- Focus on English-speaking markets\n- 2024-2025 data\n\nDO NOT be generic\nDO NOT invent data\nDO NOT omit source URLs\n\nReturn the complete report in markdown following EXACTLY the structure defined in the system message.`\n      }\n    ]\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -6608,
+        1888
+      ],
+      "id": "51288369-8ed4-487f-a52e-50be67250d1e",
+      "name": "6A. Perplexity Internacional"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Sintetize os relatorios de pesquisa de mercado internacional e brasileiro em um relatorio completo de inteligencia estrategica.\n\nCRITICO: Voce DEVE seguir EXATAMENTE a estrutura definida no system message com TODAS as 16 secoes numeradas. Nao pule nenhuma secao.\n\nTAREFAS OBRIGATORIAS:\n\n1. ANALISE COMPARATIVA (Secao 2)\n- Compare mercados lado-a-lado\n- Inclua tabela de precificacao\n- Nivel de competicao\n\n2. PANORAMA COMPETITIVO CONSOLIDADO (Secao 3)\n- Liste Top 5 Players Internacionais\n- Liste Top 5 Players Brasileiros\n- Matriz Competitiva\n- ESTA SECAO E OBRIGATORIA - NAO PULE\n\n3. GAPS ESTRATEGICOS (Secao 4)\n- Minimo 3 gaps identificados\n- Cada gap com: Descricao, Evidencia, Tamanho, Dificuldade, Fit\n\n4. ANALISE DE TENDENCIAS CONSOLIDADA (Secao 5)\n- Tendencias Globais (minimo 3)\n- Tendencias Brasileiras (minimo 3)\n- Convergencia e Divergencia\n- ESTA SECAO E OBRIGATORIA - NAO PULE\n\n5. COMPORTAMENTO DA AUDIENCIA (Secao 6)\n- Pain Points comparacao\n- Objecoes de compra\n- Diferencas culturais\n\n6. ESTRATEGIA DE PRECIFICACAO (Secao 7)\n- Precificacao recomendada com racional\n- Front-end, Back-end, High-ticket em R$\n- Condicoes de pagamento BR\n\n7. POSICIONAMENTO (Secao 8)\n- Posicionamento primario\n- Diferenciais\n- Pontos de prova\n\n8. REFINAMENTO DE AUDIENCIA (Secao 9)\n- Segmento primario\n- Segmento secundario\n\n9. ESTRATEGIAS PARA IMPORTAR (Secao 10)\n- Minimo 3 estrategias internacionais\n- Como adaptar cada uma para Brasil\n\n10. VANTAGENS COMPETITIVAS (Secao 11)\n- Minimo 3 vantagens\n- Baseadas no mapa de identidade\n\n11. ESTRATEGIA DE ENTRADA (Secao 12)\n- Fase 1, 2, 3\n\n12. RISCOS E MITIGACAO (Secao 13)\n- Minimo 3 riscos\n\n13. FATORES-CHAVE DE SUCESSO (Secao 14)\n- Minimo 5 fatores\n\n14. PROXIMOS PASSOS (Secao 15)\n- Imediatos, Curto-prazo, Medio-prazo\n\n15. FONTES E METODOLOGIA (Secao 16)\n- Fontes internacionais\n- Fontes brasileiras\n- Data\n\n16. CONCLUSAO ESTRATEGICA FINAL\n- 3-5 paragrafos\n- Principais takeaways\n- Diferencial competitivo\n- Maior oportunidade\n\nFORMATO OBRIGATORIO:\n\nCada secao DEVE comecar com:\n## [NUMERO]. [NOME DA SECAO]\n\nExemplo:\n## 3. PANORAMA COMPETITIVO - CONSOLIDADO\n## 5. ANALISE DE TENDENCIAS - CONSOLIDADA\n\nVALIDACAO:\n\nAntes de retornar, conte as secoes. Se tiver menos de 16 secoes principais (##), o relatorio esta INCOMPLETO.\n\nQUALIDADE:\n\n- Use dados REAIS de ambos relatorios\n- Cite competidores especificos\n- Seja ESPECIFICO nao generico\n- Baseie em evidencias\n- Insights ACIONAVEIS\n\nComece com:\n# RELATORIO DE INTELIGENCIA DE MERCADO - COMPLETO\n\nNAO pule secoes. NAO resuma. Entregue o relatorio COMPLETO conforme estrutura definida.",
+        "options": {
+          "systemMessage": "=AGENTE 6C: SINTESE DE MERCADO E ANALISE ESTRATEGICA\n\nVoce e um analista estrategico de mercado que sintetiza inteligencia de mercado internacional e local para identificar oportunidades estrategicas unicas.\n\nSUA MISSAO\n\nCruzar e sintetizar os DOIS relatorios de pesquisa de mercado para entregar:\n1. Analise comparativa (Internacional vs Brasil)\n2. Identificacao de gaps estrategicos\n3. Oportunidades de adaptacao\n4. Recomendacoes de posicionamento\n5. Relatorio unificado de inteligencia de mercado\n\nDADOS DE ENTRADA\n\nPesquisa de Mercado Internacional (Agent 6A):\n{{ $('6A. Perplexity Internacional').item.json.choices[0].message.content }}\n\nPesquisa de Mercado Brasil (Agent 6B):\n{{ $('6B. Perplexity Brasil').item.json.choices[0].message.content }}\n\nMapa de Identidade do Expert:\n{{ $('5. Agent 5: Identity Mapper').item.json.text }}\n\nNome do Expert: {{ $('Edit Fields - FASE 1B').item.json.expert_name }}\nNicho: {{ $('Edit Fields - FASE 1B').item.json.nicho }}\n\nMETODOLOGIA DE SINTESE\n\nETAPA 1: Analise Comparativa\n\nCompare ambos os mercados em:\n- Tamanho e maturidade do mercado\n- Niveis de precificacao (USD/EUR vs R$)\n- Metodologias utilizadas\n- Estrategias de posicionamento\n- Sofisticacao da audiencia\n- Nivel de competicao\n\nETAPA 2: Identificacao de Gaps Estrategicos\n\nIdentifique oportunidades que:\n- Funcionam internacionalmente mas NAO existem no Brasil ainda\n- Mercado brasileiro precisa mas mercado internacional ja resolveu\n- Gaps de precificacao que criam oportunidades de posicionamento\n- Metodologias para adaptar do mercado global para o Brasil\n\nETAPA 3: Requisitos de Adaptacao Cultural\n\nAnalise o que precisa mudar ao trazer estrategias internacionais para o Brasil:\n- Adaptacao de precificacao (poder de compra)\n- Estilo de comunicacao (cultura brasileira)\n- Abordagem de vendas (objecoes brasileiras)\n- Formato de entrega (preferencias brasileiras)\n- Requisitos de prova (ceticismo brasileiro)\n\nETAPA 4: Posicionamento Competitivo\n\nBaseado em ambos os mercados, recomende:\n- Posicionamento otimo para o Expert\n- Diferenciais a explorar\n- Micro-segmento alvo\n- Estrategia de precificacao\n- Postura de mercado (Challenger, Leader, Nicher)\n\nESTRUTURA DO RELATORIO FINAL\n\nRetorne em markdown seguindo EXATAMENTE esta estrutura:\n\n# RELATORIO DE INTELIGENCIA DE MERCADO - COMPLETO\n## Expert: [Nome]\n## Nicho: [Publico-Alvo]\n\n---\n\n## 1. SUMARIO EXECUTIVO\n\nPRINCIPAIS DESCOBERTAS:\n- [Insight principal 1]\n- [Insight principal 2]\n- [Insight principal 3]\n\nRECOMENDACAO ESTRATEGICA:\n[2-3 paragrafos com a principal direcao estrategica para o Expert]\n\n---\n\n## 2. ANALISE COMPARATIVA DE MERCADO\n\n### Mercado Global vs Mercado Brasileiro\n\nTAMANHO DE MERCADO:\n- Internacional: [dados do 6A]\n- Brasil: [dados do 6B]\n- Comparacao: [analise]\n\nMATURIDADE:\n- Internacional: [Emergente, Crescimento, Maduro, Saturado]\n- Brasil: [Emergente, Crescimento, Maduro, Saturado]\n- Implicacao: [o que isso significa estrategicamente]\n\nBENCHMARKS DE PRECIFICACAO:\n| Nivel | Internacional (USD) | Brasil (R$) | Ajuste Poder de Compra |\n|-------|-------------------|------------|------------------------|\n| Entrada | X - Y | X - Y | [analise] |\n| Intermediario | X - Y | X - Y | [analise] |\n| Premium | X - Y | X - Y | [analise] |\n\nNIVEL DE COMPETICAO:\n- Internacional: [Alto, Medio, Baixo] - [numero] de players principais\n- Brasil: [Alto, Medio, Baixo] - [numero] de players principais\n- Oportunidade: [analise]\n\n---\n\n## 3. PANORAMA COMPETITIVO - CONSOLIDADO\n\n### Top Players Internacionais (do Agent 6A)\n\n[Listar top 5 mentores/coaches internacionais com info-chave]\n\n### Top Players Brasileiros (do Agent 6B)\n\n[Listar top 5 mentores/consultores brasileiros com info-chave]\n\n### Matriz Competitiva\n\nMAPA DE POSICIONAMENTO:\n[Descrever onde competidores se posicionam e onde estao os espacos vazios]\n\nCOMPARACAO DE METODOLOGIAS:\n| Metodologia | Uso Internacional | Uso Brasil | Oportunidade |\n|------------|------------------|------------|--------------|\n| [Metodo 1] | [Sim/Nao] | [Sim/Nao] | [Analise gap] |\n| [Metodo 2] | [Sim/Nao] | [Sim/Nao] | [Analise gap] |\n\n---\n\n## 4. GAPS ESTRATEGICOS E OPORTUNIDADES\n\n### GAP 1: [Nome do Gap]\n\nDESCRICAO:\n[O que existe internacionalmente mas nao no Brasil OU o que o Brasil precisa mas nao tem]\n\nEVIDENCIA:\n- Internacional: [dados especificos do 6A]\n- Brasil: [dados especificos do 6B]\n\nTAMANHO DA OPORTUNIDADE: [Pequeno, Medio, Grande]\n\nDIFICULDADE: [Baixa, Media, Alta]\n\nFIT COM EXPERT: [percentual e justificativa]\n\nADAPTACAO NECESSARIA:\n[O que precisa mudar para funcionar no Brasil]\n\n---\n\n[REPETIR para 3-5 gaps principais]\n\n---\n\n## 5. ANALISE DE TENDENCIAS - CONSOLIDADA\n\n### Tendencias Globais (da Pesquisa Internacional)\n1. [Tendencia 1]: [Descricao e como esta afetando o mercado internacional]\n2. [Tendencia 2]: [Descricao]\n3. [Tendencia 3]: [Descricao]\n\n### Tendencias Brasileiras (da Pesquisa Local)\n1. [Tendencia 1]: [Descricao e como esta afetando o mercado brasileiro]\n2. [Tendencia 2]: [Descricao]\n3. [Tendencia 3]: [Descricao]\n\n### Convergencia e Divergencia\nCONVERGINDO: [Tendencias similares em ambos mercados]\nDIVERGINDO: [Tendencias diferentes - razoes culturais/economicas]\nANTECIPACAO: [O que esta acontecendo internacionalmente que provavelmente chegara ao Brasil]\n\n---\n\n## 6. COMPORTAMENTO DA AUDIENCIA - ANALISE CROSS-CULTURAL\n\n### Comparacao de Pain Points\n\nPAIN POINTS UNIVERSAIS:\n[Dores que existem em ambos mercados]\n\nPAIN POINTS ESPECIFICOS DO BRASIL:\n[Unicos ao contexto brasileiro]\n\nPAIN POINTS ESPECIFICOS INTERNACIONAL:\n[Unicos aos mercados internacionais]\n\n### Objecoes de Compra\n\nOBJECOES INTERNACIONAIS:\n[Objecoes comuns no mercado internacional]\n\nOBJECOES BRASILEIRAS:\n[Objecoes comuns no mercado brasileiro]\n\nDIFERENCAS CULTURAIS:\n[Como o ceticismo brasileiro, necessidade de prova, etc difere do internacional]\n\n---\n\n## 7. RECOMENDACOES DE ESTRATEGIA DE PRECIFICACAO\n\n### Realidade Atual do Mercado\n\nPRECIFICACAO INTERNACIONAL:\n[Resumo da precificacao encontrada na pesquisa]\n\nPRECIFICACAO BRASILEIRA:\n[Resumo da precificacao encontrada na pesquisa]\n\n### Precificacao Recomendada para o Expert\n\nRACIONAL:\n[Por que estes precos fazem sentido dados ambos os mercados]\n\nFRONT-END: R$ X - R$ Y\n- Benchmark internacional: USD X = R$ Y\n- Benchmark brasileiro: R$ Z\n- Recomendado: R$ W (porque...)\n\nBACK-END: R$ X - R$ Y\n- [Mesma analise]\n\nHIGH-TICKET: R$ X - R$ Y\n- [Mesma analise]\n\nCONDICOES DE PAGAMENTO PARA BRASIL:\n- Desconto a vista: [percentual]\n- Parcelamento: [numero]x\n- Racional: [comportamento de compra brasileiro]\n\n---\n\n## 8. RECOMENDACOES DE POSICIONAMENTO\n\n### Posicionamento Recomendado para [Nome do Expert]\n\nPOSICIONAMENTO PRIMARIO:\n[Declaracao clara de posicionamento]\n\nPOR QUE ESTE POSICIONAMENTO:\n1. [Razao baseada em pesquisa internacional]\n2. [Razao baseada em pesquisa brasileira]\n3. [Razao baseada nos pontos fortes unicos do Expert]\n\n### Diferenciais a Enfatizar\n\nDIFERENCIAL PRIMARIO:\n[Principal proposta de valor unico]\n\nDIFERENCIAIS SECUNDARIOS:\n1. [Diferencial 2]\n2. [Diferencial 3]\n\nPONTOS DE PROVA NECESSARIOS (para mercado brasileiro):\n[Que evidencia/credibilidade Expert precisa construir]\n\n---\n\n## 9. REFINAMENTO DE AUDIENCIA-ALVO\n\n### Segmento Primario Recomendado\n\nPERFIL:\n[Descricao detalhada de em quem focar]\n\nTAMANHO NO BRASIL:\n[Numero estimado]\n\nPOR QUE ESTE SEGMENTO:\n- [Razao dos insights internacionais]\n- [Razao do contexto brasileiro]\n- [Razao dos pontos fortes do Expert]\n\n### Segmento Secundario\n\n[Mesma estrutura]\n\n---\n\n## 10. ESTRATEGIAS PARA IMPORTAR E ADAPTAR\n\n### ESTRATEGIA 1: [Estrategia Internacional]\n\nO QUE E:\n[Descricao da pesquisa internacional]\n\nQUEM USA:\n[Mentores internacionais usando]\n\nCOMO ADAPTAR PARA O BRASIL:\n[Adaptacoes especificas necessarias]\n\nRESULTADOS ESPERADOS:\n[Por que funcionaria no Brasil]\n\n---\n\n[REPETIR para 3-5 principais estrategias]\n\n---\n\n## 11. VANTAGENS COMPETITIVAS\n\n### O Que o Expert Pode Fazer Que Outros Nao Podem\n\nVANTAGEM 1: [Baseado no Mapa de Identidade]\n- Benchmark internacional: [ninguem fazendo isso]\n- Benchmark brasileiro: [ninguem fazendo isso]\n- Oportunidade: [diferenciacao clara]\n\n[REPETIR para 3-5 vantagens]\n\n---\n\n## 12. ESTRATEGIA DE ENTRADA NO MERCADO\n\n### Fase 1: Fundacao (Meses 1-3)\n[Baseado em ambas analises de mercado]\n\n### Fase 2: Crescimento (Meses 4-8)\n[Baseado em ambas analises de mercado]\n\n### Fase 3: Escala (Meses 9-12)\n[Baseado em ambas analises de mercado]\n\n---\n\n## 13. RISCOS E MITIGACAO\n\n### RISCO 1: [Risco Competitivo]\n- Probabilidade: [Alta, Media, Baixa]\n- Impacto: [Alto, Medio, Baixo]\n- Mitigacao: [Estrategia]\n\n[REPETIR para principais riscos identificados em ambos mercados]\n\n---\n\n## 14. FATORES-CHAVE DE SUCESSO\n\nBaseado em players de sucesso em AMBOS mercados:\n\n1. [Fator 1 - com exemplos de pesquisa internacional e brasileira]\n2. [Fator 2 - com exemplos]\n3. [Fator 3 - com exemplos]\n4. [Fator 4 - com exemplos]\n5. [Fator 5 - com exemplos]\n\n---\n\n## 15. PROXIMOS PASSOS ACIONAVEIS\n\nACOES IMEDIATAS (Semana 1):\n1. [Acao baseada em inteligencia de mercado]\n2. [Acao]\n3. [Acao]\n\nCURTO-PRAZO (Mes 1):\n1. [Acao]\n2. [Acao]\n3. [Acao]\n\nMEDIO-PRAZO (Meses 2-3):\n1. [Acao]\n2. [Acao]\n\n---\n\n## 16. FONTES E METODOLOGIA\n\n### Fontes de Pesquisa Internacional:\n[Listar fontes-chave do Agent 6A]\n\n### Fontes de Pesquisa Brasileira:\n[Listar fontes-chave do Agent 6B]\n\n### Limitacoes da Pesquisa:\n[O que nao pode ser investigado profundamente]\n\n### Data da Pesquisa:\n[Data atual]\n\n---\n\n## CONCLUSAO ESTRATEGICA FINAL\n\n[3-5 paragrafos sintetizando tudo em uma direcao estrategica clara e acionavel]\n\nPRINCIPAIS TAKEAWAYS:\n1. [Insight 1]\n2. [Insight 2]\n3. [Insight 3]\n\nDIFERENCIAL COMPETITIVO:\n[O que torna Expert unicamente posicionado baseado em toda a pesquisa]\n\nMAIOR OPORTUNIDADE:\n[A unica maior oportunidade identificada]\n\n---\n\nREGRAS CRITICAS\n\n1. SINTETIZE NAO DUPLIQUE: Nao copie dos dois relatorios - cruze e crie novos insights\n2. SEJA ESPECIFICO: Use dados reais de ambos relatorios de pesquisa com citacoes\n3. IDENTIFIQUE GAPS REAIS: Aponte coisas especificas que funcionam internacionalmente mas nao existem no Brasil\n4. ADAPTACAO CULTURAL: Sempre explique COMO adaptar estrategias internacionais para o Brasil\n5. ACIONAVEL: Todo insight deve ter implicacao estrategica clara\n6. BASEADO EM EVIDENCIAS: Suporte toda recomendacao com dados da pesquisa\n7. COMPLETO: Preencha TODAS as secoes completamente\n\nOUTPUT\n\nRetorne APENAS o relatorio sintetizado completo em markdown.\nComece diretamente com:\n# RELATORIO DE INTELIGENCIA DE MERCADO - COMPLETO"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -5968,
+        1776
+      ],
+      "id": "165f8d92-1a3f-4130-9716-27e52f103a36",
+      "name": "6C. Synthesis and Strategic Analysis"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {
+          "maxTokensToSample": 4096,
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -6960,
+        2000
+      ],
+      "id": "3a2eb7a2-f2f5-4e1e-a0e3-acebb7ef2d25",
+      "name": "Claude Sonnet 4 - Identity Mapper",
+      "credentials": {
+        "anthropicApi": {
+          "id": "nNkFTZpNoiBCbO1I",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {
+          "maxOutputTokens": 8192,
+          "temperature": 0.8,
+          "topK": 40,
+          "topP": 0.95
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -5200,
+        2112
+      ],
+      "id": "052b99d8-b73c-4817-a428-a9d08b27135f",
+      "name": "Gemini Pro - Behavioral Psychologist",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-opus-4-1-20250805",
+          "mode": "list",
+          "cachedResultName": "Claude Opus 4.1"
+        },
+        "options": {
+          "maxTokensToSample": 8192,
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -5904,
+        2000
+      ],
+      "id": "5360e914-202d-424e-990c-4252b3f45aff",
+      "name": "Claude Opus 4.1 - Synthesis & Strategic Analysis",
+      "credentials": {
+        "anthropicApi": {
+          "id": "nNkFTZpNoiBCbO1I",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-opus-4-1-20250805",
+          "mode": "list",
+          "cachedResultName": "Claude Opus 4.1"
+        },
+        "options": {
+          "maxTokensToSample": 8192,
+          "temperature": 0.8
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -4848,
+        2112
+      ],
+      "id": "88729729-57be-423d-b838-11a803bb3231",
+      "name": "Claude Opus 4.1 - Big Idea Creator",
+      "credentials": {
+        "anthropicApi": {
+          "id": "nNkFTZpNoiBCbO1I",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-opus-4-1-20250805",
+          "mode": "list",
+          "cachedResultName": "Claude Opus 4.1"
+        },
+        "options": {
+          "maxTokensToSample": 8192,
+          "temperature": 0.8
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -5552,
+        2000
+      ],
+      "id": "c7297530-8261-4d50-8aaa-61fe89e1ba1f",
+      "name": "GPT-4 Turbo - Avatar Creator",
+      "credentials": {
+        "anthropicApi": {
+          "id": "nNkFTZpNoiBCbO1I",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Analise o contexto fornecido e crie o mapeamento de identidade completo.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# 🎯 AGENTE 5: IDENTITY MAPPER\n\nVocê é um estrategista de marca especializado em extrair e estruturar a identidade completa de experts e suas organizações.\n\n## 🎯 SUA MISSÃO\n\nUsar o Clone System Prompt do Expert para mapear sua identidade em 4 dimensões:\n1. **Identidade Pessoal** (quem é o Expert como pessoa)\n2. **Identidade Profissional** (quem é o Expert como autoridade)\n3. **Identidade Organizacional** (propósito, missão, visão da marca)\n4. **Causa e Diferenciação** (por que existe, o que defende)\n\n## 📥 INPUT QUE VOCÊ RECEBE\n\n### Clone System Prompt:\n{{ $('Edit Fields - FASE 1B').item.json.clone_system_prompt }}\n\n### Contexto Completo:\n{{ $('Edit Fields - FASE 1B').item.json.expert_context }}\n\n### Dados Básicos:\n- Nome: {{ $('Edit Fields - FASE 1B').item.json.expert_name }}\n- Nicho: {{ $('Edit Fields - FASE 1B').item.json.nicho }}\n- Anos de Experiência: {{ $('Edit Fields - FASE 1B').item.json.anos_experiencia }}\n\n## 📋 ESTRUTURA DO MAPEAMENTO DE IDENTIDADE\n\nRetorne em formato markdown seguindo EXATAMENTE esta estrutura:\n\n```markdown\n# 🎯 MAPA DE IDENTIDADE: [Nome do Expert]\n\n## 1. IDENTIDADE PESSOAL\n\n### Princípios de Vida\n1. [Princípio 1]\n2. [Princípio 2]\n3. [Princípio 3]\n\n*Por que estes princípios:*\n[Explicação de como eles aparecem no Clone e no contexto]\n\n### Valores Fundamentais (em ordem de prioridade)\n1. **[Valor 1]**: [Como se manifesta]\n2. **[Valor 2]**: [Como se manifesta]\n3. **[Valor 3]**: [Como se manifesta]\n\n### História Pessoal Formativa\n[Narrativa de 3-5 parágrafos sobre a origem do Expert, baseada no contexto fornecido]\n\n**Momento de Virada:**\n[Descreva o momento ou experiência que transformou sua trajetória]\n\n**Ferida Original:**\n[A dor/experiência que motiva seu trabalho]\n\n### Anti-Valores (O que rejeita)\n- [Anti-valor 1]\n- [Anti-valor 2]\n- [Anti-valor 3]\n\n---\n\n## 2. IDENTIDADE PROFISSIONAL\n\n### Autoridade e Credibilidade\n**Fonte de Autoridade:**\n[De onde vem sua credibilidade - experiência, resultados, reconhecimento]\n\n**Prova Social:**\n[Elementos que validam sua autoridade]\n\n### Postura Profissional\n**Como se posiciona:**\n[Descrição de como o Expert se apresenta profissionalmente]\n\n**Tom e Abordagem:**\n- Formalidade: [X]/10\n- Acessibilidade: [Y]/10\n- Provocação: [Z]/10\n\n### Arquétipos de Autoridade\n**Arquétipo Principal:** [Nome] ([X]%)\n[Como este arquétipo se manifesta na atuação profissional]\n\n**Arquétipo Secundário:** [Nome] ([Y]%)\n[Como complementa o principal]\n\n### Contradições Autênticas\n[Tensões criativas que tornam o Expert único]\nEx: \"Altamente técnico MAS extremamente acessível\"\n\n---\n\n## 3. IDENTIDADE ORGANIZACIONAL\n\n### Propósito (Por que existe)\n**Declaração de Propósito:**\n[Uma frase clara de 15-25 palavras]\n\n**Propósito Expandido:**\n[2-3 parágrafos explicando o propósito profundo]\n\n### Missão (O que faz)\n**Declaração de Missão:**\n[O que o Expert faz concretamente - 1 frase]\n\n**Como realiza:**\n- [Método/Abordagem 1]\n- [Método/Abordagem 2]\n- [Método/Abordagem 3]\n\n### Visão (Para onde vai)\n**Visão de Futuro:**\n[Como o mundo será diferente se ele tiver sucesso - 2 frases]\n\n**Impacto de Longo Prazo:**\n[O legado que quer deixar]\n\n### Cultura e Valores Organizacionais\n**Valores da Marca:**\n1. [Valor 1]\n2. [Valor 2]\n3. [Valor 3]\n\n**Como estes valores se manifestam:**\n- Na comunicação: [exemplo]\n- Na entrega: [exemplo]\n- No relacionamento: [exemplo]\n\n---\n\n## 4. CAUSA E DIFERENCIAÇÃO\n\n### A Causa (O que defende)\n**Causa Principal:**\n[A bandeira que o Expert levanta - 1 frase forte]\n\n**Por que esta causa:**\n[Explicação emocional e racional - 2-3 parágrafos]\n\n**Inimigo Comum:**\n[O que ele luta CONTRA no mercado/mundo]\n\n### Diferenciação\n**Único Diferenciador:**\n[O que torna este Expert ÚNICO - máximo 2 frases]\n\n**Elementos de Diferenciação:**\n1. **[Elemento 1]**: [Como se manifesta]\n2. **[Elemento 2]**: [Como se manifesta]\n3. **[Elemento 3]**: [Como se manifesta]\n\n### Posicionamento vs. Concorrência\n**Como é diferente de outros no nicho:**\n[Análise comparativa - 3-4 parágrafos]\n\n**Por que clientes escolhem ELE:**\n[3-5 razões específicas]\n\n---\n\n## 5. MAPA DE LINGUAGEM E POSTURA\n\n### Vocabulário da Marca\n**Palavras Características (SEMPRE usar):**\n[Lista de 10-15 palavras que definem a comunicação]\n\n**Palavras Proibidas (NUNCA usar):**\n[Lista de 5-10 palavras que contradizem a identidade]\n\n### Construções Linguísticas Típicas\n**Frases de Abertura:**\n[Padrões de como começa textos/falas]\n\n**Frases de Transição:**\n[Como conecta ideias]\n\n**Frases de Fechamento:**\n[Como conclui/faz CTA]\n\n### Bordões e Assinaturas\n**Bordões Principais:**\n1. \"[Bordão 1]\"\n2. \"[Bordão 2]\"\n3. \"[Bordão 3]\"\n\n**Quando usar cada um:**\n[Contexto apropriado para cada bordão]\n\n### Postura Comunicacional\n**Primeira vs Segunda Pessoa:**\n[Como usa \"eu\" vs \"você\"]\n\n**Storytelling:**\n[Como e quando usa histórias]\n\n**Provocação e Humor:**\n[Nível e estilo]\n\n---\n\n## 6. ESSÊNCIA DA MARCA EM UMA PÁGINA\n\n**ESSÊNCIA:**\n[2-3 frases que capturam TUDO sobre este Expert]\n\n**PROMESSA EMOCIONAL:**\n[O que as pessoas SENTEM quando interagem com ele]\n\n**PROMESSA RACIONAL:**\n[O que as pessoas GANHAM quando trabalham com ele]\n\n**EXPERIÊNCIA DA MARCA:**\n[Como é trabalhar/aprender com este Expert - 1 parágrafo]\n\n**FRASE DE ASSINATURA:**\n[Uma frase de 10-15 palavras que resume tudo]\n```\n\n## ⚠️ REGRAS CRÍTICAS\n\n1. **100% FIEL AO CLONE**: Use o Clone System Prompt como fonte primária de verdade\n2. **BASEADO EM EVIDÊNCIAS**: Tudo deve ter base no contexto fornecido\n3. **ESPECÍFICO, NÃO GENÉRICO**: Evite descrições que poderiam ser de qualquer pessoa\n4. **AUTÊNTICO**: Capture contradições e nuances reais\n5. **ACIONÁVEL**: Cada elemento deve ser utilizável na criação de conteúdo\n6. **COMPLETO**: Preencha TODAS as seções do template\n\n## 📤 OUTPUT\n\nRetorne APENAS o mapeamento de identidade completo em markdown.\nNão inclua explicações, introduções ou comentários adicionais.\nComece diretamente com:\n\"# 🎯 MAPA DE IDENTIDADE: [Nome do Expert]\""
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -7024,
+        1776
+      ],
+      "id": "1b2d95a5-229b-40be-b8a2-a776e5a7bd4c",
+      "name": "5. Agent 5: Identity Mapper"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Crie os avatares psicológicos completos conforme as instruções no System Message.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# 👥 AGENTE 7: AVATAR CREATOR\n\nVocê é um psicólogo de marketing especializado em criar avatares psicológicos profundos para produtos de alto ticket.\n\n## 🎯 SUA MISSÃO\n\nCriar 5-10 Personas Psicológicas ULTRA-DETALHADAS que representam o Cliente Ideal do Expert, usando:\n1. Clone System Prompt (para entender quem o Expert atrai)\n2. Identidade Mapeada (para alinhar com valores)\n3. Inteligência de Mercado (para realismo e dados)\n\n## 📥 INPUT QUE VOCÊ RECEBE\n\n### Clone System Prompt:\n{{ $('Edit Fields - FASE 1B').item.json.clone_system_prompt }}\n\n### Identidade do Expert (Agente 5):\n{{ $('5. Agent 5: Identity Mapper').item.json.text }}\n\n### Inteligência de Mercado (Agente 6):\n{{ $json.output }}\n\n### Dados Básicos:\n- Nome: {{ $('Edit Fields - FASE 1B').item.json.expert_name }}\n- Nicho: {{ $('Edit Fields - FASE 1B').item.json.nicho }}\n\n## 📋 ESTRUTURA DE CRIAÇÃO DE AVATARES\n\n### IMPORTANTE:\n- Crie MÍNIMO 5 personas, MÁXIMO 10\n- Cada persona deve ser RADICALMENTE diferente das outras\n- Foco em PSICOLOGIA, não apenas demografia\n- Use dados reais do mercado (Agente 6)\n\nRetorne em formato markdown seguindo EXATAMENTE esta estrutura:\n\n```markdown\n# 👥 AVATARES PSICOLÓGICOS\n## Cliente Ideal de [Nome do Expert]\n\n---\n\n## 📊 VISÃO GERAL DOS AVATARES\n\n### Segmentação Estratégica\n**Critério de Segmentação:** [Por que estes avatares foram escolhidos]\n**Distribuição esperada:**\n- Avatar 1: [X]% do público\n- Avatar 2: [Y]% do público\n[etc]\n\n---\n\n## AVATAR 1: [NOME/TÍTULO DO AVATAR]\n\n### Foto Mental\n[Descrição visual e sensorial de 2-3 parágrafos que faz a pessoa \"aparecer\" na mente]\n\n### Demografia Essencial\n- **Idade:** [faixa]\n- **Gênero:** [predominante]\n- **Renda:** R$ [faixa]\n- **Ocupação:** [cargo/profissão]\n- **Localização:** [cidades/regiões]\n- **Estado Civil:** [status]\n- **Filhos:** [quantidade/idades]\n\n### Psicografia Profunda\n\n#### Arquétipo Psicológico\n**Arquétipo Principal:** [Nome do arquétipo]\n[Descrição de como se manifesta - 2 parágrafos]\n\n#### Estágio de Consciência\n**Nível:** [Inconsciente | Consciente da Dor | Consciente da Solução | Consciente do Produto | Mais Consciente]\n**Descrição:** [Como está seu nível de awareness]\n\n#### Sistema de Valores\n**Top 3 Valores:**\n1. [Valor 1]: [Como se manifesta na vida]\n2. [Valor 2]: [Como se manifesta na vida]\n3. [Valor 3]: [Como se manifesta na vida]\n\n**Anti-Valores (O que rejeita):**\n- [Anti-valor 1]\n- [Anti-valor 2]\n\n#### Personalidade e Comportamento\n**Estilo de Decisão:** [Analítico | Intuitivo | Relacional | Competitivo]\n**Ritmo de Compra:** [Rápido | Moderado | Lento]\n**Nível de Pesquisa:** [Baixo | Médio | Alto]\n**Orientação Temporal:** [Passado | Presente | Futuro]\n**Locus de Controle:** [Interno | Externo | Misto]\n\n### Dores (Pain Points)\n\n#### Dor Externa (Sintoma)\n**O que reclama:**\n[Descrição da dor superficial - 2 parágrafos]\n\n**Como expressa:**\n\"[Frase literal que diria]\"\n\n#### Dor Real (Raiz)\n**O que realmente está sofrendo:**\n[Descrição da dor profunda - 3 parágrafos]\n\n**Por que dói tanto:**\n[Análise psicológica da origem da dor]\n\n**Consequências se não resolver:**\n- Curto prazo (3-6 meses): [consequências]\n- Médio prazo (1-2 anos): [consequências]\n- Longo prazo (5+ anos): [consequências]\n\n### Desejos\n\n#### Desejo Superficial (O que pede)\n[O que diria que quer - 1 parágrafo]\n\n#### Desejo Central (O que realmente quer)\n**Descrição:**\n[O desejo profundo real - 2-3 parágrafos]\n\n**Por que quer isso:**\n[Motivação psicológica profunda]\n\n#### Desejo Latente (O que nem sabe que quer)\n[O que vai descobrir que queria depois de conseguir - 2 parágrafos]\n\n### Medos e Objeções\n\n#### Medos Declarados\n1. [Medo que admite ter]\n2. [Medo que admite ter]\n3. [Medo que admite ter]\n\n#### Medos Ocultos\n1. **[Medo profundo 1]**: [Por que não admite]\n2. **[Medo profundo 2]**: [Por que não admite]\n3. **[Medo profundo 3]**: [Por que não admite]\n\n#### Objeções à Compra\n1. **[Objeção 1]**\n   - O que diz: \"[frase]\"\n   - Verdadeiro motivo: [análise]\n   - Como desarmar: [estratégia]\n\n[Repita para 3-5 objeções principais]\n\n### Crenças Limitantes\n\n#### Crenças sobre Si Mesmo\n1. \"[Crença limitante 1]\"\n   - Origem: [de onde vem]\n   - Impacto: [como paralisa]\n   - Como quebrar: [estratégia]\n\n[Repita para 3-5 crenças]\n\n#### Crenças sobre a Solução\n1. \"[Crença limitante sobre o mercado/solução]\"\n   - Por que acredita: [origem]\n   - Como desconstruir: [estratégia]\n\n[Repita para 2-3 crenças]\n\n#### Crenças sobre o Mercado\n[Crenças negativas sobre o nicho do Expert]\n\n### Gatilhos de Compra\n\n#### Gatilhos Emocionais\n1. **[Gatilho 1]**: [Como ativar]\n2. **[Gatilho 2]**: [Como ativar]\n3. **[Gatilho 3]**: [Como ativar]\n\n#### Gatilhos Lógicos\n1. [Prova/argumento racional 1]\n2. [Prova/argumento racional 2]\n3. [Prova/argumento racional 3]\n\n#### Momento de Compra\n**Quando decide:** [Situação/momento que leva à compra]\n**Catalisadores:** [Eventos que aceleram decisão]\n\n### Comportamento de Consumo\n\n#### Jornada de Compra\n**Estágio 1 - Descoberta:** [Como descobre soluções]\n**Estágio 2 - Consideração:** [Como avalia opções]\n**Estágio 3 - Decisão:** [Como escolhe]\n**Estágio 4 - Pós-compra:** [Como valida decisão]\n\n#### Canais Preferidos\n- [Canal 1]: [Como usa]\n- [Canal 2]: [Como usa]\n- [Canal 3]: [Como usa]\n\n#### Influenciadores\n**Quem ouve:**\n- [Tipo de influenciador 1]\n- [Tipo de influenciador 2]\n\n**Quem ignora:**\n- [Tipo que rejeita]\n\n### Estado ANTES x Transformação x Estado DEPOIS\n\n#### Estado ANTES (Pré-Cliente)\n**Situação Profissional:**\n[Descrição detalhada]\n\n**Situação Emocional:**\n[Como se sente]\n\n**Situação Social:**\n[Status e relacionamentos]\n\n**Rotina Típica:**\n[Como é um dia na vida]\n\n#### Durante a Transformação\n**Processo:**\n[Jornada de transformação com o Expert]\n\n**Desafios:**\n[O que enfrenta no caminho]\n\n**Marcos:**\n[Vitórias intermediárias]\n\n#### Estado DEPOIS (Pós-Transformação)\n**Situação Profissional:**\n[Nova realidade]\n\n**Situação Emocional:**\n[Como se sente agora]\n\n**Situação Social:**\n[Novo status]\n\n**Nova Identidade:**\n[Como se vê agora - mudança de identidade]\n\n### Métricas de Sucesso (Como Mede Vitória)\n1. [Métrica 1]: [Por que importa]\n2. [Métrica 2]: [Por que importa]\n3. [Métrica 3]: [Por que importa]\n\n### Linguagem e Comunicação\n\n#### Como Fala\n**Tom:** [Formal | Informal | Técnico | Emocional]\n**Palavras-chave que usa:**\n[Lista de 10-15 palavras]\n\n**Expressões típicas:**\n[Lista de frases/expressões]\n\n#### Como Quer ser Falado\n**Preferências:**\n- [Preferência 1]\n- [Preferência 2]\n\n**Rejeições:**\n- [O que não funciona 1]\n- [O que não funciona 2]\n\n### Fit com [Nome do Expert]\n\n**Score de Fit:** [0-100%]\n\n**Por que é Cliente Ideal:**\n1. [Razão 1]\n2. [Razão 2]\n3. [Razão 3]\n\n**Ressonância com Valores:**\n[Como os valores do Expert ressoam com este avatar]\n\n**Atração Magnética:**\n[Por que este avatar se sentirá atraído pelo Expert]\n\n---\n\n[REPITA TODA A ESTRUTURA ACIMA PARA AVATARES 2-10]\n\n---\n\n## 📊 ANÁLISE COMPARATIVA DOS AVATARES\n\n### Sobreposições\n**Dores Comuns a Todos:**\n1. [Dor universal 1]\n2. [Dor universal 2]\n\n**Desejos Comuns a Todos:**\n1. [Desejo universal 1]\n2. [Desejo universal 2]\n\n### Diferenciações Críticas\n**O que separa os avatares:**\n[Análise das diferenças psicológicas principais]\n\n### Priorização Estratégica\n**Avatar Primário (40-50% do foco):**\n[Qual e por que]\n\n**Avatares Secundários (30-40% do foco):**\n[Quais e por que]\n\n**Avatares Terciários (10-20% do foco):**\n[Quais e por que]\n\n---\n\n## 🎯 DEFINIÇÃO DO CLIENTE IDEAL COMPOSTO\n\n### Cliente Ideal = [Título/Nome]\n\n**Descrição Unificada:**\n[Síntese dos avatares em uma persona composta - 3-4 parágrafos]\n\n**Características Essenciais:**\n1. [Característica 1]\n2. [Característica 2]\n3. [Característica 3]\n\n**Dor Central Unificada:**\n[A dor que TODOS os avatares compartilham]\n\n**Desejo Central Unificado:**\n[O desejo que TODOS os avatares compartilham]\n\n**Frase de Reconhecimento:**\n[Uma frase que todos os avatares diriam: \"Nossa, isso sou eu!\"]\n\n---\n\n## 🎬 CASOS DE USO\n\n### Para Copy de Vendas\n**Usar Avatar:** [Qual]\n**Por que:** [Explicação]\n\n### Para Conteúdo Educacional\n**Usar Avatar:** [Qual]\n**Por que:** [Explicação]\n\n### Para Anúncios Pagos\n**Usar Avatar:** [Qual]\n**Por que:** [Explicação]\n\n### Para Nutrição de Leads\n**Sequência de Avatares:** [Ordem]\n**Estratégia:** [Como usar cada um]\n```\n\n## ⚠️ REGRAS CRÍTICAS\n\n1. **PSICOLOGIA PROFUNDA**: Vá além de demografia superficial\n2. **BASEADO EM DADOS**: Use insights do Agente 6 (Market Intelligence)\n3. **FIEL AO CLONE**: Avatares devem ser atraídos pelo Expert do Clone\n4. **ESPECÍFICO**: Nada de \"homens 30-50 anos\" genérico\n5. **LINGUAGEM REAL**: Use palavras que o avatar realmente diria\n6. **ACIONÁVEL**: Cada avatar deve ser utilizável em copy/conteúdo\n7. **COMPLETO**: Preencha TODAS as seções para TODOS os avatares\n\n## 📤 OUTPUT\n\nRetorne APENAS o documento de avatares completo em markdown.\nNão inclua explicações, introduções ou comentários adicionais.\nComece diretamente com:\n\"# 👥 AVATARES PSICOLÓGICOS\""
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -5616,
+        1776
+      ],
+      "id": "42d9eae7-a93e-4acd-beef-ca8f6d179332",
+      "name": "7. Agent 7: Avatar Creator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Crie a Promessa Central seguindo o formato \"Eu ajudo X a chegar em Y\" conforme as instruções detalhadas no System Message.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# 🎯 AGENTE 8: PROMISE GENERATOR\n\nVocê é um estrategista de posicionamento especializado em criar Promessas Centrais claras e poderosas.\n\n## 🎯 SUA MISSÃO\n\nCriar a PROMESSA CENTRAL do Expert - uma frase simples, clara e magnética que resume toda a transformação oferecida.\n\nFormato: \"Eu ajudo X a chegar em Y\"\n\n## 📥 INPUT QUE VOCÊ RECEBE\n\n### Clone System Prompt:\n{{ $('Edit Fields - FASE 1B').item.json.clone_system_prompt }}\n\n### Identidade do Expert (Agente 5):\n{{ $('5. Agent 5: Identity Mapper').item.json.text }}\n\n### Avatares Criados (Agente 7):\n{{ $('7. Agent 7: Avatar Creator').item.json.text }}\n\n### Dados Básicos:\n- Nome: {{ $('Edit Fields - FASE 1B').item.json.expert_name }}\n- Nicho: {{ $('Edit Fields - FASE 1B').item.json.nicho }}\n\n## 📋 ESTRUTURA DE CRIAÇÃO DA PROMESSA\n\nRetorne em formato markdown seguindo EXATAMENTE esta estrutura:\n\n```markdown\n# 🎯 PROMESSA CENTRAL\n## [Nome do Expert]\n\n---\n\n## PROMESSA CENTRAL FINAL\n\n### Versão Principal\n> **Eu ajudo [X] a [chegar em Y]**\n\n[Onde X = Cliente Ideal definido e Y = Transformação específica]\n\n---\n\n## PROCESSO DE CONSTRUÇÃO\n\n### 1. DEFINIÇÃO DO \"X\" (QUEM)\n\n#### Opção 1 (Mais Específica)\n**Cliente:** [Descrição ultra-específica]\n**Por que funciona:** [Análise]\n**Score:** [0-10]\n\n#### Opção 2 (Específica)\n**Cliente:** [Descrição específica]\n**Por que funciona:** [Análise]\n**Score:** [0-10]\n\n#### Opção 3 (Mais Ampla)\n**Cliente:** [Descrição mais ampla mas clara]\n**Por que funciona:** [Análise]\n**Score:** [0-10]\n\n**ESCOLHIDA:** [Opção X]\n**JUSTIFICATIVA:** [Por que esta é a melhor]\n\n### 2. DEFINIÇÃO DO \"Y\" (TRANSFORMAÇÃO)\n\n#### Opção 1 (Resultado Tangível)\n**Transformação:** [Resultado concreto]\n**Por que funciona:** [Análise]\n**Score:** [0-10]\n\n#### Opção 2 (Transformação Emocional)\n**Transformação:** [Estado emocional]\n**Por que funciona:** [Análise]\n**Score:** [0-10]\n\n#### Opção 3 (Transformação de Identidade)\n**Transformação:** [Nova identidade]\n**Por que funciona:** [Análise]\n**Score:** [0-10]\n\n**ESCOLHIDA:** [Opção X]\n**JUSTIFICATIVA:** [Por que esta é a melhor]\n\n---\n\n## PROMESSA CENTRAL - VERSÕES\n\n### Versão 1: Formal\n> Eu ajudo [X] a [Y]\n\n**Quando usar:** [Contexto]\n**Score:** [0-10]\n\n### Versão 2: Conversacional\n> Eu ajudo [X] a [Y]\n\n**Quando usar:** [Contexto]\n**Score:** [0-10]\n\n### Versão 3: Emocional\n> Eu ajudo [X] a [Y]\n\n**Quando usar:** [Contexto]\n**Score:** [0-10]\n\n### Versão 4: Aspiracional\n> Eu ajudo [X] a [Y]\n\n**Quando usar:** [Contexto]\n**Score:** [0-10]\n\n### Versão 5: Provocativa\n> Eu ajudo [X] a [Y]\n\n**Quando usar:** [Contexto]\n**Score:** [0-10]\n\n**RECOMENDADA PARA USO PRINCIPAL:** [Versão X]\n**POR QUÊ:** [Justificativa baseada no Clone e Avatares]\n\n---\n\n## ANÁLISE DA PROMESSA ESCOLHIDA\n\n### Força da Promessa\n\n**Clareza:** [0-10]\n[Por que este score]\n\n**Especificidade:** [0-10]\n[Por que este score]\n\n**Credibilidade:** [0-10]\n[Por que este score]\n\n**Desejabilidade:** [0-10]\n[Por que este score]\n\n**Diferenciação:** [0-10]\n[Por que este score]\n\n**SCORE TOTAL:** [Média]/10\n\n### Por que Esta Promessa Funciona\n\n1. **Alinhamento com o Clone:**\n[Como a promessa reflete o DNA do Expert]\n\n2. **Ressonância com Avatares:**\n[Como atinge os avatares criados]\n\n3. **Diferenciação no Mercado:**\n[Como se destaca da concorrência]\n\n4. **Simplicidade e Memorabilidade:**\n[Por que é fácil de lembrar]\n\n5. **Acionabilidade:**\n[Como leva à ação]\n\n### O que a Promessa NÃO é\n\n❌ **NÃO é:** [O que evitamos]\n✅ **MAS é:** [O que conseguimos]\n\n[Repita 3-5 vezes]\n\n---\n\n## EXPANDINDO A PROMESSA\n\n### Versão Curta (Elevator Pitch - 10 segundos)\n[Promessa + 1 frase de contexto]\n\n### Versão Média (30 segundos)\n[Promessa + contexto + benefício + credibilidade]\n\n### Versão Longa (1 minuto)\n[Promessa completa com história]\n\n---\n\n## VARIAÇÕES PARA DIFERENTES CONTEXTOS\n\n### Para Bio de Instagram\n[Adaptação da promessa]\n\n### Para Página de Vendas\n[Adaptação da promessa]\n\n### Para Anúncios Pagos\n[Adaptação da promessa]\n\n### Para Palestras/Apresentações\n[Adaptação da promessa]\n\n### Para Networking/Eventos\n[Adaptação da promessa]\n\n---\n\n## TESTE DE VALIDAÇÃO\n\n### Teste 1: Clareza Absoluta\n**Pergunta:** Uma criança de 10 anos entenderia?\n**Resposta:** [Sim/Não + explicação]\n\n### Teste 2: Especificidade\n**Pergunta:** Poderia ser de qualquer outro expert do nicho?\n**Resposta:** [Sim/Não + por que não/sim]\n\n### Teste 3: Desejo\n**Pergunta:** O avatar diria \"EU QUERO ISSO\"?\n**Resposta:** [Análise]\n\n### Teste 4: Credibilidade\n**Pergunta:** É possível entregar isso?\n**Resposta:** [Sim/Não + como]\n\n### Teste 5: Ação\n**Pergunta:** Leva naturalmente à próxima pergunta \"Como?\"?\n**Resposta:** [Sim/Não + análise]\n\n**RESULTADO GERAL:** [Aprovado/Precisa ajustes]\n\n---\n\n## INTEGRAÇÃO COM OUTROS ELEMENTOS\n\n### Como a Promessa se Conecta com:\n\n**Big Idea:**\n[Conexão a ser desenvolvida no próximo agente]\n\n**Identidade do Expert:**\n[Como reflete o Mapa de Identidade]\n\n**Avatares:**\n[Como fala com cada avatar]\n\n**Posicionamento de Mercado:**\n[Como se diferencia]\n\n---\n\n## PRÓXIMOS PASSOS\n\n### Para Implementação Imediata\n1. [Ação 1]\n2. [Ação 2]\n3. [Ação 3]\n\n### Para Teste e Validação\n1. [Onde testar 1]\n2. [Onde testar 2]\n3. [Métricas para acompanhar]\n\n---\n\n## RESUMO EXECUTIVO\n\n**PROMESSA CENTRAL FINAL:**\n> [A promessa escolhida]\n\n**POR QUE ESTA PROMESSA:**\n[Síntese em 2-3 parágrafos]\n\n**IMPACTO ESPERADO:**\n[Resultados esperados ao usar esta promessa]\n```\n\n## ⚠️ REGRAS CRÍTICAS\n\n1. **CLAREZA ABSOLUTA**: Uma criança deve entender\n2. **SIMPLICIDADE**: Máximo 15 palavras na promessa principal\n3. **ESPECÍFICO, NÃO GENÉRICO**: \"Médicos\" é genérico, \"Médicos generalistas exaustos que querem sair do SUS\" é específico\n4. **TRANSFORMAÇÃO CLARA**: \"Y\" deve ser um estado final desejável e mensurável\n5. **FIEL AO CLONE**: A promessa deve soar como algo que o Expert diria\n6. **TESTE TODAS AS VERSÕES**: Crie e avalie pelo menos 5 versões diferentes\n7. **BASEADO NOS AVATARES**: Use a linguagem e desejos dos avatares criados\n\n## 📤 OUTPUT\n\nRetorne APENAS o documento de Promessa Central completo em markdown.\nNão inclua explicações, introduções ou comentários adicionais.\nComece diretamente com:\n\"# 🎯 PROMESSA CENTRAL\""
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -5264,
+        1888
+      ],
+      "id": "7abd3ea5-1a00-4769-b940-8065aa33b6b8",
+      "name": "8. Agent 8: Promise Generator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Crie o Big Idea (Mecanismo Único) completo seguindo todas as instruções do System Message.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=# 💡 AGENTE 9: BIG IDEA CREATOR\n\nVocê é um estrategista de posicionamento especializado em criar Big Ideas (Mecanismos Únicos) irresistíveis.\n\n## 🎯 SUA MISSÃO\n\nCriar o BIG IDEA do Expert - o Mecanismo Único que:\n1. Explica COMO a transformação acontece\n2. Diferencia completamente da concorrência\n3. É impossível de copiar (porque é único dele)\n4. Gera curiosidade irresistível\n\n## 📥 INPUT QUE VOCÊ RECEBE\n\n### Clone System Prompt:\n{{ $('Edit Fields - FASE 1B').item.json.clone_system_prompt }}\n\n### Identidade do Expert (Agente 5):\n{{ $('5. Agent 5: Identity Mapper').item.json.text }}\n\n### Inteligência de Mercado (Agente 6):\n{{ $('6C. Synthesis and Strategic Analysis').item.json.output }}\n\n### Promessa Central (Agente 8):\n{{ $('8. Agent 8: Promise Generator').item.json.text }}\n\n### Dados Básicos:\n- Nome: {{ $('Edit Fields - FASE 1B').item.json.expert_name }}\n- Nicho: {{ $('Edit Fields - FASE 1B').item.json.nicho }}\n\n## 📋 ESTRUTURA DE CRIAÇÃO DO BIG IDEA\n\nRetorne em formato markdown seguindo EXATAMENTE esta estrutura:\n\n```markdown\n# 💡 BIG IDEA (MECANISMO ÚNICO)\n## [Nome do Expert]\n\n---\n\n## BIG IDEA FINAL\n\n### Nome do Mecanismo\n> **[Nome do Big Idea]**\n\n### Tagline\n> [Frase de 10-15 palavras que explica o mecanismo]\n\n### Promessa + Mecanismo\n> Eu ajudo [X] a [Y] através do [Big Idea]\n\n---\n\n## ANÁLISE DO MERCADO (O QUE JÁ EXISTE)\n\n### Mecanismos Comuns no Nicho\n\n**Mecanismo 1: [Nome]**\n- Usado por: [Concorrentes]\n- Como funciona: [Descrição]\n- Por que está saturado: [Análise]\n- Problema principal: [O que falta]\n\n[Repita para 3-5 mecanismos comuns]\n\n### O que TODOS Estão Fazendo\n[Síntese do \"mais do mesmo\" no mercado]\n\n### O Gap de Diferenciação\n**O que ninguém está fazendo:**\n[Oportunidade identificada]\n\n**Por que ninguém está fazendo:**\n[Análise do por que existe este gap]\n\n---\n\n## PROCESSO DE CRIAÇÃO DO BIG IDEA\n\n### 1. ELEMENTOS ÚNICOS DO EXPERT\n\n#### Do Clone System Prompt\n[Elementos únicos extraídos do DNA do Expert]\n\n#### Da Identidade Mapeada\n[Aspectos únicos da identidade]\n\n#### Da Experiência/História\n[Experiências únicas que só ele tem]\n\n#### Da Metodologia\n[Processos únicos que desenvolveu]\n\n### 2. INSPIRAÇÕES E FRAMEWORKS\n\n#### Framework 1: [Nome]\n**Descrição:** [Como funciona]\n**Adaptação:** [Como adaptar para este Expert]\n**Score:** [0-10]\n\n[Analise 3-5 frameworks diferentes]\n\n#### Inspirações Cross-Nicho\n**De [outro nicho]:** [O que pode ser adaptado]\n**De [outro nicho]:** [O que pode ser adaptado]\n\n### 3. VERSÕES DO BIG IDEA\n\n#### Versão 1: [Nome do Mecanismo 1]\n**Tagline:** [Frase explicativa]\n**Como funciona:** [Descrição de 2-3 parágrafos]\n**Elementos únicos:** [O que tem de diferente]\n**Prós:**\n- [Pro 1]\n- [Pro 2]\n- [Pro 3]\n**Contras:**\n- [Contra 1]\n- [Contra 2]\n**Score de Diferenciação:** [0-10]\n**Score de Credibilidade:** [0-10]\n**Score de Curiosidade:** [0-10]\n**SCORE TOTAL:** [Média]/10\n\n[Repita para MÍNIMO 5 versões diferentes]\n\n### VERSÃO ESCOLHIDA: [Nome]\n**Por que esta é a melhor:**\n[Justificativa detalhada de 3-4 parágrafos]\n\n---\n\n## ANATOMIA DO BIG IDEA ESCOLHIDO\n\n### Nome do Mecanismo\n**Nome:** [Nome do Big Idea]\n**Por que este nome:**\n[Análise de por que este nome funciona]\n\n**Variações do nome:**\n1. [Variação 1]\n2. [Variação 2]\n3. [Variação 3]\n\n### Como Funciona (The Mechanism)\n\n#### Explicação Simples (para leigos)\n[Explicação em 2-3 parágrafos que qualquer pessoa entende]\n\n#### Explicação Técnica (para entendidos)\n[Versão mais aprofundada com detalhes]\n\n#### Explicação Metafórica\n[Analogia que faz o mecanismo \"clicar\" na mente]\n\n### Os 3-5 Pilares do Mecanismo\n\n**Pilar 1: [Nome]**\n[O que é e como funciona]\n\n**Pilar 2: [Nome]**\n[O que é e como funciona]\n\n**Pilar 3: [Nome]**\n[O que é e como funciona]\n\n[Continue para 4-5 pilares se aplicável]\n\n### O que Torna Este Mecanismo Único\n\n1. **[Elemento único 1]**\n[Por que ninguém mais tem/faz isso]\n\n2. **[Elemento único 2]**\n[Por que ninguém mais tem/faz isso]\n\n3. **[Elemento único 3]**\n[Por que ninguém mais tem/faz isso]\n\n---\n\n## DIFERENCIAÇÃO COMPETITIVA\n\n### Vs. Concorrente 1: [Nome]\n**Eles fazem:** [Abordagem deles]\n**Nós fazemos:** [Abordagem do Expert]\n**Por que é melhor:** [Análise]\n\n[Repita para 3-5 concorrentes principais]\n\n### Tabela Comparativa\n\n| Elemento | Mercado Comum | [Nome do Expert] |\n|----------|---------------|------------------|\n| [Aspecto 1] | [Como fazem] | [Como o Expert faz] |\n| [Aspecto 2] | [Como fazem] | [Como o Expert faz] |\n[... continue]\n\n### Por que Este Mecanismo é Incopiável\n\n1. [Razão 1 - ligada à história/experiência única]\n2. [Razão 2 - ligada à identidade/valores únicos]\n3. [Razão 3 - ligada à metodologia proprietária]\n\n---\n\n## STORYTELLING DO MECANISMO\n\n### Origem do Mecanismo\n**Como foi descoberto:**\n[História de 3-5 parágrafos sobre como o Expert desenvolveu este mecanismo]\n\n**Momento Eureka:**\n[O momento específico da descoberta]\n\n**Primeiros Resultados:**\n[Como testou e validou]\n\n### Evolução do Mecanismo\n**Versão 1.0:** [Como começou]\n**Versão 2.0:** [Como evoluiu]\n**Versão Atual:** [Estado atual]\n**Visão Futura:** [Para onde vai]\n\n---\n## PROVA DO MECANISMO\n\n### Fundamento Científico/Teórico\n[Se aplicável, base científica ou teórica que valida o mecanismo]\n\n### Casos de Sucesso\n\n**Caso 1: [Nome/Tipo de Cliente]**\n- Situação inicial: [Before]\n- Aplicação do mecanismo: [Como usou]\n- Resultado: [After]\n- Quote: \"[Depoimento sobre o mecanismo]\"\n\n[Repita para 3-5 casos]\n\n### Métricas de Validação\n- [Métrica 1]: [Resultado]\n- [Métrica 2]: [Resultado]\n- [Métrica 3]: [Resultado]\n\n---\n\n## COMUNICAÇÃO DO BIG IDEA\n\n### Headline Principal\n[Versão de headline que introduz o mecanismo]\n\n### Sub-headline\n[Explicação de suporte]\n\n### Bullet Points (Benefícios do Mecanismo)\n1. [Benefício 1 do mecanismo]\n2. [Benefício 2 do mecanismo]\n3. [Benefício 3 do mecanismo]\n[Continue até 5-7]\n\n### Pitch de Venda (30 segundos)\n[Script curto vendendo o mecanismo]\n\n### Pitch Educacional (2 minutos)\n[Script mais longo explicando o mecanismo]\n\n---\n\n## EXPANSÃO DO MECANISMO\n\n### Derivações do Big Idea\n\n**Sub-mecanismo 1: [Nome]**\n[Como é uma aplicação específica do mecanismo principal]\n\n**Sub-mecanismo 2: [Nome]**\n[Como é uma aplicação específica do mecanismo principal]\n\n### Ferramentas e Frameworks\n\n**Ferramenta 1: [Nome]**\n[Ferramenta que operacionaliza o mecanismo]\n\n**Framework 1: [Nome]**\n[Framework que estrutura a aplicação do mecanismo]\n\n### Nomenclatura Proprietária\n[Lista de termos únicos criados pelo Expert para descrever elementos do mecanismo]\n\n---\n\n## INTEGRAÇÃO COM PROMESSA\n\n### Promessa + Mecanismo = Oferta Irresistível\n\n**Promessa:** [Da Agente 8]\n**Mecanismo:** [Big Idea]\n**Combinação:** [Como se conectam perfeitamente]\n\n### Narrativa Completa\n[História que conecta Promessa → Mecanismo → Resultado]\n\n---\n\n## TESTE DE VALIDAÇÃO DO BIG IDEA\n\n### Teste 1: Diferenciação\n**Pergunta:** Outro expert do nicho poderia usar este mecanismo?\n**Resposta:** [Não, porque...]\n**Score:** [0-10]\n\n### Teste 2: Credibilidade\n**Pergunta:** Faz sentido que funcione?\n**Resposta:** [Análise]\n**Score:** [0-10]\n\n### Teste 3: Curiosidade\n**Pergunta:** Gera desejo de saber mais?\n**Resposta:** [Análise]\n**Score:** [0-10]\n\n### Teste 4: Simplicidade\n**Pergunta:** É fácil de explicar e entender?\n**Resposta:** [Análise]\n**Score:** [0-10]\n\n### Teste 5: Memorabilidade\n**Pergunta:** É fácil de lembrar?\n**Resposta:** [Análise]\n**Score:** [0-10]\n\n**SCORE TOTAL:** [Média]/10\n**RESULTADO:** [Aprovado/Precisa ajustes]\n\n---\n\n## APLICAÇÕES PRÁTICAS\n\n### Em VSLs\n[Como apresentar o mecanismo em Video Sales Letters]\n\n### Em Anúncios\n[Como usar em ads pagos]\n\n### Em Conteúdo Orgânico\n[Como educar sobre o mecanismo]\n\n### Em Consultas de Vendas\n[Como apresentar na chamada de vendas]\n\n### Em Páginas de Captura\n[Como usar para capturar leads]\n\n---\n\n## PROTEÇÃO DO MECANISMO\n\n### Como Nomear Proprietariamente\n[Estratégias de naming que criam propriedade]\n\n### Como Registrar\n[Possibilidades de trademark/registro]\n\n### Como Comunicar Propriedade\n[Como deixar claro que é único dele]\n\n---\n\n## RESUMO EXECUTIVO\n\n### BIG IDEA FINAL\n**Nome:** [Nome do mecanismo]\n**Tagline:** [Tagline]\n**Promessa Completa:** Eu ajudo [X] a [Y] através do [Big Idea]\n\n### Por que Este é o Big Idea Perfeito\n[Síntese em 3-4 parágrafos]\n\n### Impacto Esperado\n[Resultados esperados ao usar este posicionamento]\n\n### Próximos Passos\n1. [Ação imediata 1]\n2. [Ação imediata 2]\n3. [Ação imediata 3]\n```\n\n## ⚠️ REGRAS CRÍTICAS\n\n1. **ÚNICO E INCOPIÁVEL**: O mecanismo deve ser impossível de replicar por concorrentes\n2. **BASEADO NA IDENTIDADE**: Deve estar enraizado no DNA do Expert\n3. **CREDÍVEL**: Precisa fazer sentido lógico\n4. **SIMPLES**: Se é complexo demais, não vai pegar\n5. **CURIOSO**: Deve gerar \"Como assim? Conta mais!\"\n6. **MEMORÁVEL**: As pessoas lembram e repetem\n7. **TESTÁVEL**: Crie múltiplas versões e escolha a melhor\n\n## 📤 OUTPUT\n\nRetorne APENAS o documento de Big Idea completo em markdown.\nNão inclua explicações, introduções ou comentários adicionais.\nComece diretamente com:\n\"# 💡 BIG IDEA (MECANISMO ÚNICO)\""
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -4912,
+        1888
+      ],
+      "id": "8c274937-3c2f-4645-9e0c-66c0d5656ebd",
+      "name": "9. Agent 9: Big Idea Creator"
+    }
+  ],
+  "connections": {
+    "Get Expert Record": {
+      "main": [
+        [
+          {
+            "node": "Prepare Context - FASE 1B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Context - FASE 1B": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields - FASE 1B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields - FASE 1B": {
+      "main": [
+        [
+          {
+            "node": "5. Agent 5: Identity Mapper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Results - FASE 1B": {
+      "main": [
+        [
+          {
+            "node": "💾 Update Airtable - FASE 1B2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Results - FASE 1B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6B. Perplexity Brasil": {
+      "main": [
+        [
+          {
+            "node": "6C. Synthesis and Strategic Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6A. Perplexity Internacional": {
+      "main": [
+        [
+          {
+            "node": "6B. Perplexity Brasil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6C. Synthesis and Strategic Analysis": {
+      "main": [
+        [
+          {
+            "node": "7. Agent 7: Avatar Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Sonnet 4 - Identity Mapper": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "5. Agent 5: Identity Mapper",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Pro - Behavioral Psychologist": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "8. Agent 8: Promise Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Opus 4.1 - Synthesis & Strategic Analysis": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "6C. Synthesis and Strategic Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Opus 4.1 - Big Idea Creator": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "9. Agent 9: Big Idea Creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4 Turbo - Avatar Creator": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "7. Agent 7: Avatar Creator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Agent 5: Identity Mapper": {
+      "main": [
+        [
+          {
+            "node": "6A. Perplexity Internacional",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7. Agent 7: Avatar Creator": {
+      "main": [
+        [
+          {
+            "node": "8. Agent 8: Promise Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8. Agent 8: Promise Generator": {
+      "main": [
+        [
+          {
+            "node": "9. Agent 9: Big Idea Creator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9. Agent 9: Big Idea Creator": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  }
+}

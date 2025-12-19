@@ -1,0 +1,393 @@
+{
+  "name": "Chatbot com Memória (Supabase)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "options": {}
+      },
+      "id": "webhook-entrada",
+      "name": "Webhook Entrada",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "chat-webhook"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "tableId": "chat_sessions",
+        "filterType": "string",
+        "filterString": "session_id=eq.{{ $json.session_id }}",
+        "returnAll": false,
+        "limit": 1
+      },
+      "id": "buscar-sessao",
+      "name": "Buscar Sessão",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "SEU_CREDENTIAL_ID",
+          "name": "Supabase Mottivme"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.id }}",
+              "value2": ""
+            }
+          ]
+        }
+      },
+      "id": "sessao-existe",
+      "name": "Sessão Existe?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "tableId": "chat_sessions",
+        "fieldsToSend": "defineBelow",
+        "fieldList": {
+          "values": [
+            {
+              "fieldName": "session_id",
+              "fieldValue": "={{ $('Webhook Entrada').item.json.session_id }}"
+            },
+            {
+              "fieldName": "user_name",
+              "fieldValue": "={{ $('Webhook Entrada').item.json.user_name || 'Usuário' }}"
+            },
+            {
+              "fieldName": "user_phone",
+              "fieldValue": "={{ $('Webhook Entrada').item.json.user_phone || '' }}"
+            },
+            {
+              "fieldName": "channel",
+              "fieldValue": "={{ $('Webhook Entrada').item.json.channel || 'web' }}"
+            }
+          ]
+        }
+      },
+      "id": "criar-sessao",
+      "name": "Criar Nova Sessão",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [850, 400],
+      "credentials": {
+        "supabaseApi": {
+          "id": "SEU_CREDENTIAL_ID",
+          "name": "Supabase Mottivme"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "tableId": "chat_messages",
+        "filterType": "string",
+        "filterString": "session_id=eq.{{ $('Webhook Entrada').item.json.session_id }}&order=created_at.desc&limit=10",
+        "returnAll": false,
+        "limit": 10
+      },
+      "id": "buscar-historico",
+      "name": "Buscar Histórico",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1050, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "SEU_CREDENTIAL_ID",
+          "name": "Supabase Mottivme"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Formatar histórico para o prompt\nconst historico = $input.all().reverse();\nconst mensagemAtual = $('Webhook Entrada').item.json.message;\nconst userName = $('Webhook Entrada').item.json.user_name || 'Usuário';\n\n// Construir contexto de conversa\nlet contexto = '';\nfor (const msg of historico) {\n  if (msg.json.role === 'user') {\n    contexto += `Usuário: ${msg.json.content}\\n`;\n  } else if (msg.json.role === 'assistant') {\n    contexto += `Assistente: ${msg.json.content}\\n`;\n  }\n}\n\n// Prompt do sistema\nconst systemPrompt = `Você é um assistente de vendas da Mottivme, especializado em BPO e consultoria comercial.\n\nInformações do usuário:\n- Nome: ${userName}\n\nDiretrizes:\n1. Seja prestativo, profissional e amigável\n2. Foque em entender as necessidades do cliente\n3. Quando apropriado, sugira agendar uma reunião\n4. Use o histórico da conversa para manter contexto\n5. Responda de forma concisa e objetiva`;\n\n// Montar mensagens para a API\nconst messages = [];\n\n// System message\nmessages.push({\n  role: 'system',\n  content: systemPrompt\n});\n\n// Histórico\nfor (const msg of historico) {\n  messages.push({\n    role: msg.json.role,\n    content: msg.json.content\n  });\n}\n\n// Mensagem atual\nmessages.push({\n  role: 'user',\n  content: mensagemAtual\n});\n\nreturn {\n  messages,\n  session_id: $('Webhook Entrada').item.json.session_id,\n  user_message: mensagemAtual,\n  historico_count: historico.length\n};"
+      },
+      "id": "montar-prompt",
+      "name": "Montar Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $credentials.httpHeaderAuth.value }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-3-haiku-20240307\",\n  \"max_tokens\": 1024,\n  \"system\": {{ $json.messages[0].content | JSON.stringify }},\n  \"messages\": {{ $json.messages.slice(1) | JSON.stringify }}\n}",
+        "options": {}
+      },
+      "id": "chamar-claude",
+      "name": "Chamar Claude",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1450, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SEU_CREDENTIAL_ANTHROPIC",
+          "name": "Anthropic API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.item.json;\nconst assistantMessage = response.content[0].text;\nconst sessionId = $('Montar Prompt').item.json.session_id;\nconst userMessage = $('Montar Prompt').item.json.user_message;\nconst tokensUsed = response.usage?.output_tokens || 0;\n\nreturn {\n  session_id: sessionId,\n  user_message: userMessage,\n  assistant_message: assistantMessage,\n  tokens_used: tokensUsed,\n  model: response.model\n};"
+      },
+      "id": "extrair-resposta",
+      "name": "Extrair Resposta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "tableId": "chat_messages",
+        "fieldsToSend": "defineBelow",
+        "fieldList": {
+          "values": [
+            {
+              "fieldName": "session_id",
+              "fieldValue": "={{ $json.session_id }}"
+            },
+            {
+              "fieldName": "role",
+              "fieldValue": "user"
+            },
+            {
+              "fieldName": "content",
+              "fieldValue": "={{ $json.user_message }}"
+            }
+          ]
+        }
+      },
+      "id": "salvar-msg-usuario",
+      "name": "Salvar Msg Usuário",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1850, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "SEU_CREDENTIAL_ID",
+          "name": "Supabase Mottivme"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "tableId": "chat_messages",
+        "fieldsToSend": "defineBelow",
+        "fieldList": {
+          "values": [
+            {
+              "fieldName": "session_id",
+              "fieldValue": "={{ $('Extrair Resposta').item.json.session_id }}"
+            },
+            {
+              "fieldName": "role",
+              "fieldValue": "assistant"
+            },
+            {
+              "fieldName": "content",
+              "fieldValue": "={{ $('Extrair Resposta').item.json.assistant_message }}"
+            },
+            {
+              "fieldName": "tokens_used",
+              "fieldValue": "={{ $('Extrair Resposta').item.json.tokens_used }}"
+            },
+            {
+              "fieldName": "model",
+              "fieldValue": "={{ $('Extrair Resposta').item.json.model }}"
+            }
+          ]
+        }
+      },
+      "id": "salvar-msg-assistente",
+      "name": "Salvar Msg Assistente",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1850, 400],
+      "credentials": {
+        "supabaseApi": {
+          "id": "SEU_CREDENTIAL_ID",
+          "name": "Supabase Mottivme"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": {{ $('Extrair Resposta').item.json.assistant_message | JSON.stringify }},\n  \"session_id\": {{ $('Extrair Resposta').item.json.session_id | JSON.stringify }},\n  \"tokens_used\": {{ $('Extrair Resposta').item.json.tokens_used }}\n}",
+        "options": {}
+      },
+      "id": "responder-webhook",
+      "name": "Responder Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2100, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Entrada": {
+      "main": [
+        [
+          {
+            "node": "Buscar Sessão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Sessão": {
+      "main": [
+        [
+          {
+            "node": "Sessão Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sessão Existe?": {
+      "main": [
+        [
+          {
+            "node": "Buscar Histórico",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Criar Nova Sessão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Nova Sessão": {
+      "main": [
+        [
+          {
+            "node": "Buscar Histórico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Histórico": {
+      "main": [
+        [
+          {
+            "node": "Montar Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Prompt": {
+      "main": [
+        [
+          {
+            "node": "Chamar Claude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chamar Claude": {
+      "main": [
+        [
+          {
+            "node": "Extrair Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Resposta": {
+      "main": [
+        [
+          {
+            "node": "Salvar Msg Usuário",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Salvar Msg Assistente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Msg Usuário": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Msg Assistente": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["chatbot", "memoria", "supabase", "claude"],
+  "triggerCount": 0,
+  "pinData": {}
+}

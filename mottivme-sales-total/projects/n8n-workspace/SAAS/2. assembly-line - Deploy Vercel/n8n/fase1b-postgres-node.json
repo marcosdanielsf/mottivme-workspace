@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "instanceId": "assembly-line-fase1b"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO clone_experts (project_id, analise_concorrentes, concorrentes_internacionais, concorrentes_brasileiros, sintese_estrategica, status, updated_at)\nVALUES (\n  '{{ $('🔄 Transform Expert Context').item.json.project_id }}'::uuid,\n  '{{ ($('5. Agent 5: Identity Mapper').item.json.text || '').replace(/'/g, \"''\") }}',\n  '{{ ($('6A. Perplexity Internacional').item.json.choices[0].message.content || '').replace(/'/g, \"''\") }}',\n  '{{ ($('6B. Perplexity Brasil').item.json.choices[0].message.content || '').replace(/'/g, \"''\") }}',\n  '{{ ($('6C. Synthesis and Strategic Analysis').item.json.text || '').replace(/'/g, \"''\") }}',\n  'ready',\n  NOW()\n)\nON CONFLICT (project_id) DO UPDATE SET\n  analise_concorrentes = EXCLUDED.analise_concorrentes,\n  concorrentes_internacionais = EXCLUDED.concorrentes_internacionais,\n  concorrentes_brasileiros = EXCLUDED.concorrentes_brasileiros,\n  sintese_estrategica = EXCLUDED.sintese_estrategica,\n  status = 'ready',\n  updated_at = NOW()\nRETURNING *;",
+        "options": {}
+      },
+      "id": "fase1b-postgres-001",
+      "name": "💾 Update Posicionamento - FASE 1B",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1800, 500],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    }
+  ],
+  "connections": {}
+}

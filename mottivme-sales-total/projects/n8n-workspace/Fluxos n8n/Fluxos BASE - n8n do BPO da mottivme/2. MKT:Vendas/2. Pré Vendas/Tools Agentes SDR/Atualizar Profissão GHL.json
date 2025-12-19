@@ -1,0 +1,269 @@
+{
+  "name": "Atualizar Profissão GHL",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "API_KEY"
+            },
+            {
+              "name": "location_id"
+            },
+            {
+              "name": "contact_id"
+            },
+            {
+              "name": "profissaoValue"
+            }
+          ]
+        }
+      },
+      "id": "d0c97d4f-9533-43cd-ab3a-6c83b1bdb78b",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -1904,
+        -1360
+      ]
+    },
+    {
+      "parameters": {
+        "content": "v1 - tava dando erro na hora de agendar pq nao tava buscando a disponibilidade",
+        "height": 688,
+        "width": 1696
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2256,
+        -1648
+      ],
+      "typeVersion": 1,
+      "id": "964b745e-7bb1-42b9-9858-fbcdb0788533",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "contact_id",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "key": "workPermit",
+              "value": "={{ $json.workPermitValue }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1.1,
+      "position": [
+        -1680,
+        -1360
+      ],
+      "id": "7d5295b8-b1c4-4f69-897f-4185ba88a1d4",
+      "name": "Execution Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8c5d3e2f-1a3b-4c5e-9f2a-7b8c9d0e1f2a",
+              "name": "contactId",
+              "value": "={{ $('Start').item.json.contact_id }}",
+              "type": "string"
+            },
+            {
+              "id": "dea4eade-a0b7-4fa8-be10-478ffe2fed82",
+              "name": "fieldId",
+              "value": "={{ $json.profissaoFieldId }}",
+              "type": "string"
+            },
+            {
+              "id": "3f4e5d6c-7b8a-9c0d-1e2f-3a4b5c6d7e8f",
+              "name": "profissoValue",
+              "value": "={{ $('Start').item.json.profissaoValue }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1024,
+        -1360
+      ],
+      "id": "1d079403-48f2-4467-9e72-c37daf95b9f0",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.location_id }}/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.API_KEY }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1456,
+        -1360
+      ],
+      "id": "3ff98738-c10b-4cf4-8460-93e7fcc9acb2",
+      "name": "1️⃣ Listar todos os campos"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contactId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Start').item.json.API_KEY }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    {\n      \"id\": \"{{ $json.fieldId }}\",\n      \"value\": \"{{ $json.profissoValue }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -800,
+        -1360
+      ],
+      "id": "ddb087a8-7a32-4c5e-b124-4a5998bf635f",
+      "name": "Atualizar profissão",
+      "notes": "Atualiza o campo customizado work_permit no contato"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega a lista de custom fields do input anterior\nconst customFields = $input.first().json.customFields;\n\n// Encontra o campo \"Work Permit\"\nconst workPermitField = customFields.find(field => \n  field.name === \"Work Permit\"\n);\n\n// Encontra o campo \"Estado onde mora\"\nconst estadoField = customFields.find(field => \n  field.name === \"Estado onde mora\"\n);\n\n// Encontra o campo \"Profissão\"\nconst profissaoField = customFields.find(field => \n  field.name === \"Profissão\"\n);\n\n// Valida se encontrou todos\nif (!workPermitField) {\n  throw new Error(\"Campo 'Work Permit' não encontrado!\");\n}\n\nif (!estadoField) {\n  throw new Error(\"Campo 'Estado onde mora' não encontrado!\");\n}\n\nif (!profissaoField) {\n  throw new Error(\"Campo 'Profissão' não encontrado!\");\n}\n\n// Retorna todos os IDs\nreturn [{\n  json: {\n    workPermitFieldId: workPermitField.id,  // YFFXi3ByB0DuISqrq6MW\n    estadoFieldId: estadoField.id,          // NBugndbaCqI3gGDn1gSB\n    profissaoFieldId: profissaoField.id     // 5xBXzNrCOyig7PvvWMoU\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1248,
+        -1360
+      ],
+      "id": "58d3c32c-1689-4040-b94f-054d3da9d479",
+      "name": "profissão"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "API_KEY": "pit-7f333e6f-a839-4f58-b371-778fed9dc2ea",
+          "location_id": "Bgi2hFMgiLLoRlOO0K5b",
+          "contact_id": "wEuY88JHzcpo6PSt43e7",
+          "profissaoValue": "agencia de seguros"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execution Data": {
+      "main": [
+        [
+          {
+            "node": "1️⃣ Listar todos os campos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Atualizar profissão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣ Listar todos os campos": {
+      "main": [
+        [
+          {
+            "node": "profissão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "profissão": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f184cb1c-2133-4984-807b-6a6e5d131857",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "Kq3b79P6v4rTsiaH",
+  "tags": [
+    {
+      "updatedAt": "2025-11-03T19:28:46.270Z",
+      "createdAt": "2025-11-03T19:28:46.270Z",
+      "id": "3znkt8vlq1yubGAB",
+      "name": "on"
+    }
+  ]
+}

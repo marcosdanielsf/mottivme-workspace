@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propostal — Propostas que Fecham Sozinhas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0a;
+            --white: #fafafa;
+            --gold: #d4af37;
+            --gold-light: #f4e4bc;
+            --gray: #888;
+            --dark-gray: #1a1a1a;
+            --gradient: linear-gradient(135deg, #d4af37 0%, #f4e4bc 50%, #d4af37 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease, background 0.2s ease;
+            mix-blend-mode: difference;
+        }
+
+        .cursor.hover {
+            transform: scale(2);
+            background: var(--gold);
+        }
+
+        /* Grain Overlay */
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(10,10,10,0.9), transparent);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .nav-cta {
+            padding: 12px 28px;
+            background: var(--gradient);
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 80px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .hero h1 span {
+            font-style: italic;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 600px;
+            line-height: 1.8;
+            margin-bottom: 50px;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            animation: fadeInUp 1s ease 0.8s both;
+        }
+
+        .btn-primary {
+            padding: 18px 40px;
+            background: var(--gradient);
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 18px 40px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            margin-top: 80px;
+            padding-top: 60px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            animation: fadeInUp 1s ease 1s both;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        /* Problem Section */
+        .problem {
+            padding: 120px 60px;
+            background: var(--dark-gray);
+            position: relative;
+        }
+
+        .problem::before {
+            content: '"';
+            position: absolute;
+            top: 60px;
+            left: 60px;
+            font-family: 'Playfair Display', serif;
+            font-size: 15rem;
+            color: rgba(212, 175, 55, 0.05);
+            line-height: 1;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 30px;
+        }
+
+        .problem h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.3;
+            max-width: 800px;
+            margin-bottom: 60px;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 1200px;
+        }
+
+        .problem-card {
+            padding: 40px;
+            background: var(--black);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .problem-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .problem-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold);
+        }
+
+        .problem-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .problem-card p {
+            font-size: 0.95rem;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* Solution Section */
+        .solution {
+            padding: 120px 60px;
+            position: relative;
+        }
+
+        .solution-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .solution h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 30px;
+        }
+
+        .solution h2 span {
+            font-style: italic;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .solution p {
+            font-size: 1.1rem;
+            color: var(--gray);
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .features-list {
+            list-style: none;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .features-list li::before {
+            content: '→';
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .solution-visual {
+            position: relative;
+            height: 500px;
+            background: var(--dark-gray);
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+        }
+
+        .solution-visual::before {
+            content: 'DASHBOARD PREVIEW';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            color: var(--gray);
+        }
+
+        .floating-card {
+            position: absolute;
+            background: var(--black);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 20px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-card:nth-child(1) {
+            top: 30px;
+            left: 30px;
+            animation-delay: 0s;
+        }
+
+        .floating-card:nth-child(2) {
+            top: 50%;
+            right: 30px;
+            animation-delay: 2s;
+        }
+
+        .floating-card:nth-child(3) {
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .card-label {
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        /* Luna Section */
+        .luna {
+            padding: 120px 60px;
+            background: var(--dark-gray);
+            text-align: center;
+        }
+
+        .luna h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .luna h2 span {
+            font-style: italic;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .luna > p {
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto 60px;
+            line-height: 1.8;
+        }
+
+        .luna-features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .luna-feature {
+            padding: 40px 30px;
+            background: var(--black);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: border-color 0.3s;
+        }
+
+        .luna-feature:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .luna-feature h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .luna-feature p {
+            font-size: 0.9rem;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* Pricing */
+        .pricing {
+            padding: 120px 60px;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .pricing-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .pricing-header p {
+            font-size: 1.1rem;
+            color: var(--gray);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            padding: 50px 40px;
+            background: var(--dark-gray);
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--gold);
+            background: linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, var(--dark-gray) 100%);
+        }
+
+        .pricing-card.featured::before {
+            content: 'MAIS POPULAR';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 20px;
+            background: var(--gradient);
+            color: var(--black);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .plan-name {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .plan-price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--gray);
+        }
+
+        .plan-desc {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            color: var(--white);
+        }
+
+        .plan-features li::before {
+            content: '✓';
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .plan-features li.disabled {
+            color: var(--gray);
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .plan-features li.disabled::before {
+            content: '✕';
+            color: var(--gray);
+        }
+
+        .plan-cta {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .plan-cta.primary {
+            background: var(--gradient);
+            color: var(--black);
+        }
+
+        .plan-cta.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .plan-cta.secondary {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+        }
+
+        .plan-cta.secondary:hover {
+            border-color: var(--gold);
+        }
+
+        /* CTA Final */
+        .cta-final {
+            padding: 120px 60px;
+            background: var(--dark-gray);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-final::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+        }
+
+        .cta-final h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .cta-final p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 500px;
+            margin: 0 auto 50px;
+            position: relative;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        .footer-copy {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .problem-grid,
+            .pricing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .luna-features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .solution-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero,
+            .problem,
+            .solution,
+            .luna,
+            .pricing,
+            .cta-final {
+                padding: 80px 20px;
+            }
+
+            .problem-grid,
+            .pricing-grid,
+            .luna-features {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 30px;
+                text-align: center;
+            }
+
+            body {
+                cursor: auto;
+            }
+
+            .cursor {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor"></div>
+    <div class="grain"></div>
+
+    <nav>
+        <div class="logo">PROPOSTAL</div>
+        <ul class="nav-links">
+            <li><a href="#problema">Problema</a></li>
+            <li><a href="#solucao">Solução</a></li>
+            <li><a href="#luna">Luna</a></li>
+            <li><a href="#precos">Preços</a></li>
+        </ul>
+        <a href="#precos" class="nav-cta">COMEÇAR AGORA</a>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">
+            <span>Novo</span> Inteligência Adaptativa
+        </div>
+        <h1>Propostas que<br><span>fecham sozinhas</span></h1>
+        <p>Transforme PDFs ignorados em experiências imersivas que rastreiam comportamento, adaptam conteúdo em tempo real e convertem 2x mais.</p>
+        <div class="hero-cta">
+            <a href="#precos" class="btn-primary">CRIAR MINHA PROPOSTA</a>
+            <a href="#demo" class="btn-secondary">VER DEMONSTRAÇÃO</a>
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">847%</div>
+                <div class="stat-label">Aumento no tempo de leitura</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">2.4x</div>
+                <div class="stat-label">Mais agendamentos</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">45%</div>
+                <div class="stat-label">Taxa de fechamento</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="problem" id="problema">
+        <div class="section-label">O Problema</div>
+        <h2>Você perde vendas porque suas propostas são invisíveis</h2>
+        <div class="problem-grid">
+            <div class="problem-card">
+                <div class="problem-icon">📄</div>
+                <h3>PDFs morrem na caixa de entrada</h3>
+                <p>70% das propostas enviadas nunca são abertas. As que são, recebem em média 47 segundos de atenção.</p>
+            </div>
+            <div class="problem-card">
+                <div class="problem-icon">👻</div>
+                <h3>Zero visibilidade</h3>
+                <p>Você não sabe se abriram, quanto tempo ficaram, onde travaram, nem se encaminharam para alguém.</p>
+            </div>
+            <div class="problem-card">
+                <div class="problem-icon">🎯</div>
+                <h3>Follow-up às cegas</h3>
+                <p>Sem dados, seu follow-up é genérico. Você pergunta "viu a proposta?" quando deveria saber exatamente onde o lead travou.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="solution" id="solucao">
+        <div class="solution-content">
+            <div>
+                <div class="section-label">A Solução</div>
+                <h2>O portal que lê a mente do seu <span>lead</span></h2>
+                <p>Propostal transforma sua proposta em uma experiência interativa que rastreia cada clique, adapta o conteúdo em tempo real e te avisa no momento exato de fazer o follow-up.</p>
+                <ul class="features-list">
+                    <li>Rastreamento completo: tempo por seção, cliques, scrolls, revisitas</li>
+                    <li>Adaptação inteligente: se o lead foca em preço, mostra ROI automaticamente</li>
+                    <li>Alertas em tempo real: saiba quando o lead está online, agora</li>
+                    <li>Score de interesse: 0-100, calculado por comportamento real</li>
+                    <li>Chat ao vivo + IA: capture dúvidas no momento de maior interesse</li>
+                </ul>
+            </div>
+            <div class="solution-visual">
+                <div class="floating-card">
+                    <div class="card-label">LEADS ONLINE</div>
+                    <div class="card-value">7</div>
+                </div>
+                <div class="floating-card">
+                    <div class="card-label">SCORE MÉDIO</div>
+                    <div class="card-value">73</div>
+                </div>
+                <div class="floating-card">
+                    <div class="card-label">CONVERSÃO</div>
+                    <div class="card-value">41%</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="luna" id="luna">
+        <div class="section-label">Conheça a Luna</div>
+        <h2>Sua assistente de vendas com <span>rosto humano</span></h2>
+        <p>Luna é o avatar que dá vida às suas propostas. Ela recebe o lead pelo nome, explica cada seção e responde dúvidas — 24 horas por dia.</p>
+        <div class="luna-features">
+            <div class="luna-feature">
+                <h4>Vídeo Personalizado</h4>
+                <p>Luna fala o nome do lead e menciona a empresa dele no vídeo de abertura.</p>
+            </div>
+            <div class="luna-feature">
+                <h4>Chat Inteligente</h4>
+                <p>Responde dúvidas sobre a proposta e escala para humano quando necessário.</p>
+            </div>
+            <div class="luna-feature">
+                <h4>Narração por Seção</h4>
+                <p>Cada capítulo da proposta tem narração opcional da Luna explicando.</p>
+            </div>
+            <div class="luna-feature">
+                <h4>Disponível 24/7</h4>
+                <p>Nunca perde um lead que abre a proposta às 2h da manhã.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing" id="precos">
+        <div class="pricing-header">
+            <div class="section-label">Investimento</div>
+            <h2>Escolha seu plano</h2>
+            <p>Cancele quando quiser. Sem fidelidade.</p>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="plan-name">Starter</div>
+                <div class="plan-price">R$197<span>/mês</span></div>
+                <div class="plan-desc">Você monta suas propostas usando nossos templates prontos.</div>
+                <ul class="plan-features">
+                    <li>Até 50 propostas/mês</li>
+                    <li>3 templates premium</li>
+                    <li>Rastreamento básico</li>
+                    <li>Alertas por email</li>
+                    <li class="disabled">Avatar Luna</li>
+                    <li class="disabled">Chat ao vivo</li>
+                    <li class="disabled">Suporte prioritário</li>
+                </ul>
+                <a href="#" class="plan-cta secondary">COMEÇAR GRÁTIS</a>
+            </div>
+            <div class="pricing-card featured">
+                <div class="plan-name">Pro</div>
+                <div class="plan-price">R$497<span>/mês</span></div>
+                <div class="plan-desc">Você monta, nós revisamos e otimizamos para converter mais.</div>
+                <ul class="plan-features">
+                    <li>Propostas ilimitadas</li>
+                    <li>Todos os templates</li>
+                    <li>Rastreamento completo</li>
+                    <li>Alertas WhatsApp + Email</li>
+                    <li>Avatar Luna com IA</li>
+                    <li>Chat ao vivo integrado</li>
+                    <li class="disabled">Setup personalizado</li>
+                </ul>
+                <a href="#" class="plan-cta primary">COMEÇAR AGORA</a>
+            </div>
+            <div class="pricing-card">
+                <div class="plan-name">Enterprise</div>
+                <div class="plan-price">R$1.497<span>/mês</span></div>
+                <div class="plan-desc">Nós criamos tudo do zero, personalizado para sua marca.</div>
+                <ul class="plan-features">
+                    <li>Propostas ilimitadas</li>
+                    <li>Templates exclusivos</li>
+                    <li>Rastreamento avançado</li>
+                    <li>Alertas multi-canal</li>
+                    <li>Avatar personalizado</li>
+                    <li>Chat + IA treinada</li>
+                    <li>Onboarding dedicado</li>
+                </ul>
+                <a href="#" class="plan-cta secondary">FALAR COM VENDAS</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-final">
+        <h2>Sua próxima proposta<br>pode fechar sozinha</h2>
+        <p>Comece grátis por 14 dias. Sem cartão de crédito.</p>
+        <a href="#" class="btn-primary">CRIAR MINHA PRIMEIRA PROPOSTA</a>
+    </section>
+
+    <footer>
+        <div class="footer-logo">PROPOSTAL</div>
+        <div class="footer-links">
+            <a href="#">Termos de Uso</a>
+            <a href="#">Privacidade</a>
+            <a href="#">Suporte</a>
+            <a href="#">Contato</a>
+        </div>
+        <div class="footer-copy">© 2025 Propostal by Mottivme</div>
+    </footer>
+
+    <script>
+        // Custom cursor
+        const cursor = document.querySelector('.cursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX - 10 + 'px';
+            cursor.style.top = e.clientY - 10 + 'px';
+        });
+
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.problem-card, .luna-feature, .pricing-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

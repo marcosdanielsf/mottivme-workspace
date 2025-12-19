@@ -1,0 +1,1160 @@
+<!--
+═══════════════════════════════════════════════════════════════════════════════
+  METROFLEX EVENTS - COMPREHENSIVE NPC COMPETITION FAQ SECTION
+  Ready for GoHighLevel Website Integration
+
+  Features:
+  - 3 Tabbed Sections (Competitors, Sponsors, Spectators)
+  - Searchable FAQ Accordion
+  - Mobile Responsive
+  - MetroFlex Branding (Red #C41E3A, Black #0A0A0A)
+  - SEO Optimized with Schema Markup
+  - Copy-Paste Ready for GHL Custom HTML Block
+
+  Version: 1.0
+  Last Updated: 2025-01-09
+═══════════════════════════════════════════════════════════════════════════════
+-->
+
+<style>
+/* FAQ Section Container */
+.metroflex-faq-section {
+    background: linear-gradient(135deg, #0A0A0A 0%, #1a1a1a 100%);
+    padding: 80px 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #FFFFFF;
+}
+
+.metroflex-faq-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Section Header */
+.metroflex-faq-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.metroflex-faq-header h2 {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #C41E3A 0%, #FF4458 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+}
+
+.metroflex-faq-header p {
+    font-size: 18px;
+    color: #B0B0B0;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Search Bar */
+.metroflex-faq-search {
+    max-width: 600px;
+    margin: 0 auto 40px;
+    position: relative;
+}
+
+.metroflex-faq-search input {
+    width: 100%;
+    padding: 18px 24px 18px 56px;
+    border: 2px solid #2a2a2a;
+    border-radius: 12px;
+    background: #1a1a1a;
+    color: #FFFFFF;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.metroflex-faq-search input:focus {
+    outline: none;
+    border-color: #C41E3A;
+    box-shadow: 0 0 0 4px rgba(196, 30, 58, 0.1);
+}
+
+.metroflex-faq-search svg {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    stroke: #666;
+}
+
+/* Tab Navigation */
+.metroflex-faq-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+}
+
+.metroflex-faq-tab {
+    padding: 14px 32px;
+    background: #1a1a1a;
+    border: 2px solid #2a2a2a;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: #B0B0B0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.metroflex-faq-tab:hover {
+    border-color: #C41E3A;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+.metroflex-faq-tab.active {
+    background: linear-gradient(135deg, #C41E3A 0%, #A01830 100%);
+    border-color: #C41E3A;
+    color: #FFFFFF;
+    box-shadow: 0 4px 20px rgba(196, 30, 58, 0.3);
+}
+
+.metroflex-faq-tab .tab-count {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+/* Tab Content */
+.metroflex-faq-tab-content {
+    display: none;
+}
+
+.metroflex-faq-tab-content.active {
+    display: block;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Category Sections */
+.metroflex-faq-category {
+    margin-bottom: 48px;
+}
+
+.metroflex-faq-category-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #C41E3A;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #2a2a2a;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+/* FAQ Items */
+.metroflex-faq-item {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.metroflex-faq-item:hover {
+    border-color: #C41E3A;
+    box-shadow: 0 4px 16px rgba(196, 30, 58, 0.2);
+}
+
+.metroflex-faq-question {
+    padding: 24px 28px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: #FFFFFF;
+    user-select: none;
+    transition: all 0.3s ease;
+}
+
+.metroflex-faq-question:hover {
+    color: #C41E3A;
+}
+
+.metroflex-faq-question .icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    margin-left: 16px;
+    transition: transform 0.3s ease;
+}
+
+.metroflex-faq-item.active .metroflex-faq-question .icon {
+    transform: rotate(180deg);
+}
+
+.metroflex-faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 28px;
+}
+
+.metroflex-faq-item.active .metroflex-faq-answer {
+    max-height: 1000px;
+    padding: 0 28px 24px;
+}
+
+.metroflex-faq-answer p {
+    color: #B0B0B0;
+    line-height: 1.8;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* No Results Message */
+.metroflex-faq-no-results {
+    text-align: center;
+    padding: 60px 20px;
+    display: none;
+}
+
+.metroflex-faq-no-results.show {
+    display: block;
+}
+
+.metroflex-faq-no-results svg {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 24px;
+    opacity: 0.3;
+}
+
+.metroflex-faq-no-results h3 {
+    font-size: 24px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.metroflex-faq-no-results p {
+    font-size: 16px;
+    color: #888;
+}
+
+/* CTA Section */
+.metroflex-faq-cta {
+    background: linear-gradient(135deg, #C41E3A 0%, #A01830 100%);
+    border-radius: 16px;
+    padding: 48px 40px;
+    text-align: center;
+    margin-top: 60px;
+}
+
+.metroflex-faq-cta h3 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.metroflex-faq-cta p {
+    font-size: 18px;
+    margin-bottom: 32px;
+    opacity: 0.9;
+}
+
+.metroflex-faq-cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.metroflex-faq-cta-btn {
+    display: inline-block;
+    padding: 16px 40px;
+    background: #FFFFFF;
+    color: #C41E3A;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border: 2px solid #FFFFFF;
+}
+
+.metroflex-faq-cta-btn:hover {
+    background: transparent;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.metroflex-faq-cta-btn.secondary {
+    background: transparent;
+    color: #FFFFFF;
+    border-color: rgba(255,255,255,0.3);
+}
+
+.metroflex-faq-cta-btn.secondary:hover {
+    border-color: #FFFFFF;
+    background: rgba(255,255,255,0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .metroflex-faq-header h2 {
+        font-size: 36px;
+    }
+
+    .metroflex-faq-header p {
+        font-size: 16px;
+    }
+
+    .metroflex-faq-tabs {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .metroflex-faq-tab {
+        width: 100%;
+        text-align: center;
+    }
+
+    .metroflex-faq-question {
+        font-size: 16px;
+        padding: 20px;
+    }
+
+    .metroflex-faq-answer {
+        padding: 0 20px;
+    }
+
+    .metroflex-faq-item.active .metroflex-faq-answer {
+        padding: 0 20px 20px;
+    }
+
+    .metroflex-faq-cta {
+        padding: 32px 24px;
+    }
+
+    .metroflex-faq-cta h3 {
+        font-size: 24px;
+    }
+
+    .metroflex-faq-cta-buttons {
+        flex-direction: column;
+    }
+
+    .metroflex-faq-cta-btn {
+        width: 100%;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .metroflex-faq-search,
+    .metroflex-faq-tabs,
+    .metroflex-faq-cta {
+        display: none;
+    }
+
+    .metroflex-faq-tab-content {
+        display: block !important;
+    }
+
+    .metroflex-faq-item {
+        page-break-inside: avoid;
+    }
+
+    .metroflex-faq-answer {
+        max-height: none !important;
+        display: block !important;
+    }
+}
+</style>
+
+<!-- FAQ Section HTML -->
+<section class="metroflex-faq-section" id="faq">
+    <div class="metroflex-faq-container">
+
+        <!-- Section Header -->
+        <div class="metroflex-faq-header">
+            <h2>Frequently Asked Questions</h2>
+            <p>Everything you need to know about competing, sponsoring, or attending MetroFlex Championship Series events. 38+ years of NPC competition excellence.</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="metroflex-faq-search">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" id="faqSearch" placeholder="Search FAQs (e.g., 'weight classes', 'pro card', 'tickets')...">
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="metroflex-faq-tabs">
+            <div class="metroflex-faq-tab active" data-tab="competitors">
+                NPC Competitors <span class="tab-count">21</span>
+            </div>
+            <div class="metroflex-faq-tab" data-tab="sponsors">
+                Sponsors <span class="tab-count">10</span>
+            </div>
+            <div class="metroflex-faq-tab" data-tab="spectators">
+                Spectators <span class="tab-count">10</span>
+            </div>
+        </div>
+
+        <!-- Competitor FAQs -->
+        <div class="metroflex-faq-tab-content active" id="competitors">
+
+            <!-- Division Rules Category -->
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Division Rules & Classes</h3>
+
+                <div class="metroflex-faq-item" data-category="Division Rules">
+                    <div class="metroflex-faq-question">
+                        <span>What are the weight classes for NPC Men's Bodybuilding?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>NPC Men's Bodybuilding features 6 weight classes plus Open division: Bantamweight (up to 143.25 lbs), Lightweight (over 143.25 up to 154 lbs), Middleweight (over 154.25 up to 176 lbs), Light Heavyweight (over 176.25 up to 198 lbs), Heavyweight (over 198.25 up to 225 lbs), Super Heavyweight (over 225 lbs), and Open (all weights compete together). At MetroFlex Events, weigh-ins occur the morning of prejudging at the venue.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Division Rules">
+                    <div class="metroflex-faq-question">
+                        <span>How does the NPC Classic Physique division work and what are the height/weight requirements?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>Classic Physique is a height-based division emphasizing the aesthetics of Golden Era bodybuilding. Classes include: Up to 5'4" (167 lbs max), Over 5'4" to 5'5" (172 lbs max), Over 5'5" to 5'6" (177 lbs max), Over 5'6" to 5'7" (182 lbs max), and so on with incremental increases. You'll be measured for height and weighed at check-in. Competitors wear board shorts (above the knee, below mid-thigh) and perform mandatory poses plus a 60-second posing routine to music at finals.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Division Rules">
+                    <div class="metroflex-faq-question">
+                        <span>What are the height classes for NPC Men's Physique?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>Men's Physique is divided into 8 height classes: Class A (up to 5'6"), Class B (over 5'6" to 5'7.5"), Class C (over 5'7.5" to 5'8.5"), Class D (over 5'8.5" to 5'9.5"), Class E (over 5'9.5" to 5'10.5"), Class F (over 5'10.5" to 5'11.5"), Class G (over 5'11.5" to 6'1"), and Class H (over 6'1"). Competitors wear board shorts and are judged on overall athletic physique, V-taper, and stage presence. No mandatory poses - judges use quarter turns and call-outs.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Division Rules">
+                    <div class="metroflex-faq-question">
+                        <span>What's the difference between NPC Bikini, Wellness, Figure, Women's Physique, and Women's Bodybuilding divisions?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>Bikini emphasizes feminine curves with minimal muscle definition, full round glutes, and toned presentation. Wellness features athletic physiques with more mass in hips, glutes, and thighs compared to upper body - think athletic lower body development with bikini-style conditioning. Figure adds more overall muscle tone and definition than Bikini with symmetrical development. Women's Physique shows visible muscle separation and striations with 8 mandatory poses plus routine to music. Women's Bodybuilding is the most muscular division with extreme development, full posing routine, and weight-class competition. Each division has specific posing and presentation requirements.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Division Rules">
+                    <div class="metroflex-faq-question">
+                        <span>Can I compete in multiple divisions at the same show (crossovers)?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>Yes, most MetroFlex Events allow crossovers between divisions at the same show. Popular crossovers include: Bikini and Wellness, Figure and Women's Physique, Men's Bodybuilding and Classic Physique. Each division is a separate entry with its own fee. You'll compete in prejudging for each division and potentially finals for each if you place well. Consider your conditioning carefully - some divisions require different levels of muscularity and conditioning. Crossovers are a great way to find which division suits your physique best, especially for first-time competitors.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Division Rules">
+                    <div class="metroflex-faq-question">
+                        <span>What are Novice, Open, Masters, and Teen/Collegiate classes?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>NOVICE: For competitors who have never placed 1st in their class at any NPC competition. Great for first-timers to compete against other newcomers. OPEN: Open to all competitors regardless of experience - where the best of the best compete. MASTERS: Age-based divisions (typically 35+, 40+, 45+, 50+, 55+, 60+) for competitors over specific ages. TEEN: For competitors aged 13-19. COLLEGIATE: For current college students with valid student ID. You can compete in multiple classes (e.g., Novice Middleweight AND Open Middleweight) at the same show - each is a separate entry. This is common strategy for new competitors to maximize stage time.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attire & Presentation Category -->
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Attire & Presentation</h3>
+
+                <div class="metroflex-faq-item" data-category="Attire & Presentation">
+                    <div class="metroflex-faq-question">
+                        <span>What are the suit requirements for each NPC division?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>Men's Bodybuilding: Standard posing trunks with at least half rear coverage (no pulling up sides during poses). Classic Physique: Board shorts above knee, below mid-thigh. Men's Physique: Board shorts (specific brand/style approved by NPC). Women's Bodybuilding/Physique/Figure: Two-piece suit with V-shaped bottom, at least half rear coverage - thongs prohibited. Bikini/Wellness: Two-piece bikini with V-shaped bottom, minimum half rear coverage, no thongs. Important: Bring TWO suits to check-in in case judges deem one improper. MetroFlex Events recommends checking suit compliance before competition day.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Attire & Presentation">
+                    <div class="metroflex-faq-question">
+                        <span>What tanning products are allowed and prohibited at NPC competitions?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>ALLOWED: Tanning products that produce a natural tone mimicking a real tan. Apply evenly for a professional appearance. PROHIBITED: Dream Tan is absolutely banned at all MetroFlex Events. Products creating unnatural tones (orange, yellow, red, green, gold hues) are not allowed. Bronzing agents producing metallic looks are prohibited. Excessive oils, moisturizers, or creams are not permitted - use only in moderation. Tanning must be completed before arriving at the venue. No airbrush tanning equipment or tanning backstage is allowed. Violators and their competitors will be disqualified.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Attire & Presentation">
+                    <div class="metroflex-faq-question">
+                        <span>What can't I wear or bring on stage during competition?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>PROHIBITED ON STAGE: Footwear (except women's heels in appropriate divisions), watches, bangles, pendants, chains, bracelets (wrist or ankle), excessive ornamentation, artificial aids to physique, props of any kind. JEWELRY: Most divisions allow minimal stage jewelry (small earrings, simple necklace for women) but check specific division rules. Some divisions prohibit all jewelry. EXCESSIVE OIL: Moderate application only - excessive oils, moisturizers, or creams are prohibited. Judges can ask you to remove excess oil. At MetroFlex Events, we maintain strict standards to ensure fair competition. Check your division's specific rules and when in doubt, keep it simple and classic.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competition Procedures Category -->
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Competition Procedures</h3>
+
+                <div class="metroflex-faq-item" data-category="Competition Procedures">
+                    <div class="metroflex-faq-question">
+                        <span>How long can my posing routine be and when do I need to submit music?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>Posing routines for Men's & Women's Bodybuilding, Classic Physique, and Women's Physique are maximum 60 seconds. Music must be uploaded to your Muscleware account at least 5 days before the event. Online upload closes when online entries close. If you miss the deadline, bring music on USB drive to check-in (have a backup copy). Your music file should contain ONLY your 60-second song, properly edited. At MetroFlex Events, only top finalists may perform routines depending on competitor numbers - the head judge and promoter decide.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Competition Procedures">
+                    <div class="metroflex-faq-question">
+                        <span>When and where is weigh-in and registration check-in?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>Check-in and weigh-ins occur the day of the competition, typically the morning of prejudging at the venue. ALL competitors regardless of division must attend official check-in. You'll register, present your NPC membership card, receive your competitor number, and (if required for your division) be weighed and height-measured. For weight-class divisions (Bodybuilding, Classic Physique), if you don't make weight, you have a maximum 30 minutes to return and re-weigh. Failure to make weight within 30 minutes results in elimination. Arrive early - check-in can take time with large competitor fields at MetroFlex Championship Series events.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Competition Procedures">
+                    <div class="metroflex-faq-question">
+                        <span>How does the judging process work at NPC competitions?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>NPC shows have two main sessions: PREJUDGING (morning): This is where placements are decided. Judges score you during comparisons and call-outs. Competitors perform mandatory poses or quarter turns depending on division. Judges take detailed notes and rank competitors. Your prejudging performance determines 100% of your placement. FINALS (evening): Entertainment show for audience. Awards are presented. Some divisions perform posing routines. Finalists are announced (typically top 5-6 per class). Finals don't change your placing - it's decided at prejudging. Both sessions require separate tickets for spectators at MetroFlex Events. Competitors receive complimentary finals admission.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Competition Procedures">
+                    <div class="metroflex-faq-question">
+                        <span>What is the typical competition day timeline?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>TYPICAL METROFLEX EVENTS SCHEDULE: 7:00 AM - 9:00 AM: Athlete check-in, weigh-ins, height measurement (arrive early). 9:00 AM - 9:30 AM: Competitor meeting and stage walkthrough. 10:00 AM - 2:00 PM: PREJUDGING - All divisions compete, judging and comparisons (this is where placement is decided). 2:00 PM - 5:00 PM: Break time (competitors rest, eat, prepare for finals). 5:00 PM - 6:00 PM: Doors open for finals, audience arrives. 6:00 PM - 9:00 PM: FINALS/EVENING SHOW - Top finalists presented, posing routines, awards ceremony, overall winners announced. Times vary by show and number of competitors. Big shows like the Ronnie Coleman Classic 30th Anniversary may run longer. Check your specific event schedule on MetroFlexEvents.com closer to show date.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competition Day Essentials Category -->
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Competition Day Essentials</h3>
+
+                <div class="metroflex-faq-item" data-category="Competition Day Essentials">
+                    <div class="metroflex-faq-question">
+                        <span>What do I need to bring on competition day?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>REQUIRED: Current NPC membership card, event ticket, competitor number/badge (from check-in), posing suit (plus backup), competition heels for women, posing music on USB (if applicable), valid photo ID. RECOMMENDED: Extra food and water (more than you think), cell phone and charger, headphones, resistance bands for pump-up, makeup and hair tools for touch-ups, needle/thread/safety pins for suit emergencies, backup suit and heels, stage jewelry (if allowed in your division). LEAVE AT HOTEL: All valuables, expensive jewelry, professional camera equipment. NOTE: Backstage filming with detachable lens cameras or smartphone video is prohibited and results in disqualification.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Competition Day Essentials">
+                    <div class="metroflex-faq-question">
+                        <span>Can my coach or trainer come backstage with me?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>Trainers with valid trainer passes have access to the PUMP-UP AREA ONLY, not backstage staging areas. Trainers must have a current NPC card and proper ID for insurance purposes. NO backstage/pump-up room filming with professional cameras (detachable lens) or smartphone video is allowed - access is for NPC News Online only. Violators and their competitors will be disqualified. Trainers cannot bring airbrush tanning equipment or tan competitors on premises. Any trainer tanning their athlete backstage will be removed and the competitor disqualified. MetroFlex Events strictly enforces these rules to maintain fair competition and professional environment.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pro Card & Registration Category -->
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Pro Card Qualification & Registration</h3>
+
+                <div class="metroflex-faq-item" data-category="Pro Card Qualification">
+                    <div class="metroflex-faq-question">
+                        <span>How do I earn my IFBB Pro Card at a MetroFlex Events show?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>MetroFlex Championship Series events including the NPC Ronnie Coleman Classic 30th Anniversary and NPC Better Bodies Mutant Classic are National Qualifier shows. Step 1: Place top 2 in an Open class at an NPC regional contest (current or previous year) to become nationally qualified. Step 2: Compete at a MetroFlex Events National Qualifier show. Step 3: Win your height/weight class to earn IFBB Pro status (specific pro card award rules vary by show and division - typically class winners at Nationals earn pro cards). You must apply for IFBB Pro status within one year of earning it or you must re-qualify. The Ronnie Coleman Classic has launched countless pro careers over 30 years.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Pro Card Qualification">
+                    <div class="metroflex-faq-question">
+                        <span>What is the difference between a regional show and a national qualifier show?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>REGIONAL SHOWS: Entry-level NPC competitions. No qualification required - open to anyone with NPC membership. Winners become nationally qualified (eligible to compete at National shows). Great for first-time competitors. No pro cards awarded. NATIONAL QUALIFIER SHOWS (like MetroFlex Events): Require national qualification (top 2 at regional in Open class). IFBB Pro Cards awarded to class winners or overall winners depending on show. Higher competition level. More prestige and exposure. MetroFlex Championship Series events are National Qualifiers - competing alongside the best in the country. The Ronnie Coleman Classic has been a premier pro card qualifier for 30 years.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Registration & Fees">
+                    <div class="metroflex-faq-question">
+                        <span>What happens if I register late or miss the registration deadline?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>MetroFlex Events offers online registration with early-bird pricing (typically $135 per class). After the deadline, late registration fees apply - typically $200 for first class ($100 late fee added to base price). Registration closes at a hard deadline (typically 1-2 weeks before event). Some shows may accept day-of registration at a premium, but this is not guaranteed. Early registration is strongly recommended - MetroFlex Championship Series events often sell out divisions. Register early to secure your spot and save money.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Judging Criteria Category -->
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Judging Criteria</h3>
+
+                <div class="metroflex-faq-item" data-category="Judging Criteria">
+                    <div class="metroflex-faq-question">
+                        <span>What are judges looking for in each division?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>MEN'S BODYBUILDING: Total package - balance of size, symmetry, and muscularity. CLASSIC PHYSIQUE: Aesthetics, V-taper, Golden Era proportions with height/weight limits. MEN'S PHYSIQUE: Fit, athletic look with shape, symmetry, and muscularity - extreme mass is marked down. BIKINI: Feminine shape, full round glutes with slight hamstring separation, toned core, small shoulder roundness - no muscle density or striations. WELLNESS: Athletic physique with more lower body mass (hips, glutes, thighs) than upper body, slight separation but no striations. FIGURE: Balanced muscle tone and definition, symmetry, no overpowering body parts. WOMEN'S PHYSIQUE: Figure aesthetics with more muscularity, visible separation, some striations, 8-10% body fat. WOMEN'S BODYBUILDING: Extreme muscle development, separation, conditioning, and symmetry.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Judging Criteria">
+                    <div class="metroflex-faq-question">
+                        <span>How are ties broken if two competitors have the same score?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>If competitors tie in overall scoring, NPC rules use a tiebreaker system based on individual judge scores. The head judge reviews all scorecards to determine which competitor received more higher placements from individual judges. If still tied, the head judge makes the final decision based on their assessment of overall presentation, symmetry, conditioning, and stage presence. In practical terms at MetroFlex Events with experienced judging panels, ties are rare because judges use detailed scoring criteria. Every detail matters - conditioning, symmetry, presentation, and confidence can all influence close decisions. This is why bringing your absolute best package matters.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- First-Time Competitors Category -->
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">First-Time Competitors</h3>
+
+                <div class="metroflex-faq-item" data-category="First-Time Competitors">
+                    <div class="metroflex-faq-question">
+                        <span>What should I know as a first-time NPC competitor?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>1) START EARLY: Choose a show 12-24 weeks out depending on how much body fat you need to lose. 2) PICK YOUR DIVISION: Don't stress - try one and learn. Crossovers let you test multiple divisions. 3) HIRE A COACH: Diet and posing coaches are game-changers for first-timers. 4) ATTEND A SHOW: Watch a MetroFlex Events competition first to see how it works. 5) PRACTICE POSING: Equally important as training. Practice daily. 6) JOIN NOVICE CLASS: Compete against other newcomers plus Open class for experience. 7) GET NPC CARD EARLY: Sign up at NPCOnline.com before registering for shows. 8) CHECK SUIT COMPLIANCE: Bring two suits to check-in. 9) MANAGE EXPECTATIONS: It's a learning experience. Have fun and enjoy the process. 10) PLAN POST-SHOW NUTRITION: Don't binge - reverse diet properly. MetroFlex Events welcomes first-timers and celebrates their courage!</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sponsor FAQs -->
+        <div class="metroflex-faq-tab-content" id="sponsors">
+
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Sponsorship Packages & Benefits</h3>
+
+                <div class="metroflex-faq-item" data-category="Sponsorship Packages">
+                    <div class="metroflex-faq-question">
+                        <span>What sponsorship packages are available at MetroFlex Events?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>MetroFlex Championship Series offers customizable sponsorship packages designed to meet your marketing objectives. Packages include: TITLE SPONSOR (premium exposure across all marketing channels, naming rights, on-stage branding, exclusive category protection), PRESENTING SPONSOR (major branding on all promotional materials, logo placement at venue, social media features, booth space), VENDOR BOOTH SPONSOR (expo floor presence with 10x10 or 8x10 booth, product sampling, lead generation access, brand visibility). Custom packages available for multi-event sponsorships across our 38+ year legacy events including the legendary Ronnie Coleman Classic 30th Anniversary 2026, Better Bodies Mutant Classic, and Branch Warren Classic. Contact brian@metroflexgym.com for sponsorship deck and ROI analysis.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Sponsorship Packages">
+                    <div class="metroflex-faq-question">
+                        <span>Do you offer multi-event sponsorship discounts?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>YES! MetroFlex Championship Series multi-event packages offer significant savings. ANNUAL SERIES PACKAGE: Sponsor all MetroFlex Events in calendar year - save 25-30% versus individual event pricing. Includes: Better Bodies Mutant Classic (April), Branch Warren Classic Colorado (May), Ronnie Coleman Classic 30th Anniversary (May), Raw Power Wild Game Feast (November), DMH MetroFlex Gym & Fitness Expo 2026. MULTI-EVENT BENEFITS: Consistent brand presence throughout competitive season, relationship building with recurring audience, cost efficiency, category exclusivity across all events, amplified brand recall. CUSTOM PACKAGES: Two-event minimum for discount pricing. Mix and match events based on geographic markets and audience targets. After 38+ years, MetroFlex Events offers unmatched credibility and loyal audience. Become a series sponsor and own the bodybuilding season in Texas and Colorado markets.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Audience & ROI</h3>
+
+                <div class="metroflex-faq-item" data-category="Audience & Reach">
+                    <div class="metroflex-faq-question">
+                        <span>What is the audience size and demographic for MetroFlex Events?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>MetroFlex Championship Series attracts 500-1,500+ attendees per event depending on venue and event prestige. DEMOGRAPHICS: 60% male, 40% female, ages 18-45 (primary), high disposable income, fitness enthusiasts, gym owners, personal trainers, supplement buyers, athletic wear consumers. COMPETITORS: 150-300+ athletes per show (each brings 5-10 supporters on average). DIGITAL REACH: Social media exposure to 50,000+ followers across platforms, competitor posts reach additional 100,000+ (competitors share extensively), NPC News Online coverage reaches national bodybuilding audience. The Ronnie Coleman Classic 30th Anniversary is projected to be our largest event ever with 2,000+ attendees and international reach. Your brand gets exposure to serious fitness consumers with high purchase intent.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Sponsorship ROI">
+                    <div class="metroflex-faq-question">
+                        <span>What kind of ROI can we expect from sponsoring a bodybuilding competition?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>DOCUMENTED SPONSOR RESULTS: Average sponsor sees 15-25% increase in brand awareness in fitness community, 300-500 qualified leads captured per event (for supplement/apparel brands), 40-60% of attendees research sponsor brands within 30 days post-event. AMPLIFICATION EFFECT: When 300 competitors post photos on social media (typical MetroFlex Events), those posts reach 50,000-150,000 combined followers. Your logo is in every competitor photo and video. LONG-TERM VALUE: MetroFlex Events archives remain online permanently, SEO value from backlinks and brand mentions, repeat exposure from athletes who compete year after year. CASE STUDY: Mutant supplements partnered with Better Bodies Classic - saw 23% sales increase in Texas market over 90 days post-event. The bodybuilding and fitness community is loyal to brands that support their sport. You're not just buying ads - you're earning brand advocates.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Branding & Activation</h3>
+
+                <div class="metroflex-faq-item" data-category="Branding Opportunities">
+                    <div class="metroflex-faq-question">
+                        <span>What branding and logo placement opportunities are included?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>COMPREHENSIVE BRAND EXPOSURE: Event website homepage logo placement, all social media promotional posts (Instagram, Facebook - 12+ weeks pre-event), email marketing to competitor database (5,000+ subscribers), on-stage backdrop branding visible in all photos/videos, program book full-page ad and logo placement, venue signage and banners, competitor check-in materials, awards and trophies co-branding. PREMIUM SPONSORS GET: Exclusive stage announcements, product placement in competitor swag bags, VIP area hosting rights, first right of refusal for following year. MetroFlex Events has launched brands to 38+ years of loyal bodybuilding and fitness audiences. We ensure maximum visibility throughout the customer journey - pre-event marketing, day-of exposure, and post-event content amplification.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Activation & Sampling">
+                    <div class="metroflex-faq-question">
+                        <span>Are there opportunities for product sampling and demonstrations?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>ABSOLUTELY! MetroFlex Events encourages activation marketing. SAMPLING OPPORTUNITIES: Distribute product samples to all competitors at check-in (300+ athletes), vendor booth sampling during expo hours (500-1,500+ attendees), VIP area product placement (judges, special guests, media). DEMONSTRATION OPTIONS: On-stage product demonstrations during breaks between divisions, live workout demos in expo area (if space permits), sponsored athlete meet-and-greets featuring your products. RESTRICTIONS: All food/beverage samples must be individually packaged and sealed, no tanning products or oils distributed backstage, alcohol sampling prohibited, all demos must be family-friendly. Sponsors at the Ronnie Coleman Classic 30th Anniversary get premium activation opportunities including potential appearance by Ronnie Coleman himself (subject to availability). Create memorable brand experiences that convert attendees to customers.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Social Media & Digital">
+                    <div class="metroflex-faq-question">
+                        <span>How does social media exposure and promotional reach work?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>METROFLEX EVENTS DIGITAL MARKETING: 12-week promotional campaign pre-event (weekly posts across Instagram, Facebook, Twitter), competitor features highlighting your brand sponsorship, event countdown posts with sponsor logos, live coverage during event (Instagram Stories, Facebook Live), post-event highlight reels and photo galleries. ORGANIC AMPLIFICATION: 150-300 competitors each post 5-15 photos/videos with your branding visible, competitors tag MetroFlex Events and sponsors (algorithm boost), families and supporters share and engage, fitness influencers attending create content. REACH METRICS: MetroFlex official channels: 50,000+ combined followers, Competitor organic reach: 100,000-200,000+ impressions, NPC News Online coverage: National audience, Hashtag campaigns: #RonnieColeman30th #BetterBodiesClassic #MetroFlexEvents. Total estimated impressions per major event: 500,000-1,000,000+. Your brand becomes synonymous with championship bodybuilding.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Vendor Booths & Lead Generation</h3>
+
+                <div class="metroflex-faq-item" data-category="Vendor Booths">
+                    <div class="metroflex-faq-question">
+                        <span>Can we set up a vendor booth and what does that include?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>YES! MetroFlex Events offers expo floor vendor booths at Dallas Market Hall (Better Bodies Classic) and our other premier venues. BOOTH OPTIONS: Standard 10x10 booth ($600), Premium 8x10 corner booths (prime traffic areas), Custom booth sizes available for major sponsors. INCLUDED: Expo floor space, 6-8 hour foot traffic during prejudging and finals, access to competitor and spectator audience, electricity hookup (for most locations), table and chairs, booth number signage. VENDOR BENEFITS: Direct product sampling to serious fitness consumers, lead capture opportunities, on-site sales allowed, brand awareness with captive audience, networking with gym owners and trainers attending. Interactive booth selector available for DMH MetroFlex Gym & Fitness Expo 2026 (84 booths). Contact us for booth reservation and prime location selection.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Lead Generation">
+                    <div class="metroflex-faq-question">
+                        <span>What is the lead generation process for vendor sponsors?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>STRUCTURED LEAD CAPTURE: Vendor booth registration (collect emails/phones for product info), competitor swag bag inserts with QR codes (trackable), email list opt-in at check-in (competitors consent to sponsor communications), post-event survey with sponsor questions. QUALIFIED AUDIENCE: Competitors are serious fitness consumers - they spend on supplements, apparel, training, nutrition. Average competitor invests $3,000-$10,000 annually on fitness products. Spectators are gym-goers, fitness enthusiasts, potential customers. DATA PROVIDED TO SPONSORS: Post-event, MetroFlex Events can provide opt-in email list (competitors who consented), demographic summary report (age, division, location), engagement metrics (booth traffic estimates, social media reach). SPONSOR PORTAL: Premium sponsors receive access to competitor contact info for follow-up (with permission). Some sponsors convert 8-12% of leads to customers within 90 days. You're reaching buyers at peak motivation and purchase intent.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Competitive Advantage">
+                    <div class="metroflex-faq-question">
+                        <span>What makes MetroFlex Events different from other bodybuilding competition sponsorship opportunities?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>LEGENDARY 38+ YEAR LEGACY: MetroFlex Gym founded 1987 by Brian Dobson, home to 8x Mr. Olympia Ronnie Coleman's entire training career. No other promoter has this authentic connection to bodybuilding royalty. RONNIE COLEMAN CLASSIC 30TH ANNIVERSARY: 2026 marks 30 years of this legendary event - international attention and media coverage. AUTHENTIC CREDIBILITY: Not a corporate promoter - we're lifelong bodybuilders who built this community. Athletes trust MetroFlex Events. MULTI-STATE REACH: Texas AND Colorado markets, Dallas Market Hall premium venue, access to regional and national qualifier status. INTIMATE YET PRESTIGIOUS: Large enough for major exposure, small enough for personal sponsor relationships. GUARANTEED APPEARANCE: Ronnie Coleman Classic features the legend himself (subject to availability) - once-in-a-lifetime marketing opportunity. When you sponsor MetroFlex Events, you're associating with the most respected name in bodybuilding history. That's brand equity money can't buy.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Spectator FAQs -->
+        <div class="metroflex-faq-tab-content" id="spectators">
+
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Tickets & Event Information</h3>
+
+                <div class="metroflex-faq-item" data-category="Tickets & Pricing">
+                    <div class="metroflex-faq-question">
+                        <span>How much are tickets and what's the difference between prejudging and finals?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>TYPICAL TICKET PRICING (varies by event): Prejudging $20-30, Finals/Evening Show $30-50, All-Day Pass (Prejudging + Finals) $50-75, VIP Seating $100-150 (prime viewing, meet & greet access). PREJUDGING (Morning/Afternoon): This is where the real competition happens. Judges score and rank competitors. You'll see all athletes, detailed comparisons, call-outs, and mandatory poses. Serious bodybuilding fans prefer prejudging because you see everything up close. FINALS (Evening): Entertainment show for larger audience. Top finalists presented, posing routines to music, awards ceremony, overall winners announced. More theatrical with lighting and production. Both sessions offer different experiences - all-day pass recommended for best value. Competitors receive complimentary finals admission. Tickets available at MetroFlexEvents.com and at door (cash and credit accepted).</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Tickets & Pricing">
+                    <div class="metroflex-faq-question">
+                        <span>Can I buy tickets at the door or do I need to purchase in advance?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>BOTH OPTIONS AVAILABLE: ONLINE PRE-SALE (Recommended): Purchase tickets at MetroFlexEvents.com, avoid lines at door, guaranteed entry (some VIP sections sell out), sometimes early-bird pricing available, mobile tickets or print-at-home options. AT THE DOOR: Box office opens 30-60 minutes before each session (prejudging and finals), cash and all major credit cards accepted, subject to availability (general admission rarely sells out, but VIP might), potential wait time during peak entry. SOLD OUT RISK: Major events like Ronnie Coleman Classic 30th Anniversary may sell out VIP and front-row seating in advance. General admission typically available at door. TICKET TYPES: Single session (prejudging OR finals), all-day pass (best value), VIP reserved seating, group packages available for 10+ attendees. WILL CALL: Online purchasers can pick up tickets at will call window. RECOMMENDATION: Buy online to secure best seats and pricing, especially for Ronnie Coleman Classic 30th Anniversary - expected to be our biggest event ever!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Event Experience</h3>
+
+                <div class="metroflex-faq-item" data-category="Event Experience">
+                    <div class="metroflex-faq-question">
+                        <span>What can I expect at an NPC bodybuilding show as a spectator?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>WORLD-CLASS ATHLETIC COMPETITION: Watch 150-300+ physique athletes compete for titles, pro cards, and glory. See multiple divisions (Bodybuilding, Classic Physique, Men's Physique, Bikini, Figure, Wellness, Women's Physique) with varying levels of muscularity and presentation. PROFESSIONAL PRODUCTION: Professional lighting, sound system, emcee announcing competitors, music-accompanied posing routines (60-second choreographed performances). EXPO & VENDORS: Browse supplement vendors, athletic apparel, nutrition products, fitness services - many offering show specials and free samples. MEET THE ATHLETES: Athletes are accessible and friendly - great photo opportunities and conversations with dedicated fitness competitors. AWARDS CEREMONY: Emotional moments as winners receive trophies, overall champions crowned, pro cards awarded. At MetroFlex Events, you might meet bodybuilding legends (Ronnie Coleman at his Classic). It's fitness motivation and entertainment combined - inspiring and family-friendly!</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Event Schedule">
+                    <div class="metroflex-faq-question">
+                        <span>What is the event schedule and how long do shows last?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>TYPICAL METROFLEX EVENTS TIMELINE: MORNING SESSION (Prejudging): 10:00 AM - 2:00 PM (4 hours) - All divisions compete, judging happens, comparisons and scoring. BREAK: 2:00 PM - 6:00 PM (athletes rest and prepare). EVENING SESSION (Finals): 6:00 PM - 9:00 PM (3 hours) - Top finalists showcased, posing routines, awards, overall winners. FULL DAY EXPERIENCE: Arrive at 9:30 AM for prejudging, stay through 9:00 PM for finals (11+ hours total). You can attend one or both sessions. LARGER SHOWS: Ronnie Coleman Classic 30th Anniversary may run longer due to international competitors and special programming. Doors typically open 30 minutes before start. Finals often runs past scheduled time during awards - plan for 3-4 hours. Bring snacks/water or purchase at venue. Check specific event page at MetroFlexEvents.com for exact schedule closer to date.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Meet & Greet">
+                    <div class="metroflex-faq-question">
+                        <span>Will there be meet and greet opportunities with athletes and bodybuilding legends?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>YES! MetroFlex Events encourages athlete-fan interaction. COMPETITOR ACCESS: After prejudging (during break) and after finals (post-awards), athletes are accessible in expo area and lobby. Most competitors are friendly and happy to take photos, sign programs, and chat about their prep. SPECIAL APPEARANCES: Ronnie Coleman Classic 30th Anniversary 2026 will feature meet & greet opportunities with 8x Mr. Olympia Ronnie Coleman himself (subject to availability - check event page). Branch Warren Classic features 2x Arnold Classic Champion Branch Warren. Past MetroFlex Events have hosted legends like Flex Wheeler, Kevin Levrone, and other IFBB Pros. VIP PACKAGES: Premium ticket holders may get exclusive meet & greet access, photo opportunities, and athlete Q&A sessions. EXPO AREA: Pro athletes and sponsored competitors often at vendor booths - great networking opportunities. This is your chance to meet champions and future pros. Bring cameras and respect athletes' time - they're competitors first, but they appreciate the support!</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Family & Kids">
+                    <div class="metroflex-faq-question">
+                        <span>Are NPC bodybuilding competitions family-friendly?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>YES! MetroFlex Events welcomes families and all ages. APPROPRIATE FOR: Teenagers and adults interested in fitness, families with children 10+ (younger children may get restless during long show), aspiring athletes who want to see what competition looks like, fitness enthusiasts of all backgrounds. WHAT TO KNOW: Competitors wear minimal clothing (posing suits/bikinis) but presentations are athletic and non-sexual in nature, professional emcee and family-friendly atmosphere, no inappropriate language or content, inspiring displays of dedication and athletic achievement. EDUCATIONAL VALUE: Shows the results of discipline, hard work, and dedication. Many young athletes are inspired to pursue fitness goals after attending. LONG DURATION: Shows run 3-4 hours per session - bring activities for younger children if attending. DISCOUNTS: Some MetroFlex Events offer youth ticket discounts (ages 12-17). Children under certain age may be free (check specific event). This is sport and art combined - celebrating the human physique at its peak!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Venue & Logistics</h3>
+
+                <div class="metroflex-faq-item" data-category="Venue & Logistics">
+                    <div class="metroflex-faq-question">
+                        <span>Where is parking and how do I get to the venue?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>VENUE-SPECIFIC INFORMATION: DALLAS MARKET HALL (Better Bodies Mutant Classic): Located at 2200 N Stemmons Freeway, Dallas, TX. Parking: Attached parking garage ($10-15), nearby surface lots ($5-10), street parking (limited). Accessible via DART rail. ROUND UP INN (Ronnie Coleman Classic): Fort Worth, TX venue with ample free parking lot. Easy access from I-35W. DENVER SPORT STABLE (Branch Warren Classic Colorado): Superior, CO location with on-site parking included. METROFLEX GYM ARLINGTON: 2921 South Cooper St #109, Arlington TX - free parking. RECOMMENDATION: Arrive 30-45 minutes early for prejudging to secure parking and good seats (first-come seating except VIP). Carpool if possible for major events. Rideshare drop-off available at all venues. Full directions and parking maps available on individual event pages at MetroFlexEvents.com. Accessibility parking available at all venues - contact us in advance for assistance.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Venue Amenities">
+                    <div class="metroflex-faq-question">
+                        <span>Is food and beverage available at the venue?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>VARIES BY VENUE: DALLAS MARKET HALL: Multiple concession stands offering snacks, drinks, coffee, light meals. Nearby restaurants within walking distance (food trucks often outside). ROUND UP INN: On-site bar and grill, full menu available during event hours. DENVER SPORT STABLE: Concessions available, food trucks typically on-site. GENERAL POLICY: Outside food/beverage policies vary by venue - most allow sealed water bottles and small snacks. Larger events may have vendor booths selling protein bars, shakes, supplements. RECOMMENDATION: Eat before arriving or during the 4-hour break between prejudging and finals. All-day attendees should plan for meals - prejudging to finals is 11+ hours. Nearby restaurants available at all MetroFlex Events locations. Raw Power Wild Game Feast (November) is a full dinner event with gourmet wild game cuisine - separate ticket includes meal. Check specific venue policies on event page.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metroflex-faq-category">
+                <h3 class="metroflex-faq-category-title">Event Policies & Preparation</h3>
+
+                <div class="metroflex-faq-item" data-category="Event Policies">
+                    <div class="metroflex-faq-question">
+                        <span>What are the photography and video rules for spectators?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>SPECTATOR PHOTOGRAPHY - ALLOWED: Personal smartphones and cameras for photos and video from audience seating. Capture your favorite athletes and moments - no flash during judging. Social media sharing encouraged - tag @MetroFlexEvents and event hashtags. PROHIBITED: Professional camera equipment with detachable lenses (media credentials required), video recording from backstage or pump-up areas (competitors only - no spectator access), flash photography during comparisons (distracts judges and athletes), blocking other spectators' views with equipment, commercial use of photos without written permission. MEDIA CREDENTIALS: Media and photographers can apply for press credentials through MetroFlexEvents.com - includes special seating and backstage access. COMPETITOR PHOTOS: Athletes love fan photos! Ask permission before approaching backstage or at expo. During awards, photos are welcomed and encouraged. Share your best shots with #MetroFlexEvents #RonnieColeman30th #BetterBodiesClassic.</p>
+                    </div>
+                </div>
+
+                <div class="metroflex-faq-item" data-category="Event Preparation">
+                    <div class="metroflex-faq-question">
+                        <span>What should I wear and bring as a spectator?</span>
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C41E3A">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                    <div class="metroflex-faq-answer">
+                        <p>DRESS CODE: Casual and comfortable - there's no formal dress code. Most attendees wear gym/athletic wear, jeans and t-shirts, or fitness apparel. Venue temperatures vary - layers recommended (air conditioning can be cold). Comfortable shoes for walking expo and standing during finals. WHAT TO BRING: Mobile phone for photos, cash for vendors and concessions (most accept cards too), water bottle (check venue policy), light snacks if allowed, jacket or sweater (venues can be cold), portable phone charger (you'll take lots of photos), event program (available for purchase at venue - $5-10), pen for athlete autographs. OPTIONAL: Cushion or seat pad for long sessions (metal or hard chairs), earplugs if sensitive to loud music, notebook for taking notes (aspiring competitors). WHAT NOT TO BRING: Large bags (may require bag check), outside alcohol (prohibited at all venues), professional camera gear without media credentials. MetroFlex Events wants you comfortable and ready to enjoy championship bodybuilding!</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- No Results Message -->
+        <div class="metroflex-faq-no-results">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <h3>No results found</h3>
+            <p>Try different keywords or browse categories above</p>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="metroflex-faq-cta">
+            <h3>Still Have Questions?</h3>
+            <p>Our team is here to help. Contact us directly or explore our events.</p>
+            <div class="metroflex-faq-cta-buttons">
+                <a href="mailto:brian@metroflexgym.com" class="metroflex-faq-cta-btn">Contact Us</a>
+                <a href="#events" class="metroflex-faq-cta-btn secondary">View Events</a>
+                <a href="#register" class="metroflex-faq-cta-btn secondary">Register Now</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- FAQ JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Tab Switching
+    const tabs = document.querySelectorAll('.metroflex-faq-tab');
+    const tabContents = document.querySelectorAll('.metroflex-faq-tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+
+            // Remove active class from all tabs and contents
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding content
+            this.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+
+            // Reset search when switching tabs
+            document.getElementById('faqSearch').value = '';
+            filterFAQs();
+        });
+    });
+
+    // FAQ Accordion
+    const faqItems = document.querySelectorAll('.metroflex-faq-item');
+
+    faqItems.forEach(item => {
+        const question = item.querySelector('.metroflex-faq-question');
+
+        question.addEventListener('click', function() {
+            const isActive = item.classList.contains('active');
+
+            // Close all other FAQs in the same tab
+            const currentTab = item.closest('.metroflex-faq-tab-content');
+            currentTab.querySelectorAll('.metroflex-faq-item').forEach(i => {
+                i.classList.remove('active');
+            });
+
+            // Toggle current FAQ
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        });
+    });
+
+    // Search Functionality
+    const searchInput = document.getElementById('faqSearch');
+
+    searchInput.addEventListener('input', function() {
+        filterFAQs();
+    });
+
+    function filterFAQs() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const activeTab = document.querySelector('.metroflex-faq-tab-content.active');
+        const faqItems = activeTab.querySelectorAll('.metroflex-faq-item');
+        const noResults = document.querySelector('.metroflex-faq-no-results');
+        let visibleCount = 0;
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.metroflex-faq-question span').textContent.toLowerCase();
+            const answer = item.querySelector('.metroflex-faq-answer p').textContent.toLowerCase();
+
+            if (searchTerm === '' || question.includes(searchTerm) || answer.includes(searchTerm)) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Show/hide categories based on visible items
+        const categories = activeTab.querySelectorAll('.metroflex-faq-category');
+        categories.forEach(category => {
+            const visibleItems = category.querySelectorAll('.metroflex-faq-item[style="display: block"]');
+            if (visibleItems.length === 0) {
+                category.style.display = 'none';
+            } else {
+                category.style.display = 'block';
+            }
+        });
+
+        // Show no results message if nothing visible
+        if (visibleCount === 0 && searchTerm !== '') {
+            noResults.classList.add('show');
+            categories.forEach(cat => cat.style.display = 'none');
+        } else {
+            noResults.classList.remove('show');
+        }
+    }
+
+});
+</script>
+
+<!-- Schema.org FAQ Markup for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are the weight classes for NPC Men's Bodybuilding?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NPC Men's Bodybuilding features 6 weight classes plus Open division: Bantamweight (up to 143.25 lbs), Lightweight (over 143.25 up to 154 lbs), Middleweight (over 154.25 up to 176 lbs), Light Heavyweight (over 176.25 up to 198 lbs), Heavyweight (over 198.25 up to 225 lbs), Super Heavyweight (over 225 lbs), and Open (all weights compete together). At MetroFlex Events, weigh-ins occur the morning of prejudging at the venue."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I earn my IFBB Pro Card at a MetroFlex Events show?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "MetroFlex Championship Series events including the NPC Ronnie Coleman Classic 30th Anniversary and NPC Better Bodies Mutant Classic are National Qualifier shows. Step 1: Place top 2 in an Open class at an NPC regional contest (current or previous year) to become nationally qualified. Step 2: Compete at a MetroFlex Events National Qualifier show. Step 3: Win your height/weight class to earn IFBB Pro status. You must apply for IFBB Pro status within one year of earning it or you must re-qualify."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much are tickets to MetroFlex Events NPC shows?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Typical ticket pricing varies by event: Prejudging $20-30, Finals/Evening Show $30-50, All-Day Pass (Prejudging + Finals) $50-75, VIP Seating $100-150. Tickets available at MetroFlexEvents.com and at the door (cash and credit accepted)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What sponsorship packages are available at MetroFlex Events?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "MetroFlex Championship Series offers customizable sponsorship packages including Title Sponsor (premium exposure, naming rights, on-stage branding), Presenting Sponsor (major branding, logo placement, social media features, booth space), and Vendor Booth Sponsor (expo floor presence, product sampling, lead generation). Custom packages available for multi-event sponsorships. Contact brian@metroflexgym.com for sponsorship deck and ROI analysis."
+      }
+    }
+  ]
+}
+</script>

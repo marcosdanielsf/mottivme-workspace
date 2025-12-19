@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escolha Final - Carol & Luiz | Mottivme Sales</title>
+    <link rel="stylesheet" href="design-system.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: var(--neutral-100);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            position: fixed;
+            top: var(--space-4);
+            left: var(--space-4);
+            z-index: 1000;
+            display: flex;
+            gap: var(--space-2);
+            font-size: var(--tipo-2);
+            padding: var(--space-2) var(--space-4);
+            background: rgba(13, 17, 23, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            border: 1px solid var(--neutral-800);
+        }
+
+        .breadcrumb a {
+            color: var(--neutral-400);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--gold-500);
+        }
+
+        .breadcrumb .current {
+            color: var(--gold-500);
+            font-weight: 600;
+        }
+
+        .breadcrumb-separator {
+            color: var(--neutral-600);
+        }
+
+        /* Logo Header */
+        .logo-header {
+            position: fixed;
+            top: var(--space-4);
+            right: var(--space-4);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-5);
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            border: 1px solid var(--gold-700);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+        }
+
+        .logo-icon {
+            font-size: var(--tipo-5);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text {
+            font-size: var(--tipo-2);
+            color: var(--neutral-400);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-16) var(--space-6);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: var(--space-12);
+            padding-top: var(--space-12);
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold-600), var(--gold-400));
+            color: var(--neutral-900);
+            padding: var(--space-2) var(--space-6);
+            border-radius: 100px;
+            font-size: var(--tipo-2);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--space-4);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .hero-title {
+            font-size: var(--tipo-8);
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: var(--tipo-5);
+            color: var(--neutral-300);
+            max-width: 800px;
+            margin: 0 auto var(--space-2);
+        }
+
+        .hero-description {
+            font-size: var(--tipo-3);
+            color: var(--neutral-400);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-8);
+            margin-bottom: var(--space-12);
+        }
+
+        /* Option Card */
+        .option-card {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(20, 20, 20, 0.95));
+            border: 2px solid var(--neutral-800);
+            border-radius: 16px;
+            padding: var(--space-8);
+            position: relative;
+            transition: all var(--transition-base);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-4);
+            border-color: var(--gold-500);
+        }
+
+        /* Option A - O QUE CONVERSAMOS */
+        .option-card.option-a {
+            border-color: var(--neutral-700);
+        }
+
+        .option-card.option-a:hover {
+            border-color: var(--neutral-500);
+        }
+
+        /* Option B - RECOMENDADO (Highlighted) */
+        .option-card.option-b {
+            border: 3px solid var(--gold-500);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            transform: scale(1.05);
+        }
+
+        .option-card.option-b:hover {
+            transform: scale(1.08) translateY(-8px);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Option C - ALTERNATIVA */
+        .option-card.option-c {
+            border-color: var(--neutral-800);
+        }
+
+        /* Option Header */
+        .option-header {
+            text-align: center;
+            margin-bottom: var(--space-6);
+        }
+
+        .option-badge {
+            display: inline-block;
+            padding: var(--space-1) var(--space-4);
+            border-radius: 100px;
+            font-size: var(--tipo-1);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-3);
+        }
+
+        .badge-conversamos {
+            background: var(--neutral-700);
+            color: var(--neutral-200);
+        }
+
+        .badge-recomendado {
+            background: linear-gradient(135deg, var(--gold-600), var(--gold-400));
+            color: var(--neutral-900);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.6); }
+        }
+
+        .badge-alternativa {
+            background: var(--neutral-800);
+            color: var(--neutral-300);
+        }
+
+        .option-title {
+            font-size: var(--tipo-6);
+            font-weight: 700;
+            margin-bottom: var(--space-2);
+            color: var(--neutral-100);
+        }
+
+        .option-b .option-title {
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .option-subtitle {
+            font-size: var(--tipo-3);
+            color: var(--neutral-400);
+            margin-bottom: var(--space-4);
+        }
+
+        /* Pricing */
+        .option-pricing {
+            text-align: center;
+            padding: var(--space-6);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin-bottom: var(--space-6);
+        }
+
+        .option-price {
+            font-size: var(--tipo-8);
+            font-weight: 700;
+            color: var(--gold-500);
+            margin-bottom: var(--space-2);
+        }
+
+        .option-b .option-price {
+            font-size: calc(var(--tipo-8) * 1.2);
+        }
+
+        .option-price-detail {
+            font-size: var(--tipo-2);
+            color: var(--neutral-400);
+        }
+
+        .option-savings {
+            display: inline-block;
+            background: var(--green-500);
+            color: var(--neutral-900);
+            padding: var(--space-1) var(--space-3);
+            border-radius: 6px;
+            font-size: var(--tipo-2);
+            font-weight: 700;
+            margin-top: var(--space-2);
+        }
+
+        /* Includes Section */
+        .option-includes {
+            flex: 1;
+            margin-bottom: var(--space-6);
+        }
+
+        .option-includes h4 {
+            font-size: var(--tipo-4);
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            color: var(--neutral-200);
+        }
+
+        .option-includes ul {
+            list-style: none;
+            margin-bottom: var(--space-4);
+        }
+
+        .option-includes li {
+            padding: var(--space-2) 0;
+            padding-left: var(--space-6);
+            position: relative;
+            font-size: var(--tipo-3);
+            color: var(--neutral-300);
+            border-bottom: 1px solid var(--neutral-800);
+        }
+
+        .option-includes li:last-child {
+            border-bottom: none;
+        }
+
+        .option-includes li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--gold-500);
+            font-weight: 700;
+            font-size: var(--tipo-4);
+        }
+
+        .option-b .option-includes li::before {
+            color: var(--gold-400);
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+            border: 1px solid var(--gold-600);
+            border-radius: 8px;
+            padding: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+
+        .highlight-box p {
+            font-size: var(--tipo-3);
+            color: var(--gold-300);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* CTA Button */
+        .option-cta {
+            width: 100%;
+            padding: var(--space-4) var(--space-6);
+            background: linear-gradient(135deg, var(--gold-600), var(--gold-500));
+            color: var(--neutral-900);
+            border: none;
+            border-radius: 8px;
+            font-size: var(--tipo-4);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .option-cta:hover {
+            background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .option-cta:active {
+            transform: translateY(-1px);
+        }
+
+        .option-b .option-cta {
+            background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+            font-size: calc(var(--tipo-4) * 1.1);
+        }
+
+        .option-b .option-cta:hover {
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-300));
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Secondary CTA */
+        .option-cta.secondary {
+            background: transparent;
+            border: 2px solid var(--neutral-600);
+            color: var(--neutral-300);
+        }
+
+        .option-cta.secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--neutral-500);
+            color: var(--neutral-100);
+            box-shadow: none;
+        }
+
+        /* Comparison Section */
+        .comparison-section {
+            margin-top: var(--space-16);
+            padding: var(--space-12);
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(20, 20, 20, 0.95));
+            border-radius: 16px;
+            border: 1px solid var(--neutral-800);
+        }
+
+        .comparison-title {
+            font-size: var(--tipo-6);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: var(--space-8);
+            color: var(--gold-500);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-6);
+        }
+
+        .comparison-item {
+            padding: var(--space-6);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid var(--neutral-800);
+        }
+
+        .comparison-item h4 {
+            font-size: var(--tipo-4);
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+            color: var(--neutral-200);
+        }
+
+        .comparison-item p {
+            font-size: var(--tipo-3);
+            color: var(--neutral-400);
+            margin-bottom: var(--space-3);
+        }
+
+        .comparison-metric {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-2) 0;
+            border-bottom: 1px solid var(--neutral-800);
+        }
+
+        .comparison-metric:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-metric-label {
+            font-size: var(--tipo-2);
+            color: var(--neutral-400);
+        }
+
+        .comparison-metric-value {
+            font-size: var(--tipo-2);
+            font-weight: 700;
+            color: var(--gold-500);
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            margin-top: var(--space-16);
+            padding: var(--space-12);
+        }
+
+        .faq-title {
+            font-size: var(--tipo-6);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: var(--space-8);
+            color: var(--gold-500);
+        }
+
+        .faq-grid {
+            display: grid;
+            gap: var(--space-4);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: rgba(26, 26, 26, 0.95);
+            border: 1px solid var(--neutral-800);
+            border-radius: 12px;
+            padding: var(--space-6);
+        }
+
+        .faq-question {
+            font-size: var(--tipo-4);
+            font-weight: 700;
+            color: var(--neutral-200);
+            margin-bottom: var(--space-3);
+        }
+
+        .faq-answer {
+            font-size: var(--tipo-3);
+            color: var(--neutral-400);
+            line-height: 1.8;
+        }
+
+        /* Final CTA Section */
+        .final-cta-section {
+            margin-top: var(--space-16);
+            padding: var(--space-12);
+            text-align: center;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            border-radius: 16px;
+            border: 2px solid var(--gold-600);
+        }
+
+        .final-cta-title {
+            font-size: var(--tipo-7);
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-cta-text {
+            font-size: var(--tipo-4);
+            color: var(--neutral-300);
+            margin-bottom: var(--space-6);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .final-cta-button {
+            display: inline-block;
+            padding: var(--space-5) var(--space-12);
+            background: linear-gradient(135deg, var(--gold-600), var(--gold-500));
+            color: var(--neutral-900);
+            border: none;
+            border-radius: 8px;
+            font-size: var(--tipo-5);
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition-base);
+        }
+
+        .final-cta-button:hover {
+            background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .option-card.option-b {
+                transform: scale(1);
+            }
+
+            .option-card.option-b:hover {
+                transform: translateY(-8px);
+            }
+
+            .hero-title {
+                font-size: var(--tipo-7);
+            }
+
+            .hero-subtitle {
+                font-size: var(--tipo-4);
+            }
+
+            .breadcrumb {
+                font-size: var(--tipo-1);
+                padding: var(--space-2) var(--space-3);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .option-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .option-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .option-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .option-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb" role="navigation" aria-label="Breadcrumb">
+        <a href="proposta.html">Visão Geral</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="entregaveis-foundation.html">Foundation</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="entregaveis-execucao.html">Execução</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="current">Escolha Final</span>
+    </nav>
+
+    <!-- Logo Header -->
+    <div class="logo-header">
+        <div class="logo-icon">MOTTIVME</div>
+        <div class="logo-text">Sales</div>
+    </div>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <header class="hero">
+            <div class="hero-badge">ESCOLHA SUA JORNADA</div>
+            <h1 class="hero-title">3 Caminhos Para Crescer</h1>
+            <p class="hero-subtitle">Carol & Luiz, agora vocês decidem como querem construir sua máquina comercial</p>
+            <p class="hero-description">Cada opção foi desenhada para um momento diferente. Escolham o que faz mais sentido para vocês AGORA.</p>
+        </header>
+
+        <!-- Options Grid -->
+        <section class="options-grid">
+            <!-- OPTION A: SÓ EXECUÇÃO -->
+            <article class="option-card option-a">
+                <div class="option-header">
+                    <div class="option-badge badge-conversamos">O QUE CONVERSAMOS</div>
+                    <h2 class="option-title">Opção A: Só Execução</h2>
+                    <p class="option-subtitle">Demand Stack completo — Começamos a rodar IMEDIATAMENTE</p>
+                </div>
+
+                <div class="option-pricing">
+                    <div class="option-price">R$ 66.000</div>
+                    <div class="option-price-detail">6 meses (R$ 11.000/mês)</div>
+                </div>
+
+                <div class="option-includes">
+                    <h4>✅ O que está incluído:</h4>
+                    <ul>
+                        <li>Gestão de 2 contas Instagram (90 posts/mês cada)</li>
+                        <li>Tráfego Pago completo (R$ 3k/mês gestão)</li>
+                        <li>SDR Human+IA (qualificação + agendamento)</li>
+                        <li>Garantia 15-20 reuniões/mês (show-rate 65%+)</li>
+                        <li>Relatórios + Otimizações semanais</li>
+                    </ul>
+
+                    <h4 style="color: var(--red-400); margin-top: var(--space-6);">⚠️ O que NÃO está incluído:</h4>
+                    <ul style="opacity: 0.7;">
+                        <li style="color: var(--neutral-400);">Brand Book (vocês não terão ICP cristalino)</li>
+                        <li style="color: var(--neutral-400);">Offer Stack estruturado (oferta pode não converter)</li>
+                        <li style="color: var(--neutral-400);">Funis otimizados (trabalhamos sem estrutura)</li>
+                        <li style="color: var(--neutral-400);">Scripts validados (criamos do zero enquanto rodamos)</li>
+                        <li style="color: var(--neutral-400);">CRM configurado (usamos planilhas ou setup básico)</li>
+                    </ul>
+                </div>
+
+                <a href="https://calendly.com/mottivme/15min" class="option-cta secondary" target="_blank">
+                    AGENDAR CALL - OPÇÃO A
+                </a>
+            </article>
+
+            <!-- OPTION B: COMPLETA (RECOMENDADO) -->
+            <article class="option-card option-b">
+                <div class="option-header">
+                    <div class="option-badge badge-recomendado">🏆 RECOMENDADO</div>
+                    <h2 class="option-title">Opção B: Completa</h2>
+                    <p class="option-subtitle">Foundation GRÁTIS + 6 Meses Demand Stack</p>
+                </div>
+
+                <div class="option-pricing">
+                    <div class="option-price">R$ 66.000</div>
+                    <div class="option-price-detail">Mesmo valor da Opção A</div>
+                    <div class="option-savings">ECONOMIA DE R$ 53.982</div>
+                </div>
+
+                <div class="highlight-box">
+                    <p>🎁 FOUNDATION SPRINT (R$ 53.982) TOTALMENTE GRÁTIS</p>
+                </div>
+
+                <div class="option-includes">
+                    <h4>✅ TUDO da Opção A, MAIS:</h4>
+                    <ul>
+                        <li><strong>Brand Book completo</strong> (40 páginas - ICP cristalino)</li>
+                        <li><strong>Offer Stack irresistível</strong> (Método Hormozi)</li>
+                        <li><strong>3 Funis validados</strong> (Orgânico + Pago + Outbound)</li>
+                        <li><strong>20 Scripts prontos</strong> (testados e validados)</li>
+                        <li><strong>90 dias de conteúdo</strong> planejado</li>
+                        <li><strong>3 Lead Magnets</strong> (Quiz + PDF + Webinar)</li>
+                        <li><strong>CRM Socialfy</strong> configurado em 7 dias</li>
+                        <li><strong>Messaging Matrix</strong> completa</li>
+                    </ul>
+
+                    <div class="highlight-box" style="margin-top: var(--space-6);">
+                        <p>⚡ COMEÇAMOS COM 30 DIAS DE ESTRUTURAÇÃO + 6 MESES DE EXECUÇÃO = 7 MESES TOTAL</p>
+                    </div>
+                </div>
+
+                <a href="https://calendly.com/mottivme/15min" class="option-cta" target="_blank">
+                    🚀 QUERO ESSA OPÇÃO
+                </a>
+            </article>
+
+            <!-- OPTION C: SÓ FOUNDATION -->
+            <article class="option-card option-c">
+                <div class="option-header">
+                    <div class="option-badge badge-alternativa">ALTERNATIVA</div>
+                    <h2 class="option-title">Opção C: Só Foundation</h2>
+                    <p class="option-subtitle">30 dias de estruturação COMPLETA — Vocês executam depois</p>
+                </div>
+
+                <div class="option-pricing">
+                    <div class="option-price">R$ 53.982</div>
+                    <div class="option-price-detail">À vista ou 4x R$ 15.495</div>
+                </div>
+
+                <div class="option-includes">
+                    <h4>✅ 8 Entregáveis completos:</h4>
+                    <ul>
+                        <li>Brand Book (40 páginas)</li>
+                        <li>Offer Stack (Método Hormozi)</li>
+                        <li>3 Funis completos</li>
+                        <li>20 Scripts prontos</li>
+                        <li>Conteúdo 90 dias</li>
+                        <li>3 Lead Magnets</li>
+                        <li>CRM Socialfy configurado</li>
+                        <li>Messaging Matrix</li>
+                    </ul>
+
+                    <h4 style="color: var(--neutral-400); margin-top: var(--space-6);">❌ O que NÃO está incluído:</h4>
+                    <ul style="opacity: 0.7;">
+                        <li style="color: var(--neutral-400);">Gestão de redes sociais</li>
+                        <li style="color: var(--neutral-400);">Tráfego pago</li>
+                        <li style="color: var(--neutral-400);">SDR (vocês qualificam os leads)</li>
+                        <li style="color: var(--neutral-400);">Garantia de reuniões</li>
+                        <li style="color: var(--neutral-400);">Relatórios e otimizações</li>
+                    </ul>
+
+                    <div class="highlight-box" style="margin-top: var(--space-6); background: rgba(88, 166, 255, 0.1); border-color: var(--blue-600);">
+                        <p style="color: var(--blue-300);">💡 IDEAL SE: Vocês querem estrutura profissional mas vão executar internamente ou com outra equipe</p>
+                    </div>
+                </div>
+
+                <a href="https://calendly.com/mottivme/15min" class="option-cta secondary" target="_blank">
+                    AGENDAR CALL - OPÇÃO C
+                </a>
+            </article>
+        </section>
+
+        <!-- Comparison Section -->
+        <section class="comparison-section">
+            <h2 class="comparison-title">📊 Comparação Lado a Lado</h2>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h4>Opção A: Só Execução</h4>
+                    <p>Começamos HOJE mas sem estrutura. Maior risco de ajustes durante o caminho.</p>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Investimento:</span>
+                        <span class="comparison-metric-value">R$ 66.000</span>
+                    </div>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Prazo total:</span>
+                        <span class="comparison-metric-value">6 meses</span>
+                    </div>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Estrutura incluída:</span>
+                        <span class="comparison-metric-value" style="color: var(--red-400);">❌ Não</span>
+                    </div>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Risco:</span>
+                        <span class="comparison-metric-value" style="color: var(--yellow-500);">Médio</span>
+                    </div>
+                </div>
+
+                <div class="comparison-item" style="border: 2px solid var(--gold-500); background: rgba(212, 175, 55, 0.1);">
+                    <h4 style="color: var(--gold-500);">🏆 Opção B: Completa</h4>
+                    <p>Estruturamos PRIMEIRO, executamos DEPOIS. Zero risco, máxima eficiência.</p>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Investimento:</span>
+                        <span class="comparison-metric-value">R$ 66.000</span>
+                    </div>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Prazo total:</span>
+                        <span class="comparison-metric-value">7 meses</span>
+                    </div>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Estrutura incluída:</span>
+                        <span class="comparison-metric-value" style="color: var(--green-400);">✓ Sim (Grátis)</span>
+                    </div>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Risco:</span>
+                        <span class="comparison-metric-value" style="color: var(--green-400);">Baixo</span>
+                    </div>
+                </div>
+
+                <div class="comparison-item">
+                    <h4>Opção C: Só Foundation</h4>
+                    <p>Saem com TUDO pronto. Vocês executam quando quiserem (ou com outra equipe).</p>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Investimento:</span>
+                        <span class="comparison-metric-value">R$ 53.982</span>
+                    </div>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Prazo total:</span>
+                        <span class="comparison-metric-value">30 dias</span>
+                    </div>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Execução incluída:</span>
+                        <span class="comparison-metric-value" style="color: var(--red-400);">❌ Não</span>
+                    </div>
+                    <div class="comparison-metric">
+                        <span class="comparison-metric-label">Autonomia:</span>
+                        <span class="comparison-metric-value" style="color: var(--green-400);">Alta</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <h2 class="faq-title">❓ Perguntas Frequentes</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3 class="faq-question">Por que a Opção B tem o mesmo preço da Opção A?</h3>
+                    <p class="faq-answer">
+                        Porque eu REALMENTE acredito que estruturar ANTES de executar é a diferença entre fracassar e ter sucesso.
+                        Estou absorvendo o custo do Foundation (R$ 53.982) para garantir que vocês tenham a melhor chance de resultado.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Qual é a diferença de prazo entre Opção A e B?</h3>
+                    <p class="faq-answer">
+                        Opção A: 6 meses de execução (começamos HOJE mas sem estrutura).<br>
+                        Opção B: 30 dias de Foundation + 6 meses de execução = 7 meses total.<br><br>
+                        Sim, leva 1 mês a mais. Mas o ROI é MUITO maior porque tudo está estruturado.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">E se eu escolher a Opção C e depois quiser execução?</h3>
+                    <p class="faq-answer">
+                        Perfeito! Vocês podem contratar a execução depois (R$ 66.000 por 6 meses).
+                        Ou executar com equipe interna, ou com outra agência. A estrutura é de VOCÊS.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Qual opção você recomenda, Marcos?</h3>
+                    <p class="faq-answer">
+                        <strong>Opção B, sem dúvida.</strong><br><br>
+                        Porque vocês terão:<br>
+                        ✅ Estrutura COMPLETA (ICP, Oferta, Funis, Scripts, CRM)<br>
+                        ✅ Execução profissional por 6 meses<br>
+                        ✅ Pelo MESMO PREÇO da execução sozinha<br><br>
+                        É literalmente a melhor relação custo-benefício que consigo oferecer.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Quando podemos começar?</h3>
+                    <p class="faq-answer">
+                        Opção A: IMEDIATAMENTE (próximos 3-5 dias úteis)<br>
+                        Opção B: Início do Foundation em 3-5 dias úteis, execução começa após 30 dias<br>
+                        Opção C: Início do Foundation em 3-5 dias úteis, entrega em 30 dias
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Tem garantia?</h3>
+                    <p class="faq-answer">
+                        <strong>Sim, 100%.</strong><br><br>
+                        Se ao final de 30 dias (Foundation) vocês não receberem TODOS os 8 entregáveis prometidos, devolvemos 100% do investimento.<br><br>
+                        Na execução: Se não entregarmos as 15-20 reuniões/mês garantidas, vocês não pagam aquele mês. Simples assim.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="final-cta-section">
+            <h2 class="final-cta-title">Próximo Passo: Vamos Conversar?</h2>
+            <p class="final-cta-text">
+                Agende 15 minutos comigo para esclarecer qualquer dúvida e definir qual opção faz mais sentido para vocês AGORA.
+            </p>
+            <a href="https://calendly.com/mottivme/15min" class="final-cta-button" target="_blank">
+                📅 AGENDAR CALL DE 15 MINUTOS
+            </a>
+            <p style="margin-top: var(--space-4); font-size: var(--tipo-2); color: var(--neutral-400);">
+                Ou me chama no WhatsApp: <strong style="color: var(--gold-500);">[Seu número]</strong>
+            </p>
+        </section>
+    </div>
+
+    <script>
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Track which option user is hovering (analytics placeholder)
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const option = this.classList.contains('option-a') ? 'A' :
+                              this.classList.contains('option-b') ? 'B' : 'C';
+                console.log(`User hovering on Option ${option}`);
+            });
+        });
+
+        // CTA click tracking
+        document.querySelectorAll('.option-cta').forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.option-card');
+                const option = card.classList.contains('option-a') ? 'A' :
+                              card.classList.contains('option-b') ? 'B' : 'C';
+                console.log(`User clicked CTA for Option ${option}`);
+            });
+        });
+
+        // Screen reader announcements
+        const srStatus = document.createElement('div');
+        srStatus.setAttribute('role', 'status');
+        srStatus.setAttribute('aria-live', 'polite');
+        srStatus.className = 'sr-only';
+        document.body.appendChild(srStatus);
+
+        // Announce page load
+        setTimeout(() => {
+            srStatus.textContent = 'Página de escolha final carregada. 3 opções disponíveis: Só Execução, Completa (Recomendado), e Só Foundation.';
+        }, 1000);
+    </script>
+</body>
+</html>

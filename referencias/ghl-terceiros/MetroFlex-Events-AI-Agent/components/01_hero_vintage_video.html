@@ -1,0 +1,623 @@
+<!--
+  METROFLEX EVENTS - HERO SECTION (Vintage Video Background)
+  Premium Component #1
+  Copy-Paste Ready for GoHighLevel Custom Code Section
+-->
+
+<section class="mf-hero" id="mf-hero-home">
+  <!-- Video Background Layer -->
+  <div class="mf-hero-video-wrapper">
+    <!-- Replace VIDEO_URL with your actual video file (MP4, WebM) -->
+    <!-- Recommended: 1920x1080, 30fps, H.264 codec, max 10MB -->
+    <video
+      class="mf-hero-video"
+      autoplay
+      muted
+      loop
+      plays inline
+      poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%23000' width='1920' height='1080'/%3E%3C/svg%3E"
+    >
+      <source src="VIDEO_URL.mp4" type="video/mp4">
+      <!-- Fallback for browsers that don't support video -->
+      Your browser does not support video backgrounds.
+    </video>
+
+    <!-- Film Grain Overlay -->
+    <div class="mf-hero-grain"></div>
+
+    <!-- Dark Gradient Overlay -->
+    <div class="mf-hero-overlay"></div>
+  </div>
+
+  <!-- Content Layer -->
+  <div class="mf-hero-content">
+    <div class="mf-container">
+      <!-- Eyebrow Text -->
+      <span class="mf-eyebrow mf-glitch" data-text="Since 1987">Since 1987</span>
+
+      <!-- Main Headline -->
+      <h1 class="mf-hero-title mf-glitch-text">
+        Where 8x Mr. Olympia<br>
+        <span class="mf-highlight">Ronnie Coleman</span><br>
+        Was Born
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="mf-hero-subtitle">
+        40 Years of Champion-Making Legacy.<br>
+        Now Hosting Texas' Premier NPC Competitions.
+      </p>
+
+      <!-- Description -->
+      <p class="mf-hero-description">
+        From the legendary iron that forged bodybuilding history comes the most prestigious NPC event series in Texas. Train where legends trained. Compete where champions are made.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="mf-hero-cta-group">
+        <a href="#events" class="mf-btn mf-btn-primary mf-pulse">
+          <span>View Upcoming Events</span>
+          <svg class="mf-btn-icon" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </a>
+        <a href="#legacy" class="mf-btn mf-btn-secondary">
+          <svg class="mf-btn-icon" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+          </svg>
+          <span>Watch Our Story</span>
+        </a>
+      </div>
+
+      <!-- Scroll Indicator -->
+      <div class="mf-scroll-indicator">
+        <span class="mf-scroll-text">Scroll to Explore</span>
+        <div class="mf-scroll-arrow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+/* ============================================
+   METROFLEX HERO - VINTAGE VIDEO BACKGROUND
+   Premium Component CSS
+   ============================================ */
+
+/* Design System Variables (Inline) */
+:root {
+  /* Colors */
+  --mf-black-deepest: #000000;
+  --mf-black-deep: #0A0E14;
+  --mf-black-surface: #141414;
+  --mf-red-primary: #C41E3A;
+  --mf-red-light: #DC2626;
+  --mf-red-dark: #991B2E;
+  --mf-red-glow: #FF1744;
+  --mf-red-alpha-40: rgba(196, 30, 58, 0.4);
+  --mf-steel-100: #FFFFFF;
+  --mf-steel-95: #F5F5F5;
+  --mf-steel-80: #C2C8CF;
+  --mf-steel-70: #A8AFB6;
+  --mf-gold: #FFD700;
+
+  /* Spacing */
+  --mf-space-2: 16px;
+  --mf-space-3: 24px;
+  --mf-space-4: 32px;
+  --mf-space-6: 48px;
+  --mf-space-8: 64px;
+
+  /* Typography */
+  --mf-font-display: 'Bebas Neue', 'Arial Black', 'Impact', sans-serif;
+  --mf-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Hero Container */
+.mf-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--mf-black-deepest);
+}
+
+/* Video Background */
+.mf-hero-video-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.mf-hero-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  opacity: 0.3;
+  filter: grayscale(0.7) contrast(1.1);
+}
+
+/* Film Grain Overlay */
+.mf-hero-grain {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+  opacity: 0.6;
+  pointer-events: none;
+  animation: grain 8s steps(10) infinite;
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
+/* Dark Gradient Overlay */
+.mf-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(196, 30, 58, 0.2) 0%,
+    rgba(10, 14, 20, 0.8) 50%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+}
+
+/* Content Layer */
+.mf-hero-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 100px 20px;
+}
+
+.mf-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Eyebrow Text */
+.mf-eyebrow {
+  display: inline-block;
+  font-family: var(--mf-font-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mf-red-primary);
+  margin-bottom: var(--mf-space-3);
+  position: relative;
+}
+
+/* Headline */
+.mf-hero-title {
+  font-family: var(--mf-font-display);
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mf-steel-100);
+  margin: 0 0 var(--mf-space-4) 0;
+  text-shadow:
+    0 0 40px rgba(196, 30, 58, 0.5),
+    0 4px 20px rgba(0, 0, 0, 0.8);
+}
+
+.mf-highlight {
+  color: var(--mf-red-primary);
+  position: relative;
+  display: inline-block;
+}
+
+/* Glitch Text Effect */
+.mf-glitch-text {
+  position: relative;
+  animation: glitch 3s infinite;
+}
+
+@keyframes glitch {
+  0%, 90%, 100% {
+    transform: translate(0);
+  }
+  92% {
+    transform: translate(-2px, 2px);
+    text-shadow:
+      2px 0 var(--mf-red-primary),
+      -2px 0 var(--mf-steel-80);
+  }
+  94% {
+    transform: translate(2px, -2px);
+    text-shadow:
+      -2px 0 var(--mf-red-primary),
+      2px 0 var(--mf-steel-80);
+  }
+  96% {
+    transform: translate(-2px, 2px);
+  }
+}
+
+/* Subtitle */
+.mf-hero-subtitle {
+  font-family: var(--mf-font-display);
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mf-steel-95);
+  margin: 0 0 var(--mf-space-3) 0;
+}
+
+/* Description */
+.mf-hero-description {
+  font-family: var(--mf-font-body);
+  font-size: clamp(16px, 2vw, 18px);
+  line-height: 1.6;
+  color: var(--mf-steel-80);
+  max-width: 700px;
+  margin: 0 auto var(--mf-space-6) auto;
+}
+
+/* CTA Button Group */
+.mf-hero-cta-group {
+  display: flex;
+  gap: var(--mf-space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--mf-space-8);
+}
+
+/* Buttons */
+.mf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 40px;
+  font-family: var(--mf-font-body);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.mf-btn-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Primary Button */
+.mf-btn-primary {
+  background: var(--mf-red-primary);
+  color: var(--mf-steel-100);
+  border: none;
+  box-shadow: 0 0 30px var(--mf-red-alpha-40);
+}
+
+.mf-btn-primary:hover {
+  background: var(--mf-red-light);
+  transform: translateY(-4px);
+  box-shadow: 0 0 50px var(--mf-red-alpha-40);
+}
+
+.mf-btn-primary:hover .mf-btn-icon {
+  transform: translateX(4px);
+}
+
+.mf-btn-primary:active {
+  background: var(--mf-red-dark);
+  transform: translateY(0);
+}
+
+/* Secondary Button */
+.mf-btn-secondary {
+  background: transparent;
+  color: var(--mf-steel-95);
+  border: 2px solid var(--mf-steel-95);
+}
+
+.mf-btn-secondary:hover {
+  background: rgba(196, 30, 58, 0.1);
+  border-color: var(--mf-red-primary);
+  color: var(--mf-red-primary);
+  transform: translateY(-4px);
+}
+
+.mf-btn-secondary:hover .mf-btn-icon {
+  transform: scale(1.1);
+}
+
+/* Pulse Animation */
+.mf-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 30px var(--mf-red-alpha-40);
+  }
+  50% {
+    box-shadow: 0 0 50px var(--mf-red-alpha-40);
+  }
+}
+
+/* Scroll Indicator */
+.mf-scroll-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 2s infinite;
+}
+
+.mf-scroll-text {
+  font-family: var(--mf-font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mf-steel-70);
+}
+
+.mf-scroll-arrow {
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(
+    to bottom,
+    var(--mf-red-primary),
+    transparent
+  );
+  position: relative;
+}
+
+.mf-scroll-arrow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid var(--mf-red-primary);
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, 10px);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .mf-hero {
+    min-height: 80vh;
+  }
+
+  .mf-hero-content {
+    padding: 60px 20px;
+  }
+
+  .mf-hero-title {
+    font-size: 42px;
+  }
+
+  .mf-hero-subtitle {
+    font-size: 18px;
+  }
+
+  .mf-hero-description {
+    font-size: 16px;
+  }
+
+  .mf-hero-cta-group {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mf-btn {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+
+  .mf-scroll-indicator {
+    display: none;
+  }
+
+  /* Pause video on mobile to save bandwidth */
+  .mf-hero-video {
+    opacity: 0.2;
+  }
+}
+
+@media (max-width: 480px) {
+  .mf-hero-title {
+    font-size: 36px;
+  }
+
+  .mf-btn {
+    padding: 14px 30px;
+    font-size: 12px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .mf-glitch-text,
+  .mf-hero-grain,
+  .mf-pulse,
+  .mf-scroll-indicator {
+    animation: none;
+  }
+
+  .mf-btn,
+  .mf-btn-icon {
+    transition: none;
+  }
+}
+</style>
+
+<script>
+// ============================================
+// METROFLEX HERO - INTERACTIVE BEHAVIORS
+// ============================================
+
+(function() {
+  'use strict';
+
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHero);
+  } else {
+    initHero();
+  }
+
+  function initHero() {
+    const hero = document.getElementById('mf-hero-home');
+    if (!hero) return;
+
+    const video = hero.querySelector('.mf-hero-video');
+    const scrollIndicator = hero.querySelector('.mf-scroll-indicator');
+
+    // Pause video on mobile devices to save bandwidth
+    handleVideoPlayback(video);
+
+    // Smooth scroll for CTA buttons
+    initSmoothScroll(hero);
+
+    // Hide scroll indicator on scroll
+    if (scrollIndicator) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 100) {
+          scrollIndicator.style.opacity = '0';
+        } else {
+          scrollIndicator.style.opacity = '1';
+        }
+      });
+    }
+  }
+
+  function handleVideoPlayback(video) {
+    if (!video) return;
+
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+      video.pause();
+      video.style.opacity = '0.2';
+    } else {
+      video.play().catch(err => {
+        console.log('Video autoplay prevented:', err);
+      });
+      video.style.opacity = '0.3';
+    }
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      const nowMobile = window.innerWidth < 768;
+      if (nowMobile && !isMobile) {
+        video.pause();
+        video.style.opacity = '0.2';
+      } else if (!nowMobile && isMobile) {
+        video.play();
+        video.style.opacity = '0.3';
+      }
+    });
+  }
+
+  function initSmoothScroll(hero) {
+    const ctaButtons = hero.querySelectorAll('a[href^="#"]');
+
+    ctaButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+
+        // Only smooth scroll for anchor links on same page
+        if (href.startsWith('#')) {
+          const targetId = href.substring(1);
+          const targetElement = document.getElementById(targetId);
+
+          if (targetElement) {
+            e.preventDefault();
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        }
+      });
+    });
+  }
+
+})();
+</script>
+
+<!--
+  IMPLEMENTATION NOTES FOR GOHIGHLEVEL:
+
+  1. Go to your GHL Site Builder
+  2. Add a new Section at the top of your page
+  3. Click Section Settings (gear icon)
+  4. Go to "Custom Code" tab
+  5. Paste this entire HTML block
+  6. Replace VIDEO_URL.mp4 with your actual video file URL
+  7. Update href values in CTA buttons to match your pages (#events, #legacy)
+  8. Save and test in Mobile Mode
+
+  VIDEO RECOMMENDATIONS:
+  - Format: MP4 (H.264 codec)
+  - Resolution: 1920x1080
+  - Frame rate: 30fps
+  - File size: Under 10MB (compress if needed)
+  - Content: Vintage bodybuilding contest footage, black & white preferred
+  - Hosting: Upload to GHL media library or use external CDN
+
+  CUSTOMIZATION:
+  - Change colors by replacing CSS variables (--mf-red-primary, etc.)
+  - Modify text directly in HTML
+  - Adjust video opacity in .mf-hero-video (currently 0.3)
+  - Change headline text to match your branding
+-->

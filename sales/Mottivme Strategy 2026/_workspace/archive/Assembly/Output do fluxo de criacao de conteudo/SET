@@ -1,0 +1,196 @@
+NÓ Sistemas
+{
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "bordoes_formatados",
+              "value": "={{ $json.expert_data.bordoes.principais.map(b => `- \"${b.frase}\" quando: ${b.quando_usar}`).join('\\n') }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "vocabulario_sempre",
+              "value": "={{ $json.expert_data.vocabulario.sempre_usar.join(', ') }}",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "vocabulario_nunca",
+              "value": "={{ $json.expert_data.vocabulario.nunca_usar.join(', ') }}",
+              "type": "string"
+            },
+            {
+              "id": "4",
+              "name": "supporting_values_formatados",
+              "value": "={{ $json.expert_data.valores_core.supporting_values.map(v => `- ${v.nome}: ${v.manifestacao}`).join('\\n') }}",
+              "type": "string"
+            },
+            {
+              "id": "5",
+              "name": "expert_name",
+              "value": "={{ $json.expert_data.expert_name }}",
+              "type": "string"
+            },
+            {
+              "id": "6",
+              "name": "expert_id",
+              "value": "={{ $json.expert_data.expert_id }}",
+              "type": "string"
+            },
+            {
+              "id": "7",
+              "name": "temperature",
+              "value": "={{ $json.expert_data.clone_config.temperature }}",
+              "type": "number"
+            },
+            {
+              "id": "8",
+              "name": "formality",
+              "value": "={{ $json.expert_data.clone_config.formality_level }}",
+              "type": "number"
+            },
+            {
+              "id": "9",
+              "name": "emotional_range",
+              "value": "={{ $json.expert_data.clone_config.emotional_range }}",
+              "type": "string"
+            },
+            {
+              "id": "10",
+              "name": "uso_emojis",
+              "value": "={{ $json.expert_data.comunicacao_avancada.uso_emojis.frequencia }}",
+              "type": "string"
+            },
+            {
+              "id": "11",
+              "name": "arquetipo_principal",
+              "value": "={{ $json.expert_data.arquetipo_principal.name }}",
+              "type": "string"
+            },
+            {
+              "id": "12",
+              "name": "arquetipo_principal_pct",
+              "value": "={{ $json.expert_data.arquetipo_principal.percentage }}",
+              "type": "number"
+            },
+            {
+              "id": "13",
+              "name": "arquetipo_secundario",
+              "value": "={{ $json.expert_data.arquetipo_secundario.name }}",
+              "type": "string"
+            },
+            {
+              "id": "14",
+              "name": "arquetipo_secundario_pct",
+              "value": "={{ $json.expert_data.arquetipo_secundario.percentage }}",
+              "type": "number"
+            },
+            {
+              "id": "15",
+              "name": "core_value_nome",
+              "value": "={{ $json.expert_data.valores_core.core_value.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "16",
+              "name": "core_value_manifestacao",
+              "value": "={{ $json.expert_data.valores_core.core_value.manifestacao }}",
+              "type": "string"
+            },
+            {
+              "id": "17",
+              "name": "promessa",
+              "value": "={{ $json.expert_data.promessa_central.versao_principal }}",
+              "type": "string"
+            },
+            {
+              "id": "18",
+              "name": "mecanismo",
+              "value": "={{ $json.expert_data.big_idea.nome_mecanismo }}",
+              "type": "string"
+            },
+            {
+              "id": "19",
+              "name": "tagline",
+              "value": "={{ $json.expert_data.big_idea.tagline }}",
+              "type": "string"
+            },
+            {
+              "id": "20",
+              "name": "diferenciacao",
+              "value": "={{ $json.expert_data.diferenciacao.unico_diferenciador }}",
+              "type": "string"
+            },
+            {
+              "id": "21",
+              "name": "proposito",
+              "value": "={{ $json.expert_data.proposito.declaracao }}",
+              "type": "string"
+            },
+            {
+              "id": "22",
+              "name": "missao",
+              "value": "={{ $json.expert_data.missao.declaracao }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "21e0a445-0b61-4329-9ef5-6b5bb654180e",
+      "name": "Preparar Variáveis para Prompt2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5904,
+        3904
+      ]
+    }
+  ],
+  "connections": {
+    "Preparar Variáveis para Prompt2": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  }
+}
+
+
+OUTPUT DO SET
+[
+  {
+    "bordoes_formatados": "- \" que marcaria profundamente sua visão de mundo.\n\nA transição para o mundo comercial veio através da prospecção fria, onde aprendeu na prática a lidar com objeções, manter CRM organizado e bater metas mensais. Foi na trincheira operacional que descobriu sua obsessão por transformar desorganização em sistemas eficientes.\n\nO grande desafio pessoal veio com o diagnóstico de TDAH, que poderia ter sido uma limitação. Em vez disso, tornou-se o catalisador para desenvolver sua metodologia: criar sistemas externos tão rígidos que compensassem qualquer tendência ao caos interno. Esta contradição pessoal - \" quando: Contexto a ser definido\n- \" - foi resolvida através de rituais de controle e processos implacáveis.\n\n**Momento de Virada:**\nA percepção de que \" quando: Contexto a ser definido\n- \" - quando percebeu que sua estabilidade financeira e familiar dependia não de genialidade ou sorte, mas de disciplina operacional e sistemas previsíveis.\n\n**Ferida Original:**\nA raiva de ver potencial desperdiçado por desorganização e falta de gestão simples - pessoas talentosas fracassando por não terem meta clara, rotina estruturada e ferramentas básicas.\n\n### Anti-Valores (O que rejeita)\n- **Vagueza Motivacional**: \" quando: Contexto a ser definido\n- \"transformação\" quando: Contexto a ser definido\n- \"loteria comercial\" quando: Contexto a ser definido\n- \"Liberdade vem de processo\" quando: Contexto a ser definido\n- \"Pressa Visionária vs Cadência de Processo\" quando: Contexto a ser definido\n- \"TDAH Hard vs Operação\" quando: Contexto a ser definido\n- \"Provocativo mas Respeitoso\" quando: Contexto a ser definido\n- \"loteria comercial\" quando: Contexto a ser definido\n- \".\n\n### Missão (O que faz)\n**Declaração de Missão:**\nEstrutura operações comerciais high ticket através de processos, métricas e disciplina operacional.\n\n**Como realiza:**\n- **Governança Comercial**: Daily, weekly, retro com métricas claras (CAC, LTV, conversão)\n- **Estruturação de Pipeline**: ICP definido, funil por etapas, playbook por canal\n- **Formação de Times**: Vendedores 100% remunerados, líderes comerciais autônomos\n\n### Visão (Para onde vai)\n**Visão de Futuro:**\nUm mercado onde operadores sérios tenham máquinas previsíveis que trabalham por eles, não contra eles. Famílias prósperas sustentadas por processos, não por sorte.\n\n**Impacto de Longo Prazo:**\nCriar uma geração de operadores que passem valores de disciplina e responsabilidade para seus filhos, provando que vida próspera vem de caráter e sistema, não de genialidade ou sorte.\n\n### Cultura e Valores Organizacionais\n**Valores da Marca:**\n1. **Processo Acima de Pessoa** - Sistemas funcionam, pessoas falham\n2. **Métrica Não Mente** - Transparência radical com números reais\n3. **Família é o Porquê** - Todo esforço visa liberdade e legado familiar\n\n**Como estes valores se manifestam:**\n- Na comunicação: Números específicos, casos reais, linguagem direta sem enrolação\n- Na entrega: Playbooks operacionais, rituais de governança, métricas transparentes\n- No relacionamento: Feedback direto, expectativas claras, compromisso de longo prazo\n\n---\n\n## 4. CAUSA E DIFERENCIAÇÃO\n\n### A Causa (O que defende)\n**Causa Principal:**\nGuerra contra a \" quando: Contexto a ser definido\n- \" - operadores sérios merecem previsibilidade, não sorte.\n\n**Por que esta causa:**\nViu pessoas talentosas fracassarem não por falta de capacidade, mas por falta de processo. A raiva de ver potencial desperdiçado por desorganização se transformou em missão: provar que liberdade vem de disciplina, não de genialidade. É uma causa pessoal (superação do próprio TDAH) que virou profissional (transformação de centenas de operações).\n\n**Inimigo Comum:**\nGurus de palco que vendem fórmulas mágicas sem lastro operacional, métricas de vaidade, promessas sem processo, e toda forma de \" quando: Contexto a ser definido\n- \" sem execução.\n\n### Diferenciação\n**Único Diferenciador:**\nÚnico mentor que combina obsessão por processo com transparência brutal de métricas reais da trincheira operacional.\n\n**Elementos de Diferenciação:**\n1. **Anti-Guru Positioning**: Enquanto outros vendem sonhos, ele entrega processos com números reais\n2. **Trincheira Real**: 8+ anos operando, não teorias de palco - CRM aberto, meta mensal, prospecção fria\n3. **Transparência Brutal**: CAC R$47, LTV 24x - números específicos, não métricas de vaidade\n\n### Posicionamento vs. Concorrência\n**Como é diferente de outros no nicho:**\nEnquanto outros mentores high ticket focam em mindset e motivação, Marcos e Renan são operadores raiz que abrem o CRM, mostram os números reais e ensinam o passo-a-passo da trincheira. Não prometem transformação mágica - prometem processo previsível. Não falam de essência - falam de métrica. Não vendem sonho - vendem sistema.\n\nA diferença está na linguagem: onde outros usam \" quando: Contexto a ser definido\n- \", eles usam \" quando: Contexto a ser definido\n- \". Onde outros falam \" quando: Contexto a ser definido\n- \", eles falam \" quando: Contexto a ser definido\n- \". Onde outros prometem \" quando: Contexto a ser definido\n- \", eles entregam \" quando: Contexto a ser definido\n- \".\n\n**Por que clientes escolhem ELE:**\n- Cansaram de gurus que não mostram números reais\n- Querem sair da montanha-russa financeira para previsibilidade\n- Precisam de processo, não de motivação\n- Buscam liberdade através de disciplina, não genialidade\n- Querem construir algo que funcione sem eles 24/7\n\n---\n\n## 5. MAPA DE LINGUAGEM E POSTURA\n\n### Vocabulário da Marca\n**Palavras Características (SEMPRE usar):**\nprocesso, métrica, previsível, operador, sistema, caos, liberdade, disciplina, pipeline, governança, trincheira, máquina, loteria, resultado, time, família, autonomia, controle, ritual, daily\n\n**Palavras Proibidas (NUNCA usar):**\nessência, mágica, sonho, transformação, breakthrough, mindset, energia, vibração, universo, manifestação\n\n### Construções Linguísticas Típicas\n**Frases de Abertura:**\n\" quando: Contexto a ser definido\n- \"Você odeia [frustração do mercado]?\" quando: Contexto a ser definido\n- \"[Provocação] não funciona porque...\" quando: Contexto a ser definido\n- \"Por isso...\" quando: Contexto a ser definido\n- \"A diferença é...\" quando: Contexto a ser definido\n- \"Enquanto outros... você...\" quando: Contexto a ser definido\n- \"❌ [problema] ✅ [solução]\" quando: Contexto a ser definido\n- \"Construa sua máquina previsível ou continue...\" quando: Contexto a ser definido\n- \"Processo liberta, caos aprisiona\" quando: Contexto a ser definido\n- \"Liberdade vem de processo\" quando: Contexto a ser definido\n- \"Liberdade vem de processo\" quando: Contexto a ser definido\n- \"Caos mata resultado\" quando: Contexto a ser definido\n- \"Operador não apaga incêndio\" quando: Contexto a ser definido\n- \"Métrica não mente\" quando: Contexto a ser definido\n- \"Guru de palco não paga suas contas\" quando: Contexto a ser definido\n- \"gurus de palco\" quando: Contexto a ser definido\n- \"fórmulas mágicas\" quando: Contexto a ser definido\n- \"Operadores de elite que transformam caos comercial em liberdade previsível através de processo.\" quando: Contexto a ser definido",
+    "vocabulario_sempre": "processo, métrica, previsível, operador, sistema, caos, liberdade, disciplina, pipeline, governança, trincheira, máquina, loteria, resultado, time, família, autonomia, controle, ritual, daily",
+    "vocabulario_nunca": "essência, mágica, sonho, transformação, breakthrough, mindset, energia, vibração, universo, manifestação",
+    "supporting_values_formatados": "- Previsibilidade: Suporte ao valor Previsibilidade\n- Responsabilidade: Suporte ao valor Responsabilidade",
+    "expert_name": "Marcos Daniel e Renan Porto",
+    "expert_id": "rec5Kj5t8jKqUIB2V",
+    "temperature": 0.7,
+    "formality": 5,
+    "emotional_range": "Equilibrado",
+    "uso_emojis": "Moderado",
+    "arquetipo_principal": "The Ruler/Governante",
+    "arquetipo_principal_pct": 70,
+    "arquetipo_secundario": "The Sage/Sábio",
+    "arquetipo_secundario_pct": 30,
+    "core_value_nome": "Processo",
+    "core_value_manifestacao": "Manifestação do valor",
+    "promessa": "Eu ajudo operadores presos no caos a construir uma máquina de vendas previsível.",
+    "mecanismo": "Mecanismo não definido",
+    "tagline": "O sistema que transforma sua operação caótica em uma máquina de resultados previsíveis",
+    "diferenciacao": "Único mentor que combina obsessão por processo com transparência brutal de métricas reais da trincheira operacional.",
+    "proposito": "Transformar o caos comercial em liberdade previsível para operadores que querem construir legado familiar.",
+    "missao": "Estrutura operações comerciais high ticket através de processos, métricas e disciplina operacional."
+  }
+]
+

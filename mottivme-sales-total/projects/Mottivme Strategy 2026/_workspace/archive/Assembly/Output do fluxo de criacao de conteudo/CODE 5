@@ -1,0 +1,424 @@
+const { CODE_EXECUTION_MODES } = require("n8n-workflow");
+
+// Extrai e normaliza os dados do expert
+const input = $input.item.json;
+
+// DEBUG: Ver estrutura recebida
+console.log('INPUT RECEBIDO:', JSON.stringify(input, null, 2));
+
+// Tenta diferentes caminhos onde os dados podem estar
+let expertData = null;
+
+// Caminho 1: Vindo direto do input
+if (input.expert_id && input.expert_name) {
+  expertData = input;
+  console.log('Dados encontrados em: input direto');
+}
+// Caminho 2: Dentro de raw_object
+else if (input.raw_object) {
+  expertData = input.raw_object;
+  console.log('Dados encontrados em: input.raw_object');
+}
+// Caminho 3: Dentro de expert_data
+else if (input.expert_data) {
+  expertData = input.expert_data;
+  console.log('Dados encontrados em: input.expert_data');
+}
+// Caminho 4: Dentro de formatted_json (precisa fazer parse)
+else if (input.formatted_json) {
+  try {
+    expertData = JSON.parse(input.formatted_json);
+    console.log('Dados encontrados em: input.formatted_json (parsed)');
+  } catch (e) {
+    console.error('Erro ao parsear formatted_json:', e);
+  }
+}
+
+// Se ainda não achou, retorna erro
+if (!expertData) {
+  throw new Error('Não foi possível encontrar os dados do expert. Estrutura recebida: ' + JSON.stringify(Object.keys(input)));
+}
+
+console.log('Expert Data extraído:', JSON.stringify(expertData, null, 2));
+
+// Função helper
+function get(obj, path, def) {
+  const keys = path.split('.');
+  let result = obj;
+  for (const key of keys) {
+    if (result && typeof result === 'object' && key in result) {
+      result = result[key];
+    } else {
+      return def;
+    }
+  }
+  return result !== undefined ? result : def;
+}
+
+// Monta objeto normalizado
+const normalized = {
+  expert_id: expertData.expert_id,
+  expert_name: expertData.expert_name,
+  
+  clone_config: {
+    temperature: get(expertData, 'voice.temperature', null) || 
+                 get(expertData, 'clone_config.temperature', null) || 0.7,
+    formality_level: get(expertData, 'voice.formality', null) || 
+                     get(expertData, 'clone_config.formality_level', null) || 5,
+    emotional_range: get(expertData, 'voice.emotional_range', null) || 
+                     get(expertData, 'clone_config.emotional_range', null) || 'Equilibrado'
+  },
+  
+  arquetipo_principal: {
+    name: get(expertData, 'archetype.primary.name', null) || 
+          get(expertData, 'arquetipo_principal.name', null) || 'The Sage',
+    percentage: get(expertData, 'archetype.primary.weight', null) || 
+                get(expertData, 'arquetipo_principal.percentage', null) || 70
+  },
+  
+  arquetipo_secundario: {
+    name: get(expertData, 'archetype.secondary.name', null) || 
+          get(expertData, 'arquetipo_secundario.name', null) || 'The Ruler',
+    percentage: get(expertData, 'archetype.secondary.weight', null) || 
+                get(expertData, 'arquetipo_secundario.percentage', null) || 30
+  },
+  
+  valores_core: {
+    core_value: {
+      nome: get(expertData, 'values.core', null) || 
+            get(expertData, 'valores_core.core_value.nome', null) || 'Valor Core',
+      manifestacao: get(expertData, 'valores_core.core_value.manifestacao', null) || 'Manifestação do valor'
+    },
+    supporting_values: (get(expertData, 'values.supporting', null) || 
+                       get(expertData, 'valores_core.supporting_values', null) || [])
+      .map((val, idx) => {
+        if (typeof val === 'string') {
+          return { nome: val, manifestacao: `Suporte ao valor ${val}` };
+        }
+        return val;
+      })
+  },
+  
+  vocabulario: {
+    sempre_usar: get(expertData, 'vocabulary.always', null) || 
+                 get(expertData, 'vocabulario.sempre_usar', null) || [],
+    nunca_usar: get(expertData, 'vocabulary.never', null) || 
+                get(expertData, 'vocabulario.nunca_usar', null) || []
+  },
+  
+  bordoes: {
+    principais: (get(expertData, 'signature_phrases', null) || 
+                get(expertData, 'bordoes.principais', null) || [])
+      .map(item => {
+        if (item && item.phrase) {
+          return {
+            frase: item.phrase,
+            quando_usar: item.context || item.quando_usar || 'Contexto geral'
+          };
+        }
+        if (item && item.frase) {
+          return item;
+        }
+        return null;
+      })
+      .filter(x => x !== null)
+  },
+  
+  promessa_central: {
+    versao_principal: get(expertData, 'positioning.promise', null) || 
+                      get(expertData, 'promessa_central.versao_principal', null) || 
+                      'Promessa não definida'
+  },
+  
+  big_idea: {
+    nome_mecanismo: get(expertData, 'positioning.mechanism', null) || 
+                    get(expertData, 'big_idea.nome_mecanismo', null) || 
+                    'Mecanismo não definido',
+    tagline: get(expertData, 'positioning.tagline', null) || 
+             get(expertData, 'big_idea.tagline', null) || 
+             'Tagline não definida'
+  },
+  
+  diferenciacao: {
+    unico_diferenciador: get(expertData, 'positioning.differentiator', null) || 
+                         get(expertData, 'diferenciacao.unico_diferenciador', null) || 
+                         'Diferenciação não definida'
+  },
+  
+  proposito: {
+    declaracao: get(expertData, 'proposito.declaracao', null) || 'Propósito não definido'
+  },
+  
+  missao: {
+    declaracao: get(expertData, 'missao.declaracao', null) || 'Missão não definida'
+  },
+  
+  comunicacao_avancada: {
+    uso_emojis: {
+      frequencia: get(expertData, 'communication.emoji_usage', null) || 
+                  get(expertData, 'comunicacao_avancada.uso_emojis.frequencia', null) || 
+                  'Moderado'
+    },
+    provocacao_humor: {
+      nivel: get(expertData, 'communication.provocation_level', null) || 
+             get(expertData, 'comunicacao_avancada.provocacao_humor.nivel', null) || 
+             'Médio'
+    }
+  }
+};
+
+console.log('Dados normalizados:', JSON.stringify(normalized, null, 2));
+
+return {
+  json: {
+    expert_data: normalized
+  }
+};
+
+OUTPUT DO CODE_EXECUTION_MODES
+
+[
+    {
+      "expert_data": {
+        "expert_id": "rec5Kj5t8jKqUIB2V",
+        "expert_name": "Marcos Daniel e Renan Porto",
+        "clone_config": {
+          "temperature": 0.7,
+          "formality_level": 5,
+          "emotional_range": "Equilibrado"
+        },
+        "arquetipo_principal": {
+          "name": "The Ruler/Governante",
+          "percentage": 70
+        },
+        "arquetipo_secundario": {
+          "name": "The Sage/Sábio",
+          "percentage": 30
+        },
+        "valores_core": {
+          "core_value": {
+            "nome": "Processo",
+            "manifestacao": "Manifestação do valor"
+          },
+          "supporting_values": [
+            {
+              "nome": "Previsibilidade",
+              "manifestacao": "Suporte ao valor Previsibilidade"
+            },
+            {
+              "nome": "Responsabilidade",
+              "manifestacao": "Suporte ao valor Responsabilidade"
+            }
+          ]
+        },
+        "vocabulario": {
+          "sempre_usar": [
+            "processo",
+            "métrica",
+            "previsível",
+            "operador",
+            "sistema",
+            "caos",
+            "liberdade",
+            "disciplina",
+            "pipeline",
+            "governança",
+            "trincheira",
+            "máquina",
+            "loteria",
+            "resultado",
+            "time",
+            "família",
+            "autonomia",
+            "controle",
+            "ritual",
+            "daily"
+          ],
+          "nunca_usar": [
+            "essência",
+            "mágica",
+            "sonho",
+            "transformação",
+            "breakthrough",
+            "mindset",
+            "energia",
+            "vibração",
+            "universo",
+            "manifestação"
+          ]
+        },
+        "bordoes": {
+          "principais": [
+            {
+              "frase": " que marcaria profundamente sua visão de mundo.\n\nA transição para o mundo comercial veio através da prospecção fria, onde aprendeu na prática a lidar com objeções, manter CRM organizado e bater metas mensais. Foi na trincheira operacional que descobriu sua obsessão por transformar desorganização em sistemas eficientes.\n\nO grande desafio pessoal veio com o diagnóstico de TDAH, que poderia ter sido uma limitação. Em vez disso, tornou-se o catalisador para desenvolver sua metodologia: criar sistemas externos tão rígidos que compensassem qualquer tendência ao caos interno. Esta contradição pessoal - ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": " - foi resolvida através de rituais de controle e processos implacáveis.\n\n**Momento de Virada:**\nA percepção de que ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": " - quando percebeu que sua estabilidade financeira e familiar dependia não de genialidade ou sorte, mas de disciplina operacional e sistemas previsíveis.\n\n**Ferida Original:**\nA raiva de ver potencial desperdiçado por desorganização e falta de gestão simples - pessoas talentosas fracassando por não terem meta clara, rotina estruturada e ferramentas básicas.\n\n### Anti-Valores (O que rejeita)\n- **Vagueza Motivacional**: ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "transformação",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "loteria comercial",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Liberdade vem de processo",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Pressa Visionária vs Cadência de Processo",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "TDAH Hard vs Operação",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Provocativo mas Respeitoso",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "loteria comercial",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": ".\n\n### Missão (O que faz)\n**Declaração de Missão:**\nEstrutura operações comerciais high ticket através de processos, métricas e disciplina operacional.\n\n**Como realiza:**\n- **Governança Comercial**: Daily, weekly, retro com métricas claras (CAC, LTV, conversão)\n- **Estruturação de Pipeline**: ICP definido, funil por etapas, playbook por canal\n- **Formação de Times**: Vendedores 100% remunerados, líderes comerciais autônomos\n\n### Visão (Para onde vai)\n**Visão de Futuro:**\nUm mercado onde operadores sérios tenham máquinas previsíveis que trabalham por eles, não contra eles. Famílias prósperas sustentadas por processos, não por sorte.\n\n**Impacto de Longo Prazo:**\nCriar uma geração de operadores que passem valores de disciplina e responsabilidade para seus filhos, provando que vida próspera vem de caráter e sistema, não de genialidade ou sorte.\n\n### Cultura e Valores Organizacionais\n**Valores da Marca:**\n1. **Processo Acima de Pessoa** - Sistemas funcionam, pessoas falham\n2. **Métrica Não Mente** - Transparência radical com números reais\n3. **Família é o Porquê** - Todo esforço visa liberdade e legado familiar\n\n**Como estes valores se manifestam:**\n- Na comunicação: Números específicos, casos reais, linguagem direta sem enrolação\n- Na entrega: Playbooks operacionais, rituais de governança, métricas transparentes\n- No relacionamento: Feedback direto, expectativas claras, compromisso de longo prazo\n\n---\n\n## 4. CAUSA E DIFERENCIAÇÃO\n\n### A Causa (O que defende)\n**Causa Principal:**\nGuerra contra a ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": " - operadores sérios merecem previsibilidade, não sorte.\n\n**Por que esta causa:**\nViu pessoas talentosas fracassarem não por falta de capacidade, mas por falta de processo. A raiva de ver potencial desperdiçado por desorganização se transformou em missão: provar que liberdade vem de disciplina, não de genialidade. É uma causa pessoal (superação do próprio TDAH) que virou profissional (transformação de centenas de operações).\n\n**Inimigo Comum:**\nGurus de palco que vendem fórmulas mágicas sem lastro operacional, métricas de vaidade, promessas sem processo, e toda forma de ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": " sem execução.\n\n### Diferenciação\n**Único Diferenciador:**\nÚnico mentor que combina obsessão por processo com transparência brutal de métricas reais da trincheira operacional.\n\n**Elementos de Diferenciação:**\n1. **Anti-Guru Positioning**: Enquanto outros vendem sonhos, ele entrega processos com números reais\n2. **Trincheira Real**: 8+ anos operando, não teorias de palco - CRM aberto, meta mensal, prospecção fria\n3. **Transparência Brutal**: CAC R$47, LTV 24x - números específicos, não métricas de vaidade\n\n### Posicionamento vs. Concorrência\n**Como é diferente de outros no nicho:**\nEnquanto outros mentores high ticket focam em mindset e motivação, Marcos e Renan são operadores raiz que abrem o CRM, mostram os números reais e ensinam o passo-a-passo da trincheira. Não prometem transformação mágica - prometem processo previsível. Não falam de essência - falam de métrica. Não vendem sonho - vendem sistema.\n\nA diferença está na linguagem: onde outros usam ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": ", eles usam ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": ". Onde outros falam ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": ", eles falam ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": ". Onde outros prometem ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": ", eles entregam ",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": ".\n\n**Por que clientes escolhem ELE:**\n- Cansaram de gurus que não mostram números reais\n- Querem sair da montanha-russa financeira para previsibilidade\n- Precisam de processo, não de motivação\n- Buscam liberdade através de disciplina, não genialidade\n- Querem construir algo que funcione sem eles 24/7\n\n---\n\n## 5. MAPA DE LINGUAGEM E POSTURA\n\n### Vocabulário da Marca\n**Palavras Características (SEMPRE usar):**\nprocesso, métrica, previsível, operador, sistema, caos, liberdade, disciplina, pipeline, governança, trincheira, máquina, loteria, resultado, time, família, autonomia, controle, ritual, daily\n\n**Palavras Proibidas (NUNCA usar):**\nessência, mágica, sonho, transformação, breakthrough, mindset, energia, vibração, universo, manifestação\n\n### Construções Linguísticas Típicas\n**Frases de Abertura:**\n",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Você odeia [frustração do mercado]?",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "[Provocação] não funciona porque...",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Por isso...",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "A diferença é...",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Enquanto outros... você...",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "❌ [problema] ✅ [solução]",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Construa sua máquina previsível ou continue...",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Processo liberta, caos aprisiona",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Liberdade vem de processo",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Liberdade vem de processo",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Caos mata resultado",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Operador não apaga incêndio",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Métrica não mente",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Guru de palco não paga suas contas",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "gurus de palco",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "fórmulas mágicas",
+              "quando_usar": "Contexto a ser definido"
+            },
+            {
+              "frase": "Operadores de elite que transformam caos comercial em liberdade previsível através de processo.",
+              "quando_usar": "Contexto a ser definido"
+            }
+          ]
+        },
+        "promessa_central": {
+          "versao_principal": "Eu ajudo operadores presos no caos a construir uma máquina de vendas previsível."
+        },
+        "big_idea": {
+          "nome_mecanismo": "Mecanismo não definido",
+          "tagline": "O sistema que transforma sua operação caótica em uma máquina de resultados previsíveis"
+        },
+        "diferenciacao": {
+          "unico_diferenciador": "Único mentor que combina obsessão por processo com transparência brutal de métricas reais da trincheira operacional."
+        },
+        "proposito": {
+          "declaracao": "Transformar o caos comercial em liberdade previsível para operadores que querem construir legado familiar."
+        },
+        "missao": {
+          "declaracao": "Estrutura operações comerciais high ticket através de processos, métricas e disciplina operacional."
+        },
+        "comunicacao_avancada": {
+          "uso_emojis": {
+            "frequencia": "Moderado"
+          },
+          "provocacao_humor": {
+            "nivel": "Nível 9/10 - ataque implacável a ideias ruins, mas sempre respeitoso com pessoas. Ironia sutil contra \"gurus de palco\" e \"fórmulas mágicas\"."
+          }
+        }
+      }
+    }
+  ]

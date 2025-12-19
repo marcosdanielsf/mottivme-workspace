@@ -1,0 +1,613 @@
+{
+  "name": "SENTINEL Process Agent - Bottlenecks & Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 12
+            }
+          ]
+        }
+      },
+      "id": "trigger-schedule",
+      "name": "Run Every 12 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, issue_type, status, severity, priority, detected_at, resolved_at, customer_id, description\nFROM mottivme_intelligence_system.issues\nWHERE detected_at >= NOW() - INTERVAL '7 days'\nORDER BY detected_at DESC\nLIMIT 100",
+        "options": {}
+      },
+      "id": "get-recent-issues",
+      "name": "Get Recent Issues (7 days)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [450, 200],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels."
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, content, sentiment, urgency_score, sender_name, direction, created_at\nFROM mottivme_intelligence_system.messages\nWHERE created_at >= NOW() - INTERVAL '7 days'\nORDER BY created_at DESC\nLIMIT 200",
+        "options": {}
+      },
+      "id": "get-recent-messages",
+      "name": "Get Recent Messages (7 days)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [450, 400],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels."
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "merge-data",
+      "name": "Merge Issues & Messages",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Aggregate data for analysis\nconst items = $input.all();\n\n// Separate issues and messages\nconst issues = items.filter(i => i.json.issue_type !== undefined);\nconst messages = items.filter(i => i.json.content !== undefined && i.json.issue_type === undefined);\n\n// Count issues by type\nconst issuesByType = {};\nissues.forEach(i => {\n  const type = i.json.issue_type || 'unknown';\n  if (!issuesByType[type]) {\n    issuesByType[type] = { count: 0, resolved: 0, avgResolutionTime: [] };\n  }\n  issuesByType[type].count++;\n  if (i.json.status === 'resolved' || i.json.status === 'closed') {\n    issuesByType[type].resolved++;\n    if (i.json.resolved_at && i.json.detected_at) {\n      const resTime = new Date(i.json.resolved_at) - new Date(i.json.detected_at);\n      issuesByType[type].avgResolutionTime.push(resTime / (1000 * 60)); // minutes\n    }\n  }\n});\n\n// Calculate averages\nObject.keys(issuesByType).forEach(type => {\n  const times = issuesByType[type].avgResolutionTime;\n  issuesByType[type].avgResolutionMinutes = times.length > 0 \n    ? times.reduce((a, b) => a + b, 0) / times.length \n    : 0;\n  delete issuesByType[type].avgResolutionTime;\n});\n\n// Identify patterns in messages\nconst messagePatterns = {};\nmessages.forEach(m => {\n  const sentiment = m.json.sentiment || 'neutral';\n  const urgency = m.json.urgency_score || 0;\n  if (!messagePatterns[sentiment]) {\n    messagePatterns[sentiment] = { count: 0, avgUrgency: 0, totalUrgency: 0 };\n  }\n  messagePatterns[sentiment].count++;\n  messagePatterns[sentiment].totalUrgency += urgency;\n});\n\nObject.keys(messagePatterns).forEach(s => {\n  messagePatterns[s].avgUrgency = messagePatterns[s].totalUrgency / messagePatterns[s].count;\n  delete messagePatterns[s].totalUrgency;\n});\n\nconst prompt = `Analise estes dados dos últimos 7 dias e identifique gargalos, atualizações de processos e oportunidades de automação:\n\nTotal de Issues: ${issues.length}\nTotal de Mensagens: ${messages.length}\n\nIssues por Tipo:\n${JSON.stringify(issuesByType, null, 2)}\n\nPadrões de Mensagens:\n${JSON.stringify(messagePatterns, null, 2)}\n\nResponda APENAS com JSON válido, sem markdown, sem explicações.`;\n\nreturn [{\n  json: {\n    prompt,\n    totalIssues: issues.length,\n    totalMessages: messages.length,\n    issuesByType,\n    messagePatterns,\n    period: '7_days',\n    analyzedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "aggregate-data",
+      "name": "Aggregate Data for Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.prompt }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Você é o SENTINEL Process Agent, analista especializado em otimização de processos.\n\nIMPORTANTE: Você DEVE responder APENAS no formato JSON especificado abaixo. NÃO use nenhum outro formato.\n\nSUA TAREFA:\n1. Analise os dados de issues e mensagens fornecidos\n2. Identifique gargalos, processos e oportunidades de automação\n3. Retorne SEMPRE as 3 propriedades obrigatórias: bottlenecks, process_updates, automation_opportunities\n\nFORMATO OBRIGATÓRIO:\n{\n  \"bottlenecks\": [\n    {\n      \"issue_type\": \"string\",\n      \"severity\": \"high|medium|low\",\n      \"description\": \"string\",\n      \"suggested_action\": \"string\"\n    }\n  ],\n  \"process_updates\": [\n    {\n      \"process_name\": \"string\",\n      \"category\": \"string\",\n      \"description\": \"string\",\n      \"steps\": [\n        {\"order\": 1, \"name\": \"string\", \"description\": \"string\", \"responsible\": \"string\", \"avg_time_minutes\": 10}\n      ],\n      \"bottlenecks\": [\"string\"],\n      \"optimization_suggestions\": [\"string\"]\n    }\n  ],\n  \"automation_opportunities\": [\n    {\n      \"description\": \"string\",\n      \"estimated_time_saved_hours\": 5,\n      \"implementation_complexity\": \"low|medium|high\",\n      \"priority_score\": 8\n    }\n  ]\n}\n\nREGRAS:\n- Se não houver dados para uma categoria, retorne array vazio []\n- NUNCA omita nenhuma das 3 propriedades principais\n- NUNCA adicione propriedades extras como should_create, is_duplicate, category, title, content, tags, priority, reason\n- Analise APENAS os dados fornecidos"
+        }
+      },
+      "id": "process-analyzer",
+      "name": "Process Analysis Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {
+          "temperature": 0.1,
+          "maxTokens": 4096
+        }
+      },
+      "id": "groq-model",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [1050, 500],
+      "credentials": {
+        "groqApi": {
+          "id": "WVbQ0d3w6cnLwPtX",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"bottlenecks\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"issue_type\": {\"type\": \"string\"},\n          \"severity\": {\"type\": \"string\", \"enum\": [\"high\", \"medium\", \"low\"]},\n          \"description\": {\"type\": \"string\"},\n          \"suggested_action\": {\"type\": \"string\"}\n        },\n        \"required\": [\"issue_type\", \"severity\", \"description\", \"suggested_action\"]\n      }\n    },\n    \"process_updates\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"process_name\": {\"type\": \"string\"},\n          \"category\": {\"type\": \"string\"},\n          \"description\": {\"type\": \"string\"},\n          \"steps\": {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"order\": {\"type\": \"number\"},\n                \"name\": {\"type\": \"string\"},\n                \"description\": {\"type\": \"string\"},\n                \"responsible\": {\"type\": \"string\"},\n                \"avg_time_minutes\": {\"type\": \"number\"}\n              }\n            }\n          },\n          \"bottlenecks\": {\n            \"type\": \"array\",\n            \"items\": {\"type\": \"string\"}\n          },\n          \"optimization_suggestions\": {\n            \"type\": \"array\",\n            \"items\": {\"type\": \"string\"}\n          }\n        },\n        \"required\": [\"process_name\", \"category\", \"description\"]\n      }\n    },\n    \"automation_opportunities\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"description\": {\"type\": \"string\"},\n          \"estimated_time_saved_hours\": {\"type\": \"number\"},\n          \"implementation_complexity\": {\"type\": \"string\", \"enum\": [\"low\", \"medium\", \"high\"]},\n          \"priority_score\": {\"type\": \"number\"}\n        },\n        \"required\": [\"description\", \"implementation_complexity\", \"priority_score\"]\n      }\n    }\n  },\n  \"required\": [\"bottlenecks\", \"process_updates\", \"automation_opportunities\"]\n}"
+      },
+      "id": "output-parser",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [1150, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse the AI response with robust error handling\nconst aiResponse = $input.first().json;\n\n// Helper to safely escape strings for SQL\nconst escapeSQL = (str) => {\n  if (str === null || str === undefined) return '';\n  return String(str).replace(/'/g, \"''\");\n};\n\n// Helper to safely stringify JSON\nconst safeJSON = (obj) => {\n  try {\n    return JSON.stringify(obj || []);\n  } catch (e) {\n    return '[]';\n  }\n};\n\nlet parsed;\ntry {\n  // Try multiple possible response formats\n  let content = '';\n  if (typeof aiResponse === 'string') {\n    content = aiResponse;\n  } else if (aiResponse.output) {\n    content = typeof aiResponse.output === 'string' ? aiResponse.output : JSON.stringify(aiResponse.output);\n  } else if (aiResponse.text) {\n    content = aiResponse.text;\n  } else if (aiResponse.content) {\n    content = aiResponse.content;\n  } else if (aiResponse.message?.content) {\n    content = aiResponse.message.content;\n  } else {\n    content = JSON.stringify(aiResponse);\n  }\n  \n  // Remove markdown code blocks if present\n  let cleanContent = content\n    .replace(/```json\\s*/gi, '')\n    .replace(/```\\s*/g, '')\n    .trim();\n  \n  // Find JSON object in content\n  const jsonMatch = cleanContent.match(/\\{[\\s\\S]*\\}/);\n  if (jsonMatch) {\n    parsed = JSON.parse(jsonMatch[0]);\n  } else {\n    throw new Error('No JSON found in response');\n  }\n} catch (e) {\n  console.error('Parse error:', e.message);\n  parsed = { bottlenecks: [], process_updates: [], automation_opportunities: [] };\n}\n\nconst results = [];\n\n// Process updates - with full validation\nif (parsed.process_updates && Array.isArray(parsed.process_updates) && parsed.process_updates.length > 0) {\n  parsed.process_updates.forEach(p => {\n    if (!p || !p.process_name) return; // Skip invalid entries\n    \n    results.push({\n      json: {\n        type: 'process',\n        data: {\n          process_name: escapeSQL(p.process_name || 'Processo sem nome'),\n          category: escapeSQL(p.category || 'geral'),\n          description: escapeSQL(p.description || ''),\n          steps: safeJSON(p.steps),\n          bottlenecks: safeJSON(p.bottlenecks),\n          optimization_suggestions: safeJSON(p.optimization_suggestions),\n          status: 'draft'\n        }\n      }\n    });\n  });\n}\n\n// Automation opportunities - with full validation\nif (parsed.automation_opportunities && Array.isArray(parsed.automation_opportunities) && parsed.automation_opportunities.length > 0) {\n  parsed.automation_opportunities.forEach(a => {\n    if (!a || !a.description) return; // Skip invalid entries\n    \n    const timeHours = parseFloat(a.estimated_time_saved_hours) || 0;\n    const priority = parseInt(a.priority_score) || 5;\n    \n    results.push({\n      json: {\n        type: 'automation',\n        data: {\n          opportunity_description: escapeSQL(a.description),\n          estimated_time_saved_hours: Math.max(0, timeHours),\n          implementation_complexity: ['low', 'medium', 'high'].includes(a.implementation_complexity) ? a.implementation_complexity : 'medium',\n          priority_score: Math.min(10, Math.max(1, priority)),\n          status: 'identified'\n        }\n      }\n    });\n  });\n}\n\n// Store bottlenecks as insights - with full validation\nif (parsed.bottlenecks && Array.isArray(parsed.bottlenecks) && parsed.bottlenecks.length > 0) {\n  parsed.bottlenecks.forEach(b => {\n    if (!b) return; // Skip invalid entries\n    \n    const issueType = b.issue_type || 'geral';\n    const description = b.description || 'Gargalo identificado';\n    const action = b.suggested_action || 'Revisar processo';\n    const severity = ['high', 'medium', 'low'].includes(b.severity) ? b.severity : 'medium';\n    \n    results.push({\n      json: {\n        type: 'insight',\n        data: {\n          insight_type: 'bottleneck',\n          content: escapeSQL(`${issueType}: ${description}. Ação sugerida: ${action}`),\n          confidence_score: severity === 'high' ? 0.9 : severity === 'medium' ? 0.7 : 0.5,\n          metadata: safeJSON({ severity: severity, issue_type: issueType }),\n          processed_for_kb: false\n        }\n      }\n    });\n  });\n}\n\n// Return results or skip marker\nif (results.length === 0) {\n  return [{ json: { type: 'none', skip: true, reason: 'No valid items parsed from AI response' } }];\n}\n\nreturn results;"
+      },
+      "id": "parse-analysis",
+      "name": "Parse Analysis Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "process",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $json.data?.process_name }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "process"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "automation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $json.data?.opportunity_description }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "automation"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "insight",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  },
+                  {
+                    "leftValue": "={{ $json.data?.content }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "insight"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "id": "route-by-type",
+      "name": "Route by Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO mottivme_intelligence_system.process_maps (process_name, category, description, steps, bottlenecks, optimization_suggestions, status)\nVALUES (\n  $1,\n  $2,\n  $3,\n  $4::jsonb,\n  $5::jsonb,\n  $6::jsonb,\n  $7\n)\nON CONFLICT DO NOTHING\nRETURNING id",
+        "options": {
+          "queryReplacement": "={{ [$json.data.process_name, $json.data.category, $json.data.description, $json.data.steps, $json.data.bottlenecks, $json.data.optimization_suggestions, $json.data.status] }}"
+        }
+      },
+      "id": "insert-process",
+      "name": "Insert Process Map",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1900, 150],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels."
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "mottivme_intelligence_system"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "automation_opportunities"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "opportunity_description": "={{ $json.data.opportunity_description }}",
+            "estimated_time_saved_hours": "={{ $json.data.estimated_time_saved_hours }}",
+            "implementation_complexity": "={{ $json.data.implementation_complexity }}",
+            "priority_score": "={{ $json.data.priority_score }}",
+            "status": "={{ $json.data.status }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "insert-automation",
+      "name": "Insert Automation Opportunity",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1900, 300],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels."
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO mottivme_intelligence_system.sentinel_insights (insight_type, content, confidence_score, metadata, processed_for_kb)\nVALUES (\n  $1,\n  $2,\n  $3,\n  $4::jsonb,\n  false\n)\nRETURNING id",
+        "options": {
+          "queryReplacement": "={{ [$json.data.insight_type, $json.data.content, $json.data.confidence_score, $json.data.metadata] }}"
+        }
+      },
+      "id": "insert-insight",
+      "name": "Insert Insight",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1900, 450],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels."
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "process",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "leftValue": "={{ $json.data?.process_name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "leftValue": "={{ $json.data?.steps }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "validate-process",
+      "name": "Validate Process",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [1700, 150]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "automation",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "leftValue": "={{ $json.data?.opportunity_description }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "validate-automation",
+      "name": "Validate Automation",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [1700, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "insight",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "leftValue": "={{ $json.data?.content }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "validate-insight",
+      "name": "Validate Insight",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [1700, 450]
+    }
+  ],
+  "connections": {
+    "Run Every 12 Hours": {
+      "main": [
+        [
+          {
+            "node": "Get Recent Issues (7 days)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Recent Messages (7 days)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent Issues (7 days)": {
+      "main": [
+        [
+          {
+            "node": "Merge Issues & Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent Messages (7 days)": {
+      "main": [
+        [
+          {
+            "node": "Merge Issues & Messages",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Issues & Messages": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Data for Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Data for Analysis": {
+      "main": [
+        [
+          {
+            "node": "Process Analysis Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Process Analysis Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Process Analysis Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Analysis Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Analysis Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Analysis Results": {
+      "main": [
+        [
+          {
+            "node": "Route by Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Type": {
+      "main": [
+        [
+          {
+            "node": "Validate Process",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate Automation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate Insight",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Process": {
+      "main": [
+        [
+          {
+            "node": "Insert Process Map",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Automation": {
+      "main": [
+        [
+          {
+            "node": "Insert Automation Opportunity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Insight": {
+      "main": [
+        [
+          {
+            "node": "Insert Insight",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "mis-sentinel"
+  },
+  "tags": [
+    {
+      "name": "SENTINEL"
+    },
+    {
+      "name": "Process"
+    }
+  ]
+}

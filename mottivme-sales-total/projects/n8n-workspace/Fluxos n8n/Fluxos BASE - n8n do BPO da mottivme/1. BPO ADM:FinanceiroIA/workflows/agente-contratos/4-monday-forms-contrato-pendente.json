@@ -1,0 +1,289 @@
+{
+  "name": "4 - Monday Forms → Contrato Pendente",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "monday-contrato-form",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-monday",
+      "name": "Webhook Monday",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300],
+      "webhookId": "monday-contrato-form"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verificar se é challenge do Monday\nconst body = $input.first().json.body || {};\nconst isChallenge = !!body.challenge;\n\nif (isChallenge) {\n  return {\n    json: {\n      is_challenge: true,\n      challenge: body.challenge,\n      response_body: { challenge: body.challenge }\n    }\n  };\n}\n\n// Extrair dados do evento do Monday\nconst event = body.event || {};\nconst cv = event.columnValues || {};\n\n// Mapeamento baseado nos campos reais do Monday:\n// texto = Nome completo\n// e_mail4__1 = Email\n// telefone__1 = Telefone\n// texto_curto_mkks9gh3 = Nacionalidade (BRASILEIRO)\n// texto_curto_mkm3j504 = Profissão (MÉDICO)\n// lista_suspensa = Estado civil\n// local__1 = Endereço completo\n// texto_curto_mkm3n9fn = CEP\n// n_meros = Documento (SSN/CPF)\n// date_mkpn3pkn = Data nascimento\n// dup__of___mrr___inicial__1 = Valor mensal\n// n_meros8__1 = Número de parcelas (meses)\n// cronograma__1 = Período do contrato (from/to)\n// date__1 = Data início\n// numeric_mkqrrw53 = Dia vencimento\n\nconst dados = {\n  is_challenge: false,\n  \n  // IDs Monday\n  monday_item_id: event.pulseId?.toString() || null,\n  monday_board_id: event.boardId?.toString() || null,\n  \n  // Dados do cliente\n  nome: cv.texto?.value || event.pulseName || '',\n  nome_completo_razao_social: cv.texto?.value || event.pulseName || '',\n  email: cv.e_mail4__1?.email || '',\n  telefone: cv.telefone__1?.phone || '',\n  nacionalidade: cv.texto_curto_mkks9gh3?.value || cv.texto_curto_mkm3exgw?.value || '',\n  profissao: cv.texto_curto_mkm3j504?.value || '',\n  estado_civil: cv.lista_suspensa?.chosenValues?.[0]?.name || '',\n  \n  // Endereço (do campo local__1)\n  endereco: cv.local__1?.address || '',\n  cep: cv.texto_curto_mkm3n9fn?.value || '',\n  \n  // Documentos\n  documento: cv.n_meros?.value?.toString() || '',\n  documento_alternativo: '',\n  \n  // Data nascimento\n  data_nascimento: cv.date_mkpn3pkn?.date || null,\n  foto_url: null,\n  \n  // Dados do contrato (já vem preenchido do Monday!)\n  valor_mensal: cv.dup__of___mrr___inicial__1?.value || null,\n  num_parcelas: cv.n_meros8__1?.value || cv.numeric_mkqrjy20?.value || null,\n  data_inicio: cv.date__1?.date || cv.cronograma__1?.from || null,\n  data_fim: cv.cronograma__1?.to || null,\n  dia_vencimento: cv.numeric_mkqrrw53?.value || null,\n  \n  // Status\n  tipo_servico: cv.status_1_mkks9gh3?.label?.text || 'BPOSS',\n  pais: cv.status6__1?.label?.text || 'Brasil',\n  \n  // Response\n  response_body: { success: true }\n};\n\nreturn { json: dados };"
+      },
+      "id": "code-processar",
+      "name": "Processar Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-challenge",
+              "leftValue": "={{ $json.is_challenge }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-challenge",
+      "name": "É Challenge?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json.response_body) }}",
+        "options": {}
+      },
+      "id": "respond-challenge",
+      "name": "Responder Challenge",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [880, 180]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Buscar cliente existente ou criar novo\nWITH dados AS (\n  SELECT \n    '{{ $json.nome }}' as nome,\n    NULLIF('{{ $json.email }}', '') as email,\n    NULLIF('{{ $json.telefone }}', '') as telefone,\n    NULLIF('{{ $json.documento }}', '') as documento\n),\ncliente_existente AS (\n  SELECT id, nome, email, telefone\n  FROM fin_clientes_fornecedores\n  WHERE \n    (email IS NOT NULL AND LOWER(email) = LOWER((SELECT email FROM dados)))\n    OR (telefone IS NOT NULL AND telefone = (SELECT telefone FROM dados))\n  LIMIT 1\n),\ncliente_novo AS (\n  INSERT INTO fin_clientes_fornecedores (nome, email, telefone, documento, tipo, ativo)\n  SELECT \n    d.nome,\n    d.email,\n    d.telefone,\n    COALESCE(d.documento, 'PENDENTE'),\n    'pessoa_fisica',\n    true\n  FROM dados d\n  WHERE NOT EXISTS (SELECT 1 FROM cliente_existente)\n  RETURNING id, nome, email, telefone\n)\nSELECT * FROM cliente_existente\nUNION ALL\nSELECT * FROM cliente_novo;",
+        "options": {}
+      },
+      "id": "supabase-cliente",
+      "name": "Buscar/Criar Cliente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [880, 420],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO fin_contratos_pendentes (\n  nome,\n  nome_completo_razao_social,\n  email,\n  telefone,\n  nacionalidade,\n  profissao,\n  estado_civil,\n  endereco,\n  cep,\n  documento,\n  documento_alternativo,\n  data_nascimento,\n  foto_url,\n  cliente_id,\n  monday_item_id,\n  valor_mensal,\n  num_parcelas,\n  data_inicio,\n  dia_vencimento,\n  status\n) VALUES (\n  '{{ $('Processar Request').item.json.nome }}',\n  NULLIF('{{ $('Processar Request').item.json.nome_completo_razao_social }}', ''),\n  NULLIF('{{ $('Processar Request').item.json.email }}', ''),\n  NULLIF('{{ $('Processar Request').item.json.telefone }}', ''),\n  NULLIF('{{ $('Processar Request').item.json.nacionalidade }}', ''),\n  NULLIF('{{ $('Processar Request').item.json.profissao }}', ''),\n  NULLIF('{{ $('Processar Request').item.json.estado_civil }}', ''),\n  NULLIF('{{ $('Processar Request').item.json.endereco }}', ''),\n  NULLIF('{{ $('Processar Request').item.json.cep }}', ''),\n  NULLIF('{{ $('Processar Request').item.json.documento }}', ''),\n  NULLIF('{{ $('Processar Request').item.json.documento_alternativo }}', ''),\n  {{ $('Processar Request').item.json.data_nascimento ? \"'\" + $('Processar Request').item.json.data_nascimento + \"'\" : 'NULL' }},\n  NULLIF('{{ $('Processar Request').item.json.foto_url }}', ''),\n  '{{ $json.id }}',\n  NULLIF('{{ $('Processar Request').item.json.monday_item_id }}', ''),\n  {{ $('Processar Request').item.json.valor_mensal || 'NULL' }},\n  {{ $('Processar Request').item.json.num_parcelas || 'NULL' }},\n  {{ $('Processar Request').item.json.data_inicio ? \"'\" + $('Processar Request').item.json.data_inicio + \"'\" : 'NULL' }},\n  {{ $('Processar Request').item.json.dia_vencimento || 'NULL' }},\n  {{ $('Processar Request').item.json.valor_mensal ? \"'termos_informados'\" : \"'aguardando_termos'\" }}\n)\nRETURNING id, nome, cliente_id, status, created_at;",
+        "options": {}
+      },
+      "id": "supabase-contrato",
+      "name": "Criar Contrato Pendente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1100, 420],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Formatar mensagem para o Marcos\nconst d = $('Processar Request').first().json;\nconst contratoPendente = $('Criar Contrato Pendente').first().json;\nconst cliente = $('Buscar/Criar Cliente').first().json;\n\n// Formatar valor em moeda\nconst formatMoeda = (v) => v ? `$${Number(v).toLocaleString('en-US', {minimumFractionDigits: 2})}` : 'Não informado';\n\n// Formatar data BR\nconst formatData = (dt) => {\n  if (!dt) return 'Não informado';\n  const [y,m,day] = dt.split('-');\n  return `${day}/${m}/${y}`;\n};\n\nconst mensagem = `📋 *NOVO CONTRATO - ${d.tipo_servico}*\n\n👤 *Cliente:* ${d.nome}\n📧 *Email:* ${d.email || 'Não informado'}\n📱 *Telefone:* ${d.telefone || 'Não informado'}\n🌍 *País:* ${d.pais}\n\n📝 *Dados Pessoais:*\n• Nacionalidade: ${d.nacionalidade || 'Não informado'}\n• Profissão: ${d.profissao || 'Não informado'}\n• Estado Civil: ${d.estado_civil || 'Não informado'}\n• Documento: ${d.documento || 'Não informado'}\n• Nascimento: ${formatData(d.data_nascimento)}\n• Endereço: ${d.endereco || 'Não informado'}\n• CEP: ${d.cep || 'Não informado'}\n\n💰 *Termos do Contrato:*\n• Valor Mensal: ${formatMoeda(d.valor_mensal)}\n• Parcelas: ${d.num_parcelas || 'Não informado'} meses\n• Início: ${formatData(d.data_inicio)}\n• Término: ${formatData(d.data_fim)}\n• Dia Vencimento: ${d.dia_vencimento || 'Não informado'}\n\n🆔 *ID:* ${contratoPendente.id}\n\n${d.valor_mensal ? '✅ *Dados completos - pronto para gerar contrato!*' : '⏳ *Aguardando termos da negociação*'}`;\n\nreturn {\n  json: {\n    mensagem: mensagem,\n    contrato_pendente_id: contratoPendente.id,\n    cliente_id: cliente.id,\n    cliente_nome: d.nome,\n    dados_completos: !!d.valor_mensal,\n    response_body: { success: true, contrato_pendente_id: contratoPendente.id }\n  }\n};"
+      },
+      "id": "code-mensagem",
+      "name": "Formatar Mensagem",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 420]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "highLevelOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"WhatsApp\",\n  \"contactId\": \"skfa6JP6lLlAXkc8FfIp\",\n  \"message\": {{ JSON.stringify($json.mensagem) }}\n}",
+        "options": {}
+      },
+      "id": "ghl-notificar",
+      "name": "Notificar Marcos WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1540, 420],
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "YOUR_GHL_CREDENTIAL_ID",
+          "name": "GoHighLevel OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE fin_contratos_pendentes\nSET notificado_em = NOW()\nWHERE id = '{{ $('Formatar Mensagem').item.json.contrato_pendente_id }}';",
+        "options": {}
+      },
+      "id": "supabase-atualizar",
+      "name": "Marcar Notificado",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1760, 420],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_POSTGRES_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($('Formatar Mensagem').item.json.response_body) }}",
+        "options": {}
+      },
+      "id": "respond-success",
+      "name": "Responder Sucesso",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1980, 420]
+    }
+  ],
+  "connections": {
+    "Webhook Monday": {
+      "main": [
+        [
+          {
+            "node": "Processar Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Request": {
+      "main": [
+        [
+          {
+            "node": "É Challenge?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É Challenge?": {
+      "main": [
+        [
+          {
+            "node": "Responder Challenge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Buscar/Criar Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar/Criar Cliente": {
+      "main": [
+        [
+          {
+            "node": "Criar Contrato Pendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Contrato Pendente": {
+      "main": [
+        [
+          {
+            "node": "Formatar Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Notificar Marcos WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificar Marcos WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Marcar Notificado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marcar Notificado": {
+      "main": [
+        [
+          {
+            "node": "Responder Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "BPO Financeiro"
+    },
+    {
+      "name": "Monday"
+    }
+  ],
+  "triggerCount": 0
+}

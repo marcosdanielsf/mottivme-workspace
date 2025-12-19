@@ -1,0 +1,22 @@
+{
+  "name": "mottivme-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "dev:propostal": "turbo dev --filter=propostal",
+    "dev:eletrify": "turbo dev --filter=eletrify",
+    "build:propostal": "turbo build --filter=propostal",
+    "build:eletrify": "turbo build --filter=eletrify"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "npm@10.2.0"
+}

@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carol & Luiz - Proposta Clara e Direta | Mottivme Sales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0D1117;
+            --bg-card: #161B22;
+            --bg-card-hover: #1C2128;
+            --border: #30363D;
+            --blue-primary: #2F81F7;
+            --blue-electric: #58A6FF;
+            --green-success: #3FB950;
+            --red-danger: #F85149;
+            --yellow-warning: #D29922;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B949E;
+            --text-muted: #6E7681;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--blue-electric);
+        }
+
+        .cta-button {
+            background: var(--blue-primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background: var(--blue-electric);
+            transform: translateY(-2px);
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-card) 100%);
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: var(--bg-card);
+            color: var(--blue-electric);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--blue-electric) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 32px;
+        }
+
+        /* Confession Section */
+        .confession {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            margin: 60px auto;
+            max-width: 900px;
+        }
+
+        .confession h2 {
+            color: var(--yellow-warning);
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .confession p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .confession strong {
+            color: var(--text-primary);
+        }
+
+        /* Clarity Box */
+        .clarity-box {
+            background: linear-gradient(135deg, #1a3a52 0%, #0d1f2e 100%);
+            border: 2px solid var(--blue-electric);
+            border-radius: 12px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+        }
+
+        .clarity-box h3 {
+            color: var(--blue-electric);
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .clarity-box p {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .clarity-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .clarity-box li {
+            padding: 12px 0;
+            font-size: 18px;
+        }
+
+        .clarity-box strong {
+            color: var(--blue-electric);
+        }
+
+        /* Section */
+        section {
+            padding: 60px 20px;
+        }
+
+        section h2 {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        section .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 48px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--blue-electric);
+            transform: translateY(-4px);
+        }
+
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: var(--blue-electric);
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .card li:last-child {
+            border-bottom: none;
+        }
+
+        .card li::before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+
+        /* Pricing */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 32px;
+            margin-top: 40px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--blue-electric);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--blue-electric);
+            background: linear-gradient(135deg, var(--bg-card) 0%, #0a1929 100%);
+        }
+
+        .pricing-card.featured::before {
+            content: "✅ O QUE CONVERSAMOS";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--green-success);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pricing-card.recommended::before {
+            content: "⭐ RECOMENDADO";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--blue-electric);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pricing-card h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .price {
+            font-size: 48px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--blue-electric);
+            margin: 24px 0;
+        }
+
+        .discount {
+            background: var(--green-success);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            margin: 16px 0;
+            font-size: 16px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 24px 0;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+
+        .savings {
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 16px;
+            border: 1px solid var(--green-success);
+        }
+
+        .savings strong {
+            color: var(--green-success);
+            font-size: 20px;
+        }
+
+        /* Recommendation Box */
+        .recommendation {
+            background: var(--bg-card);
+            border: 2px solid var(--yellow-warning);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 40px auto;
+            max-width: 900px;
+        }
+
+        .recommendation h3 {
+            color: var(--yellow-warning);
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .recommendation p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .recommendation strong {
+            color: var(--text-primary);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--blue-primary) 0%, #1a5cc4 100%);
+            padding: 80px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .cta-section h2 {
+            font-size: 42px;
+            margin-bottom: 24px;
+        }
+
+        .cta-section p {
+            font-size: 20px;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--blue-primary);
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            border: 2px solid white;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--blue-primary);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-info {
+            margin-top: 24px;
+        }
+
+        .contact-info a {
+            color: var(--blue-electric);
+            text-decoration: none;
+            margin: 0 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            section h2 {
+                font-size: 28px;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .price {
+                font-size: 36px;
+            }
+
+            .cta-section h2 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🚀 MOTTIVME SALES</div>
+                <a href="#investimento" class="cta-button">VER OPÇÕES</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-tag">💎 PROPOSTA CLARA - CAROL & LUIZ</div>
+            <h1>Da Clínica à Mentoria<br>de R$ 150k/mês</h1>
+            <p class="subtitle">Gestão completa de 2 contas Instagram + Tráfego Pago durante 6 meses<br>+ Recomendação estratégica pra acelerar resultados</p>
+        </div>
+    </section>
+
+    <!-- Confession -->
+    <div class="container">
+        <div class="confession">
+            <h2>🙏 Oi Carol, Oi Luiz... Preciso Ser Bem Claro</h2>
+            <p>Saí da nossa call com um sentimento de que <strong>talvez não tenha sido 100% claro</strong>.</p>
+            <p>Então vou <strong>reescrever tudo do zero</strong> pra ter ZERO confusão.</p>
+            <p style="margin-top: 24px; font-size: 20px; color: var(--text-primary);">
+                <strong>Vou dividir em 2 partes:</strong>
+            </p>
+            <p style="margin-left: 20px;">
+                1️⃣ <strong>O que conversamos na call</strong> (o combinado)<br>
+                2️⃣ <strong>O que eu recomendo adicionar</strong> (opcional, não obrigatório)
+            </p>
+        </div>
+    </div>
+
+    <!-- What We Discussed -->
+    <section style="background: var(--bg-card);">
+        <div class="container">
+            <div class="clarity-box">
+                <h3>✅ O QUE CONVERSAMOS NA CALL (O COMBINADO)</h3>
+
+                <p><strong>Gestão de 2 Contas Instagram + Tráfego Pago durante 6 meses</strong></p>
+
+                <ul>
+                    <li>✅ <strong>Conta #1:</strong> Dr. Luiz (maior audiência)</li>
+                    <li>✅ <strong>Conta #2:</strong> Dra. Carol (expande alcance)</li>
+                </ul>
+
+                <p style="margin-top: 24px;"><strong>O que fazemos TODO MÊS (6 meses):</strong></p>
+
+                <ul>
+                    <li>📱 Criação de conteúdo (posts, stories, reels)</li>
+                    <li>📅 Planejamento mensal</li>
+                    <li>💬 Resposta de DMs</li>
+                    <li>🎯 Engajamento estratégico</li>
+                    <li>💰 Tráfego pago (anúncios Meta Ads)</li>
+                    <li>🎨 Criativos mensais</li>
+                    <li>📊 Testes A/B contínuos</li>
+                    <li>🤖 SDR Human+IA (agendamento)</li>
+                    <li>✅ 15-20 reuniões qualificadas/mês</li>
+                    <li>📈 Relatórios mensais</li>
+                </ul>
+
+                <p style="margin-top: 24px; font-size: 20px;"><strong>Investimento:</strong></p>
+                <ul>
+                    <li>Gestão 2 contas: <strong>R$ 8.000/mês</strong> (R$ 4.000 cada)</li>
+                    <li>Tráfego 2 contas: <strong>R$ 3.000/mês</strong> (R$ 1.500 cada)</li>
+                    <li style="border-top: 2px solid var(--blue-electric); padding-top: 12px; margin-top: 12px; font-size: 22px;">
+                        <strong>TOTAL MENSAL: R$ 11.000/mês</strong>
+                    </li>
+                    <li style="font-size: 24px; color: var(--blue-electric);">
+                        <strong>6 MESES: R$ 66.000</strong>
+                    </li>
+                </ul>
+
+                <p style="margin-top: 32px; text-align: center; font-size: 18px; background: rgba(88, 166, 255, 0.1); padding: 16px; border-radius: 8px;">
+                    <strong>Isso é o que conversamos. Simples e direto.</strong>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Recommendation -->
+    <section>
+        <div class="container">
+            <h2>⚠️ Minha Recomendação Honesta (OPCIONAL)</h2>
+            <p class="section-subtitle">Após a call, percebi algo CRÍTICO que preciso te falar:</p>
+
+            <div class="recommendation">
+                <h3>🎯 Por Que Só EXECUÇÃO Pode Não Funcionar</h3>
+
+                <p>Carol e Luiz, vocês são médicos excepcionais. Mas pra mentoria funcionar, precisam de:</p>
+
+                <ul style="list-style: none; padding: 0; margin: 20px 0;">
+                    <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        ❌ <strong>ICP claro</strong> - Qual médico é o cliente ideal?
+                    </li>
+                    <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        ❌ <strong>Oferta definida</strong> - Mentoria de quanto? Como? Formato?
+                    </li>
+                    <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        ❌ <strong>Preço/garantias</strong> - R$ 8k? R$ 12k? R$ 15k?
+                    </li>
+                    <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                        ❌ <strong>Scripts prontos</strong> - O que falar na call de vendas?
+                    </li>
+                    <li style="padding: 12px 0;">
+                        ❌ <strong>Posicionamento claro</strong> - Por que vocês vs outros?
+                    </li>
+                </ul>
+
+                <p style="margin-top: 24px; font-size: 20px; color: var(--yellow-warning);"><strong>SEM isso estruturado:</strong></p>
+                <p>→ Os posts não vão ter clareza de mensagem<br>
+                → Os anúncios não vão converter bem<br>
+                → As reuniões agendadas não vão fechar<br>
+                → Você vai gastar R$ 66K sem resultado máximo</p>
+
+                <p style="margin-top: 32px; font-size: 20px; color: var(--blue-electric);"><strong>COM estrutura antes (Foundation Sprint):</strong></p>
+                <p>→ Mensagem clara e matadora<br>
+                → Anúncios que convertem<br>
+                → Scripts de vendas testados<br>
+                → ROI 3x-5x maior</p>
+
+                <p style="margin-top: 32px; text-align: center; padding: 20px; background: rgba(88, 166, 255, 0.1); border-radius: 8px; font-size: 18px;">
+                    <strong>Por isso, RECOMENDO fazer Foundation Sprint ANTES de rodar execução.</strong><br>
+                    <span style="color: var(--text-secondary); font-size: 16px;">Mas a decisão é 100% de vocês.</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Investment Options -->
+    <section id="investimento" style="background: var(--bg-card);">
+        <div class="container">
+            <h2>💰 Suas Opções de Investimento</h2>
+            <p class="section-subtitle">Escolha o que faz mais sentido pra vocês:</p>
+
+            <div class="pricing-grid">
+                <!-- Option 1: Only Execution (What was discussed) -->
+                <div class="pricing-card featured">
+                    <h3>OPÇÃO A<br>SÓ EXECUÇÃO</h3>
+                    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 16px; font-size: 14px;">
+                        (O que conversamos na call)
+                    </p>
+                    <div class="price">R$ 66.000</div>
+                    <p style="text-align: center; color: var(--text-secondary); margin: 16px 0;">
+                        6 meses de gestão + tráfego
+                    </p>
+
+                    <ul class="pricing-features">
+                        <li>Gestão 2 contas Instagram (6 meses)</li>
+                        <li>Tráfego pago R$ 3.000/mês</li>
+                        <li>Criação de conteúdo mensal</li>
+                        <li>SDR Human+IA dedicado</li>
+                        <li>15-20 reuniões/mês</li>
+                        <li>Show-Rate Guard 65%+</li>
+                        <li>Relatórios mensais</li>
+                    </ul>
+
+                    <div style="margin-top: 24px; padding: 16px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border);">
+                        <p style="text-align: center; color: var(--text-secondary); font-size: 14px;">
+                            Pagamento:<br>
+                            <strong style="color: var(--text-primary); font-size: 18px;">R$ 66.000 à vista</strong><br>
+                            ou<br>
+                            <strong style="color: var(--text-primary); font-size: 18px;">50% (R$ 33K) + 3x R$ 11K</strong>
+                        </p>
+                    </div>
+
+                    <p style="margin-top: 16px; text-align: center; color: var(--text-muted); font-size: 14px;">
+                        ⚠️ Sem estruturação prévia<br>
+                        (vocês fazem internamente)
+                    </p>
+                </div>
+
+                <!-- Option 2: Complete (Execution + Foundation) -->
+                <div class="pricing-card recommended">
+                    <h3>OPÇÃO B<br>COMPLETA</h3>
+                    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 16px; font-size: 14px;">
+                        (Recomendado pra acelerar resultados)
+                    </p>
+                    <div class="price">R$ 66.000</div>
+                    <div class="discount">
+                        🎁 FOUNDATION SPRINT GRÁTIS!<br>
+                        (Valor: R$ 53.982)
+                    </div>
+
+                    <ul class="pricing-features">
+                        <li><strong>Foundation Sprint GRÁTIS</strong> (30 dias estruturação)</li>
+                        <li>Brand Book (40 páginas)</li>
+                        <li>Offer Stack + Preço + Garantias</li>
+                        <li>3 funis completos</li>
+                        <li>20 scripts prontos</li>
+                        <li>90 dias de conteúdo</li>
+                        <li>CRM Socialfy configurado</li>
+                        <li style="margin-top: 12px; padding-top: 12px; border-top: 2px solid var(--border);"><strong>+ TUDO da Opção A</strong></li>
+                        <li>Gestão 2 contas (6 meses)</li>
+                        <li>Tráfego + SDR + Reuniões</li>
+                    </ul>
+
+                    <div class="savings">
+                        <p>Valor real: R$ 119.982</p>
+                        <p>Você paga: R$ 66.000</p>
+                        <p><strong>ECONOMIA: R$ 53.982 (45%)</strong></p>
+                    </div>
+
+                    <p style="margin-top: 16px; text-align: center; color: var(--green-success); font-size: 16px; font-weight: 600;">
+                        ✅ Estrutura + Execução<br>
+                        Solução completa
+                    </p>
+                </div>
+
+                <!-- Option 3: Only Foundation -->
+                <div class="pricing-card">
+                    <h3>OPÇÃO C<br>SÓ ESTRUTURA</h3>
+                    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 16px; font-size: 14px;">
+                        (Se quiserem executar internamente)
+                    </p>
+                    <div class="price">R$ 53.982</div>
+                    <p style="text-align: center; color: var(--text-secondary); margin: 16px 0;">
+                        30 dias de estruturação
+                    </p>
+
+                    <ul class="pricing-features">
+                        <li>Foundation Sprint completo</li>
+                        <li>Brand Book (40 páginas)</li>
+                        <li>Offer Stack estruturado</li>
+                        <li>3 funis completos</li>
+                        <li>20 scripts prontos</li>
+                        <li>90 dias de conteúdo</li>
+                        <li>3 lead magnets</li>
+                        <li>CRM Socialfy configurado</li>
+                        <li>Messaging Matrix</li>
+                    </ul>
+
+                    <div style="margin-top: 24px; padding: 16px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border);">
+                        <p style="text-align: center; color: var(--text-secondary); font-size: 14px;">
+                            Pagamento:<br>
+                            <strong style="color: var(--text-primary); font-size: 18px;">R$ 53.982 à vista</strong><br>
+                            ou<br>
+                            <strong style="color: var(--text-primary); font-size: 18px;">4x R$ 15.495</strong>
+                        </p>
+                    </div>
+
+                    <p style="margin-top: 16px; text-align: center; color: var(--text-muted); font-size: 14px;">
+                        Vocês executam internamente<br>
+                        depois da estruturação
+                    </p>
+                </div>
+            </div>
+
+            <!-- Comparison -->
+            <div style="max-width: 900px; margin: 60px auto 0; padding: 32px; background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border);">
+                <h3 style="color: var(--blue-electric); text-align: center; margin-bottom: 24px; font-size: 24px;">
+                    💡 Qual Escolher?
+                </h3>
+
+                <div style="display: grid; gap: 20px;">
+                    <div style="padding: 20px; background: var(--bg-card); border-radius: 8px; border-left: 4px solid var(--green-success);">
+                        <p style="font-weight: 600; margin-bottom: 8px;">✅ Escolha OPÇÃO A se:</p>
+                        <p style="color: var(--text-secondary); font-size: 16px;">
+                            • Vocês já têm ICP, oferta e scripts definidos<br>
+                            • Só querem delegar a execução (gestão + tráfego)<br>
+                            • Querem começar rápido
+                        </p>
+                    </div>
+
+                    <div style="padding: 20px; background: var(--bg-card); border-radius: 8px; border-left: 4px solid var(--blue-electric);">
+                        <p style="font-weight: 600; margin-bottom: 8px; color: var(--blue-electric);">⭐ Escolha OPÇÃO B se:</p>
+                        <p style="color: var(--text-secondary); font-size: 16px;">
+                            • Ainda não têm tudo estruturado<br>
+                            • Querem garantir resultado máximo<br>
+                            • Gostam da ideia de economizar R$ 53K<br>
+                            <strong style="color: var(--text-primary);">(Minha recomendação sincera)</strong>
+                        </p>
+                    </div>
+
+                    <div style="padding: 20px; background: var(--bg-card); border-radius: 8px; border-left: 4px solid var(--yellow-warning);">
+                        <p style="font-weight: 600; margin-bottom: 8px;">💡 Escolha OPÇÃO C se:</p>
+                        <p style="color: var(--text-secondary); font-size: 16px;">
+                            • Querem SÓ estruturação agora<br>
+                            • Vão executar internamente depois<br>
+                            • Têm equipe pra rodar tráfego e conteúdo
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why I Recommend Foundation -->
+    <section>
+        <div class="container">
+            <h2>🎯 Por Que Recomendo Foundation ANTES de Executar?</h2>
+
+            <div style="max-width: 800px; margin: 40px auto;">
+                <div class="card">
+                    <h3>Sem Foundation (Opção A):</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 12px 0; color: var(--red-danger);">
+                            ❌ Mensagem pode não ser clara
+                        </li>
+                        <li style="padding: 12px 0; color: var(--red-danger);">
+                            ❌ Anúncios sem positioning forte
+                        </li>
+                        <li style="padding: 12px 0; color: var(--red-danger);">
+                            ❌ Calls sem script testado
+                        </li>
+                        <li style="padding: 12px 0; color: var(--red-danger);">
+                            ❌ Gastamos R$ 66K pra aprender no erro
+                        </li>
+                        <li style="padding: 12px 0; color: var(--red-danger); border-bottom: none;">
+                            ❌ ROI demora mais pra chegar
+                        </li>
+                    </ul>
+                </div>
+
+                <div style="text-align: center; margin: 32px 0; font-size: 32px;">
+                    ⬇️
+                </div>
+
+                <div class="card" style="border-color: var(--green-success);">
+                    <h3 style="color: var(--green-success);">Com Foundation (Opção B):</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="padding: 12px 0; color: var(--green-success);">
+                            ✅ Mensagem cristalina desde dia 1
+                        </li>
+                        <li style="padding: 12px 0; color: var(--green-success);">
+                            ✅ Anúncios com oferta matadora
+                        </li>
+                        <li style="padding: 12px 0; color: var(--green-success);">
+                            ✅ Scripts testados e validados
+                        </li>
+                        <li style="padding: 12px 0; color: var(--green-success);">
+                            ✅ Cada centavo de tráfego otimizado
+                        </li>
+                        <li style="padding: 12px 0; color: var(--green-success); border-bottom: none;">
+                            ✅ ROI 3x-5x mais rápido
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div style="max-width: 700px; margin: 40px auto; text-align: center; padding: 32px; background: var(--bg-card); border-radius: 12px; border: 2px solid var(--blue-electric);">
+                <p style="font-size: 20px; line-height: 1.8;">
+                    <strong style="color: var(--blue-electric);">Minha recomendação honesta:</strong><br>
+                    <span style="color: var(--text-secondary);">
+                        Se têm os R$ 66K, façam <strong style="color: var(--text-primary);">Opção B</strong>.<br>
+                        Vocês economizam R$ 53K E garantem resultado máximo.<br><br>
+                        Mas se quiserem começar direto, <strong style="color: var(--text-primary);">Opção A</strong> também funciona.
+                    </span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="cta">
+        <div class="container">
+            <h2>🚀 Próximo Passo</h2>
+            <p>Vamos marcar 15min pra você me falar qual opção faz mais sentido pra vocês.<br>Sem pressão. Só pra alinhar.</p>
+
+            <div class="cta-buttons">
+                <a href="https://calendly.com/mottivme/15min" class="btn-primary">📅 AGENDAR 15MIN</a>
+                <a href="mailto:marcos@mottivme.com" class="btn-secondary">📧 ENVIAR EMAIL</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p style="font-size: 18px; margin-bottom: 8px;">
+                    <strong>Espero ter deixado tudo claro agora. Qualquer dúvida, só chamar.</strong>
+                </p>
+                <p style="font-size: 20px; font-weight: 700; color: var(--blue-electric); margin: 16px 0;">
+                    Marcos Daniel
+                </p>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Founder & CEO - Mottivme Sales
+                </p>
+
+                <div class="contact-info">
+                    <a href="mailto:marcos@mottivme.com">📧 marcos@mottivme.com</a>
+                    <a href="https://mottivme.com">🌐 mottivme.com</a>
+                </div>
+
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 32px;">
+                    Proposta Clara e Direta - v4.0<br>
+                    Dra. Carol & Dr. Luiz<br>
+                    Válido até 12/12/2025
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

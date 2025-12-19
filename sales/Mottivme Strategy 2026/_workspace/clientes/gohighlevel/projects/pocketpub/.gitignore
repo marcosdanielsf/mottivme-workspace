@@ -1,0 +1,24 @@
+# Dart and Flutter specific
+.dart_tool/
+.packages
+build/
+pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# PocketBase data
+pocketbase_data/
+
+# Package archives
+package_archives/
+
+# Environment files
+.env
+.env.local
+
+# IDE specific files
+.idea/
+.vscode/
+*.iml
+*.iws
+.DS_Store 

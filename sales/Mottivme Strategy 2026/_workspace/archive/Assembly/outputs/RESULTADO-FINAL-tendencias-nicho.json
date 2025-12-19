@@ -1,0 +1,128 @@
+{
+  "tendencias_nicho": {
+    "tendencias_emergentes": [
+      {
+        "tendencia": "Account-Based Selling (ABS): Shift de lead-based para account-based com foco em contas de alto valor e personalização extrema",
+        "relevancia": "Alta",
+        "fonte": "Análise de mercado internacional"
+      },
+      {
+        "tendencia": "AI-Powered Sales Enablement: 65% aumento em confiança do vendedor, 30% aumento em engajamento com AI coaching",
+        "relevancia": "Alta",
+        "fonte": "Tendência global 2025"
+      },
+      {
+        "tendencia": "Radical Transparency Movement: Coaches compartilhando métricas reais (CAC, LTV, margins) como diferencial",
+        "relevancia": "Alta",
+        "fonte": "Movimento internacional liderado por Hormozi"
+      },
+      {
+        "tendencia": "Demanda por Transparência no Brasil: 68% dos compradores exigem métricas reais antes de contratar (↑32% YoY)",
+        "relevancia": "Alta",
+        "fonte": "Pesquisa mercado brasileiro 2024"
+      },
+      {
+        "tendencia": "Anti-Guru Sentiment: 41% aumento em busca por mentores com lastro operacional vs mindset puro",
+        "relevancia": "Média",
+        "fonte": "Tendência brasileira emergente"
+      },
+      {
+        "tendencia": "Foco em Previsibilidade: 57% priorizam previsibilidade sobre crescimento rápido",
+        "relevancia": "Alta",
+        "fonte": "Mudança fundamental de mindset no Brasil"
+      }
+    ],
+    "mudancas_comportamento": [
+      {
+        "mudanca": "De lead-based para account-based: empresários buscando contas de alto valor com personalização vs volume",
+        "impacto": "Alto"
+      },
+      {
+        "mudanca": "De mindset para operação: cansaço com gurus motivacionais, busca por processos reais e métricas verificáveis",
+        "impacto": "Alto"
+      },
+      {
+        "mudanca": "De crescimento a qualquer custo para crescimento previsível: 57% preferem previsibilidade",
+        "impacto": "Alto"
+      },
+      {
+        "mudanca": "De guru individual para sistemas autônomos: demanda por processos que funcionem sem o founder",
+        "impacto": "Médio"
+      }
+    ],
+    "tecnologias_impactantes": [
+      {
+        "tecnologia": "AI coaching em tempo real analisando calls - chegará ao Brasil em 12-18 meses",
+        "maturidade": "Emergente internacional, inexistente BR"
+      },
+      {
+        "tecnologia": "Automação de vendas com personalização em escala através de AI",
+        "maturidade": "Em crescimento"
+      },
+      {
+        "tecnologia": "Plataformas integradas (CRM + automação + analytics) para PMEs brasileiras",
+        "maturidade": "Crescimento acelerado"
+      },
+      {
+        "tecnologia": "Forecast preditivo com 85%+ acurácia baseado em dados históricos",
+        "maturidade": "Disponível mas pouco utilizado no BR"
+      }
+    ],
+    "previsoes_mercado": [
+      {
+        "previsao": "Mercado global: USD $5.34bi (2025) → $8.43bi (2030) - CAGR 9.6%",
+        "horizonte": "Médio prazo (5 anos)",
+        "confianca": "Alta"
+      },
+      {
+        "previsao": "Consolidação eliminará 60% dos gurus brasileiros em 24 meses - só sobrevivem quem tem lastro operacional",
+        "horizonte": "Curto prazo (2 anos)",
+        "confianca": "Média-Alta"
+      },
+      {
+        "previsao": "Pricing premium ($50k+) será normalizado no Brasil em 36 meses com transparência provando valor",
+        "horizonte": "Médio prazo (3 anos)",
+        "confianca": "Média"
+      },
+      {
+        "previsao": "AI coaching chegará ao Brasil em 12-18 meses, democratizando tático mas criando demanda por estratégico premium",
+        "horizonte": "Curto prazo (1-2 anos)",
+        "confianca": "Alta"
+      }
+    ],
+    "oportunidades_timing": [
+      {
+        "oportunidade": "Janela de 18-24 meses para estabelecer liderança em transparência radical antes da maturação",
+        "urgencia": "Alta",
+        "duracao_estimada": "Limitada - mercado mudando rápido"
+      },
+      {
+        "oportunidade": "Ser primeiro a quebrar teto R$50k com justificativa por métricas antes da cópia",
+        "urgencia": "Alta",
+        "duracao_estimada": "12-18 meses antes da saturação"
+      },
+      {
+        "oportunidade": "Capitalizar cansaço com gurus de palco através de posicionamento anti-guru explícito",
+        "urgencia": "Alta",
+        "duracao_estimada": "Momento atual ideal - sentimento no pico"
+      }
+    ],
+    "riscos_ameacas": [
+      {
+        "ameaca": "Resistência cultural à transparência radical - mercado pode rejeitar exposição de métricas",
+        "severidade": "Média",
+        "mitigacao": "Começar com métricas safe (conversão, ticket) antes de CAC/LTV"
+      },
+      {
+        "ameaca": "Cópia rápida por concorrentes uma vez que modelo provar sucesso",
+        "severidade": "Média",
+        "mitigacao": "Velocidade + profundidade cria moat. Registro de IP"
+      },
+      {
+        "ameaca": "Pricing resistance acima de R$50k - mercado pode não aceitar premium ainda",
+        "severidade": "Média",
+        "mitigacao": "Garantia baseada em métricas reduz risco. Casos provam valor"
+      }
+    ]
+  }
+}

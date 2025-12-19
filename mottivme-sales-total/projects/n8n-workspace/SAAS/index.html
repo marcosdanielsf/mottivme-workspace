@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mottivme Sales | Pitch Deck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --gold: #C9A962;
+            --gold-light: #E8D5A3;
+            --red: #EF4444;
+            --green: #22C55E;
+            --text: #FFFFFF;
+            --text-muted: #71717A;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        /* Slides Container */
+        .slides-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(100px);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .slide.exit {
+            opacity: 0;
+            transform: translateX(-100px);
+        }
+
+        .slide-content {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--gold);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .nav-arrows {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .nav-arrow {
+            width: 50px;
+            height: 50px;
+            border: 1px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav-arrow:hover {
+            background: var(--gold);
+            color: var(--bg);
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            font-size: 14px;
+            color: var(--text-muted);
+            z-index: 1000;
+        }
+
+        /* Typography */
+        .badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 64px;
+            font-weight: 400;
+            line-height: 1.2;
+            margin-bottom: 30px;
+        }
+
+        .title span {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 22px;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+
+        /* Problem Cards */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 50px;
+        }
+
+        .problem-card {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: left;
+        }
+
+        .problem-card .icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .problem-card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .problem-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid rgba(201, 169, 98, 0.1);
+        }
+
+        .stat-value {
+            font-size: 56px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Solution Flow */
+        .solution-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .solution-box {
+            background: var(--surface);
+            border: 1px solid rgba(201, 169, 98, 0.2);
+            border-radius: 16px;
+            padding: 40px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .solution-box .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .solution-box h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .solution-box p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .solution-box .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-top: 20px;
+        }
+
+        .flow-arrow {
+            font-size: 32px;
+            color: var(--gold);
+        }
+
+        /* Investment Options */
+        .investment-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 50px;
+        }
+
+        .investment-card {
+            background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 40px 30px;
+            position: relative;
+        }
+
+        .investment-card.featured {
+            border-color: var(--gold);
+            transform: scale(1.05);
+        }
+
+        .investment-card.featured::before {
+            content: '⭐ RECOMENDADO';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gold);
+            color: var(--bg);
+            padding: 6px 16px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-radius: 20px;
+        }
+
+        .investment-card .option {
+            font-size: 12px;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .investment-card h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .investment-card .price {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .investment-card.featured .price {
+            color: var(--gold);
+        }
+
+        .investment-card .savings {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid var(--green);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .investment-card .savings span {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .investment-card ul {
+            list-style: none;
+            text-align: left;
+        }
+
+        .investment-card li {
+            padding: 10px 0;
+            padding-left: 24px;
+            position: relative;
+            font-size: 14px;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .investment-card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--gold);
+        }
+
+        /* CTA Buttons */
+        .cta-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 50px;
+        }
+
+        .btn-primary {
+            padding: 18px 50px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            border: none;
+            color: var(--bg);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(201, 169, 98, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 18px 50px;
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(201, 169, 98, 0.1);
+        }
+
+        /* Logo */
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 600;
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            z-index: 1000;
+        }
+
+        .logo span {
+            color: var(--gold);
+        }
+
+        /* Testimonial */
+        .testimonial {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 50px;
+            margin-top: 50px;
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            text-align: left;
+        }
+
+        .testimonial-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            flex-shrink: 0;
+        }
+
+        .testimonial-content {
+            flex: 1;
+        }
+
+        .testimonial-quote {
+            font-size: 20px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: var(--text);
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .testimonial-role {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .testimonial-result {
+            margin-top: 16px;
+            padding: 12px 20px;
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 3px solid var(--green);
+            display: inline-block;
+        }
+
+        .testimonial-result span {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .title {
+                font-size: 42px;
+            }
+
+            .problem-grid,
+            .stats-grid,
+            .investment-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .solution-flow {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .investment-card.featured {
+                transform: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+            }
+
+            .title {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .testimonial {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .cta-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">MOTTIV<span>ME</span></div>
+    <div class="slide-counter"><span id="current-slide">1</span> / <span id="total-slides">10</span></div>
+
+    <div class="slides-container">
+        
+        <!-- Slide 1: Capa -->
+        <div class="slide active" data-slide="1">
+            <div class="slide-content">
+                <div class="badge">Apresentação Exclusiva</div>
+                <h1 class="title">
+                    Transformamos Especialistas em<br>
+                    <span>Máquinas de Faturamento</span>
+                </h1>
+                <p class="subtitle">
+                    O sistema que já gerou R$ 6.5M+ em pipeline para médicos, mentores e consultores
+                    que querem escalar sem virar refém de Instagram.
+                </p>
+                <div class="cta-group">
+                    <button class="btn-primary" onclick="nextSlide()">INICIAR APRESENTAÇÃO →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: O Problema -->
+        <div class="slide" data-slide="2">
+            <div class="slide-content">
+                <div class="badge">O Problema</div>
+                <h1 class="title">O Que o Mercado Te Vendeu</h1>
+                <p class="subtitle">
+                    E porque você está frustrado com os resultados
+                </p>
+                <div class="problem-grid">
+                    <div class="problem-card">
+                        <div class="icon">❌</div>
+                        <h3>"Poste todo dia"</h3>
+                        <p>Você posta, posta, posta... e nada. Os likes vêm, mas os clientes não. Porque conteúdo sem estratégia é só barulho.</p>
+                    </div>
+                    <div class="problem-card">
+                        <div class="icon">❌</div>
+                        <h3>"Invista em tráfego"</h3>
+                        <p>Gastou R$ 5k, R$ 10k, R$ 20k em anúncios. Resultado? Leads frios que nem respondem. Porque tráfego sem funil é dinheiro jogado fora.</p>
+                    </div>
+                    <div class="problem-card">
+                        <div class="icon">❌</div>
+                        <h3>"Contrate uma agência"</h3>
+                        <p>Pagou mensalidade por meses. Recebeu posts bonitos e relatórios de vaidade. Vendas? Zero. Porque agência vende execução, não resultado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: A Verdade -->
+        <div class="slide" data-slide="3">
+            <div class="slide-content">
+                <div class="badge">A Verdade</div>
+                <h1 class="title">
+                    O Problema Não É Você.<br>
+                    É a <span>Falta de Sistema</span>.
+                </h1>
+                <p class="subtitle">
+                    Você tem conhecimento. Tem resultado. Tem autoridade.<br>
+                    O que falta é ESTRUTURA + EXECUÇÃO trabalhando juntos.
+                </p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">87%</div>
+                        <div class="stat-label">dos experts falham por falta de estrutura</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">R$ 0</div>
+                        <div class="stat-label">retorno médio de agências tradicionais</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">6-12</div>
+                        <div class="stat-label">meses desperdiçados tentando sozinho</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Nossa Solução -->
+        <div class="slide" data-slide="4">
+            <div class="slide-content">
+                <div class="badge">Nossa Solução</div>
+                <h1 class="title">
+                    O <span>Demand Engine</span>
+                </h1>
+                <p class="subtitle">
+                    O único sistema que combina estruturação + execução<br>
+                    para transformar especialistas em máquinas de faturamento
+                </p>
+                <div class="solution-flow">
+                    <div class="solution-box">
+                        <div class="icon">📘</div>
+                        <h3>Foundation Sprint</h3>
+                        <p>30 dias para estruturar TUDO: ICP, Oferta, Funis, Scripts, CRM</p>
+                        <div class="value">R$ 53.982</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="solution-box">
+                        <div class="icon">🚀</div>
+                        <h3>Demand Stack</h3>
+                        <p>6 meses executando: Gestão, Tráfego, SDR, 15-20 reuniões/mês</p>
+                        <div class="value">R$ 66.000</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="solution-box">
+                        <div class="icon">👑</div>
+                        <h3>Resultado</h3>
+                        <p>Faturamento previsível de R$ 100k-150k/mês em mentorias</p>
+                        <div class="value">6 DÍGITOS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Prova Social -->
+        <div class="slide" data-slide="5">
+            <div class="slide-content">
+                <div class="badge">Resultados Reais</div>
+                <h1 class="title">
+                    Quem Já Está <span>Faturando</span>
+                </h1>
+                <div class="testimonial">
+                    <div class="testimonial-image">👨‍⚕️</div>
+                    <div class="testimonial-content">
+                        <p class="testimonial-quote">
+                            "Eu tinha 50 mil seguidores e não vendia nada. Em 90 dias com a Mottivme, 
+                            fechei 12 mentorias de R$ 12k cada. O segredo? Parar de criar conteúdo 
+                            aleatório e ter um sistema de verdade."
+                        </p>
+                        <p class="testimonial-author">Dr. João Silva</p>
+                        <p class="testimonial-role">Cardiologista • Mentor de Médicos</p>
+                        <div class="testimonial-result">
+                            Resultado: <span>R$ 144k em 90 dias</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Mais Resultados -->
+        <div class="slide" data-slide="6">
+            <div class="slide-content">
+                <div class="badge">Case Studies</div>
+                <h1 class="title">
+                    Não É Sorte. É <span>Sistema</span>.
+                </h1>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">R$ 127k</div>
+                        <div class="stat-label">Dr. João • Cardiologista</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">R$ 89k</div>
+                        <div class="stat-label">Dra. Maria • Nutricionista</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">+340%</div>
+                        <div class="stat-label">Clínica Vida • Estética</div>
+                    </div>
+                </div>
+                <p class="subtitle" style="margin-top: 40px;">
+                    Todos começaram frustrados com marketing.<br>
+                    Todos aplicaram o mesmo sistema.<br>
+                    Todos estão faturando 6 dígitos.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Como Funciona -->
+        <div class="slide" data-slide="7">
+            <div class="slide-content">
+                <div class="badge">Divisão de Trabalho</div>
+                <h1 class="title">
+                    Você Faz <span>Pouco</span>.<br>
+                    Nós Fazemos <span>Tudo</span>.
+                </h1>
+                <div class="solution-flow">
+                    <div class="solution-box">
+                        <div class="icon">👤</div>
+                        <h3>VOCÊ</h3>
+                        <p style="font-size: 16px; line-height: 2;">
+                            ✓ Aprova<br>
+                            ✓ Aparece<br>
+                            ✓ Fecha
+                        </p>
+                    </div>
+                    <div class="flow-arrow">↔</div>
+                    <div class="solution-box">
+                        <div class="icon">🏢</div>
+                        <h3>MOTTIVME</h3>
+                        <p style="font-size: 16px; line-height: 2;">
+                            ✓ Estratégia<br>
+                            ✓ Conteúdo<br>
+                            ✓ Tráfego<br>
+                            ✓ SDR<br>
+                            ✓ Qualificação<br>
+                            ✓ Relatórios
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Investimento -->
+        <div class="slide" data-slide="8">
+            <div class="slide-content">
+                <div class="badge">Investimento</div>
+                <h1 class="title">Escolha Sua Jornada</h1>
+                <div class="investment-grid">
+                    <div class="investment-card">
+                        <div class="option">OPÇÃO A</div>
+                        <h3>Só Execução</h3>
+                        <div class="price">R$ 66.000</div>
+                        <ul>
+                            <li>Gestão 2 contas (6 meses)</li>
+                            <li>Tráfego pago incluso</li>
+                            <li>SDR Human+IA</li>
+                            <li>15-20 reuniões/mês</li>
+                        </ul>
+                    </div>
+                    <div class="investment-card featured">
+                        <div class="option">OPÇÃO B</div>
+                        <h3>Completa</h3>
+                        <div class="price">R$ 66.000</div>
+                        <div class="savings">
+                            GANHE <span>R$ 53.982</span> GRÁTIS
+                        </div>
+                        <ul>
+                            <li><strong>Foundation Sprint GRÁTIS</strong></li>
+                            <li>8 entregáveis completos</li>
+                            <li>+ Tudo da Opção A</li>
+                            <li>Economia de 45%</li>
+                        </ul>
+                    </div>
+                    <div class="investment-card">
+                        <div class="option">OPÇÃO C</div>
+                        <h3>Só Estrutura</h3>
+                        <div class="price">R$ 53.982</div>
+                        <ul>
+                            <li>Foundation Sprint</li>
+                            <li>Brand Book completo</li>
+                            <li>3 funis + 20 scripts</li>
+                            <li>90 dias de conteúdo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Garantias -->
+        <div class="slide" data-slide="9">
+            <div class="slide-content">
+                <div class="badge">Segurança</div>
+                <h1 class="title">
+                    O Risco É <span>Nosso</span>.<br>
+                    Não Seu.
+                </h1>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">🛡️</div>
+                        <div class="stat-label">Contrato com SLA de entregas documentado</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">📊</div>
+                        <div class="stat-label">Relatórios semanais transparentes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">📞</div>
+                        <div class="stat-label">Calls quinzenais de alinhamento</div>
+                    </div>
+                </div>
+                <p class="subtitle" style="margin-top: 40px;">
+                    Modelo Fee + Success: ganhamos quando você ganha.<br>
+                    Nosso incentivo é seu resultado.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 10: CTA Final -->
+        <div class="slide" data-slide="10">
+            <div class="slide-content">
+                <div class="badge">Próximo Passo</div>
+                <h1 class="title">
+                    Pronto Para<br>
+                    <span>Escalar</span>?
+                </h1>
+                <p class="subtitle">
+                    Agende uma call de diagnóstico de 15 minutos.<br>
+                    Sem compromisso. Só clareza.
+                </p>
+                <div class="cta-group">
+                    <button class="btn-primary" onclick="window.open('https://calendly.com/mottivme/15min')">
+                        📅 AGENDAR CALL
+                    </button>
+                    <button class="btn-secondary" onclick="window.open('https://wa.me/5511999999999')">
+                        💬 WHATSAPP
+                    </button>
+                </div>
+                <p style="margin-top: 40px; font-size: 14px; color: var(--text-muted);">
+                    ⏰ Vagas limitadas: 3 novos clientes por mês
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-bar" id="nav-bar"></div>
+    <div class="nav-arrows">
+        <button class="nav-arrow" id="prev-btn" onclick="prevSlide()">←</button>
+        <button class="nav-arrow" id="next-btn" onclick="nextSlide()">→</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+
+        // Initialize
+        document.getElementById('total-slides').textContent = totalSlides;
+        createNavDots();
+        updateNavigation();
+
+        function createNavDots() {
+            const navBar = document.getElementById('nav-bar');
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'nav-dot' + (i === 1 ? ' active' : '');
+                dot.onclick = () => goToSlide(i);
+                navBar.appendChild(dot);
+            }
+        }
+
+        function goToSlide(n) {
+            if (n < 1 || n > totalSlides || n === currentSlide) return;
+
+            const current = document.querySelector(`.slide[data-slide="${currentSlide}"]`);
+            const next = document.querySelector(`.slide[data-slide="${n}"]`);
+
+            current.classList.remove('active');
+            current.classList.add('exit');
+            
+            setTimeout(() => {
+                current.classList.remove('exit');
+            }, 800);
+
+            next.classList.add('active');
+            currentSlide = n;
+            updateNavigation();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        function updateNavigation() {
+            document.getElementById('current-slide').textContent = currentSlide;
+            document.getElementById('prev-btn').disabled = currentSlide === 1;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides;
+
+            document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i + 1 === currentSlide);
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Touch/swipe support
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>

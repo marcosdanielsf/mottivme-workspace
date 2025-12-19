@@ -1,0 +1,548 @@
+{
+  "name": "Error Handler V3 - Coletor de Padroes",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "73291c61-d3e6-4a5f-a643-5a5950dc091e",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "exec-id",
+              "name": "execution_id",
+              "value": "={{ $json.execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "exec-url",
+              "name": "execution_url",
+              "value": "={{ $json.execution.url }}",
+              "type": "string"
+            },
+            {
+              "id": "link-direto",
+              "name": "link_execucao",
+              "value": "=https://cliente-a1.mentorfy.io/workflow/{{ $json.workflow.id }}/executions/{{ $json.execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "data-hora",
+              "name": "data_hora",
+              "value": "={{ $now.setZone('America/Sao_Paulo').toFormat('dd/MM/yyyy HH:mm:ss') }}",
+              "type": "string"
+            },
+            {
+              "id": "workflow-id",
+              "name": "workflow_id",
+              "value": "={{ $json.workflow.id }}",
+              "type": "string"
+            },
+            {
+              "id": "workflow-name",
+              "name": "workflow_name",
+              "value": "={{ $json.workflow.name }}",
+              "type": "string"
+            },
+            {
+              "id": "node-erro",
+              "name": "node_name",
+              "value": "={{ $json.execution.error.node?.name || 'unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "node-type",
+              "name": "node_type",
+              "value": "={{ $json.execution.error.node?.type || 'unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "mensagem-erro",
+              "name": "error_message",
+              "value": "={{ $json.execution.error.message }}",
+              "type": "string"
+            },
+            {
+              "id": "error-name",
+              "name": "error_name",
+              "value": "={{ $json.execution.error.name || 'UnknownError' }}",
+              "type": "string"
+            },
+            {
+              "id": "http-code",
+              "name": "http_status",
+              "value": "={{ $json.execution.error.httpCode || $json.execution.error.context?.response?.status || null }}",
+              "type": "number"
+            },
+            {
+              "id": "location-id",
+              "name": "location_id",
+              "value": "={{ $json.execution.error.context?.request?.body?.locationId || $json.execution.error.context?.request?.headers?.locationId || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-id",
+              "name": "contact_id",
+              "value": "={{ $json.execution.error.context?.request?.body?.contactId || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "link-contato",
+              "name": "link_contato",
+              "value": "={{ ($json.execution.error.context?.request?.body?.locationId && $json.execution.error.context?.request?.body?.contactId) ? 'https://app.socialfy.me/v2/location/' + $json.execution.error.context.request.body.locationId + '/contacts/detail/' + $json.execution.error.context.request.body.contactId : '' }}",
+              "type": "string"
+            },
+            {
+              "id": "request-url",
+              "name": "request_url",
+              "value": "={{ $json.execution.error.context?.request?.uri || $json.execution.error.context?.request?.url || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "request-method",
+              "name": "request_method",
+              "value": "={{ $json.execution.error.context?.request?.method || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "request-body",
+              "name": "request_body",
+              "value": "={{ $json.execution.error.context?.request?.body || null }}",
+              "type": "object"
+            },
+            {
+              "id": "error-type",
+              "name": "error_type",
+              "value": "={{ \n  $json.execution.error.message?.includes('slot') && $json.execution.error.message?.includes('available') ? 'slot_unavailable' :\n  $json.execution.error.message?.includes('Credential') ? 'credential_error' :\n  $json.execution.error.message?.includes('token') ? 'token_error' :\n  $json.execution.error.message?.includes('timeout') ? 'timeout' :\n  $json.execution.error.message?.includes('rate limit') ? 'rate_limit' :\n  $json.execution.error.message?.includes('not found') ? 'not_found' :\n  $json.execution.error.message?.includes('Bad request') ? 'bad_request' :\n  $json.execution.error.message?.includes('unauthorized') || $json.execution.error.httpCode === '401' ? 'unauthorized' :\n  $json.execution.error.message?.includes('forbidden') || $json.execution.error.httpCode === '403' ? 'forbidden' :\n  'unknown'\n}}",
+              "type": "string"
+            },
+            {
+              "id": "error-hash",
+              "name": "error_hash",
+              "value": "={{ ($json.workflow.id + '_' + ($json.execution.error.node?.name || '') + '_' + ($json.execution.error.message || '').substring(0, 50)).replace(/[^a-zA-Z0-9_]/g, '_') }}",
+              "type": "string"
+            },
+            {
+              "id": "raw-error",
+              "name": "raw_error",
+              "value": "={{ $json.execution.error }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a5acc9fc-f0aa-4ec5-9b3f-7eba2fc4e7e9",
+      "name": "1. Extrair Dados do Erro",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-location",
+              "leftValue": "={{ $json.location_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-location-exists",
+      "name": "2. Tem Location ID?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.location_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-43abf775-9c0e-4440-a73e-4a568e5257ba"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-location-info",
+      "name": "3a. Buscar Location Name",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        192,
+        -400
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "location-name",
+              "name": "location_name",
+              "value": "={{ $json.location?.name || $json.name || 'Conta nao identificada' }}",
+              "type": "string"
+            },
+            {
+              "id": "keep-data",
+              "name": "dados_erro",
+              "value": "={{ $('1. Extrair Dados do Erro').item.json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-location-name",
+      "name": "4a. Extrair Nome da Conta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "location-name-empty",
+              "name": "location_name",
+              "value": "Conta nao identificada",
+              "type": "string"
+            },
+            {
+              "id": "keep-data",
+              "name": "dados_erro",
+              "value": "={{ $('1. Extrair Dados do Erro').item.json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-no-location",
+      "name": "3b. Sem Location",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -192
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "merge-location-data",
+      "name": "5. Merge Dados",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        640,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-whatsapp",
+              "name": "mensagem_whatsapp",
+              "value": "=*ERRO NO N8N*\n\n*Conta:* {{ $json.location_name }}\n*Workflow:* {{ $json.dados_erro.workflow_name }}\n*Node:* {{ $json.dados_erro.node_name }}\n*Tipo:* {{ $json.dados_erro.error_type }}\n*Erro:* {{ $json.dados_erro.error_message }}\n*Data:* {{ $json.dados_erro.data_hora }}\n\n*Execucao:* {{ $json.dados_erro.link_execucao }}{{ $json.dados_erro.link_contato ? '\\n*Contato:* ' + $json.dados_erro.link_contato : '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "109b8050-51fa-4236-a45a-ebcf9f151103",
+      "name": "6. Preparar Mensagem",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-43abf775-9c0e-4440-a73e-4a568e5257ba"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"skfa6JP6lLlAXkc8FfIp\",\n  \"message\": {{ JSON.stringify($json.mensagem_whatsapp) }}\n}",
+        "options": {}
+      },
+      "id": "1205510d-9151-4e54-81ae-ba89bd88faf7",
+      "name": "7. Notificar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1088,
+        -304
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO error_patterns (\n  error_type,\n  error_message,\n  error_code,\n  http_status,\n  workflow_id,\n  workflow_name,\n  node_name,\n  node_type,\n  execution_id,\n  execution_url,\n  location_id,\n  location_name,\n  contact_id,\n  contact_link,\n  request_url,\n  request_method,\n  request_body,\n  response_body,\n  error_hash,\n  status\n) VALUES (\n  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb, $18::jsonb, $19, 'new'\n)\nON CONFLICT (error_hash) DO UPDATE SET\n  occurrence_count = error_patterns.occurrence_count + 1,\n  last_occurrence = NOW()\nRETURNING id, occurrence_count;",
+        "options": {
+          "queryReplacement": "={{ $('5. Merge Dados').item.json.dados_erro.error_type }}\n{{ $('5. Merge Dados').item.json.dados_erro.error_message }}\n{{ $('5. Merge Dados').item.json.dados_erro.error_name }}\n{{ $('5. Merge Dados').item.json.dados_erro.http_status || null }}\n{{ $('5. Merge Dados').item.json.dados_erro.workflow_id }}\n{{ $('5. Merge Dados').item.json.dados_erro.workflow_name }}\n{{ $('5. Merge Dados').item.json.dados_erro.node_name }}\n{{ $('5. Merge Dados').item.json.dados_erro.node_type }}\n{{ $('5. Merge Dados').item.json.dados_erro.execution_id }}\n{{ $('5. Merge Dados').item.json.dados_erro.link_execucao }}\n{{ $('5. Merge Dados').item.json.dados_erro.location_id }}\n{{ $('5. Merge Dados').item.json.location_name }}\n{{ $('5. Merge Dados').item.json.dados_erro.contact_id }}\n{{ $('5. Merge Dados').item.json.dados_erro.link_contato }}\n{{ $('5. Merge Dados').item.json.dados_erro.request_url }}\n{{ $('5. Merge Dados').item.json.dados_erro.request_method }}\n{{ JSON.stringify($('5. Merge Dados').item.json.dados_erro.request_body || {}) }}\n{{ JSON.stringify($('5. Merge Dados').item.json.dados_erro.raw_error || {}) }}\n{{ $('5. Merge Dados').item.json.dados_erro.error_hash }}"
+        }
+      },
+      "id": "ecd84530-f027-4e25-8a00-fd126672d721",
+      "name": "8. Salvar Padrao de Erro",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1312,
+        -304
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels."
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "status-final",
+              "name": "status",
+              "value": "collected",
+              "type": "string"
+            },
+            {
+              "id": "msg-final",
+              "name": "message",
+              "value": "Erro coletado para analise de padroes",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "768cd42a-b463-4cf1-8fdf-6666f101e661",
+      "name": "9. Concluido",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1536,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ERROR HANDLER V3 - COLETOR DE PADROES\n\n**Objetivo:** Coletar erros para identificar padroes e criar auto-fix\n\n**O que coleta:**\n- Tipo de erro (slot_unavailable, credential_error, etc)\n- Dados da requisicao que falhou (pra poder reprocessar)\n- Frequencia de cada erro\n- Contexto completo (location, contact, workflow)\n\n**Tipos de erro detectados:**\n- `slot_unavailable` - Horario nao disponivel\n- `credential_error` - Problema com credencial\n- `token_error` - Token invalido/expirado\n- `timeout` - Timeout na requisicao\n- `rate_limit` - Limite de requisicoes\n- `not_found` - Recurso nao encontrado\n- `bad_request` - Requisicao invalida\n- `unauthorized` - Nao autorizado (401)\n- `forbidden` - Proibido (403)\n- `unknown` - Erro nao classificado",
+        "height": 420,
+        "width": 400,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        -800
+      ],
+      "typeVersion": 1,
+      "id": "doc-fluxo"
+    },
+    {
+      "parameters": {
+        "content": "## QUERIES UTEIS\n\n**Ver erros mais frequentes:**\n```sql\nSELECT * FROM vw_erros_frequentes;\n```\n\n**Ver erros por conta:**\n```sql\nSELECT * FROM vw_erros_por_conta;\n```\n\n**Ver erros de um tipo especifico:**\n```sql\nSELECT * FROM error_patterns\nWHERE error_type = 'slot_unavailable'\nORDER BY last_occurrence DESC;\n```\n\n**Ver request body dos erros (pra reprocessar):**\n```sql\nSELECT workflow_name, node_name, request_body\nFROM error_patterns\nWHERE error_type = 'slot_unavailable';\n```",
+        "height": 380,
+        "width": 400,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -40,
+        -800
+      ],
+      "typeVersion": 1,
+      "id": "doc-queries"
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "1. Extrair Dados do Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Extrair Dados do Erro": {
+      "main": [
+        [
+          {
+            "node": "2. Tem Location ID?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Tem Location ID?": {
+      "main": [
+        [
+          {
+            "node": "3a. Buscar Location Name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "3b. Sem Location",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3a. Buscar Location Name": {
+      "main": [
+        [
+          {
+            "node": "4a. Extrair Nome da Conta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4a. Extrair Nome da Conta": {
+      "main": [
+        [
+          {
+            "node": "5. Merge Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3b. Sem Location": {
+      "main": [
+        [
+          {
+            "node": "5. Merge Dados",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "5. Merge Dados": {
+      "main": [
+        [
+          {
+            "node": "6. Preparar Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Preparar Mensagem": {
+      "main": [
+        [
+          {
+            "node": "7. Notificar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7. Notificar WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "8. Salvar Padrao de Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8. Salvar Padrao de Erro": {
+      "main": [
+        [
+          {
+            "node": "9. Concluido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  }
+}

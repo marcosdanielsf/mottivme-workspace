@@ -1,0 +1,38 @@
+{
+  "name": "Agendamento Inteligente com Tratamento de Erro",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 60
+            }
+          ]
+        }
+      },
+      "id": "trigger-node",
+      "name": "Trigger de Agendamento",
+      "type": "n8n-nodes-base.interval",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gerar horários disponíveis para hoje\nconst now = new Date();\nconst timeSlots = [];\n\n// Horários de trabalho: 9h às 18h\nconst startHour = 9;\nconst endHour = 18;\nconst slotDuration = 60; // 60 minutos\n\nfor (let hour = startHour; hour < endHour; hour++) {\n  for (let minute = 0; minute < 60; minute += slotDuration) {\n    const slotTime = new Date(now);\n    slotTime.setHours(hour, minute, 0, 0);\n    \n    // Apenas horários futuros\n    if (slotTime > now) {\n      timeSlots.push({\n        startTime: slotTime.toISOString(),\n        endTime: new Date(slotTime.getTime() + slotDuration * 60000).toISOString(),\n        display: slotTime.toLocaleString('pt-BR')\n      });\n    }\n  }\n}\n\nreturn [{\n  json: {\n    timeSlots: timeSlots.slice(0, 5), // Top 5 horários\n    locationId: 'sua_location_id_aqui',\n    contactId: 'contact_id_do_cliente',\n    calendarId: 'calendario_principal'\n  }\n}];"
+      },
+      "id": "generate-slots",
+      "name": "Gerar Horários Disponíveis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Verificar disponibilidade antes de agendar\nconst timeSlots = items[0].json.timeSlots;\nconst availableSlots = [];\n\n// Simular verificação de disponibilidade\n// Na prática, isso seria uma chamada à API de disponibilidade\nfor (const slot of timeSlots) {\n  // Simular lógica de disponibilidade\n  const isAvailable = Math.random() > 0.3; // 70% de chance de disponível\n  \n  if (isAvailable) {\n    availableSlots.push(slot);\n  }\n}\n\nif (availableSlots.length === 0) {\n  return [{\n    json: {\n      error: 'NO_SLOTS_AVAILABLE',\n      message: 'Nenhum horário disponível encontrado',\n      suggestedAction: 'CONTACT_SUPPORT'\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    availableSlots: availableSlots,\n    preferredSlot: availableSlots[0],\n    totalOptions: availableSlots.length\n  }\n}];"
+      },
+      "id": "check-availability",
+      "name": "Verificar Disponibilidade",
+      "type": "n8n-nodes-base.code",
+      "typeVersion":

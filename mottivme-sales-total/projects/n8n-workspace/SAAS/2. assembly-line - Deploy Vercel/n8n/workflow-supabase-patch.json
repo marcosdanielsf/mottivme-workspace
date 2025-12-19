@@ -1,0 +1,584 @@
+{
+  "_meta": {
+    "description": "Patch para substituir nós Airtable por Supabase no workflow Assembly Line APP",
+    "version": "1.0",
+    "date": "2024-12-04",
+    "instructions": [
+      "1. ANTES: Configure as variáveis de ambiente no n8n (Settings > Variables)",
+      "2. ANTES: Crie a credencial 'Supabase API' (HTTP Header Auth)",
+      "3. No n8n, abra o workflow 'Assembly line APP'",
+      "4. Delete os nós Airtable listados em 'nodes_to_delete'",
+      "5. Importe os nós de 'replacement_nodes'",
+      "6. Reconecte as connections conforme 'updated_connections'"
+    ]
+  },
+
+  "environment_variables": {
+    "SUPABASE_URL": "https://bfumywvwubvernvhjehk.supabase.co",
+    "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTQwMzc5OSwiZXhwIjoyMDY2OTc5Nzk5fQ.fdTsdGlSqemXzrXEU4ov1SUpeDn_3bSjOingqkSAWQE",
+    "APP_CALLBACK_URL": "https://assembly-line-deploy-vercel.vercel.app",
+    "N8N_WEBHOOK_SECRET": "assembly-line-secret-2024"
+  },
+
+  "credential_setup": {
+    "name": "Supabase API",
+    "type": "httpHeaderAuth",
+    "config": {
+      "name": "apikey",
+      "value": "={{$env.SUPABASE_SERVICE_ROLE_KEY}}"
+    }
+  },
+
+  "nodes_to_delete": [
+    "Get Product1",
+    "Get Expert Record",
+    "Get Expert Record1",
+    "Get Expert Record - FASE 3A",
+    "Get Expert DNA",
+    "Get Expert DNA2",
+    "💾 Update Airtable - FASE ",
+    "💾 Update Airtable - FASE 1B2",
+    "💾 Update Airtable - FASE 2",
+    "💾 Update Airtable - FASE 3",
+    "💾 Update Airtable - FASE 4",
+    "💾 Update Airtable - FASE 5",
+    "💾 Update Airtable - Reels",
+    "💾 Update Airtable - Carrossel",
+    "💾 Update Airtable - Stories",
+    "💾 Update Airtable - FASE 1",
+    "💾 Update Airtable - FASE 8",
+    "💾 Update Airtable - FASE 9"
+  ],
+
+  "replacement_nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/rpc/get_expert_data",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_project_id: $json.query?.recordId || $json.body?.project_id }) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-12192, -3576],
+      "id": "supabase-get-expert-1",
+      "name": "📖 Get Expert Data (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: Get Product1. Busca project + briefing + clone + offers via RPC."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/rpc/get_expert_data",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_project_id: $json.query?.recordId || $json.body?.project_id }) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-12192, -3176],
+      "id": "supabase-get-expert-2",
+      "name": "📖 Get Expert - FASE 1B (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: Get Expert Record"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/rpc/get_expert_data",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_project_id: $json.query?.recordId || $json.body?.project_id }) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-12192, -2688],
+      "id": "supabase-get-expert-3",
+      "name": "📖 Get Expert - FASE 2 (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: Get Expert Record1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/rpc/get_expert_data",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_project_id: $json.query?.recordId || $json.body?.project_id }) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-12192, -2368],
+      "id": "supabase-get-expert-4",
+      "name": "📖 Get Expert - FASE 3A (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: Get Expert Record - FASE 3A"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/rpc/get_expert_data",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_project_id: $json.query?.recordId || $json.body?.project_id }) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-12192, -1992],
+      "id": "supabase-get-expert-5",
+      "name": "📖 Get Expert DNA (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: Get Expert DNA"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/rpc/get_expert_data",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_project_id: $json.query?.recordId || $json.body?.project_id }) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-12192, -1248],
+      "id": "supabase-get-expert-6",
+      "name": "📖 Get Expert DNA2 (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: Get Expert DNA2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/clone_experts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"},
+            {"name": "Prefer", "value": "resolution=merge-duplicates,return=representation"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  project_id: $('Webhook').item.json.body?.project_id || $('Edit Fields').item.json.expert_id,\n  dna_psicologico: { output: $('1. Agent 1: DNA Psicológico1').item.json.output },\n  engenharia_reversa: { output: $('2. Agent 2: Engenheiro Reverso2').item.json.output },\n  configuracao_clone: { output: $('3. Agent 3: Configurador1').item.json.output },\n  system_prompt: $json.output,\n  status: 'ready'\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9824, -3576],
+      "id": "supabase-update-clone-1a",
+      "name": "💾 Save Clone - FASE 1A (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE. Salva Clone via upsert."
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/clone_experts?project_id=eq.{{ $('Webhook').item.json.body?.project_id || $('Edit Fields - FASE 1B').item.json.expert_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"},
+            {"name": "Prefer", "value": "return=representation"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  analise_concorrentes: { identity_map: $json['5. Identity Map'] },\n  concorrentes_internacionais: { pesquisa: $json['6A. Perplexity Internacional'] },\n  concorrentes_brasileiros: { pesquisa: $json['6B. Perplexity Brasil'] },\n  sintese_estrategica: { market_intelligence: $json['6. Market Intelligence'] }\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-6528, -3280],
+      "id": "supabase-update-clone-1b",
+      "name": "💾 Save Posicionamento - FASE 1B (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE 1B2. Atualiza clone com posicionamento."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/offers",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"},
+            {"name": "Prefer", "value": "resolution=merge-duplicates,return=representation"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  project_id: $('Webhook').item.json.body?.project_id || $('Edit Fields - FASE 2').item.json.expert_id,\n  avatar: { output: $json['Avatares Psicológicos - IA'] },\n  promessas: { output: $json['Promessa Central - IA'] },\n  big_idea: { output: $json['Big Idea - IA'] },\n  high_ticket: { output: $json['High Ticket Ofertas - IA'] },\n  mid_ticket: { output: $json['Back End Ofertas - IA'] },\n  frontend: { output: $json['Ofertas Front End - IA'] },\n  status: 'ready'\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-10112, -2688],
+      "id": "supabase-upsert-offers",
+      "name": "💾 Save Ofertas - FASE 2 (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE 2. Cria/atualiza ofertas."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/contents",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"},
+            {"name": "Prefer", "value": "return=representation"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  project_id: $('Webhook').item.json.body?.project_id,\n  type: 'post',\n  title: 'Conteúdo FASE 3',\n  body: $json['Content Strategy - IA'] || $json.output,\n  generated_by: 'generateMarketingeGeracaodeDemanda',\n  status: 'draft'\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9856, -2368],
+      "id": "supabase-insert-content-3",
+      "name": "💾 Save Marketing - FASE 3 (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE 3. Insere conteúdos."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/contents",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"},
+            {"name": "Prefer", "value": "return=representation"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  project_id: $('Webhook').item.json.body?.project_id,\n  type: 'reel',\n  title: $json.titulo || 'Reel',\n  body: $json.roteiro || $json.script,\n  hook: $json.gancho || $json.hook,\n  cta: $json.cta,\n  generated_by: 'generateScriptsCalendarioeScripts',\n  status: 'draft'\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9500, -1600],
+      "id": "supabase-insert-reels",
+      "name": "💾 Save Reels (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: 💾 Update Airtable - Reels"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/contents",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"},
+            {"name": "Prefer", "value": "return=representation"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  project_id: $('Webhook').item.json.body?.project_id,\n  type: 'carrossel',\n  title: $json.titulo || 'Carrossel',\n  body: $json.conteudo,\n  slides: $json.slides,\n  hook: $json.gancho,\n  cta: $json.cta,\n  generated_by: 'generateScriptsCalendarioeScripts',\n  status: 'draft'\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9500, -1400],
+      "id": "supabase-insert-carrossel",
+      "name": "💾 Save Carrossel (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: 💾 Update Airtable - Carrossel"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/contents",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"},
+            {"name": "Prefer", "value": "return=representation"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  project_id: $('Webhook').item.json.body?.project_id,\n  type: 'story',\n  title: $json.titulo || 'Story',\n  body: $json.conteudo,\n  hook: $json.gancho,\n  cta: $json.cta,\n  generated_by: 'generateScriptsCalendarioeScripts',\n  status: 'draft'\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9500, -1200],
+      "id": "supabase-insert-stories",
+      "name": "💾 Save Stories (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: 💾 Update Airtable - Stories"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/contents",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "Authorization", "value": "=Bearer {{$env.SUPABASE_SERVICE_ROLE_KEY}}"},
+            {"name": "Prefer", "value": "return=representation"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  project_id: $('Webhook').item.json.body?.project_id,\n  type: 'email',\n  title: $json.assunto || $json.subject,\n  body: $json.corpo || $json.body,\n  subject: $json.assunto || $json.subject,\n  sequence_name: $json.sequencia || 'Email Sequence',\n  sequence_day: $json.dia || 1,\n  generated_by: 'generateMarketingeGeracaodeDemanda',\n  status: 'draft'\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9500, -1000],
+      "id": "supabase-insert-emails",
+      "name": "💾 Save Emails (Supabase)",
+      "credentials": {
+        "httpHeaderAuth": {"id": "CREDENTIAL_ID", "name": "Supabase API"}
+      },
+      "notes": "Substitui: 💾 Update Airtable - FASE 4/5/8/9 (emails)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Webhook').item.json.body?.callback_url || $env.APP_CALLBACK_URL }}/api/webhook/n8n",
+        "authentication": "noAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "x-webhook-secret", "value": "={{$env.N8N_WEBHOOK_SECRET}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  generation_id: $('Webhook').item.json.body?.generation_id,\n  project_id: $('Webhook').item.json.body?.project_id,\n  agent_name: $('Webhook').item.json.body?.action,\n  phase: 'clone',\n  status: 'complete',\n  output: {\n    dna_psicologico: $('1. Agent 1: DNA Psicológico1')?.item?.json?.output,\n    engenharia_reversa: $('2. Agent 2: Engenheiro Reverso2')?.item?.json?.output,\n    configuracao_clone: $('3. Agent 3: Configurador1')?.item?.json?.output,\n    system_prompt: $json?.output\n  },\n  tokens_input: 0,\n  tokens_output: 0\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9500, -3576],
+      "id": "callback-app-clone",
+      "name": "📤 Callback App - Clone Completo",
+      "notes": "NOVO: Notifica o App que a FASE 1A foi concluída. Conecte APÓS o nó de save."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Webhook').item.json.body?.callback_url || $env.APP_CALLBACK_URL }}/api/webhook/n8n",
+        "authentication": "noAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "x-webhook-secret", "value": "={{$env.N8N_WEBHOOK_SECRET}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  generation_id: $('Webhook').item.json.body?.generation_id,\n  project_id: $('Webhook').item.json.body?.project_id,\n  agent_name: 'generatePosicionamentoEstrategico',\n  phase: 'posicionamento',\n  status: 'complete',\n  output: {\n    identity_map: $json['5. Identity Map'],\n    market_intelligence: $json['6. Market Intelligence']\n  }\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-6200, -3280],
+      "id": "callback-app-posicionamento",
+      "name": "📤 Callback App - Posicionamento Completo",
+      "notes": "NOVO: Notifica o App que a FASE 1B foi concluída."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Webhook').item.json.body?.callback_url || $env.APP_CALLBACK_URL }}/api/webhook/n8n",
+        "authentication": "noAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "x-webhook-secret", "value": "={{$env.N8N_WEBHOOK_SECRET}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  generation_id: $('Webhook').item.json.body?.generation_id,\n  project_id: $('Webhook').item.json.body?.project_id,\n  agent_name: 'generateEcossistemaDeOfertas',\n  phase: 'ofertas',\n  status: 'complete',\n  output: {\n    avatar: $json['Avatares Psicológicos - IA'],\n    big_idea: $json['Big Idea - IA'],\n    high_ticket: $json['High Ticket Ofertas - IA']\n  }\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9800, -2688],
+      "id": "callback-app-ofertas",
+      "name": "📤 Callback App - Ofertas Completo",
+      "notes": "NOVO: Notifica o App que a FASE 2 foi concluída."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Webhook').item.json.body?.callback_url || $env.APP_CALLBACK_URL }}/api/webhook/n8n",
+        "authentication": "noAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Content-Type", "value": "application/json"},
+            {"name": "x-webhook-secret", "value": "={{$env.N8N_WEBHOOK_SECRET}}"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  generation_id: $('Webhook').item.json.body?.generation_id,\n  project_id: $('Webhook').item.json.body?.project_id,\n  agent_name: 'generateMarketingeGeracaodeDemanda',\n  phase: 'marketing',\n  status: 'complete',\n  output: {\n    contents: 'generated'\n  }\n}) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-9500, -2368],
+      "id": "callback-app-marketing",
+      "name": "📤 Callback App - Marketing Completo",
+      "notes": "NOVO: Notifica o App que a FASE 3 foi concluída."
+    }
+  ],
+
+  "updated_connections": {
+    "Switch": {
+      "main": [
+        [{"node": "📖 Get Expert Data (Supabase)", "type": "main", "index": 0}],
+        [{"node": "📖 Get Expert - FASE 1B (Supabase)", "type": "main", "index": 0}],
+        [{"node": "📖 Get Expert - FASE 2 (Supabase)", "type": "main", "index": 0}],
+        [{"node": "📖 Get Expert - FASE 3A (Supabase)", "type": "main", "index": 0}],
+        [{"node": "📖 Get Expert DNA (Supabase)", "type": "main", "index": 0}],
+        [{"node": "📖 Get Expert DNA2 (Supabase)", "type": "main", "index": 0}]
+      ]
+    },
+    "📖 Get Expert Data (Supabase)": {
+      "main": [[{"node": "Code in JavaScript", "type": "main", "index": 0}]]
+    },
+    "📖 Get Expert - FASE 1B (Supabase)": {
+      "main": [[{"node": "Prepare Context - FASE 1B", "type": "main", "index": 0}]]
+    },
+    "📖 Get Expert - FASE 2 (Supabase)": {
+      "main": [[{"node": "Prepare Context - FASE 2", "type": "main", "index": 0}]]
+    },
+    "📖 Get Expert - FASE 3A (Supabase)": {
+      "main": [[{"node": "Prepare Context - FASE 3A", "type": "main", "index": 0}]]
+    },
+    "Aggregate Results - CAMADA 3": {
+      "main": [[{"node": "💾 Save Clone - FASE 1A (Supabase)", "type": "main", "index": 0}]]
+    },
+    "💾 Save Clone - FASE 1A (Supabase)": {
+      "main": [[{"node": "📤 Callback App - Clone Completo", "type": "main", "index": 0}]]
+    },
+    "Aggregate Results - FASE 1B": {
+      "main": [[{"node": "💾 Save Posicionamento - FASE 1B (Supabase)", "type": "main", "index": 0}]]
+    },
+    "💾 Save Posicionamento - FASE 1B (Supabase)": {
+      "main": [[{"node": "📤 Callback App - Posicionamento Completo", "type": "main", "index": 0}]]
+    },
+    "Aggregate Results - FASE 2": {
+      "main": [[{"node": "💾 Save Ofertas - FASE 2 (Supabase)", "type": "main", "index": 0}]]
+    },
+    "💾 Save Ofertas - FASE 2 (Supabase)": {
+      "main": [[{"node": "📤 Callback App - Ofertas Completo", "type": "main", "index": 0}]]
+    },
+    "Aggregate Results - FASE 3A": {
+      "main": [[{"node": "💾 Save Marketing - FASE 3 (Supabase)", "type": "main", "index": 0}]]
+    },
+    "💾 Save Marketing - FASE 3 (Supabase)": {
+      "main": [[{"node": "📤 Callback App - Marketing Completo", "type": "main", "index": 0}]]
+    }
+  },
+
+  "sql_to_execute": "-- Execute isso no Supabase SQL Editor ANTES de usar o workflow\n\nCREATE OR REPLACE FUNCTION get_expert_data(p_project_id UUID)\nRETURNS JSON AS $$\nDECLARE\n  result JSON;\nBEGIN\n  SELECT json_build_object(\n    'id', p.id,\n    'project', row_to_json(p.*),\n    'briefing', (SELECT row_to_json(b.*) FROM briefings b WHERE b.project_id = p_project_id),\n    'clone', (SELECT row_to_json(c.*) FROM clone_experts c WHERE c.project_id = p_project_id),\n    'offers', (SELECT row_to_json(o.*) FROM offers o WHERE o.project_id = p_project_id),\n    -- Campos do Airtable mapeados\n    'Expert Name', p.name,\n    'Nicho do Expert', COALESCE((SELECT nicho FROM briefings WHERE project_id = p_project_id), ''),\n    'Clone', COALESCE((SELECT system_prompt FROM clone_experts WHERE project_id = p_project_id), ''),\n    'DNA Extraido', COALESCE((SELECT dna_psicologico FROM clone_experts WHERE project_id = p_project_id), '{}'),\n    'Engenharia Reversa', COALESCE((SELECT engenharia_reversa FROM clone_experts WHERE project_id = p_project_id), '{}'),\n    'Identity Map', COALESCE((SELECT analise_concorrentes FROM clone_experts WHERE project_id = p_project_id), '{}'),\n    'Market Intelligence', COALESCE((SELECT sintese_estrategica FROM clone_experts WHERE project_id = p_project_id), '{}'),\n    'Avatares Psicológicos', COALESCE((SELECT avatar FROM offers WHERE project_id = p_project_id), '{}'),\n    'Promessa Central', COALESCE((SELECT promessas FROM offers WHERE project_id = p_project_id), '{}'),\n    'Big Idea', COALESCE((SELECT big_idea FROM offers WHERE project_id = p_project_id), '{}'),\n    'High Ticket Ofertas', COALESCE((SELECT high_ticket FROM offers WHERE project_id = p_project_id), '{}'),\n    'Back End Ofertas', COALESCE((SELECT mid_ticket FROM offers WHERE project_id = p_project_id), '{}'),\n    'Ofertas Front End', COALESCE((SELECT frontend FROM offers WHERE project_id = p_project_id), '{}')\n  )\n  INTO result\n  FROM projects p\n  WHERE p.id = p_project_id;\n  \n  RETURN result;\nEND;\n$$ LANGUAGE plpgsql SECURITY DEFINER;\n\nGRANT EXECUTE ON FUNCTION get_expert_data(UUID) TO anon, authenticated, service_role;"
+}

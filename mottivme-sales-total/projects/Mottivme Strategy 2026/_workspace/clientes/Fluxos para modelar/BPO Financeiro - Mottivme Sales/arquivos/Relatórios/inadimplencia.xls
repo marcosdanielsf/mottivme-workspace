@@ -1,0 +1,722 @@
+﻿<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html="http://www.w3.org/TR/REC-html40" xmlns="urn:schemas-microsoft-com:office:spreadsheet">
+<DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+<Version>12.00</Version>
+</DocumentProperties>
+<ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+<WindowHeight>8130</WindowHeight>
+<WindowWidth>15135</WindowWidth>
+<WindowHeight>8130</WindowHeight>
+<WindowTopX>120</WindowTopX>
+<WindowTopY>45</WindowTopY>
+<ProtectStructure>False</ProtectStructure>
+<ProtectWindow>False</ProtectWindow>
+</ExcelWorkbook>
+<Styles>
+<Style ss:ID="text-center" ss:Name="text-center">
+</Style>
+</Styles>
+<Worksheet ss:Name="ag-grid">
+<Table>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="120"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="150"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="300"/>
+<Column ss:Width="190"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Column ss:Width="200"/>
+<Row>
+<Cell>
+<Data ss:Type="String">Tipo</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Transferência</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Id da Conta Financeira</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Nome da Conta Financeira</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Tipo de Repetiçao</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Parcela</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Quitado</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Quitado Parcialmente</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Conciliado</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Observação/Descrição</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Competência</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Vencimento</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Data Realizado</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Data Conciliação</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor (R$)</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor Previsto</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor Realizado</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor Rateio</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor Retenção</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Quantidade de Parcelas</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Origem da Renegociação</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Boleto Gerado</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Inicial</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Categoria</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Departamento</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Tipo Cliente/Fornecedor</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Documento Cliente/Fornecedor</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Cliente/Fornecedor</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Numero da Nota Fiscal</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Observação</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Forma de Pagamento - Parcela</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Forma de Pagamento - Quitação</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Etiquetas</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Número do Documento</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Nome Vendedor</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor PIS</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor COFINS</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor CSLL</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor IRRF</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor INSS</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor ISS</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Taxa Pagamento %</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Valor Taxa Pagamento</Data>
+</Cell>
+</Row>
+<Row>
+<Cell>
+<Data ss:Type="String">Receita</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">129</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">BTG MOTTIVME</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Customizada</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">5</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Recebimento DO(A) Luciana Garcia NO VALOR R$ 1984.50 (PARCELA FIXA TODO DIA 23)</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">08/2025</Data>
+</Cell>
+<Cell ss:StyleID="text-center">
+<Data ss:Type="String">23/08/2025</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">1984.5</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">1984.5</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">1984.5</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Contrato de BPO - SOCIAL SELLING / Contrato de BPO - SOCIAL SELLING</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Pessoa Fisica</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">260.234.278-55</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Luciana Garcia</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell ss:StyleID="text-center">
+<Data ss:Type="String">PAGAMENTO EM DOLLAR 375$</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Boleto Bancário</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+</Row>
+<Row>
+<Cell>
+<Data ss:Type="String">Receita</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">129</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">BTG MOTTIVME</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Customizada</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">6</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Recebimento DO(A) Milton de Abreu NO VALOR R$ 1620.00 (PARCELA FIXA TODO DIA 22)</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">09/2025</Data>
+</Cell>
+<Cell ss:StyleID="text-center">
+<Data ss:Type="String">22/09/2025</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">1620</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">1620</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">1620</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Contrato de BPO - SOCIAL SELLING / Contrato de BPO - SOCIAL SELLING</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Pessoa Fisica</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">425.404.881-53</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Milton de Abreu</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell ss:StyleID="text-center">
+<Data ss:Type="String">PAGAMENTO EM DOLLAR $300</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Boleto Bancário</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+</Row>
+<Row>
+<Cell>
+<Data ss:Type="String">Receita</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">129</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">BTG MOTTIVME</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Customizada</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">6</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Recebimento DO(A) Claudia Fehribach NO VALOR R$ 9756.00 (PARCELA FIXA TODO DIA 25)</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">09/2025</Data>
+</Cell>
+<Cell ss:StyleID="text-center">
+<Data ss:Type="String">25/09/2025</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">9756</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">9756</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">9756</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Contrato de BPO - SOCIAL SELLING / Contrato de BPO - SOCIAL SELLING</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Pessoa Fisica</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">677.977.573-53</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Claudia Fehribach</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell ss:StyleID="text-center">
+<Data ss:Type="String">PAGAMENTO EM DOLLAR $1800 3 MESES</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Boleto Bancário</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+</Row>
+<Row>
+<Cell>
+<Data ss:Type="String">Receita</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">129</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">BTG MOTTIVME</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Customizada</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">1</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Recebimento DO(A) Renata Vieira NO VALOR R$ 2168.00 (PARCELA FIXA TODO DIA 27)</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">09/2025</Data>
+</Cell>
+<Cell ss:StyleID="text-center">
+<Data ss:Type="String">27/09/2025</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">2168</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">2168</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">2168</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Não</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Contrato de BPO - SOCIAL SELLING / Contrato de BPO - SOCIAL SELLING</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Pessoa Fisica</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">838927173</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Renata Vieira</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell ss:StyleID="text-center">
+<Data ss:Type="String">400 dolares</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String">Boleto Bancário</Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="String"></Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+<Cell>
+<Data ss:Type="Number">0</Data>
+</Cell>
+</Row>
+</Table>
+</Worksheet>
+</Workbook>

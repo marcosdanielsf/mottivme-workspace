@@ -1,0 +1,214 @@
+// ============================================
+// JUNTA AS 2 PARTES DA TRILHA EDITORIAL
+// Parte 1 = Dias 1-15
+// Parte 2 = Dias 16-30
+// ============================================
+
+// Pegar outputs dos 2 agentes
+const parte1Input = $('Parse Trilha - Parte 1').first();
+const parte2Input = $('Parse Trilha - Parte 2').first();
+
+console.log('📦 Juntando partes da trilha editorial...');
+
+// ✅ VALIDAR INPUTS
+if (!parte1Input || !parte2Input) {
+  throw new Error('❌ Uma das partes está faltando. Verifique se ambos os agentes executaram.');
+}
+
+const parte1 = parte1Input.json;
+const parte2 = parte2Input.json;
+
+// ✅ VALIDAR STATUS DE PARSING
+if (parte1.parsing_status !== 'success') {
+  console.warn('⚠️ Parte 1 teve problemas no parsing:', parte1.parsing_warning);
+}
+
+if (parte2.parsing_status !== 'success') {
+  console.warn('⚠️ Parte 2 teve problemas no parsing:', parte2.parsing_warning);
+}
+
+// ✅ PARSEAR JSON DAS TRILHAS
+let trilhaParte1, trilhaParte2;
+
+try {
+  trilhaParte1 = JSON.parse(parte1.trilha_json);
+  console.log(`✅ Parte 1: ${trilhaParte1.length} dias`);
+} catch (e) {
+  console.error('❌ Erro ao parsear Parte 1:', e.message);
+  trilhaParte1 = [];
+}
+
+try {
+  trilhaParte2 = JSON.parse(parte2.trilha_json);
+  console.log(`✅ Parte 2: ${trilhaParte2.length} dias`);
+} catch (e) {
+  console.error('❌ Erro ao parsear Parte 2:', e.message);
+  trilhaParte2 = [];
+}
+
+// ✅ JUNTAR TRILHAS
+const trilhaCompleta = [...trilhaParte1, ...trilhaParte2];
+
+console.log(`📅 Trilha completa: ${trilhaCompleta.length} dias`);
+
+// ✅ VALIDAR DIAS (devem ser 1-30)
+const diasPresentes = trilhaCompleta.map(d => d.dia).sort((a, b) => a - b);
+const diasFaltando = [];
+
+for (let i = 1; i <= 30; i++) {
+  if (!diasPresentes.includes(i)) {
+    diasFaltando.push(i);
+  }
+}
+
+if (diasFaltando.length > 0) {
+  console.warn(`⚠️ Dias faltando: ${diasFaltando.join(', ')}`);
+}
+
+// ✅ ORDENAR POR DIA (garantir ordem 1-30)
+trilhaCompleta.sort((a, b) => a.dia - b.dia);
+
+// ✅ CALCULAR ESTATÍSTICAS COMBINADAS
+const totalReels = trilhaCompleta.filter(d => d.formato_primario === 'Reel').length;
+const totalStories = trilhaCompleta.filter(d => d.formato_primario === 'Story').length;
+const totalCarrosseis = trilhaCompleta.filter(d => d.formato_primario === 'Carrossel').length;
+const totalPosts = trilhaCompleta.filter(d => d.formato_primario === 'Post').length;
+
+const statsCombinadas = {
+  total_dias: trilhaCompleta.length,
+  total_reels: totalReels,
+  total_stories: totalStories,
+  total_carrosseis: totalCarrosseis,
+  total_posts: totalPosts,
+  por_fase: {
+    awareness: trilhaCompleta.filter(d => d.fase === 'Awareness').length,
+    educacao: trilhaCompleta.filter(d => d.fase === 'Educação').length,
+    diferenciacao: trilhaCompleta.filter(d => d.fase === 'Diferenciação').length,
+    conversao: trilhaCompleta.filter(d => d.fase === 'Conversão').length
+  }
+};
+
+// ✅ FORMATAR TRILHA COMPLETA
+const trilhaFormatada = trilhaCompleta.map(dia =>
+  `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+  `📅 DIA ${dia.dia} | ${dia.dia_semana} ${dia.data_sugerida}\n` +
+  `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+  `🎯 FASE: ${dia.fase}\n` +
+  `📌 PILAR: ${dia.pilar}\n` +
+  `🌡️ TEMPERATURA: ${dia.temperatura_lead}\n\n` +
+  `📝 TEMA:\n${dia.tema}\n\n` +
+  `🔍 ÂNGULO:\n${dia.angulo}\n\n` +
+  `🎬 FORMATO: ${dia.formato_primario}${dia.duracao_estimada ? ` (${dia.duracao_estimada})` : ''}\n\n` +
+  `🎪 GATILHO: ${dia.gatilho_mental}\n` +
+  `🎯 OBJETIVO: ${dia.objetivo}\n` +
+  `📊 MÉTRICA: ${dia.metrica_sucesso}\n\n` +
+  `💡 PONTOS:\n${(dia.pontos_chave || []).map((p, i) => `  ${i+1}. ${p}`).join('\n')}\n\n` +
+  `🪝 HOOK: "${dia.hook_sugerido || 'N/A'}"\n` +
+  `📣 CTA (${dia.cta_tipo}): ${dia.cta_texto || 'N/A'}\n` +
+  (dia.objecao_abordada ? `🚧 OBJEÇÃO: ${dia.objecao_abordada}\n` : '')
+).join('\n\n');
+
+// ✅ FORMATAR ESTATÍSTICAS
+const statsFormatadas =
+  `📊 ESTATÍSTICAS DA TRILHA COMPLETA (30 DIAS)\n\n` +
+  `📅 Total: ${statsCombinadas.total_dias} dias\n` +
+  `🎬 Reels: ${statsCombinadas.total_reels} | Stories: ${statsCombinadas.total_stories} | Carrosséis: ${statsCombinadas.total_carrosseis} | Posts: ${statsCombinadas.total_posts}\n\n` +
+  `🌡️ POR FASE:\n` +
+  `  • Awareness: ${statsCombinadas.por_fase.awareness} dias\n` +
+  `  • Educação: ${statsCombinadas.por_fase.educacao} dias\n` +
+  `  • Diferenciação: ${statsCombinadas.por_fase.diferenciacao} dias\n` +
+  `  • Conversão: ${statsCombinadas.por_fase.conversao} dias\n\n` +
+  `✅ Parte 1: ${trilhaParte1.length} dias (dias ${trilhaParte1[0]?.dia || '?'}-${trilhaParte1[trilhaParte1.length-1]?.dia || '?'})\n` +
+  `✅ Parte 2: ${trilhaParte2.length} dias (dias ${trilhaParte2[0]?.dia || '?'}-${trilhaParte2[trilhaParte2.length-1]?.dia || '?'})`;
+
+// ✅ CALENDÁRIO SIMPLES
+const calendarioSimples = trilhaCompleta.map(dia =>
+  `${dia.data_sugerida} (${dia.dia_semana}) | ${dia.formato_primario} | ${dia.tema}`
+).join('\n');
+
+// ✅ APENAS REELS (para próximo agente)
+const diasComReels = trilhaCompleta.filter(d => d.formato_primario === 'Reel');
+
+// ✅ AVISO SE INCOMPLETO
+const aviso = trilhaCompleta.length < 30
+  ? `\n\n⚠️ ATENÇÃO: Trilha incompleta! Apenas ${trilhaCompleta.length}/30 dias.\n` +
+    `Dias faltando: ${diasFaltando.join(', ')}\n`
+  : '\n\n✅ Trilha completa com 30 dias!';
+
+// ✅ COMBINAR ESTRATÉGIAS E INSIGHTS
+let estrategiaCombinada, insightsCombinados;
+
+try {
+  const estrategia1 = JSON.parse(parte1.trilha_completa_json).estrategia_resumo || {};
+  const estrategia2 = JSON.parse(parte2.trilha_completa_json).estrategia_resumo || {};
+
+  estrategiaCombinada =
+    `📈 ESTRATÉGIA DO MÊS (30 DIAS)\n\n` +
+    `🎯 PRIMEIRA QUINZENA:\n${estrategia1.objetivo_quinzena || 'N/A'}\n\n` +
+    `🎯 SEGUNDA QUINZENA:\n${estrategia2.objetivo_quinzena || 'N/A'}\n\n` +
+    `📊 PILARES DOMINANTES:\n${[...(estrategia1.pilares_dominantes || []), ...(estrategia2.pilares_dominantes || [])].filter((v, i, a) => a.indexOf(v) === i).map(p => `• ${p}`).join('\n')}`;
+
+  const insights1 = JSON.parse(parte1.trilha_completa_json).insights_estrategicos || {};
+  const insights2 = JSON.parse(parte2.trilha_completa_json).insights_estrategicos || {};
+
+  insightsCombinados =
+    `💡 INSIGHTS ESTRATÉGICOS\n\n` +
+    `S1 (dias 1-7): ${insights1.semana_1 || 'N/A'}\n\n` +
+    `S2 (dias 8-15): ${insights1.semana_2 || 'N/A'}\n\n` +
+    `S3 (dias 16-21): ${insights2.semana_3 || 'N/A'}\n\n` +
+    `S4 (dias 22-30): ${insights2.semana_4 || 'N/A'}`;
+
+} catch (e) {
+  console.error('⚠️ Erro ao combinar estratégias:', e.message);
+  estrategiaCombinada = 'Erro ao combinar estratégias';
+  insightsCombinados = 'Erro ao combinar insights';
+}
+
+console.log('✅ TRILHA COMPLETA MONTADA!');
+
+// ✅ RETORNAR TRILHA COMBINADA
+return {
+  json: {
+    // Textos formatados
+    trilha_texto: trilhaFormatada + aviso,
+    estrategia_texto: estrategiaCombinada,
+    insights_texto: insightsCombinados,
+    calendario_texto: calendarioSimples,
+    stats_texto: statsFormatadas + aviso,
+
+    // JSON estruturado
+    trilha_json: JSON.stringify(trilhaCompleta, null, 2),
+    trilha_completa_json: JSON.stringify({
+      trilha_editorial: trilhaCompleta,
+      expert_id: parte1.expert_id,
+      expert_name: parte1.expert_name,
+      estrategia_resumo: {
+        parte1: JSON.parse(parte1.trilha_completa_json).estrategia_resumo,
+        parte2: JSON.parse(parte2.trilha_completa_json).estrategia_resumo
+      },
+      insights_estrategicos: {
+        parte1: JSON.parse(parte1.trilha_completa_json).insights_estrategicos,
+        parte2: JSON.parse(parte2.trilha_completa_json).insights_estrategicos
+      }
+    }, null, 2),
+
+    dias_reels_json: JSON.stringify(diasComReels, null, 2),
+
+    // Metadata
+    expert_id: parte1.expert_id,
+    expert_name: parte1.expert_name,
+    total_dias: statsCombinadas.total_dias,
+    total_reels: statsCombinadas.total_reels,
+    stats: statsCombinadas,
+    data_geracao: new Date().toISOString(),
+
+    // Status
+    parsing_status: trilhaCompleta.length === 30 ? 'success' : 'partial',
+    parsing_warning: diasFaltando.length > 0 ? `dias_faltando: ${diasFaltando.join(',')}` : null,
+
+    // Debug
+    parte1_dias: trilhaParte1.length,
+    parte2_dias: trilhaParte2.length,
+    dias_faltando: diasFaltando
+  }
+};

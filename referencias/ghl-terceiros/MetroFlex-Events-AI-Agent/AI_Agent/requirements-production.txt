@@ -1,0 +1,16 @@
+# MetroFlex AI Agent - Production Dependencies
+# Minimal, conflict-free dependencies for production deployment
+
+# Core AI
+openai>=1.3.0
+
+# Web Framework
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# Production Server
+gunicorn>=21.2.0
+
+# Utilities
+python-dotenv>=1.0.0
+requests>=2.31.0

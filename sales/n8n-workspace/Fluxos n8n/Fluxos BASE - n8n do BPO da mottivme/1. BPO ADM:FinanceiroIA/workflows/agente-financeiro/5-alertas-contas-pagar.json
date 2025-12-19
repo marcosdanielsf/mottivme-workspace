@@ -1,0 +1,236 @@
+{
+  "name": "5. Alertas de Contas a Pagar",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 400],
+      "id": "schedule-trigger",
+      "name": "Todo dia às 8h"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ghl-location",
+              "name": "location_id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "admin-contact",
+              "name": "admin_contact_id",
+              "value": "={{ $env.ADMIN_CONTACT_ID || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [460, 400],
+      "id": "config-ghl",
+      "name": "Config GHL"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Buscar todas as despesas pendentes (atrasadas, hoje, em 3 dias)\nWITH despesas_pendentes AS (\n  SELECT \n    m.id,\n    m.descricao,\n    m.valor_previsto as valor,\n    m.data_vencimento,\n    c.nome as fornecedor_nome,\n    cat.nome as categoria,\n    CASE \n      WHEN m.data_vencimento < CURRENT_DATE THEN 'atrasado'\n      WHEN m.data_vencimento = CURRENT_DATE THEN 'hoje'\n      WHEN m.data_vencimento = CURRENT_DATE + INTERVAL '3 days' THEN 'em_3_dias'\n      ELSE 'futuro'\n    END as tipo_alerta,\n    CASE \n      WHEN m.data_vencimento < CURRENT_DATE THEN CURRENT_DATE - m.data_vencimento\n      ELSE 0\n    END as dias_atraso\n  FROM fin_movimentacoes m\n  LEFT JOIN fin_clientes_fornecedores c ON m.cliente_fornecedor_id = c.id\n  LEFT JOIN fin_categorias cat ON m.categoria_id = cat.id\n  WHERE \n    m.tipo = 'despesa'\n    AND m.quitado = false\n    AND m.data_vencimento <= CURRENT_DATE + INTERVAL '3 days'\n)\nSELECT \n  tipo_alerta,\n  json_agg(json_build_object(\n    'id', id,\n    'descricao', descricao,\n    'valor', valor,\n    'data_vencimento', data_vencimento,\n    'fornecedor', fornecedor_nome,\n    'categoria', categoria,\n    'dias_atraso', dias_atraso\n  ) ORDER BY data_vencimento) as items,\n  COUNT(*) as quantidade,\n  SUM(valor) as total\nFROM despesas_pendentes\nWHERE tipo_alerta != 'futuro'\nGROUP BY tipo_alerta;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [680, 400],
+      "id": "query-despesas",
+      "name": "Buscar Despesas Pendentes",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Consolidar alertas de contas a pagar\nconst config = $('Config GHL').first().json;\nconst resultados = $input.all();\n\n// Organizar por tipo\nconst dados = {\n  atrasado: { items: [], quantidade: 0, total: 0 },\n  hoje: { items: [], quantidade: 0, total: 0 },\n  em_3_dias: { items: [], quantidade: 0, total: 0 }\n};\n\nresultados.forEach(r => {\n  const tipo = r.json.tipo_alerta;\n  if (dados[tipo]) {\n    dados[tipo].items = r.json.items || [];\n    dados[tipo].quantidade = parseInt(r.json.quantidade) || 0;\n    dados[tipo].total = parseFloat(r.json.total) || 0;\n  }\n});\n\n// Se não há nada, retorna skip\nconst totalGeral = dados.atrasado.total + dados.hoje.total + dados.em_3_dias.total;\nif (totalGeral === 0) {\n  return { json: { skip: true } };\n}\n\n// Função para formatar valor\nconst formatarValor = (valor) => new Intl.NumberFormat('pt-BR', {\n  style: 'currency',\n  currency: 'BRL'\n}).format(valor || 0);\n\n// Montar mensagem\nlet mensagem = `*ALERTA DE CONTAS A PAGAR*\\n`;\nmensagem += `${new Date().toLocaleDateString('pt-BR')}\\n\\n`;\n\n// Atrasados\nif (dados.atrasado.quantidade > 0) {\n  mensagem += `*ATRASADOS* (${dados.atrasado.quantidade})\\n`;\n  dados.atrasado.items.slice(0, 5).forEach(d => {\n    mensagem += `- ${d.descricao}: ${formatarValor(d.valor)} (${d.dias_atraso}d atraso)\\n`;\n  });\n  if (dados.atrasado.quantidade > 5) mensagem += `  ... e mais ${dados.atrasado.quantidade - 5}\\n`;\n  mensagem += `Total: *${formatarValor(dados.atrasado.total)}*\\n\\n`;\n}\n\n// Hoje\nif (dados.hoje.quantidade > 0) {\n  mensagem += `*VENCE HOJE* (${dados.hoje.quantidade})\\n`;\n  dados.hoje.items.forEach(d => {\n    mensagem += `- ${d.descricao}: ${formatarValor(d.valor)}\\n`;\n  });\n  mensagem += `Total: *${formatarValor(dados.hoje.total)}*\\n\\n`;\n}\n\n// Em 3 dias\nif (dados.em_3_dias.quantidade > 0) {\n  mensagem += `*VENCE EM 3 DIAS* (${dados.em_3_dias.quantidade})\\n`;\n  dados.em_3_dias.items.forEach(d => {\n    mensagem += `- ${d.descricao}: ${formatarValor(d.valor)}\\n`;\n  });\n  mensagem += `Total: *${formatarValor(dados.em_3_dias.total)}*\\n\\n`;\n}\n\nmensagem += `---\\n*TOTAL PENDENTE: ${formatarValor(totalGeral)}*`;\n\nreturn {\n  json: {\n    mensagem,\n    admin_contact_id: config.admin_contact_id,\n    ghl_api_key: config.ghl_api_key,\n    total_geral: totalGeral\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 400],
+      "id": "consolidar-alertas",
+      "name": "Consolidar Alertas"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "skip-check",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "has-contact",
+              "leftValue": "={{ $json.admin_contact_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1120, 400],
+      "id": "check-enviar",
+      "name": "Deve Enviar?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $json.admin_contact_id }}\",\n  \"message\": \"{{ $json.mensagem.replace(/\"/g, '\\\\\"').replace(/\\n/g, '\\\\n') }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 300],
+      "id": "send-alert",
+      "name": "Enviar Alerta GHL"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1340, 500],
+      "id": "noop-skip",
+      "name": "Nada a Alertar"
+    }
+  ],
+  "connections": {
+    "Todo dia às 8h": {
+      "main": [
+        [
+          {
+            "node": "Config GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config GHL": {
+      "main": [
+        [
+          {
+            "node": "Buscar Despesas Pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Despesas Pendentes": {
+      "main": [
+        [
+          {
+            "node": "Consolidar Alertas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidar Alertas": {
+      "main": [
+        [
+          {
+            "node": "Deve Enviar?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deve Enviar?": {
+      "main": [
+        [
+          {
+            "node": "Enviar Alerta GHL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Nada a Alertar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "v1.1.0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "n8n-bpo-financeiro"
+  },
+  "id": "alertas-contas-pagar",
+  "tags": []
+}

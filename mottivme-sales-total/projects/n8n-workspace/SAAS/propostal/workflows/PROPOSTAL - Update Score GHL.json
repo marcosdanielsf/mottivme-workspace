@@ -1,0 +1,273 @@
+{
+  "name": "PROPOSTAL - Update Score GHL",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "propostal-score-update",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [64, 80],
+      "id": "webhook-score",
+      "name": "Webhook - Score Atualizado",
+      "webhookId": "propostal-score-update"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ghl-location",
+              "name": "ghl_location_id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "lead-email",
+              "name": "leadEmail",
+              "value": "={{ $json.body.record.email || $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "proposal-score",
+              "name": "proposalScore",
+              "value": "={{ $json.body.record.score || $json.body.score || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "proposal-status",
+              "name": "proposalStatus",
+              "value": "={{ $json.body.record.status || $json.body.status || 'vista' }}",
+              "type": "string"
+            },
+            {
+              "id": "proposal-url",
+              "name": "proposalUrl",
+              "value": "={{ $json.body.record.proposal_url || $json.body.proposal_url || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-name",
+              "name": "leadName",
+              "value": "={{ $json.body.record.name || $json.body.name || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [288, 80],
+      "id": "prep-data",
+      "name": "Preparar Dados"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{ $json.ghl_api_key }}"},
+            {"name": "Version", "value": "2021-07-28"},
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $json.ghl_location_id }}\",\n  \"query\": \"{{ $json.leadEmail }}\",\n  \"pageLimit\": 1\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [512, 80],
+      "id": "search-contact",
+      "name": "GHL - Buscar Contato"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+          "conditions": [
+            {
+              "id": "has-contact",
+              "leftValue": "={{ $json.contacts.length }}",
+              "rightValue": 0,
+              "operator": {"type": "number", "operation": "gt"}
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [736, 80],
+      "id": "check-contact",
+      "name": "Contato Encontrado?"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contacts[0].id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{ $('Preparar Dados').item.json.ghl_api_key }}"},
+            {"name": "Version", "value": "2021-07-28"},
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    {\n      \"key\": \"contact.score_da_proposta\",\n      \"field_value\": \"{{ $('Preparar Dados').item.json.proposalScore }}\"\n    },\n    {\n      \"key\": \"contact.contactproposal_status\",\n      \"field_value\": \"{{ $('Preparar Dados').item.json.proposalStatus }}\"\n    },\n    {\n      \"key\": \"contact.contactproposal_url\",\n      \"field_value\": \"{{ $('Preparar Dados').item.json.proposalUrl }}\"\n    }\n  ],\n  \"tags\": [\"propostal\", \"proposta-{{ $('Preparar Dados').item.json.proposalStatus }}\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, -32],
+      "id": "update-ghl",
+      "name": "GHL - Atualizar Custom Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+          "conditions": [
+            {
+              "id": "is-hot",
+              "leftValue": "={{ $('Preparar Dados').item.json.proposalScore }}",
+              "rightValue": 70,
+              "operator": {"type": "number", "operation": "gte"}
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1184, -32],
+      "id": "check-hot",
+      "name": "Lead Quente (>70)?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $('Contato Encontrado?').item.json.contacts[0].id }}/tags",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{ $('Preparar Dados').item.json.ghl_api_key }}"},
+            {"name": "Version", "value": "2021-07-28"},
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"tags\": [\"lead-quente\", \"prioridade-alta\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1408, -144],
+      "id": "add-hot-tag",
+      "name": "GHL - Adicionar Tag Lead Quente"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {"id": "result", "name": "status", "value": "success", "type": "string"},
+            {"id": "msg", "name": "message", "value": "=Score {{ $('Preparar Dados').item.json.proposalScore }} atualizado no GHL", "type": "string"},
+            {"id": "hot", "name": "isHotLead", "value": "={{ $('Preparar Dados').item.json.proposalScore >= 70 }}", "type": "boolean"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1632, -32],
+      "id": "result-success",
+      "name": "Resultado Sucesso"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {"id": "result", "name": "status", "value": "not_found", "type": "string"},
+            {"id": "msg", "name": "message", "value": "=Contato com email {{ $('Preparar Dados').item.json.leadEmail }} nao encontrado no GHL", "type": "string"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [960, 176],
+      "id": "result-notfound",
+      "name": "Contato Nao Encontrado"
+    },
+    {
+      "parameters": {
+        "content": "## PROPOSTAL - Update Score GHL\n\n### Funcao:\nAtualiza os Custom Fields no GHL quando o score da proposta muda\n\n### Custom Fields atualizados:\n- `contact.score_da_proposta` (0-100)\n- `contact.contactproposal_status` (vista, quente, aceita, etc)\n- `contact.contactproposal_url`\n\n### Payload esperado:\n```json\n{\n  \"email\": \"lead@email.com\",\n  \"score\": 85,\n  \"status\": \"quente\",\n  \"proposal_url\": \"https://...\"\n}\n```\n\n### Trigger:\nWebhook do Supabase (Database Trigger na tabela leads)",
+        "height": 420,
+        "width": 380,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [-272, -200],
+      "typeVersion": 1,
+      "id": "docs-note",
+      "name": "Documentacao"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Score Atualizado": {
+      "main": [[{"node": "Preparar Dados", "type": "main", "index": 0}]]
+    },
+    "Preparar Dados": {
+      "main": [[{"node": "GHL - Buscar Contato", "type": "main", "index": 0}]]
+    },
+    "GHL - Buscar Contato": {
+      "main": [[{"node": "Contato Encontrado?", "type": "main", "index": 0}]]
+    },
+    "Contato Encontrado?": {
+      "main": [
+        [{"node": "GHL - Atualizar Custom Fields", "type": "main", "index": 0}],
+        [{"node": "Contato Nao Encontrado", "type": "main", "index": 0}]
+      ]
+    },
+    "GHL - Atualizar Custom Fields": {
+      "main": [[{"node": "Lead Quente (>70)?", "type": "main", "index": 0}]]
+    },
+    "Lead Quente (>70)?": {
+      "main": [
+        [{"node": "GHL - Adicionar Tag Lead Quente", "type": "main", "index": 0}],
+        [{"node": "Resultado Sucesso", "type": "main", "index": 0}]
+      ]
+    },
+    "GHL - Adicionar Tag Lead Quente": {
+      "main": [[{"node": "Resultado Sucesso", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": ["propostal", "ghl", "score"]
+}

@@ -1,0 +1,261 @@
+{
+  "meta": {
+    "instanceId": "assembly-line-postgres-migration"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Extrai o project_id de qualquer lugar que ele possa estar\nconst input = $input.first().json;\n\n// Tenta encontrar o project_id em diferentes lugares\nlet projectId = \n  input.body?.project_id ||\n  input.body?.projectId ||\n  input.body?.recordId ||\n  input.query?.project_id ||\n  input.query?.projectId ||\n  input.query?.recordId ||\n  input.project_id ||\n  input.projectId ||\n  input.recordId ||\n  input.params?.project_id ||\n  input.params?.projectId ||\n  input.params?.recordId;\n\nif (!projectId) {\n  throw new Error('project_id não encontrado! Dados recebidos: ' + JSON.stringify(input, null, 2));\n}\n\nreturn [{\n  json: {\n    project_id: projectId,\n    original_input: input\n  }\n}];"
+      },
+      "id": "extract-project-id-001",
+      "name": "🔍 Extract Project ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [420, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT get_expert_data('{{ $json.project_id }}'::uuid) as data;",
+        "options": {}
+      },
+      "id": "get-expert-data-001",
+      "name": "📖 Get Expert Data",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [640, 300],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrai os dados do resultado da query Postgres\nconst result = $input.first().json;\nlet data = result.data;\n\n// Se vier como string, faz parse\nif (typeof data === 'string') {\n  data = JSON.parse(data);\n}\n\nconst project = data.project || {};\nconst briefing = data.briefing || {};\nconst clone = data.clone || {};\nconst offers = data.offers || {};\n\nfunction getValue(obj, field) {\n  if (!obj || !obj[field]) return null;\n  if (obj[field] === '') return null;\n  return obj[field];\n}\n\nfunction formatSection(title, content) {\n  if (!content || (typeof content === 'string' && content.trim() === '')) return '';\n  if (typeof content === 'object') content = JSON.stringify(content, null, 2);\n  return `\\n### ${title}\\n${content}\\n`;\n}\n\nlet context = `# 🧬 PERFIL COMPLETO DO EXPERT\\n`;\ncontext += `Este é o perfil detalhado extraído do briefing e dados do projeto.\\n`;\ncontext += `\\n---\\n`;\n\ncontext += `\\n## 📋 DADOS BÁSICOS DO EXPERT\\n`;\ncontext += `\\n**Nome:** ${project.name || 'Não informado'}\\n`;\ncontext += `**Nicho:** ${getValue(briefing, 'nicho') || 'Não informado'}\\n`;\ncontext += `**Produto:** ${getValue(briefing, 'produto') || 'Não informado'}\\n`;\n\ncontext += `\\n---\\n`;\ncontext += `\\n## 🎯 BRIEFING\\n`;\ncontext += formatSection('Avatar/Público-Alvo', getValue(briefing, 'avatar_descricao'));\ncontext += formatSection('Dor Principal', getValue(briefing, 'dor_principal'));\ncontext += formatSection('Desejo Principal', getValue(briefing, 'desejo_principal'));\ncontext += formatSection('Transformação Prometida', getValue(briefing, 'transformacao'));\ncontext += formatSection('Diferencial', getValue(briefing, 'diferencial'));\ncontext += formatSection('Ticket Médio', getValue(briefing, 'ticket_medio'));\ncontext += formatSection('Tipo de Funil', getValue(briefing, 'tipo_funil'));\ncontext += formatSection('Tom de Comunicação', getValue(briefing, 'tom_comunicacao'));\n\nif (clone && clone.system_prompt) {\n  context += `\\n---\\n`;\n  context += `\\n## 🧬 CLONE SYSTEM PROMPT (EXISTENTE)\\n`;\n  context += `\\n\\`\\`\\`\\n${clone.system_prompt}\\n\\`\\`\\`\\n`;\n}\n\nif (clone && clone.dna_psicologico) {\n  context += formatSection('DNA Psicológico', clone.dna_psicologico);\n}\n\nif (clone && clone.engenharia_reversa) {\n  context += formatSection('Engenharia Reversa', clone.engenharia_reversa);\n}\n\nif (clone && clone.sintese_estrategica) {\n  context += `\\n---\\n`;\n  context += `\\n## 📊 POSICIONAMENTO ESTRATÉGICO\\n`;\n  context += formatSection('Síntese Estratégica', clone.sintese_estrategica);\n  context += formatSection('Análise de Concorrentes', clone.analise_concorrentes);\n}\n\nif (offers && offers.avatar) {\n  context += `\\n---\\n`;\n  context += `\\n## 💰 ECOSSISTEMA DE OFERTAS\\n`;\n  context += formatSection('Avatar Detalhado', offers.avatar);\n  context += formatSection('Promessas', offers.promessas);\n  context += formatSection('Big Idea', offers.big_idea);\n  context += formatSection('High Ticket', offers.high_ticket);\n  context += formatSection('Frontend', offers.frontend);\n}\n\ncontext += `\\n---\\n`;\ncontext += `\\n*Contexto gerado automaticamente a partir do Supabase.*\\n`;\n\nreturn [{\n  json: {\n    expert_context: context,\n    expert_name: project.name,\n    expert_id: project.id,\n    project_id: project.id,\n    nicho: getValue(briefing, 'nicho'),\n    clone_system_prompt: clone?.system_prompt || null,\n    has_clone: !!clone?.system_prompt,\n    has_posicionamento: !!clone?.sintese_estrategica,\n    has_ofertas: !!offers?.avatar,\n    context_length: context.length,\n    timestamp: new Date().toISOString(),\n    _project: project,\n    _briefing: briefing,\n    _clone: clone,\n    _offers: offers\n  }\n}];"
+      },
+      "id": "transform-context-001",
+      "name": "🔄 Transform Expert Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [860, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepara os dados da FASE 1A com escape SQL correto\nfunction escapeSQL(str) {\n  if (!str) return '';\n  return str.toString()\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/'/g, \"''\")\n    .replace(/\\x00/g, '');\n}\n\nconst transformContext = $('🔄 Transform Expert Context').item.json;\nconst agent1 = $('1. Agent 1: DNA Psicológico1').item.json;\nconst agent2 = $('2. Agent 2: Engenheiro Reverso2').item.json;\nconst agent3 = $('3. Agent 3: Configurador1').item.json;\nconst agent4 = $('4. Agent 4: Integrador1').item.json;\n\nreturn [{\n  json: {\n    project_id: transformContext.project_id,\n    dna_psicologico: escapeSQL(agent1.output || agent1.text),\n    engenharia_reversa: escapeSQL(agent2.output || agent2.text),\n    configuracao_clone: escapeSQL(agent3.output || agent3.text),\n    system_prompt: escapeSQL(agent4.output || agent4.text)\n  }\n}];"
+      },
+      "id": "prepare-fase1a-001",
+      "name": "🔧 Prepare FASE 1A Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1600, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO clone_experts (\n  project_id,\n  dna_psicologico,\n  engenharia_reversa,\n  configuracao_clone,\n  system_prompt,\n  status,\n  updated_at\n)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  '{{ $json.dna_psicologico }}',\n  '{{ $json.engenharia_reversa }}',\n  '{{ $json.configuracao_clone }}',\n  '{{ $json.system_prompt }}',\n  'ready',\n  NOW()\n)\nON CONFLICT (project_id) DO UPDATE SET\n  dna_psicologico = EXCLUDED.dna_psicologico,\n  engenharia_reversa = EXCLUDED.engenharia_reversa,\n  configuracao_clone = EXCLUDED.configuracao_clone,\n  system_prompt = EXCLUDED.system_prompt,\n  status = 'ready',\n  updated_at = NOW()\nRETURNING *;",
+        "options": {}
+      },
+      "id": "update-clone-fase1a-001",
+      "name": "💾 Update Clone - FASE 1A",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1800, 300],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepara os dados da FASE 1B com escape SQL correto\nfunction escapeSQL(str) {\n  if (!str) return '';\n  return str.toString()\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/'/g, \"''\")\n    .replace(/\\x00/g, '');\n}\n\nconst transformContext = $('🔄 Transform Expert Context').item.json;\nconst identityMapper = $('5. Agent 5: Identity Mapper').item.json;\nconst perplexityInternacional = $('6A. Perplexity Internacional').item.json;\nconst perplexityBrasil = $('6B. Perplexity Brasil').item.json;\nconst synthesis = $('6C. Synthesis and Strategic Analysis').item.json;\n\nreturn [{\n  json: {\n    project_id: transformContext.project_id,\n    analise_concorrentes: escapeSQL(identityMapper.text || identityMapper.output),\n    concorrentes_internacionais: escapeSQL(perplexityInternacional.choices?.[0]?.message?.content || perplexityInternacional.text),\n    concorrentes_brasileiros: escapeSQL(perplexityBrasil.choices?.[0]?.message?.content || perplexityBrasil.text),\n    sintese_estrategica: escapeSQL(synthesis.text || synthesis.output)\n  }\n}];"
+      },
+      "id": "prepare-fase1b-001",
+      "name": "🔧 Prepare FASE 1B Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1600, 500]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO clone_experts (\n  project_id,\n  analise_concorrentes,\n  concorrentes_internacionais,\n  concorrentes_brasileiros,\n  sintese_estrategica,\n  status,\n  updated_at\n)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  '{{ $json.analise_concorrentes }}',\n  '{{ $json.concorrentes_internacionais }}',\n  '{{ $json.concorrentes_brasileiros }}',\n  '{{ $json.sintese_estrategica }}',\n  'ready',\n  NOW()\n)\nON CONFLICT (project_id) DO UPDATE SET\n  analise_concorrentes = EXCLUDED.analise_concorrentes,\n  concorrentes_internacionais = EXCLUDED.concorrentes_internacionais,\n  concorrentes_brasileiros = EXCLUDED.concorrentes_brasileiros,\n  sintese_estrategica = EXCLUDED.sintese_estrategica,\n  status = 'ready',\n  updated_at = NOW()\nRETURNING *;",
+        "options": {}
+      },
+      "id": "update-posicionamento-fase1b-001",
+      "name": "💾 Update Posicionamento - FASE 1B",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1800, 500],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepara os dados da FASE 2 (Offers) com escape SQL correto\nfunction escapeSQL(str) {\n  if (!str) return '';\n  return str.toString()\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/'/g, \"''\")\n    .replace(/\\x00/g, '');\n}\n\nconst transformContext = $('🔄 Transform Expert Context').item.json;\nconst currentItem = $input.first().json;\n\n// Tenta pegar dos agents ou do item atual\nlet avatarCreator, avatarDetalhado, promiseGenerator, bigIdeaCreator, mecanismoUnico;\n\ntry { avatarCreator = $('7. Agent: Avatar Creator').item.json; } catch(e) { avatarCreator = {}; }\ntry { avatarDetalhado = $('7B. Agent: Avatar Detalhado').item.json; } catch(e) { avatarDetalhado = {}; }\ntry { promiseGenerator = $('8. Agent: Promise Generator').item.json; } catch(e) { promiseGenerator = {}; }\ntry { bigIdeaCreator = $('9. Agent: Big Idea Creator').item.json; } catch(e) { bigIdeaCreator = {}; }\ntry { mecanismoUnico = $('9B. Agent: Mecanismo Único').item.json; } catch(e) { mecanismoUnico = {}; }\n\nreturn [{\n  json: {\n    project_id: transformContext.project_id,\n    avatar: escapeSQL(avatarCreator.text || avatarCreator.output || ''),\n    avatar_detalhado: escapeSQL(avatarDetalhado.text || avatarDetalhado.output || ''),\n    promessas: escapeSQL(promiseGenerator.text || promiseGenerator.output || ''),\n    big_idea: escapeSQL(bigIdeaCreator.text || bigIdeaCreator.output || ''),\n    mecanismo_unico: escapeSQL(mecanismoUnico.text || mecanismoUnico.output || ''),\n    high_ticket: escapeSQL(currentItem['High Ticket Ofertas - IA'] || ''),\n    mid_ticket: escapeSQL(currentItem['Back End Ofertas - IA'] || ''),\n    frontend: escapeSQL(currentItem['Ofertas Front End - IA'] || '')\n  }\n}];"
+      },
+      "id": "prepare-fase2-001",
+      "name": "🔧 Prepare FASE 2 Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1600, 700]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO offers (\n  project_id,\n  avatar,\n  avatar_detalhado,\n  promessas,\n  big_idea,\n  mecanismo_unico,\n  high_ticket,\n  mid_ticket,\n  frontend,\n  status,\n  created_at,\n  updated_at\n)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  '{{ $json.avatar }}',\n  '{{ $json.avatar_detalhado }}',\n  '{{ $json.promessas }}',\n  '{{ $json.big_idea }}',\n  '{{ $json.mecanismo_unico }}',\n  '{{ $json.high_ticket }}',\n  '{{ $json.mid_ticket }}',\n  '{{ $json.frontend }}',\n  'ready',\n  NOW(),\n  NOW()\n)\nON CONFLICT (project_id) DO UPDATE SET\n  avatar = EXCLUDED.avatar,\n  avatar_detalhado = EXCLUDED.avatar_detalhado,\n  promessas = EXCLUDED.promessas,\n  big_idea = EXCLUDED.big_idea,\n  mecanismo_unico = EXCLUDED.mecanismo_unico,\n  high_ticket = EXCLUDED.high_ticket,\n  mid_ticket = EXCLUDED.mid_ticket,\n  frontend = EXCLUDED.frontend,\n  status = 'ready',\n  updated_at = NOW()\nRETURNING *;",
+        "options": {}
+      },
+      "id": "upsert-offers-fase2-001",
+      "name": "💾 Upsert Offers - FASE 2",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1800, 700],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepara os dados de conteúdo com escape SQL correto\nfunction escapeSQL(str) {\n  if (!str) return '';\n  return str.toString()\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/'/g, \"''\")\n    .replace(/\\x00/g, '');\n}\n\nconst transformContext = $('🔄 Transform Expert Context').item.json;\nconst currentItem = $input.first().json;\n\nreturn [{\n  json: {\n    project_id: transformContext.project_id,\n    title: escapeSQL(currentItem.title || 'Conteúdo gerado'),\n    body: escapeSQL(currentItem.script || currentItem.content || currentItem.body || ''),\n    hook: escapeSQL(currentItem.hook || ''),\n    cta: escapeSQL(currentItem.cta || '')\n  }\n}];"
+      },
+      "id": "prepare-content-001",
+      "name": "🔧 Prepare Content Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1600, 900]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO contents (\n  project_id,\n  type,\n  title,\n  body,\n  hook,\n  cta,\n  generated_by,\n  status,\n  created_at\n)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  'reel',\n  '{{ $json.title }}',\n  '{{ $json.body }}',\n  '{{ $json.hook }}',\n  '{{ $json.cta }}',\n  'generateMarketingeGeracaodeDemanda',\n  'draft',\n  NOW()\n)\nRETURNING *;",
+        "options": {}
+      },
+      "id": "insert-content-reel-001",
+      "name": "💾 Insert Content - Reel",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1800, 900],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO contents (\n  project_id,\n  type,\n  title,\n  body,\n  hook,\n  cta,\n  generated_by,\n  status,\n  created_at\n)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  'carousel',\n  '{{ $json.title }}',\n  '{{ $json.body }}',\n  '{{ $json.hook }}',\n  '{{ $json.cta }}',\n  'generateMarketingeGeracaodeDemanda',\n  'draft',\n  NOW()\n)\nRETURNING *;",
+        "options": {}
+      },
+      "id": "insert-content-carousel-001",
+      "name": "💾 Insert Content - Carrossel",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1800, 1100],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=INSERT INTO contents (\n  project_id,\n  type,\n  title,\n  body,\n  hook,\n  cta,\n  generated_by,\n  status,\n  created_at\n)\nVALUES (\n  '{{ $json.project_id }}'::uuid,\n  'story',\n  '{{ $json.title }}',\n  '{{ $json.body }}',\n  '{{ $json.hook }}',\n  '{{ $json.cta }}',\n  'generateMarketingeGeracaodeDemanda',\n  'draft',\n  NOW()\n)\nRETURNING *;",
+        "options": {}
+      },
+      "id": "insert-content-stories-001",
+      "name": "💾 Insert Content - Stories",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1800, 1300],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "🔍 Extract Project ID": {
+      "main": [
+        [
+          {
+            "node": "📖 Get Expert Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📖 Get Expert Data": {
+      "main": [
+        [
+          {
+            "node": "🔄 Transform Expert Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Prepare FASE 1A Data": {
+      "main": [
+        [
+          {
+            "node": "💾 Update Clone - FASE 1A",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Prepare FASE 1B Data": {
+      "main": [
+        [
+          {
+            "node": "💾 Update Posicionamento - FASE 1B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Prepare FASE 2 Data": {
+      "main": [
+        [
+          {
+            "node": "💾 Upsert Offers - FASE 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Prepare Content Data": {
+      "main": [
+        [
+          {
+            "node": "💾 Insert Content - Reel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

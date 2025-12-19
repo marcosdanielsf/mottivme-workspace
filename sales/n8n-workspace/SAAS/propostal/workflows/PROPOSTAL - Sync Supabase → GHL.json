@@ -1,0 +1,351 @@
+{
+  "name": "PROPOSTAL - Sync Supabase → GHL",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "propostal-sync-lead",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        64,
+        80
+      ],
+      "id": "f0944d4e-3f51-4a88-8307-35275dc9a8ef",
+      "name": "Webhook - Novo Lead Criado",
+      "webhookId": "propostal-sync-lead"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ghl-location",
+              "name": "ghl_location_id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "lead-id",
+              "name": "leadId",
+              "value": "={{ $json.body.record.id }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-name",
+              "name": "leadName",
+              "value": "={{ $json.body.record.name }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-email",
+              "name": "leadEmail",
+              "value": "={{ $json.body.record.email }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-phone",
+              "name": "leadPhone",
+              "value": "={{ $json.body.record.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-company",
+              "name": "leadCompany",
+              "value": "={{ $json.body.record.company }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        80
+      ],
+      "id": "d8f5a44b-1282-4b28-8529-ab9f23304770",
+      "name": "⚙️ Preparar Dados"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $json.ghl_location_id }}\",\n  \"query\": \"{{ $json.leadEmail }}\",\n  \"pageLimit\": 1\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        80
+      ],
+      "id": "6588a40e-a3b0-4aaf-960b-a761fa9ce0b7",
+      "name": "GHL - Buscar Contato Existente"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "contact-exists",
+              "leftValue": "={{ $json.contacts.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        80
+      ],
+      "id": "780a1f26-e458-45d7-8b75-39cbc6c8b2f7",
+      "name": "Contato já existe?"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contacts[0].id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('⚙️ Preparar Dados').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"tags\": [\"propostal\", \"lead-proposta\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        -32
+      ],
+      "id": "84b9dc2d-d659-492e-9e46-8f19770b6396",
+      "name": "GHL - Atualizar Tags"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('⚙️ Preparar Dados').item.json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"locationId\": \"{{ $('⚙️ Preparar Dados').item.json.ghl_location_id }}\",\n  \"email\": \"{{ $('⚙️ Preparar Dados').item.json.leadEmail }}\",\n  \"phone\": \"{{ $('⚙️ Preparar Dados').item.json.leadPhone }}\",\n  \"name\": \"{{ $('⚙️ Preparar Dados').item.json.leadName }}\",\n  \"companyName\": \"{{ $('⚙️ Preparar Dados').item.json.leadCompany }}\",\n  \"source\": \"propostal\",\n  \"tags\": [\"propostal\", \"lead-proposta\", \"novo-lead\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        176
+      ],
+      "id": "701ac088-bd95-415f-b419-e8dc9244ed99",
+      "name": "GHL - Criar Contato"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ghl-id",
+              "name": "ghlContactId",
+              "value": "={{ $json.contact?.id || $json.contacts?.[0]?.id }}",
+              "type": "string"
+            },
+            {
+              "id": "action",
+              "name": "action",
+              "value": "={{ $('Contato já existe?').item.json.contacts?.length > 0 ? 'updated' : 'created' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        80
+      ],
+      "id": "6f23c466-d7f5-4173-97e7-9d7160372f5e",
+      "name": "Consolidar Resultado"
+    },
+    {
+      "parameters": {
+        "content": "## 🔄 PROPOSTAL - Sync Supabase → GHL\n\n### O que este workflow faz:\n1. Recebe webhook quando novo lead é criado no Supabase\n2. Verifica se contato já existe no GHL\n3. Se existe: atualiza tags\n4. Se não existe: cria novo contato\n\n### Como configurar no Supabase:\n1. Vá em Database → Triggers\n2. Crie trigger para tabela `leads`\n3. Evento: INSERT\n4. Use Supabase Edge Function para chamar este webhook\n\n### Configuração:\n- Altere `ghl_location_id` e `ghl_api_key` no nó \"⚙️ Preparar Dados\"",
+        "height": 380,
+        "width": 400,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        -336
+      ],
+      "typeVersion": 1,
+      "id": "fad786b5-fbfa-4bb1-b63f-b8cc1e3e48ff",
+      "name": "📌 Documentação"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Novo Lead Criado": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Preparar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Preparar Dados": {
+      "main": [
+        [
+          {
+            "node": "GHL - Buscar Contato Existente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Buscar Contato Existente": {
+      "main": [
+        [
+          {
+            "node": "Contato já existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contato já existe?": {
+      "main": [
+        [
+          {
+            "node": "GHL - Atualizar Tags",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "GHL - Criar Contato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Atualizar Tags": {
+      "main": [
+        [
+          {
+            "node": "Consolidar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Criar Contato": {
+      "main": [
+        [
+          {
+            "node": "Consolidar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "versionId": "612c4df3-9333-45e8-94dd-21371c3a02ca",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "mZfc8FzTHa2gfb0b",
+  "tags": []
+}

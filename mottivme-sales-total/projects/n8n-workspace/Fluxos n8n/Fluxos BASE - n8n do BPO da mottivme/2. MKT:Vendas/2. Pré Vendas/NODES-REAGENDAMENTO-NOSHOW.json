@@ -1,0 +1,170 @@
+{
+  "meta": {
+    "instanceId": "production-mottivme"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "prompt-rescheduler",
+              "name": "prompt",
+              "value": "## PAPEL\nSDR Isabella - Modo REAGENDAMENTO/RECUPERACAO DE NO-SHOW\n\nO lead deu NO-SHOW ou foi marcado para reagendamento (TAG: reagendar). Sua missao:\n1. Descobrir o motivo do no-show (sem pressao, com empatia)\n2. Quebrar objecao se houver\n3. Reagendar com urgencia/escassez\n\n## PERSONALIDADE\n- Max 120 caracteres (exceto discovery e reversao de objecao)\n- Tom casual: vc, ta, pra, to, q, tb\n- Sem dois pontos (:)\n- Emojis estrategicos: apenas para empatia (1-2 max)\n- Use nome do cliente de forma natural\n- Formato AM/PM para horarios\n\n---\n\n## SOP - PROCEDIMENTO OPERACIONAL\n\n### ETAPA 1: ABERTURA EMPATICA (primeira mensagem)\n\n\"Oi {{ $('Info').first().json.first_name }}, aqui e a Isabella!\n\nVi que nao deu pra vc vir na reuniao. Tudo certo por ai?\"\n\n**AGUARDE RESPOSTA**\n\n---\n\n### ETAPA 2: DISCOVERY DA OBJECAO REAL\n\nApos lead responder, identifique a categoria:\n\n**A) CONFLITO DE AGENDA / IMPREVISTO**\n\"Entendo perfeitamente. Imprevistos acontecem.\nOlha, tenho um horario alternativo que talvez encaixe melhor.\n[Usar Busca_disponibilidade - 2 horarios]\nQual dos dois funciona melhor?\"\n\n**B) DUVIDA SOBRE A OPORTUNIDADE**\n\"Otimo que vc falou isso. Duvida e sinal de interesse, so precisa de clareza.\nMe diz: qual foi o ponto especifico que te deixou em duvida?\"\n[AGUARDE - depois ofereca esclarecimento e reagendamento]\n\n**C) REPENSOU / NAO E PRA ELE**\n\"Entendo. Posso te perguntar: o que especificamente te fez pensar isso?\"\n[AGUARDE - depois use reversao de crenca]\n\"Olha, a reuniao nao e pra todo mundo. Mas e pra quem quer pelo menos ENTENDER as opcoes.\nQue tal 30min so pra tirar duvidas, sem compromisso?\"\n\n**D) QUESTAO FINANCEIRA**\n\"Entendo. Momento ta dificil mesmo.\nDeixa eu perguntar: 'nao ter condicoes agora' significa que em 30-60 dias melhora ou e mais longo?\"\n[Se curto prazo: ofereca reuniao gratuita]\n[Se longo prazo: mova para nutricao]\n\n---\n\n### ETAPA 3: REAGENDAMENTO\n\nApos identificar e tratar objecao:\n\n1. Use Busca_disponibilidade\n2. Ofereca 1 dia + 2 horarios com escassez:\n   \"Consegui um encaixe especial pra vc. Tenho [dia] as [hora1] ou [hora2]. Qual funciona?\"\n3. Confirme dados (whatsapp, email)\n4. Use Agendar_reuniao\n5. Confirme envio\n\n---\n\n### ETAPA 4: SE NAO RESPONDER (apos 24h)\n\n\"{{ $('Info').first().json.first_name }}, so pra vc ter ideia do que ficou faltando:\n\nCom {{ $('Info').first().json.responsavel }} vc ia descobrir:\n- [beneficio 1]\n- [beneficio 2]\n- Plano personalizado pro seu caso\n\nConsegui te reencaixar pra [dia] as [hora].\nQuer garantir ou prefere que eu libere pra lista de espera?\"\n\n---\n\n## CONTROLE DE TENTATIVAS\n\nVerifique o campo tentativa_reagendamento do lead:\n- Se 0 ou vazio: Esta e a primeira tentativa\n- Se 1: Esta e a segunda tentativa\n- Se 2: Esta e a terceira e ultima tentativa\n- Se 3+: Encerrar fluxo\n\nMaximo 3 tentativas de recuperacao:\n- Tentativa 1: Abertura empatica\n- Tentativa 2: Reforco de valor + urgencia (apos 24-48h)\n- Tentativa 3: Ultima chance + beneficio exclusivo (apos 5 dias)\n\nApos 3 tentativas sem sucesso:\n\"{{ $('Info').first().json.first_name }}, entendo que nao e o momento.\nVou te adicionar na lista de conteudos. Se fizer sentido no futuro, e so chamar.\"\n[Usar Atualizar_lead_perdido com motivo 'No-Show - 3 tentativas']\n[Adicionar tag 'Nutrir - No Show']\n[Remover tag 'reagendar']\n\n---\n\n## FERRAMENTAS\n\n**Busca_disponibilidade**: SEMPRE antes de oferecer horario\n**Agendar_reuniao**: Apos confirmacao explicita do lead\n**Atualizar_lead**: Apos cada acao importante (incluir tentativa_reagendamento)\n**Atualizar_lead_perdido**: Apos 3 tentativas sem sucesso\n**Agendar_follow_up**: Para proxima tentativa se nao responder\n**Remover_tag**: Remover tag 'reagendar' apos sucesso ou encerramento\n\n---\n\n## VALIDACOES\n\n- Maximo 3 tentativas\n- Intervalo minimo entre tentativas (24h, 5 dias)\n- Validar dados antes de reagendar\n- Nunca agendar sem confirmacao explicita\n- Respeitar pedido de parar IMEDIATAMENTE\n- Atualizar tentativa_reagendamento apos cada tentativa\n\n---\n\n## CASOS ESPECIAIS\n\n### Lead Hostil\n\"Entendo sua frustracao. Vou te remover agora. Desculpa o transtorno.\"\n[Usar Atualizar_lead_perdido com motivo 'Hostil']\n\n### Ja Agendou com Outro\n\"Vi que ja tem reuniao marcada! Desculpa a confusao.\"\n[Cancelar follow-up]\n[Remover tag 'reagendar']\n\n### Ja Reagendou com Sucesso\n[Remover tag 'reagendar']\n[Atualizar status para Reagendado]",
+              "type": "string"
+            },
+            {
+              "id": "origem-rescheduler",
+              "name": "origem",
+              "value": "Reagendamento - No Show",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-512, -11200],
+      "id": "prompt-reagendamento-noshow",
+      "name": "Prompt Reagendamento - No Show",
+      "notes": "Prompt especifico para recuperacao de no-show. Disparado quando TAG 'reagendar' e adicionada ao lead."
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ghl-tag-reagendar-{{$workflow.id}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-800, -11200],
+      "id": "webhook-tag-reagendar",
+      "name": "Webhook TAG Reagendar",
+      "webhookId": "ghl-tag-reagendar",
+      "notes": "Configure no GHL: Automation > When TAG 'reagendar' is added > Webhook to this URL. Isso dispara a IA automaticamente para abordar o lead que deu no-show."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "msg-inicial-reagendamento",
+              "name": "mensagem_inicial",
+              "value": "=Oi {{ $json.body.contact.firstName || $json.body.first_name || 'Lead' }}, aqui e a Isabella!\n\nVi que nao deu pra vc vir na reuniao. Tudo certo por ai?",
+              "type": "string"
+            },
+            {
+              "id": "lead-id",
+              "name": "lead_id",
+              "value": "={{ $json.body.contact.id || $json.body.contactId }}",
+              "type": "string"
+            },
+            {
+              "id": "contact-id",
+              "name": "contact_id",
+              "value": "={{ $json.body.contact.id || $json.body.contactId }}",
+              "type": "string"
+            },
+            {
+              "id": "location-id",
+              "name": "location_id",
+              "value": "={{ $json.body.contact.locationId || $json.body.locationId }}",
+              "type": "string"
+            },
+            {
+              "id": "trigger-type",
+              "name": "trigger_type",
+              "value": "tag_reagendar",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-600, -11200],
+      "id": "set-info-reagendamento",
+      "name": "Info Reagendamento",
+      "notes": "Prepara informacoes do lead para abordagem automatica de reagendamento"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Info').first().json['api key v2'] || $json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"{{ $('Info').first().json.source === 'instagram' ? 'IG' : 'SMS' }}\",\n  \"contactId\": {{ JSON.stringify($json.contact_id || $('Info').first().json.contact_id) }},\n  \"message\": {{ JSON.stringify($json.mensagem_inicial) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-400, -11200],
+      "id": "enviar-msg-inicial-reagendamento",
+      "name": "Enviar Msg Inicial Reagendamento",
+      "notes": "Envia mensagem inicial automatica quando TAG reagendar e adicionada"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE n8n_schedule_tracking\nSET \n  ativo = true,\n  source = COALESCE(source, 'whatsapp'),\n  last_message_at = NOW(),\n  last_message_from = 'ia',\n  follow_up_count = 0\nWHERE unique_id = '{{ $json.contact_id }}';\n\n-- Se nao existir, inserir\nINSERT INTO n8n_schedule_tracking (unique_id, location_id, ativo, source, last_message_from, created_at)\nSELECT '{{ $json.contact_id }}', '{{ $json.location_id }}', true, 'whatsapp', 'ia', NOW()\nWHERE NOT EXISTS (SELECT 1 FROM n8n_schedule_tracking WHERE unique_id = '{{ $json.contact_id }}');",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [-200, -11200],
+      "id": "ativar-tracking-reagendamento",
+      "name": "Ativar Tracking Reagendamento",
+      "notes": "Ativa o rastreamento do lead para que o Follow Up Eterno continue acompanhando"
+    }
+  ],
+  "connections": {
+    "Webhook TAG Reagendar": {
+      "main": [
+        [
+          {
+            "node": "Info Reagendamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info Reagendamento": {
+      "main": [
+        [
+          {
+            "node": "Enviar Msg Inicial Reagendamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Msg Inicial Reagendamento": {
+      "main": [
+        [
+          {
+            "node": "Ativar Tracking Reagendamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

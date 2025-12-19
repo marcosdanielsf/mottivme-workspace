@@ -1,0 +1,1257 @@
+{
+  "name": "TrackCosts",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -336,
+        0
+      ],
+      "id": "8dbb8bcd-1a62-4e87-a088-4ca1e34abca8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  execution_id,\n  workflow_id,\n  workflow_name,\n  started_at\nFROM execution_metrics\nWHERE \n  status = 'running'\n  AND started_at <= NOW() - INTERVAL '5 minutes'\nORDER BY started_at ASC\nLIMIT 25;\n",
+        "additionalFields": {}
+      },
+      "name": "Select Pendentes",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "8ef79188-8aad-4859-9ec8-b91657269e73",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "execution",
+        "operation": "get",
+        "executionId": "={{ $json.execution_id }}",
+        "options": {
+          "activeWorkflows": true
+        },
+        "requestOptions": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        48,
+        0
+      ],
+      "id": "986a4e5f-f0b3-43be-8338-2c4b1761fb0e",
+      "name": "n8n",
+      "retryOnFail": true,
+      "credentials": {
+        "n8nApi": {
+          "id": "yfUM2j52zfaGpvFs",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1c9c374-b58d-43d1-9a72-838a78c60c3d",
+              "name": "stopped_at",
+              "value": "={{ $json.stoppedAt }}",
+              "type": "string"
+            },
+            {
+              "id": "bf8231cf-9a27-4b01-9c47-c8fbded753bc",
+              "name": "createdAt",
+              "value": "={{ $json.createdAt }}",
+              "type": "string"
+            },
+            {
+              "id": "35f37412-59e7-45ac-bdcd-70fd0e3ccafd",
+              "name": "workflowId",
+              "value": "={{ $json.workflowId }}",
+              "type": "string"
+            },
+            {
+              "id": "7f80c9d9-71da-48c6-8831-59d08971c5de",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "c604a51e-9c5d-44c3-8e5a-937e0d028446",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "8ddab379-3d1e-43bd-8d54-5dcf47582ee8",
+              "name": "mode",
+              "value": "={{ $json.mode }}",
+              "type": "string"
+            },
+            {
+              "id": "5eb33620-8afd-4f7f-9c86-a6c347259eba",
+              "name": "duration",
+              "value": "={{ ((new Date($json.stoppedAt) - new Date($json.startedAt))) || 0\n }}",
+              "type": "number"
+            },
+            {
+              "id": "bfc1a893-9693-493c-ace8-802609ddab63",
+              "name": "primary_output_tokens",
+              "value": "={{ \n  $json.data?.resultData?.runData?.Gemini?.[0]?.data?.ai_languageModel?.[0]\n    ?.reduce((sum, item) => sum + item.json.tokenUsage.completionTokens, 0) || 0\n}}",
+              "type": "number"
+            },
+            {
+              "id": "8ddfd0e7-b9fd-4d0b-bd14-bc6352ef417d",
+              "name": "primary_input_estimated_tokens",
+              "value": "={{ \n  $json.data?.resultData?.runData?.Gemini?.[0]?.data.ai_languageModel?.[0]\n    ?.reduce((sum, item) => sum + item.json?.tokenUsage?.promptTokens, 0) \n|| $json.data?.resultData?.runData?.Gemini?.[0]?.inputOverride?.ai_languageModel?.[0]?.[0]?.json?.estimatedTokens || 0\n}}",
+              "type": "string"
+            },
+            {
+              "id": "0d3e594d-ae6a-4a90-8b42-51cf8dcd49e0",
+              "name": "primary_model",
+              "value": "={{ $json.data.resultData.runData.Gemini?.[0]?.inputOverride?.ai_languageModel?.[0]?.[0]?.json?.options?.model_name || 'gemini-2.5-pro' }}",
+              "type": "string"
+            },
+            {
+              "id": "5dc5b812-9b3d-4ba2-bf86-983acb6bf990",
+              "name": "secundary_output_tokens",
+              "value": "={{\n  Object.values($json.data.resultData.runData)\n    .flatMap(arr => arr) // pega todos os objetos dos nós\n    .flatMap(node => (node.data?.ai_languageModel?.[0] || []))\n    .reduce((sum, item) => sum + (item.json?.tokenUsageEstimate?.completionTokens || 0), 0)\n}}",
+              "type": "string"
+            },
+            {
+              "id": "a89e5069-a171-4822-a624-05c9c4fc6817",
+              "name": "secundary_input_estimated_tokens",
+              "value": "={{\n  Object.values($json.data.resultData.runData)\n    .flatMap(arr => arr) // pega todos os objetos dos nós\n    .flatMap(node => (node.data?.ai_languageModel?.[0] || []))\n    .reduce((sum, item) => sum + (item.json?.tokenUsageEstimate?.promptTokens || 0), 0)\n}}",
+              "type": "string"
+            },
+            {
+              "id": "60f54918-e93d-4756-9ec1-ff6a7beaf9f9",
+              "name": "secundary_model",
+              "value": "={{ $json.data?.resultData?.runData?.['Google Gemini Chat Model2']?.[0]?.inputOverride?.ai_languageModel?.[0]?.[0]?.json?.options?.model_name || 'gemini-2.5-flash' }}",
+              "type": "string"
+            },
+            {
+              "id": "b8cf125f-5ef9-470e-b649-f29954ed5496",
+              "name": "client_name",
+              "value": "={{ $json.data.resultData.runData.Info[0].data.main[0][0].json.nome_completo }}",
+              "type": "string"
+            },
+            {
+              "id": "01fbe541-5e9a-42ab-bee3-f46c79aeed8f",
+              "name": "mensagem",
+              "value": "={{ $json.data.resultData.runData.Info[0].data.main[0][0].json.mensagem }}",
+              "type": "string"
+            },
+            {
+              "id": "73934498-1bf5-4932-850e-951112178e53",
+              "name": "resposta",
+              "value": "={{ $json.data.resultData.runData['Formatar texto'][0].data.main[0][0].json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "b6a12ce2-8dba-4b42-aec2-f8983b3fc295",
+              "name": "process_id",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        784,
+        112
+      ],
+      "id": "afef74f4-7ed8-4ebd-a445-e692e873781a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "execution_metrics",
+          "mode": "list",
+          "cachedResultName": "execution_metrics"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "execution_id": "={{ $('Edit Fields').item.json.id }}",
+            "stopped_at": "={{ $('Edit Fields').item.json.stopped_at }}",
+            "mensagem": "={{ $('Edit Fields').item.json.mensagem }}",
+            "primary_model": "={{ $('Edit Fields').item.json.primary_model }}",
+            "primary_input_tokens": "={{ $('Edit Fields').item.json.primary_input_estimated_tokens }}",
+            "primary_output_tokens": "={{ $('Edit Fields').item.json.primary_output_tokens }}",
+            "secondary_model": "={{ $('Edit Fields').item.json.secundary_model }}",
+            "secondary_input_tokens": "={{ $('Edit Fields').item.json.secundary_input_estimated_tokens }}",
+            "secondary_output_tokens": "={{ $('Edit Fields').item.json.secundary_output_tokens }}",
+            "resposta": "={{ $('Edit Fields').item.json.resposta }}",
+            "client_name": "={{ $('Edit Fields').item.json.client_name }}",
+            "process_id": "={{ $execution.id }}",
+            "status": "={{ $('Edit Fields').item.json.status }}",
+            "duration_ms": 0,
+            "primary_cost_usd": "={{ $json.primary_cost_usd }}",
+            "secondary_cost_usd": "={{ $json.secondary_cost_usd }}",
+            "total_cost_usd": "={{ $json.total_cost_usd }}"
+          },
+          "matchingColumns": [
+            "execution_id"
+          ],
+          "schema": [
+            {
+              "id": "execution_id",
+              "displayName": "execution_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "workflow_version",
+              "displayName": "workflow_version",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "n8n_version",
+              "displayName": "n8n_version",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "environment",
+              "displayName": "environment",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "started_at",
+              "displayName": "started_at",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "stopped_at",
+              "displayName": "stopped_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "duration_ms",
+              "displayName": "duration_ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error_message",
+              "displayName": "error_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "tokens_consumed",
+              "displayName": "tokens_consumed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "primary_model",
+              "displayName": "primary_model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "primary_input_tokens",
+              "displayName": "primary_input_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "primary_output_tokens",
+              "displayName": "primary_output_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "secondary_model",
+              "displayName": "secondary_model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "secondary_input_tokens",
+              "displayName": "secondary_input_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "secondary_output_tokens",
+              "displayName": "secondary_output_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "primary_cost_usd",
+              "displayName": "primary_cost_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "secondary_cost_usd",
+              "displayName": "secondary_cost_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total_cost_usd",
+              "displayName": "total_cost_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_mode",
+              "displayName": "workflow_mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "owner",
+              "displayName": "owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status_sync",
+              "displayName": "status_sync",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "mensagem",
+              "displayName": "mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resposta",
+              "displayName": "resposta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "owner_id",
+              "displayName": "owner_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "process_id",
+              "displayName": "process_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2048,
+        112
+      ],
+      "id": "ee17a011-069d-4661-bcb4-4aca093f35b8",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "ai_models",
+          "mode": "list",
+          "cachedResultName": "ai_models"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        64,
+        272
+      ],
+      "id": "51f3c8ff-415b-4f8f-995e-728230aff7e4",
+      "name": "AI_Models",
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        592,
+        112
+      ],
+      "id": "437137df-f8a8-4d39-ae95-08c5297e376e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const {\n  primary_input_estimated_tokens: inPrim,\n  primary_output_tokens: outPrim,\n  secundary_input_estimated_tokens: inSec,\n  secundary_output_tokens: outSec,\n  primary_model,\n  secundary_model\n} = $input.first().json;\n\nconst priceByModel = {\n  \"gemini-2.5-pro\": {\n    input: 1.25 / 1e6,\n    output: 10 / 1e6\n  },\n  \"gemini-2.5-pro-preview-03-25\": {\n    input: 1.25 / 1e6,\n    output: 10 / 1e6\n  },\n  \"gemini-2.5-flash\": {\n    input: 0.30 / 1e6,\n    output: 2.50 / 1e6\n  },\n  \"gemini-2.5-flash-preview-04-17\": {\n    input: 0.30 / 1e6,\n    output: 2.50 / 1e6\n  }\n};\n\nfunction cost(tokens, rate) {\n  return tokens * rate;\n}\n\nconst pPrice = priceByModel[primary_model] || { input: 0, output: 0 };\nconst sPrice = priceByModel[secundary_model] || { input: 0, output: 0 };\n\nconst primary_cost_usd = cost(inPrim, pPrice.input) + cost(outPrim, pPrice.output);\nconst secondary_cost_usd = cost(inSec, sPrice.input) + cost(outSec, sPrice.output);\nconst total_cost_usd = primary_cost_usd + secondary_cost_usd;\n\nreturn {\n  primary_cost_usd,\n  secondary_cost_usd,\n  total_cost_usd\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        112
+      ],
+      "id": "23ceceff-a284-4c6d-8409-3610234def1f",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        368,
+        0
+      ],
+      "id": "57b7bb65-e80a-4802-866f-102a6f0d05ae",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        -80
+      ],
+      "id": "f4ec2785-894f-4535-b000-096550e4ea03",
+      "name": "Fim"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4f5758b5-2907-4054-b1e7-a98003122272",
+              "leftValue": "={{ $json.primary_output_tokens }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        -160
+      ],
+      "id": "ff9d1617-22e9-4774-80a4-e1ca4fa3b496",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "execution_metrics",
+          "mode": "list",
+          "cachedResultName": "execution_metrics"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "execution_id": "={{ $('Edit Fields').item.json.id || $json.id || '-1' }}",
+            "status": "={{ $('Edit Fields').item.json.status }}",
+            "process_id": "={{ $('Edit Fields').item.json.process_id }}",
+            "client_name": "={{ $('Edit Fields').item.json.client_name }}",
+            "mensagem": "={{ $('Edit Fields').item.json.mensagem }}",
+            "resposta": "={{ $('Edit Fields').item.json.resposta || '' }}",
+            "primary_cost_usd": "=0",
+            "secondary_cost_usd": "=0",
+            "total_cost_usd": "=0",
+            "tokens_consumed": 0,
+            "primary_input_tokens": 0,
+            "primary_output_tokens": 0,
+            "secondary_input_tokens": 0,
+            "secondary_output_tokens": 0,
+            "duration_ms": "={{ $('Edit Fields').item.json.duration }}",
+            "error_message": "acumulado"
+          },
+          "matchingColumns": [
+            "execution_id"
+          ],
+          "schema": [
+            {
+              "id": "execution_id",
+              "displayName": "execution_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "workflow_version",
+              "displayName": "workflow_version",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "n8n_version",
+              "displayName": "n8n_version",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "environment",
+              "displayName": "environment",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "started_at",
+              "displayName": "started_at",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "stopped_at",
+              "displayName": "stopped_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "duration_ms",
+              "displayName": "duration_ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error_message",
+              "displayName": "error_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tokens_consumed",
+              "displayName": "tokens_consumed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "primary_model",
+              "displayName": "primary_model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "primary_input_tokens",
+              "displayName": "primary_input_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "primary_output_tokens",
+              "displayName": "primary_output_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "secondary_model",
+              "displayName": "secondary_model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "secondary_input_tokens",
+              "displayName": "secondary_input_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "secondary_output_tokens",
+              "displayName": "secondary_output_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "primary_cost_usd",
+              "displayName": "primary_cost_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "secondary_cost_usd",
+              "displayName": "secondary_cost_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_cost_usd",
+              "displayName": "total_cost_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_mode",
+              "displayName": "workflow_mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "owner",
+              "displayName": "owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status_sync",
+              "displayName": "status_sync",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "mensagem",
+              "displayName": "mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resposta",
+              "displayName": "resposta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "client_name",
+              "displayName": "client_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "owner_id",
+              "displayName": "owner_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "process_id",
+              "displayName": "process_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1184,
+        192
+      ],
+      "id": "2e8db8f2-abd9-4c79-9c42-64d3f8fa00e9",
+      "name": "Postgres1",
+      "retryOnFail": true,
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.primary_output_tokens }}",
+                    "rightValue": "=0",
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    },
+                    "id": "00131999-b4db-4589-9bee-f1464b382b5c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Sim"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ecaf3a60-87bd-47b7-b0f9-b62b1f5455bf",
+                    "leftValue": "={{ $json.primary_output_tokens }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Não"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        992,
+        112
+      ],
+      "id": "86174442-960a-4c1b-8e38-7f228bf2c79e",
+      "name": "Switch"
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2025-07-14T18:50:22.002-03:00",
+          "Readable date": "July 14th 2025, 6:50:22 pm",
+          "Readable time": "6:50:22 pm",
+          "Day of week": "Monday",
+          "Year": "2025",
+          "Month": "July",
+          "Day of month": "14",
+          "Hour": "18",
+          "Minute": "50",
+          "Second": "22",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Select Pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Pendentes": {
+      "main": [
+        [
+          {
+            "node": "n8n",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI_Models",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI_Models": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Fim",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "Postgres1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Postgres1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b1a420e8-57f8-48ca-ae6d-b09087637190",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "h8n3RChy0pUUh38c",
+  "tags": []
+}

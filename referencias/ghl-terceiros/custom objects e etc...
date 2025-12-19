@@ -1,0 +1,1806 @@
+Pular para o conteúdo
+Histórico de chats
+
+
+
+
+Você disse:
+Estou começando a fechar contratos com clínicas médicas High Ticket. 
+
+Lhe darei alguns contextos a seguir, o primeiro:
+
+Vou lhe dar o docx da call que fizemos com nosso primeiro cliente. 
+
+E a transcrição de como podemos usar custom objeções no ghl
+
+Segue a transcrição 
+
+então vamos lá Nessa aula vou est mostrando aqui uma das principais features que o Go Relevel lançou recentemente que são os custom objects Então indo direto ao ponto Qual que é o conceito primeiramente essa é uma future avançada somente disponível no plano de 497 que é o último plano do Go High Level Ela pega os dados essenciais além de contatos e oportunies e faz realmente ser algo personalizado para cada tipo de negócio Se você tem uma imobiliária se você tem uma clínica ou se clientes são imobiliárias clínicas ou qualquer tipo de negócio você consegue estar personalizando 100% por conta desses custom objects Eu vou explicar aqui com alguns exemplos e explicar na prática como funciona Quando você vai est usando os custom objects quando seus dados não cabem nos objetos padrões não cabem ali em oportunidades ou não cabem em contatos Eu vou est partindo aqui pro documento e explicando isso mais na prática Imagina o seguinte a gente tem atualmente no Go High Level a parte de contatos que são pessoas ou seja informações de nome e-mail telefone informações de contato e tem as oportunidades que são ali quando uma oportunidade está em negociação A gente tem também a parte de companies que é a parte de empresa mas isso é bem com os custom objects você consegue criar uma entidade específica Imagina por exemplo uma loja que vende carros ela vai querer ter o estoque dela linkado ao Go High Level vai querer ter o estoque dela linkado a cada oportunidade para tá entendendo isso com os custom objects isso é possível por conta do relacionamento Então por exemplo um cliente que se interessar por 10 imóveis é difícil gerenciar só com tags só com oportunidades ou só com contatos Já com a questão dos custom objects a gente consegue gerenciar esse estoque de imóveis ou estoque de carros e linkcar aquele carro aquele móvel aquela pessoa ou oportunidade específica Então tem essa sincronização many to many Um carro pode ter três propostas simultâneas que é impossível com uma pipeline padrão Com os custom objects isso se resolve por conta desses links que tem Nas automações avançadas a gente consegue colocar triggers específicos Então toda vez que por exemplo que um carro sair de estoque ou que um imóvel sai de estoque ou que for adicionado ao estoque a gente consegue fazer automações baseado nisso Outro ponto interessante é a questão da escalabilidade de organização Em vez de sobrecarregar a parte ali de contatos você poderia por exemplo criar vários campos personalizados contact fields né para cada coisa dessa mas teria que ser vários campos diferentes Então você consegue estar separando isso e organizando de uma maneira mais clara Fora que uma vez que você cria aparece no Go High Level ali no cantinho você consegue colocar o ícone que você quiser Por exemplo nesse caso que eu dei imóveis você consegue colocar uma casinha carro você consegue colocar um carrinho Ou se for clínicas você consegue colocar um prontuário como se fosse um prontuário por exemplo de cada cliente E fora que traz mais personalismo né você realmente ali mostra que o Go High Level foi modificado ou que o seu software é específico para aquele nicho por conta desses custom OK vantagens resumidas Estrutura CM de forma mais rica e adaptada pro seu negócio Melhor organização histórico do cliente objeto Automação adicionada para eventos fora do básico Facilita relatório e segmentação e reduz a bagunça ali na parte de contatos e oportunidades Vou mostrar aqui um comparativo por exemplo de uma imobiliária sem custom objects e uma imobiliária com custom objects Imagina que tem o lead João Silva é um lead que vai estar na aba de contato com um campo personalizado por exemplo imóveis de interesse um texto livre ali que o imóvel de interesse dele é uma casa de três quartos no Jardim Paulista e com uma tag apartamento Morumbi que seria uma tag no estoque dessa imobiliária Nas notas estaria que ele visitou no dia 109 e gostou da sala Problema é vários imóveis então vai sobrecarregar os campos a parte tags as notas viram uma bagunça e se mudar o preço de um imóvel você tem que atualizar manualmente em todos os leads daquele imóvel anotado Não existe histórico de estrutura de visitas propostas ou status Já com custom object imagine o seguinte a gente vai ter uma propriedade chamada imóvel com campo endereço tipo preço status Cada imóvel tem ficha própria dentro do CRM Ou seja basicamente você tem um RP tem um gerenciamento de estoque dentro do GO High Level Isso é essencial para muitos negócios físicos que eu acredito que a maioria de vocês trabalham Então imagina que esse mesmo Le João Silva tá associado a Property One que é a casa na Jardim Paulista e ela vale 900.000 e associado também a Property 3 que é um apartamento no Morumbi de 1.2 milhões Então tudo que eu preciso fazer é modificar o valor dessa casa caso for modificado ou as informações dessa casa aqui específica e vai modificar para todas as oportunidades que esse contato ali ou todas as oportunidades que estiverem linkados a esse imóvel Acredito que deu para entender um pouco aqui da dinâmica e o por que isso é tão importante No workflow por exemplo quando a casa três a propriedade três for sair de estoque for pro status soldo por exemplo eu consigo fazer uma automação para tirar de todas as oportunidades que estava em negociação aquela casa ou notificar o meu time que aquela casa foi vendida por exemplo Resultado uma organização clara de quem realmente tá interessado em qual imóvel em qual estágio e tem uma escala sem bagunça Realmente vou dar outro exemplo aqui de uma concessionária Então vai ter o campo carro com Honda Civic tal com a tag proposta Honda Civic a nota fez thet drive problema Se ela quiser também um Corolla não tem onde registrar e vira uma bagunça Teria que criar uma tag pro Corolla por exemplo É difícil saber quais carros estão disponíveis e quais carros não foram vendidos por exemplo E não dá para automatizar também baseado no status do veículo tipo vendido reservado todas essas situações Com os CONT você poderia criar um campo ali é de modelo de ano do carro condição preço status Cada carro é um registro próprio Então tudo que eu tenho que fazer é modificar ali na parte de estoque no go High level que basicamente essa future é um estoque dentro do go High Level Isso é essencial pra maioria dos negócios como eu disse negócios locais Resumo prático sem o custom object o CRM fica chatado com gambiar de tags de notas tudo bagunçado Com os custom objects viram CM real com estoque relacionamentos complexos e automações robustas Bom vamos lá Tô na minha conta aqui de teste onde eu tenho o SAS Plan fazer esses Então eu vou vir em configurações vou até objetos e aqui eu consigo tá criando um object novo OK então eu segui exatamente a descrição e e o que o prompt me passou Criei um custom object aqui chamado consultas Vou até editar para vocês verem Consulta no plural consultas O que vai mostrar vai ser o número do prontuário nome do paciente e a descrição é para um registro de consultas médicas vinculadas a pacientes com status especialidade e plano OK e aí eu consigo estar selecionando também um ícone Eu coloquei aqui o estetoscópio Beleza fazendo isso eu vou est criando esse custom object e vai ficar aqui na minha barra lateral embaixo de oportunidades vai ficar o custom object que você criou Beleza no meu caso aqui eu criei consultas Eu vou seguir o exemplo aqui que o GPT deu pra gente para seguir a aula OK e aí você precisa entender pro seu caso o que que faz sentido para você ou pros seus clientes Vamos lá Agora que eu criei o custom object consultas eu preciso estar criando os campos que vai ter na consulta Então eu preciso saber o status da consulta preciso saber o número do prontuário preciso saber o status da consulta especialidade e plano Eu vou clicar aqui nos três pontinhos adicionar custom fields e eu posso estar colocando vários campos de contatos nos campos de oportunidades eu consigo estar colocando campos específicos aqui pra consulta Eu já tinha colocado alguns mas eu vou colocar mais um só para exemplificar aqui para vocês Bom eu vou criar aqui a tipo da consulta data da consulta pode ser o data da consulta Eu vou pegar eh esse aqui são os campos que o prompt sugeriu para eu criar colocou se é obrigatório que que não é Eu vou pegar aqui a data da consulta vou colocar aqui é esse tipo aqui data picker vou colocar o nome data consulta informações da consulta e vou salvar Beleza agora eu vou voltar vou até consultas e a gente vai ter aqui os campos que a gente criou né tem aqui o número do paciente ou o prontuário a especialidade taço da consulta tudo mais O que que a gente vai fazer agora a gente tem que criar as associações Para eu explicar para vocês o que são associações eu criei aqui esse documento Se você quiser ter acesso a todo esse documento de como implementar os custom objects para você pros seus clientes dá uma olhada aí na descrição que eu mostro como pegar beleza bom vamos lá Aqui a gente vai ter três tipos de associação A gente vai ter a associação one to many Que que significa isso um campo linkado a vários campos que é a mais padrão que é a que a gente vai utilizar aqui Exemplo prático você vai linkar um contato a várias consultas diferentes ok a outra associação é linkar one to one raríssimo dificilmente você vai usar que não faz sentido que é por exemplo linkar uma associação um contato a um paciente não faz sentido fazer isso A outra que é o Juncle Object é dificilmente você vai utilizar que é uma associação Men mani que é você vai relacionar um banco de dados a vários outros tipos de campo OK é mais complexo e vai por mim O que mais você vai utilizar é essa associação one to man que é o que eu vou mostrar aqui para vocês A gente vai est fazendo uma associação em que eu vou conseguir um contato no go High Level virar um paciente e esse paciente poder ser associado a várias consultas que a gente vai criar ok de maneira que fique bem mais organizado o meu CRM o Go High Level fique organizado para você e pro seu time Beleza inclusive uma associação é exatamente isso Por que que você deve usar associação para evitar duplicação e inconsistência então ao invés de você criar um contato que já vai estar criado no high level e criar um paciente você só linca esse contato a esse paciente Ah te permite essa personalização para os envios das automações facilita nos relatórios e nos filtros permite esse relacionamento complexo que nem eu falei um paciente ter várias consultas ali fica mais fácil de gerenciar e reduz esse trabalho manual e o risco operacional Menos confusão pro time Vamos lá Como é que a gente vai fazer essa associação eu vou vir em settings novamente em objetos Vou clicar no a gente criou que no caso é consultas vou até associações E aqui a gente vai criar uma associação Vou deletar essas que já tinha para criar uma do zero com vocês E a associação que a gente vai criar vai ser puxando do contatos porque eu quero que os contatos sejam relacionados aos campos aqui que eu vou colocar Por enquanto só tem contatos mas eles já vão colocar nesse momento que eu tô gravando esse vídeo vai lançar daqui uma semana para você poder fazer essa associação com oportunidades Então da mesma forma que eu seleciono contatos aqui você vai poder selecionar objetos e fazer essa associação com objetos Aqui a label que a gente vai estar falando vai ser consultas Então vou est associando consultas a campos específicos objetos específicos O tipo vou selecionar o one to many que no caso eu vou est selecionando contatos a várias consultas diferentes OK então que nem tá aqui embaixo preview um contato vai poder ser relacionado a várias consultas e várias consultas vão estar relacionadas a um contato beleza então é dessa forma aqui que a gente vai fazer Eu vou est salvando e a gente vai ter aqui ó consultas one to many Beleza vamos lá criar uma consulta na prática agora para vocês entenderem como é que vai funcionar Eu vou est mostrando de maneira manual porém você vai fazer isso aqui automatizado Logo em seguida eu vou mostrar como fazer isso nas automações Então agora aqui embaixo de oportunidades a gente tem consultas Eu vou clicar em adicionar consulta Vou colocar o número do prontuário ou o nome do paciente Vou colocar o nome do paciente Paciente X Y Z OK Vou salvar E aí vai abrir o sal Então vai tá aqui ó o número ou do prontuário ou o nome do paciente Vou colocar a paciente X YZ O número do prontuário vou colocar um aleatório Especialidade vai ser cardiologia e status da consulta tá agendado para dia 10 OK e aí beleza coloquei as informações da consulta preenchi ali o formulário da consulta Porém eu preciso que essa consulta seja associada a um contato Então vou vir aqui em associações vou escolher o contato que eu quero que seja atribuído essa consulta E pronto a gente tem aqui uma consulta Eita não salvou os campos Calma aí Número do prontuário Especialidade de dado para amanhã Salva Pronto Agora sim E aí associado ao contato ali Beleza se eu clicar em ver informações de contato vai abrir aqui para mim as informações daquele contato Aqui vai para as informações do contato Aqui na direita tem associações E aí eu consigo ver quais consultas estão associadas à aquele contato OK no caso a gente tem aqui e o nome da consulta ou seria o prontuário e eu consigo ver que tá associado a esse contato Beleza então se eu voltar aqui na minha tabela eu vou ter uma tabela mostrando ali o paciente XYZ com o número do prontuário tal a especialidade de cardiologia agendada para tal horário lá Eita não pegou a data da consulta né então eu vou clicar aqui em manage fields e vou pegar associações informações da consulta para pegar a data também Vou tirar quando foi criado quando foi atualizado vou aplicar e aí aparece dessa maneira aqui Beleza data consulta quando foi agendado a especialidade e aí pra gente testar se a nossa associação tá funcionando eu vou adicionar uma nova consulta a esse usuário Então é o mesmo paciente paciente tal paciente X YZ é o mesmo paciente Aí você poderia colocar o mesmo número puntuário o número do paciente Vou salvar e as mesmas informações só que dessa vez é uma consulta de pediatria Faltou faltou E vou asciar essa consulta aqui aquele mesmo contato Eu passei em teste Vou salvar Beleza pronto Agora a gente tem aqui nos contatos duas consultas atribuídas a esse paciente E aí se eu clico aqui eu sou direcionado lá paraa parte dos dessa forma Eu vou até salvar informações Smart list pra gente poder ver isso mais organizado Consultas E aí consigo estar colocando vários filtros Por exemplo eu só quero ver as consultas da especialidade tal ou eu só quero ver as consultas associadas ao contato específico Eu consigo estar fazendo vários filtros aqui mas aqui no caso eu só vou salvar essas matulas ali chamado consultas e aí fica ali consultas Também se eu clicar em customizar a lista aqui novamente eu consigo estar compartilhando com usuários específicos a minha base Então posso até est pegando um link onde maneira bem fácil eu posso só estar colando consigo visualizar quais são as consultas ok então se eu quiser mandar para alguém de maneira rápida aí quais as consultas a lista de consultas por exemplo da clínica novamente eu tô falando consultas aqui mas você tem que adaptar pro seu nicho beleza e aí você consegue ver as consultas ali de maneira bem tranquila Vai ser um pouco difícil talvez entender o quão poderoso é isso aqui Então eu peço que você vá na sua conta teste veja se faz sentido pro nicho que você tá atuando E eu vou deixar todo esse documento aqui explicado certinho Eu até deixei um prompt aqui Eu vou mostrar o prompt na prática mostrando como que você pode estar personalizando e se faz realmente sentido você est usando esse custom object Beleza então voltando aqui pra aula criação de cada objeto você vai na sub account vai em series object ad custom object você pode colocar o nome os campos dessa deabas que vai ter você pode criar vários campos por exemplo de imobiliária endereço do imóvel propriedade o preço metragem status se foi vendido se não foi vendido concessionária tá aqui alguns exemplos associações você pode fazer até 10 associações entre objetos Então você pode associar aquele objeto específico você pode associar contatos oportunidades principalmente exemplos práticos Aqui a propriedade que eu mostrei do João Silva lá tá interessado mas ele pode estar interessado a várias outras propriedades também nas automações e workflows Como eu disse vocês podem colocar gatilhos assim que um objeto novo é criado ou por exemplo assim que foi adicionado algo no estoque ou algo foi alterado no estoque Você pode colocar algumas ações também que é de atualizar um estoque específico atualizar o preço de um imóvel o preço de um carro por exemplo limpar campos adicionar linhas no Google Sheets Você pode utilizar as automações ali do Web Hook para est mandando isso para alguém No meu caso por exemplo exemplo prático assim que tiver um imóvel vendido assim que tiver um carro vendido a gente vai mandar notificação pro time interno do cliente avisando que aquele carro foi vendido realmente que saiu de estoque que é para parar de mandar ele pras negociações entendeu então vamos lá Tô aqui no meu GPT eu vou pegar o prompt aqui que eu deixei para vocês Vocês vão conseguir visualizar esse prompt aqui certinho Eu vou copiar tudo que tem no prompt É um prompt que eu criei para exatamente criar os custom objects da maneira correta e para est ajudando vocês para ver se faz sentido ou não OK com esse pronto vocês podem fazer outras perguntas ali também de follow-up para tentar entender se realmente faz sentido vocês estarem utilizando ou não como que você vende essa ideia pro cliente e tudo mais Então vou jogar simplesmente o prompt aqui e eu vou pegar um nicho por exemplo de patch Ele já tá com todo o contexto do que que é um custom object aqui e como criar um custom object realmente Então é só eu colocar de maneira bem tranquila me ajude a criar pro nicho de de nicho petch e ele já cria ali para mim Eu posso criar um object chamado PET nome plural Pets Campo de exibição principal nome do pet Ícone um ícone de patinha Descrição registro do animal associado ao tutor para gestão de saúde vacinas e consultas Então vai ter por exemplo o Thor com campo obrigatório que é o nome vai ser o campo principal espécie lista suspensa se é cão se é gato se é ave se é rptil raça texto simples para eu poder escrever ali A data de nascimento peso estatus de vacinação última vacina próxima vacina tutor Que que eu posso estar fazendo também eu posso estar criando um formulário que vai linkar diretamente a esse custom object Então toda vez que por exemplo o dono desse pet shop tiver que cadastrar o novo animal tudo que o time dele vai ter que fazer é pegar o formulário preencher com esses campos aqui e vai est adicionando um novo pet lá na parte dos custom Da mesma forma funciona para outros nichos Então vou pegar outro exemplo aqui que é o nicho de clínicas que é um nicho bem utilizado também para isso Agora me ajude a criar para o nicho de clínicas Clínicas e consultórios precisa organizar dados dos pacientes e suas consultas vinculando a médicos planos de saúde e status de atendimento O CRM padrão do Gorreleva não resolve porque contatos são só pessoas e precisamos rastrear prontuários consultas para automatizar followups retornos e cobranças Então ele sugeriu aqui para mim criar consulta no plural consultas o campo de exibição número do prontuário e nome do paciente Um ícone ali que remete ao nicho de médico né descrição registro de consultas médicas vinculadas a pacientes com status especialidade e plano Então número do prontuário vai ter em texto Você pode automatizar esse aqui para gerar um aleatório Associação do paciente vai associar ao contato dele criado no no Go High Level especialidade se é cardiologia se é pediatra você pode criar ali você vai clicar vai mostrar as opções Médico responsável Dr Silva por exemplo você pode colocar associado a um usuário que já tá dentro do goelev é um médico que já esteja dentro do govel para ficar realmente linkcado a ele aquele paciente com aquele prontuário linkado aquele médico plano de saúde está de consulta Então ele girou aqui para mim alguns campos possíveis que eu posso estar criando para que isso fique mais organizado realmente as associações que eu posso fazer cardianalidade N1 muitas consultas para um paciente opcional associar também a companhe a clínica atender empresas ou planos corporativos né esse aqui tá aí num nível mais avançado mas só para vocês entenderem que esses custom object né automação recomendada confirmação de consulta Quando consulta criado com data e horário definido ação enviar SMS WhatsApp automático para paciente confirmando o agendamento followup pós consulta Quando o status status consulta esse campo que a gente criar for para realizada a gente pode enviar uma mensagem de agradecimento mais um link de feedback paraa pesquisa de satisfação Ou se o status for faltou eu posso estar pegando um gatilho porque vai tá lá o status já vai est linkado a pessoa já vai est linkada a oportunidade já vai est linkada a usuário que tá atribuído à aquela pessoa Então já vai est tudo linkado Tudo que eu preciso fazer é est gerenciando isso ali no custom object que eu criei Beleza então essa automação quando for pro estatus faltou a gente vai conseguir fazer esse disparo beleza então passa aqui também um checklist de teste um passo a passo de implementação Essa aula foi mais introdutória para introduzir vocês realmente essa parte de canção obsem o potencial disso aqui para vocês e pros seus clientes Eu vou estar trazendo aulas mais a fundo e a gente pode estar fazendo isso juntos para organizar o CRM de vocês para deixar realmente personalizado Beleza vou ficando por aqui Espero que essa aula tenha sido útil para vocês Valeu até a próxima M 
+O ChatGPT disse:
+Perfeito. O que você descreveu (Custom Objects + associações + triggers) é exatamente o que separa “GHL genérico” de “CRM clínico que parece software próprio” — e isso muda jogo em High Ticket porque:
+
+você vende organização + previsibilidade + escala
+
+e não “WhatsApp + funil bonitinho” (que todo mundo promete)
+
+O que dá pra construir com isso pra clínicas (modelo que fecha contrato)
+Pensa em 3 camadas:
+
+1) Contato = pessoa (lead/paciente/responsável)
+Fica só o básico + identidade + consentimentos.
+
+2) Custom Objects = o que realmente importa na clínica
+Sugestão prática (você escolhe 1 ou 2 pra não virar Frankenstein):
+
+A) Consultas (o seu exemplo)
+
+Data/hora
+
+Status (Agendada / Confirmada / Realizada / Faltou / Reagendada / Cancelada)
+
+Especialidade
+
+Médico responsável
+
+Convênio / particular
+
+Valor / forma de pagamento
+
+Observações internas
+
+Associação: Contato (1) → Consultas (N)
+
+B) Procedimentos / Tratamentos (quando o ticket é alto)
+
+Tipo de procedimento
+
+Etapa do tratamento (Avaliação / Exames / Pré / Execução / Pós / Retorno)
+
+Valor total / parcelas
+
+Status financeiro (em dia / atraso / quitado)
+
+Próximo passo
+
+Associação: Contato (1) → Tratamentos (N)
+(opcional: associar também a Oportunidade depois, quando liberar)
+
+C) “Objeções” como Custom Object (pra virar máquina de fechamento)
+Isso aqui é ouro pro teu SDR/closer e pra otimizar VSL/argumentação.
+
+Campos:
+
+Objeção (dropdown: Preço / Tempo / Medo / Cônjuge / “Vou pensar” / Comparação / Confiança / Dor baixa etc.)
+
+Intensidade (1–5)
+
+Origem (SDR / Closer / WhatsApp / Recepção)
+
+Status (Aberta / Contornada / Voltou / Perdida)
+
+Motivo raiz (texto curto)
+
+Próxima ação (dropdown)
+
+Data de registro
+
+Associação: Contato (1) → Objeções (N)
+E aí você consegue ver o “histórico de travas” do lead sem poluir notas.
+
+Workflows que você devia ter prontos (pra vender como pacote)
+Sem enrolar, 6 automações que fazem a clínica te amar:
+
+Confirmação de consulta (D-1 / H-3 / H-1)
+Se respondeu “confirmo” → status = Confirmada
+Se não respondeu → tarefa pra recepção
+
+No-show recovery (status = Faltou)
+Mensagem + link pra reagendar + “pergunta de barreira” (foi tempo, dinheiro, medo?)
+Resposta alimenta Custom Object Objeções
+
+Pós-consulta (status = Realizada)
+Agradecimento + NPS + pedido de avaliação Google (quando NPS alto)
+
+Follow-up de orçamento (Tratamento criado/atualizado)
+Sequência 7/14/21 dias baseada em objeção registrada
+
+Cobrança inteligente (status financeiro = atraso)
+Com régua educada (sem virar cobrador chato)
+
+Recorrência / retorno (ex: 30/90/180 dias)
+Gatilho por especialidade/procedimento
+
+Como isso vira argumento de venda (e não “feature”)
+Você não vende “Custom Objects”. Você vende:
+
+Zero bagunça: cada consulta/tratamento é um registro (não nota)
+
+Time alinhado: recepção, SDR e médico vendo a mesma realidade
+
+Recuperação de receita: no-show e orçamento parado viram automação
+
+Previsibilidade: dá pra reportar por status (agendado/confirmado/realizado) e por objeção (por que não fecha)
+
+Próximo passo
+Manda o DOCX da call com o cliente aqui que eu vou fazer 3 coisas em cima dele:
+
+extrair dor, promessa, métricas e linguagem exata do cliente (copy que fecha)
+
+montar o blueprint do CRM (quais objetos + campos + automações) baseado no caso real
+
+gerar um Objection Playbook ligado aos Custom Objects (o que registrar, como contornar, e qual workflow dispara)
+
+Pode mandar o arquivo quando quiser.
+
+Você disse:
+Onboarding luiz .docx
+Documento
+O ChatGPT disse:
+Perfeito. Li o onboarding inteiro do Dr. Luiz com lupa estratégica. Isso aqui não é só “briefing de cliente”. É matéria-prima pra criar um CRM clínico que fecha High Ticket com previsibilidade. Vou direto ao que importa.
+
+1️⃣ Diagnóstico brutal (o que ninguém está te dizendo)
+O problema não é tráfego.
+Não é “script ruim”.
+Não é “secretária fraca”.
+
+O gargalo real é este combo:
+
+Avatar certo entrando errado
+
+Desejo alto + poder de decisão fragmentado
+
+Objeções recorrentes não estruturadas
+
+Processo de follow-up manual, emocional e inconsistente
+
+Isso aparece várias vezes no onboarding: mulheres 40+, altamente desejosas, mas travadas por marido, culpa, medo e dinheiro — e tudo isso fica perdido em conversa de WhatsApp 
+Onboarding luiz
+
+.
+
+2️⃣ O erro clássico da clínica (e como você vira herói)
+Hoje o CRM trata tudo como:
+
+contato → conversa → “sumiu / não fechou”
+
+Isso é amador pra ticket de 15k–50k.
+
+O que deveria existir:
+Cada lead tem histórico clínico + histórico emocional + histórico financeiro.
+
+E isso não cabe em:
+
+notas
+
+tags
+
+pipelines genéricos
+
+Aqui entram os Custom Objects como arma de fechamento, não como “feature bonita”.
+
+3️⃣ Blueprint de Custom Objects (feito sob medida pro Dr. Luiz)
+🔹 1. CONSULTAS (você já começou certo)
+Mas ajusta assim:
+
+Campos obrigatórios
+
+Data / Hora
+
+Status (Agendada / Confirmada / Realizada / Faltou / Reagendada)
+
+Especialidade
+
+Valor da consulta
+
+Origem (Instagram / Tráfego / Indicação)
+
+Concierge responsável
+
+Associação
+
+Contato (1) → Consultas (N)
+
+👉 Isso vira:
+
+taxa de no-show real
+
+gargalo por secretária
+
+gargalo por canal
+
+🔹 2. TRATAMENTOS (onde mora o dinheiro)
+Esse aqui é o coração do High Ticket.
+
+Campos
+
+Tipo de tratamento (Menopausa / Emagrecimento / Longevidade)
+
+Valor total
+
+Forma de pagamento
+
+Status clínico (Avaliação / Exames / Execução / Retorno)
+
+Status financeiro (Proposto / Em negociação / Fechado / Perdido)
+
+Motivo de não fechamento (dropdown)
+
+Associação
+
+Contato (1) → Tratamentos (N)
+
+👉 Agora você sabe:
+
+quantos orçamentos morrem
+
+em qual etapa
+
+por qual motivo
+
+🔹 3. OBJEÇÕES (isso aqui é ouro puro)
+Tudo que o Dr. Luiz reclamou na call vira dado acionável.
+
+Campos
+
+Tipo de objeção
+(Preço / Marido / Medo / Tempo / Comparação / “Vou pensar”)
+
+Intensidade (1–5)
+
+Quem gerou (Secretária / IA / Dr. Luiz)
+
+Status (Aberta / Contornada / Perdida)
+
+Próxima ação sugerida
+
+Associação
+
+Contato (1) → Objeções (N)
+
+Tratamento (1) → Objeções (N)
+
+👉 Resultado:
+Você descobre, por exemplo:
+
+“72% das perdas acima de 20k morrem em ‘marido + medo’, não em preço”.
+
+Isso muda copy, VSL, IA, tudo.
+
+4️⃣ Automações que imprimem dinheiro (sem achismo)
+⚙️ No-show
+Status da consulta → Faltou
+→ WhatsApp humanizado
+→ pergunta única: “O que te travou?”
+→ resposta alimenta Custom Object Objeções
+
+⚙️ Orçamento parado
+Tratamento = “Proposto” por 3 dias
+→ sequência baseada na objeção registrada
+(preço ≠ mesma mensagem de marido)
+
+⚙️ Follow-up inteligente
+Nada de “Oi, tudo bem?”
+
+Mensagem sempre baseada em:
+
+dor declarada
+
+desejo declarado
+
+estágio emocional
+
+Isso está todo explícito no onboarding 
+Onboarding luiz
+
+.
+
+5️⃣ O que você vende pro próximo cliente (não venda GHL)
+Você não vende:
+
+“CRM + IA + automação”
+
+Você vende:
+
+menos no-show
+
+menos secretária perdida
+
+mais fechamento sem aumentar tráfego
+
+clareza de por que não fecha
+
+posicionamento real de luxo
+
+6️⃣ Próximo passo prático (sem enrolação)
+Se você quiser, no próximo round eu faço uma dessas três coisas (você escolhe):
+
+1️⃣ Transformo esse onboarding em um mapa completo de CRM (campos + automações + dashboards)
+2️⃣ Crio o Objection Playbook da clínica (o que dizer, quando dizer, por qual canal)
+3️⃣ Estruturo a VSL + IA + CRM como um sistema único de fechamento High Ticket
+
+Escolhe o caminho. Aqui tem munição pra escalar.
+
+
+Fontes
+Você disse:
+Quero criar um sistema completo no ghl, um processo completo com estratégias de marketing e vendas... estratégias de ads, funks demarketing funks de vendas, estratégia de abordagem qualificação follow up com vídeos, áudios, nutrição, Emil mkt, trabalhar com base de clientes antigas como enviei pra você recebmtente uma estratégia de selling ai system... vamos nessa?
+O ChatGPT disse:
+Agora sim.
+Vamos montar um sistema de verdade, não um monte de automações soltas.
+
+Vou te entregar a arquitetura completa do que você quer construir no GHL, pensando como dono de operação High Ticket, não como “implementador de CRM”.
+
+Pensa nisso como um Sistema Operacional de Aquisição, Conversão e Retenção para clínicas premium.
+
+VISÃO GERAL DO SISTEMA (macro)
+O sistema tem 5 camadas integradas:
+
+1️⃣ Aquisição (Ads + Conteúdo + Autoridade)
+2️⃣ Qualificação & Abordagem (IA + humano)
+3️⃣ Conversão (consultas e tratamentos High Ticket)
+4️⃣ Follow-up inteligente (vendas + objeções)
+5️⃣ Monetização contínua (base antiga + recorrência)
+
+Tudo isso rodando dentro do GHL, com Custom Objects, pipelines, workflows, IA e dados.
+
+1️⃣ ESTRATÉGIA DE AQUISIÇÃO (ADS + CONTEÚDO)
+🎯 Objetivo real dos anúncios
+❌ Não é vender tratamento
+❌ Não é vender consulta
+
+✅ É atrair o avatar certo e pré-qualificar emocionalmente
+
+Estrutura de Ads (simples e matadora)
+TOPO – Consciência
+
+Conteúdo educacional emocional
+
+Dor + identificação
+
+Vídeos do médico (30–60s)
+
+Ex:
+
+“Você não está cansada porque está ficando velha…”
+
+➡️ CTA: “Converse com a nossa equipe”
+
+MEIO – Autoridade
+
+Prova social
+
+Bastidores
+
+Casos reais (sem prometer milagre)
+
+➡️ CTA: WhatsApp / Instagram
+
+FUNDO – Seleção
+
+Mensagens claras de posicionamento:
+
+atendimento personalizado
+
+não é para todos
+
+investimento compatível com exclusividade
+
+➡️ Isso afasta curiosa sem dinheiro antes do CRM.
+
+2️⃣ ABORDAGEM & QUALIFICAÇÃO (Selling AI System)
+Aqui nasce o teu diferencial.
+
+🔥 Conceito: IA não vende. IA filtra e prepara.
+Etapas da abordagem
+1. Abertura humanizada
+
+Linguagem imperfeita
+
+Emojis leves
+
+Tom “amiga da casa” (como o Dr. Luiz pediu)
+
+2. Diagnóstico rápido
+Perguntas-chave:
+
+O que mais te incomoda hoje?
+
+Há quanto tempo isso te afeta?
+
+Você já tentou resolver como?
+
+➡️ Respostas alimentam:
+
+Custom Object: Objeções
+
+Campo: Dor principal
+
+3. Qualificação silenciosa
+Sem perguntar dinheiro diretamente:
+
+Profissão
+
+Cidade
+
+Se já fez tratamentos
+
+Disponibilidade de agenda
+
+➡️ Lead Score automático no GHL
+
+3️⃣ FUNIL DE VENDAS (PIPELINES REAIS)
+Pipeline 1 – Consultas
+Etapas:
+
+Novo Lead
+
+Qualificado
+
+Consulta Ofertada
+
+Consulta Agendada
+
+Compareceu
+
+Faltou
+
+Cancelou
+
+Automação:
+
+Confirmação
+
+Reagendamento
+
+No-show recovery
+
+Pipeline 2 – Tratamentos (High Ticket)
+Etapas:
+
+Orçamento Criado
+
+Em Avaliação
+
+Em Negociação
+
+Fechado
+
+Perdido
+
+Aqui entra o ouro:
+👉 cada etapa dispara follow-ups diferentes
+👉 baseados na objeção registrada
+
+4️⃣ FOLLOW-UP MULTICANAL (onde você ganha dinheiro)
+📲 WhatsApp
+Áudios curtos
+
+Vídeos do médico (gravados 1x, usados 100x)
+
+Mensagens personalizadas com variáveis reais
+
+🎥 Vídeos estratégicos
+Tipos:
+
+“Por que não é só hormônio”
+
+“Por que tratar barato sai caro”
+
+“Por que não atendemos todo mundo”
+
+Usados em:
+
+orçamento parado
+
+marido como objeção
+
+medo de investir
+
+📧 Email Marketing (nutrição premium)
+Nada de newsletter lixo.
+
+Sequências:
+
+Educação profunda
+
+Autoridade médica
+
+Casos reais
+
+Quebra de objeções
+
+Função:
+👉 preparar emocionalmente quem ainda não fechou.
+
+5️⃣ BASE ANTIGA = MÁQUINA DE FATURAMENTO
+Isso aqui é negligenciado pela maioria.
+
+Estratégia com base antiga:
+Segmentação por:
+
+Nunca fechou
+
+Fechou consulta, não fechou tratamento
+
+Tratamento antigo (6–12 meses)
+
+Campanhas:
+
+“Você ainda sente isso?”
+
+“O que mudou desde a última vez?”
+
+Convites VIP
+
+Reavaliação
+
+Tudo automatizado, mas com cara humana.
+
+6️⃣ DASHBOARDS (decisão de CEO, não feeling)
+Você precisa ver:
+
+% no-show
+
+% fechamento por objeção
+
+% fechamento por canal
+
+Ticket médio real
+
+Onde morre o dinheiro
+
+Isso vira argumento de venda pra você com próximos clientes.
+
+COMO A GENTE CONTINUA (próximo passo)
+Sugestão de roadmap prático:
+
+Passo 1️⃣
+Eu desenho pra você:
+
+Mapa completo do sistema no GHL
+
+Custom Objects finais
+
+Pipelines
+
+Lógica de automação
+
+Passo 2️⃣
+Criamos:
+
+Scripts de abordagem
+
+Perguntas de qualificação
+
+Mensagens por objeção
+
+Passo 3️⃣
+Construímos:
+
+Selling AI System
+
+Playbook replicável pra qualquer clínica High Ticket
+
+Agora me responde direto, sem rodeio:
+
+👉 Você quer que eu desenhe o sistema técnico no GHL primeiro
+ou
+👉 quer começar pela estratégia de selling + scripts + objeções e depois plugar no GHL?
+
+Escolhe a ordem. Vamos executar.
+
+Você disse:
+Mas tem um detalhe a consulta é paga 
+O ChatGPT disse:
+Excelente você ter trazido isso agora — muda tudo (e pra melhor).
+Consulta paga não é detalhe operacional, é pilar estratégico.
+
+Vou ajustar o sistema inteiro com esse pressuposto 👇
+
+REGRA Nº1 DO SISTEMA
+A consulta paga NÃO é barreira.
+É filtro, posicionamento e pré-fechamento.
+
+Se alguém trava na consulta paga, jamais fecharia 15k–50k.
+Então o sistema tem que vender a consulta como produto premium, não como “taxa”.
+
+1️⃣ A CONSULTA VIRA UM PRODUTO (não um agendamento)
+Mentalidade errada (comum)
+“Vamos convencer a pagar a consulta”
+
+Mentalidade correta
+“Vamos selecionar quem merece a consulta”
+
+Isso muda:
+
+copy
+
+abordagem
+
+funil
+
+follow-up
+
+automações
+
+2️⃣ ESTRUTURA DO FUNIL COM CONSULTA PAGA
+🔹 Funil A – Venda da Consulta (High Intent)
+Pipeline separado, sem misturar com tratamento.
+
+Etapas
+
+Lead Entrou
+
+Qualificado
+
+Consulta Apresentada
+
+Pagamento Pendente
+
+Consulta Confirmada
+
+Faltou
+
+Compareceu
+
+👉 Não existe “Agendado sem pagamento”
+Pagamento = confirmação.
+
+3️⃣ COPY & ABORDAGEM (ponto crítico)
+❌ O que NÃO dizer
+“Valor da consulta é X”
+
+“A consulta custa X reais”
+
+“Tem interesse em agendar?”
+
+✅ O que dizer
+Estrutura de 3 camadas:
+
+1. Valor
+
+“A consulta não é só uma conversa, é um diagnóstico profundo…”
+
+2. Exclusividade
+
+“O doutor não atende volume, atende casos selecionados…”
+
+3. Filtro
+
+“Por isso a consulta é paga e não é para todo mundo”
+
+💡 A consulta já antecipa o High Ticket.
+
+4️⃣ PRÉ-QUALIFICAÇÃO ANTES DE FALAR DE PREÇO
+Antes de citar valor, o sistema obriga passar por:
+
+Dor real
+
+Tentativas frustradas
+
+Desejo de mudança
+
+Comprometimento
+
+Isso pode ser:
+
+IA
+
+humano
+
+híbrido
+
+👉 Só depois disso o valor faz sentido emocionalmente.
+
+5️⃣ COMO APRESENTAR O PREÇO DA CONSULTA
+Script base (ajusta por clínica):
+
+“Pelo nível de profundidade e pelo tempo dedicado, a consulta tem um investimento de R$ X.
+Ela é o primeiro passo para entender se o tratamento faz sentido pra você.”
+
+Repara:
+
+não fala “custa”
+
+fala “investimento”
+
+não promete tratamento
+
+não promete desconto
+
+6️⃣ PAGAMENTO = GATILHO DE AUTORIDADE
+Regra de ouro
+❌ Não agenda sem pagar
+❌ Não segura vaga
+❌ Não “deixa pensar” com agenda travada
+
+Automação no GHL:
+
+Link de pagamento
+
+Deadline
+
+Mensagem clara:
+
+“Após o pagamento, sua vaga é confirmada”
+
+Isso reduz no-show brutalmente.
+
+7️⃣ FOLLOW-UP PARA CONSULTA PAGA (não fechado)
+Aqui a maioria erra.
+
+❌ Errado
+“Conseguiu ver o valor?”
+
+✅ Certo
+Follow-up emocional:
+
+vídeo curto do médico
+
+áudio humanizado da concierge
+
+reforço de exclusividade
+
+reforço de seleção
+
+Ex:
+
+“Só passando pra te avisar que a agenda dessa semana está quase completa…”
+
+8️⃣ CONSULTA PAGA + TRATAMENTO = CONTINUIDADE LÓGICA
+A consulta não vende tratamento.
+Ela cria autoridade + clareza + confiança.
+
+Por isso:
+
+quem paga consulta já entra com:
+
+ticket mindset
+
+comprometimento
+
+menos objeção
+
+9️⃣ AUTOMAÇÕES ESPECÍFICAS (essenciais)
+⚙️ Pagamento não realizado (24h)
+mensagem leve
+
+reforço de valor
+
+sem pressão
+
+⚙️ Pagamento realizado
+confirmação premium
+
+regras claras (exames / cancelamento)
+
+sensação de “já sou paciente”
+
+⚙️ No-show
+recuperação
+
+possível taxa
+
+reaproveitamento estratégico
+
+10️⃣ O QUE ISSO TE PERMITE VENDER COMO SERVIÇO
+Você não vende:
+
+“CRM + automação”
+
+Você vende:
+
+aumento de comparecimento
+
+menos curiosos
+
+mais fechamento de tratamento
+
+posicionamento premium real
+
+AGORA, DECISÃO DE EXECUÇÃO
+Pra avançar do jeito certo, preciso alinhar contigo:
+
+👉 Você quer que eu:
+1️⃣ Desenhe o sistema completo no GHL já considerando consulta paga
+(campos, pipelines, automações, lógica)
+
+ou
+2️⃣ Comece pelos scripts, vídeos e copy da venda da consulta paga
+(e depois plugamos no GHL)
+
+Escolhe.
+A partir daqui, isso vira playbook replicável pra qualquer clínica High Ticket.
+
+Você disse:
+E como isso se encaixa ao que vamos fazer?
+
+Com base nos materiais fornecidos, que detalham a operação da agência "Gym Members Now" de JP Middleton (assumida aqui como a base estratégica para a "Mottivme"), segue a síntese estratégica completa para orientar o crescimento do negócio.
+
+### 1. Essência do Negócio
+A empresa opera como uma **Agência de IA e Crescimento B2B** focada em negócios físicos (brick-and-mortar). A essência não é vender "marketing" ou "chatbots", mas sim instalar uma infraestrutura completa de sistemas de IA que resolvem a ineficiência operacional na conversão de leads. O modelo de negócio transforma o serviço em um ativo vendável, focando em sistemas replicáveis em vez de depender de uma marca pessoal [1], [2], [3].
+
+### 2. ICP Real (Ideal Customer Profile)
+*   **Perfil Primário:** Proprietários de academias e estúdios fitness (ex: Anytime Fitness, marcas da Exponential Brands) [4], [5].
+*   **Expansão Validada (Nichos "High-Ticket"):** Negócios físicos B2C que vendem serviços caros ou recorrentes, como Med Spas, Quiropráticos, Dentistas, HVAC, Energia Solar e Telhados (Roofing) [4], [6].
+*   **Características Chave:** Negócios que já investem em marketing ($5k-$15k/mês) mas falham no acompanhamento; proprietários "operadores" que estão ocupados demais para gerenciar leads manualmente; franquias ou redes onde um case de sucesso gera efeito dominó [7], [8].
+
+### 3. Problema Central do Cliente
+O cliente não sofre apenas por "falta de leads", mas pela **incapacidade de processar leads com eficiência**.
+*   **Dados Críticos:** O tempo médio de resposta é de 42 a 47 horas (quando deveria ser <5 min); 62% das ligações não são atendidas; 27% nunca fazem follow-up pós-venda [9], [10], [11].
+*   **A Dor Real:** O cliente gasta dinheiro em anúncios, gera leads, mas os perde por falta de velocidade, falta de processos de vendas e dependência de funcionários mal treinados [12], [13].
+
+### 4. Ofertas e Diferenciais (Sistema "AI Aristotle")
+A oferta não é um produto isolado, mas um ecossistema onde "o todo é maior que a soma das partes" [14].
+*   **Oferta Principal:** Sistema completo de aquisição e retenção via IA.
+    1.  **Reativação de Banco de Dados:** Campanhas de SMS/IA para listas antigas (gera caixa imediato sem custo de anúncios) [15], [16].
+    2.  **Reputação Automática:** IA que pede avaliações (reviews) e referências apenas para clientes satisfeitos, e responde automaticamente no Google [17], [18].
+    3.  **Nurturing & Speed to Lead:** IA que responde leads em <1 minuto, agenda reuniões e faz follow-up de não comparecimento [9], [19].
+    4.  **Anúncios Pagos (Ads):** Tráfego pago (Facebook/Instagram) inserido apenas *após* a fundação estar corrigida [12], [20].
+*   **Diferencial Competitivo:** Enquanto concorrentes vendem apenas "agentes de voz" ou "anúncios", a empresa vende a solução ponta a ponta (Do lead ao show, do show ao fechamento, do fechamento à referência) [21], [22].
+
+### 5. Estratégias Já Testadas
+*   **O que FALHOU (Não fazer):**
+    *   **Vender apenas Agentes de Voz:** Resolve apenas uma parte do problema (agendamento) e é difícil de escalar como oferta única [21].
+    *   **Facebook Lead Forms (sem atrito):** Gera volume alto, mas qualidade baixa e taxas de comparecimento (show rates) ruins (aprox. 10%) [23], [24].
+    *   **Vender para "Gatekeepers" (Gerentes):** Perda de tempo; focar apenas nos donos/decisores [25].
+    *   **Ligar anúncios sem corrigir o processo:** Desperdício de verba se o cliente não atende o telefone ou não tem reviews [26], [27].
+*   **O que FUNCIONOU (Alavancas de Sucesso):**
+    *   **Reativação Primeiro:** Começar reativando a base antiga do cliente para gerar ROI imediato antes de gastar com ads [28], [29].
+    *   **Landing Pages com Fricção:** Usar páginas de destino (em vez de formulários nativos) para qualificar melhor o lead [30].
+    *   **Matriz Decágono (Ads):** Segmentar anúncios especificamente por idade e gênero (5 criativos masc. + 5 fem.) em vez de campanhas genéricas [31], [32].
+    *   **Parcerias Estratégicas:** Usar um cliente influente dentro de uma franquia para vender para toda a rede (efeito "Jeff" e "Andy") [33], [34].
+
+### 6. Posicionamento e Mensagens-Chave
+*   **Posicionamento:** "Especialista" e não "Generalista". A agência se posiciona como parceira preferencial que entende a operação interna do nicho (ex: "Feito por donos de academia para donos de academia") [35], [36].
+*   **Mensagem-Chave 1:** "Nós instalamos um sistema de IA que trabalha seus leads antigos e gera agendamentos sem você gastar $1 em anúncios novos" [37].
+*   **Mensagem-Chave 2:** "Seu problema não é tráfego, é conversão. A média de resposta é de 47 horas; nossa IA responde em 1 minuto, aumentando a conversão em 400%" [9], [19].
+*   **Mensagem-Chave 3:** "Nós não vendemos leads, vendemos comparecimentos (shows) e sistemas de vendas validados" [12].
+
+### 7. Objeções Recorrentes e Como Contornar
+*   **"Já trabalho com uma agência":**
+    *   *Resposta:* A outra agência faz reativação da base antiga? Eles automatizam reviews e referências? Se não, você está deixando dinheiro na mesa [38], [39].
+*   **"Minha equipe faz o follow-up":**
+    *   *Resposta:* Dados mostram que humanos falham ou demoram >42h. A IA nunca dorme, nunca adoece e responde em segundos [9], [40].
+*   **"Isso é muito caro ($1.500/mês)":**
+    *   *Resposta:* Ancorar no valor do "Lifetime Value" do cliente deles. Se a reativação trouxer 4 vendas, o sistema já se pagou sem custo de ads [41], [42].
+*   **"Não gosto de IA/Chatbots":**
+    *   *Resposta:* É um sistema supervisionado por humanos 24/7 para garantir que não haja erros (mesmo que seja mentira/exagero, é a quebra de objeção usada) [43].
+
+### 8. Alavancas de Crescimento Implícitas
+1.  **Venda baseada em evidência visual:** Usar ferramentas como *Search Atlas* (mapas de calor de SEO) durante a call de vendas para provar visualmente que o cliente está perdendo para a concorrência local [44].
+2.  **Call de Triagem (Setter):** Não vender no primeiro contato. Usar uma call curta (15 min) apenas para diagnosticar a dor (agitar o problema) e agendar o fechamento, garantindo que o cliente admita que precisa de mudança antes de ouvir o preço [45], [46].
+3.  **Ancoragem em Autoridade:** Tornar-se "fornecedor preferencial" de franquias ou softwares (CRMs) para eliminar o custo de aquisição de clientes (CAC) via indicações passivas [5].
+4.  **Oferta de Entrada (Trojan Horse):** Vender a *Reativação de Base* como porta de entrada. É baixo risco para o cliente, gera caixa rápido e cria confiança para vender o contrato recorrente de anúncios depois [28], [42].
+
+Esta síntese fornece o "playbook" exato utilizado para escalar a *Gym Members Now*, focado em corrigir ineficiências operacionais com tecnologia, em vez de apenas vender serviços de marketing tradicionais.
+O ChatGPT disse:
+Excelente pergunta — e aqui está o ponto-chave: tudo o que você descreveu já é exatamente o que vamos fazer.
+A diferença é que agora vamos encaixar isso num sistema operacional único dentro do GHL, adaptado para consulta paga + High Ticket, e não para “lead grátis de academia”.
+
+Vou te mostrar como cada bloco do playbook da Gym Members Now / AI Aristotle se encaixa 1:1 no que estamos construindo, sem conflito, sem gambiarra.
+
+VISÃO-MÃE
+O que vocês vendem = o mesmo ativo.
+O que muda = o tipo de conversão final.
+
+GMN → vende comparecimento para aula gratuita
+
+Mottivme (clínicas) → vende pagamento de consulta + fechamento de tratamento
+
+👉 A arquitetura é a mesma.
+👉 O funil só ganha uma camada a mais de seleção e valor.
+
+1️⃣ ESSÊNCIA DO NEGÓCIO — 100% ALINHADO
+“Não vendemos marketing, vendemos sistemas operacionais de conversão”
+
+Perfeito.
+No nosso caso, o sistema passa a se chamar algo como:
+
+Sistema de Aquisição, Qualificação e Monetização Clínica com IA
+
+Dentro do GHL, isso vira:
+
+CRM
+
+IA
+
+Automação
+
+Follow-up
+
+Ads
+
+Reativação
+
+Pós-venda
+
+Reviews
+
+Exatamente como no AI Aristotle.
+Só que adaptado à lógica médica (consulta paga).
+
+2️⃣ ICP — A CLÍNICA É UM “GYM HIGH TICKET”
+O que define o ICP da GMN?
+
+negócio físico
+
+lead inbound
+
+falha de follow-up
+
+LTV alto
+
+dono ocupado
+
+Isso descreve clínicas High Ticket palavra por palavra.
+
+A diferença:
+
+ticket unitário maior
+
+decisão mais emocional
+
+mais objeções (medo, marido, saúde)
+
+👉 Por isso entram Custom Objects de Objeções, Consultas e Tratamentos.
+
+3️⃣ PROBLEMA CENTRAL — É O MESMO
+“O problema não é tráfego, é conversão”
+
+Na clínica isso é ainda mais grave, porque:
+
+lead custa mais
+
+ciclo é mais emocional
+
+no-show é mais caro
+
+A consulta paga não quebra o sistema.
+Ela refina o sistema.
+
+👉 O papel da IA aqui:
+
+responder em <1 min
+
+conduzir até o pagamento
+
+recuperar quem travou
+
+eliminar curiosos
+
+4️⃣ OFERTA — COMO O AI ARISTOTLE SE TRADUZ NA CLÍNICA
+🔹 1. Reativação de Base (Trojan Horse)
+Igualzinho.
+
+Pacientes antigos
+
+Leads que pediram info
+
+Consultas que não fecharam
+
+Orçamentos mortos
+
+Campanhas:
+
+WhatsApp
+
+SMS
+
+Email
+
+Vídeo curto do médico
+
+👉 Caixa imediato, sem ads.
+
+🔹 2. Reputação Automática
+Aqui é ainda mais forte.
+
+Pós-consulta
+
+Pós-tratamento
+
+Pós-resultado
+
+IA pede review só de quem está satisfeito, exatamente como no playbook.
+
+🔹 3. Speed to Lead + Nurturing
+Mesmo conceito, ajuste de copy.
+
+GMN:
+
+“Agende sua aula”
+
+Clínica:
+
+“Vamos entender se você é um caso para o doutor”
+
+👉 IA não agenda, ela vende a consulta paga.
+
+🔹 4. Ads (SÓ DEPOIS DA BASE ARRUMADA)
+100% alinhado com JP Middleton.
+
+nada de lead form
+
+landing com fricção
+
+copy seletiva
+
+CTA para conversa, não para agenda
+
+5️⃣ O QUE FALHOU / FUNCIONOU — TUDO CONFERE
+❌ Lead form barato
+Na clínica isso é suicídio.
+
+✅ Landing com fricção
+Aqui é obrigatório, ainda mais com consulta paga.
+
+✅ Reativação primeiro
+Perfeito para:
+
+“sonho de ser paciente”
+
+ex-pacientes
+
+leads antigos sem follow-up
+
+✅ Parcerias / redes
+Clínica → grupos médicos, franquias, redes premium.
+
+6️⃣ POSICIONAMENTO — CONSULTA PAGA AJUDA, NÃO ATRAPALHA
+O posicionamento:
+
+“Nós não vendemos leads, vendemos comparecimentos”
+
+Na clínica vira:
+
+“Nós não vendemos consultas, vendemos pacientes comprometidos”
+
+A consulta paga:
+
+filtra
+
+ancora valor
+
+prepara o fechamento
+
+reduz no-show
+
+Ela reforça o posicionamento premium, não enfraquece.
+
+7️⃣ OBJEÇÕES — TRADUZINDO O PLAYBOOK
+GMN:
+
+“já tenho agência”
+
+“minha equipe faz follow-up”
+
+Clínica:
+
+“já tenho secretária”
+
+“vou falar com meu marido”
+
+“é caro”
+
+Resposta é a mesma lógica:
+👉 dados > opinião
+👉 sistema > humano
+👉 LTV > custo
+
+8️⃣ ALAVANCAS DE CRESCIMENTO — TODAS SE ENCAIXAM
+GMN	Clínica
+Visual proof (heatmap)	Dashboards de no-show, fechamento
+Setter call	Pré-qualificação IA
+Trojan Horse	Reativação de base
+Franquias	Redes médicas / clínicas
+COMO ISSO VAI VIRAR PRODUTO DA MOTIVME
+Vocês não vão vender:
+
+“GHL + IA”
+
+Vocês vão vender:
+
+“Instalamos um sistema que transforma leads em consultas pagas e consultas em tratamentos High Ticket, mesmo com sua equipe atual.”
+
+Esse sistema:
+
+é replicável
+
+é ativo
+
+não depende de marca pessoal
+
+encaixa em qualquer negócio físico High Ticket
+
+PRÓXIMO PASSO (DECISÃO ESTRATÉGICA)
+Agora temos duas opções claras:
+
+OPÇÃO A — Arquitetura Técnica
+Eu desenho:
+
+o Sistema Operacional no GHL
+
+objetos
+
+pipelines
+
+automações
+
+lógica de IA
+(espelhando o AI Aristotle)
+
+OPÇÃO B — Oferta & Go-To-Market
+Eu estruturo:
+
+a oferta Mottivme
+
+a narrativa de vendas
+
+o pitch
+
+o “Trojan Horse”
+
+o posicionamento para clínicas
+
+👉 O certo é fazer as duas.
+Mas precisamos escolher por onde começar.
+
+Me diz:
+você quer começar pela arquitetura do sistema ou pela oferta e posicionamento?
+
+Você disse:
+Arquitetura do sistema pois é o que demanda mais energia e tempo pra ser construído já que terão os custom fields automações e etc 
+O ChatGPT disse:
+Perfeito. Então vamos tratar isso como arquiteto de sistema, não como “ideia”.
+Vou te entregar a arquitetura operacional do sistema no GHL, em camadas, exatamente do jeito que uma GMN / AI Aristotle é construída — só que adaptada para consulta paga + High Ticket clínico.
+
+A ideia aqui é:
+👉 se alguém do teu time pegar isso, consegue construir
+👉 se um cliente olhar, entende que é um ativo, não um serviço
+
+ARQUITETURA DO SISTEMA — VISÃO DE ENGENHARIA
+Pensa no sistema em 4 CAMADAS, todas dentro do GHL:
+
+1️⃣ Camada de Dados (Base do Sistema)
+2️⃣ Camada de Processos (Fluxos e Pipelines)
+3️⃣ Camada de Automação & IA
+4️⃣ Camada de Aquisição & Reativação (Marketing + Ads)
+
+Se a camada 1 estiver errada, tudo quebra.
+Por isso começamos aqui.
+
+1️⃣ CAMADA DE DADOS (CORE DO SISTEMA)
+OBJETOS PADRÃO (não mexer)
+Contacts → pessoa
+
+Opportunities → dinheiro em jogo
+
+CUSTOM OBJECTS (onde o sistema vira “software”)
+🔹 A. CONSULTAS
+Produto de entrada + filtro + pré-fechamento
+
+Campos obrigatórios
+
+Data da consulta
+
+Status da consulta
+(Apresentada / Pagamento pendente / Confirmada / Compareceu / Faltou / Cancelou)
+
+Valor da consulta
+
+Origem do lead
+
+Concierge responsável
+
+Forma de pagamento
+
+Associação
+
+Contact (1) → Consultas (N)
+
+👉 Isso resolve:
+
+no-show
+
+gargalo de secretária
+
+previsibilidade de agenda
+
+🔹 B. TRATAMENTOS
+Onde mora o High Ticket
+
+Campos
+
+Tipo de tratamento
+
+Valor total
+
+Status clínico
+(Avaliação / Exames / Execução / Retorno)
+
+Status comercial
+(Proposto / Em negociação / Fechado / Perdido)
+
+Forma de pagamento
+
+Motivo de perda (dropdown)
+
+Associação
+
+Contact (1) → Tratamentos (N)
+
+Consultation (1) → Treatment (0–1)
+
+👉 Aqui você enxerga onde o dinheiro morre.
+
+🔹 C. OBJEÇÕES
+Diferencial absurdo do sistema
+
+Campos
+
+Tipo de objeção
+(Preço / Marido / Medo / Tempo / Comparação / Confiança)
+
+Intensidade (1–5)
+
+Origem (IA / Concierge / Médico)
+
+Status (Aberta / Contornada / Perdida)
+
+Próxima ação sugerida
+
+Associação
+
+Contact (1) → Objeções (N)
+
+Treatment (1) → Objeções (N)
+
+👉 Isso alimenta:
+
+copy
+
+VSL
+
+anúncios
+
+follow-up
+
+pitch comercial
+
+2️⃣ CAMADA DE PROCESSOS (PIPELINES)
+PIPELINE 1 — VENDA DA CONSULTA (PAGA)
+Etapas
+
+Lead entrou
+
+Qualificado
+
+Consulta apresentada
+
+Pagamento pendente
+
+Consulta confirmada
+
+Compareceu
+
+Faltou / Cancelou
+
+🚨 Regra estrutural:
+
+Não existe “agendado sem pagamento”
+
+Pagamento = confirmação
+
+PIPELINE 2 — TRATAMENTOS (HIGH TICKET)
+Etapas
+
+Orçamento criado
+
+Em avaliação
+
+Em negociação
+
+Fechado
+
+Perdido
+
+Cada mudança de etapa:
+
+dispara automação
+
+considera objeção registrada
+
+ajusta comunicação
+
+3️⃣ CAMADA DE AUTOMAÇÃO & IA (O “CÉREBRO”)
+A. Speed to Lead
+Resposta <1 minuto
+
+Linguagem imperfeita
+
+Humanizada
+
+Emojis leves
+
+Função da IA:
+❌ não vender tratamento
+✅ conduzir até consulta paga
+
+B. Qualificação Silenciosa
+Durante conversa:
+
+dor
+
+tentativas anteriores
+
+disponibilidade
+
+perfil (profissão, cidade)
+
+Isso gera:
+
+Lead Score
+
+Registro de objeções
+
+Direcionamento correto
+
+C. Automação de Pagamento da Consulta
+Triggers
+
+Consulta apresentada
+
+Pagamento não realizado (24h / 48h)
+
+Pagamento confirmado
+
+Ações
+
+link de pagamento
+
+vídeos curtos do médico
+
+regras claras
+
+sensação de exclusividade
+
+D. No-show Recovery
+Status = Faltou
+→ mensagem empática
+→ pergunta única
+→ resposta vira Objeção registrada
+
+E. Follow-up de Tratamento
+Baseado em:
+
+etapa do pipeline
+
+objeção principal
+
+tempo parado
+
+Canais:
+
+WhatsApp
+
+vídeo
+
+áudio
+
+email
+
+4️⃣ CAMADA DE MARKETING & REATIVAÇÃO
+🔹 Reativação de Base (Trojan Horse)
+Segmentos:
+
+Leads antigos
+
+Consultas não fechadas
+
+Orçamentos perdidos
+
+Ex-pacientes
+
+Campanhas:
+
+WhatsApp + SMS + Email
+
+Copy emocional
+
+Convite seletivo
+
+Sem ads
+
+🔹 Ads (só depois)
+Arquitetura:
+
+Landing com fricção
+
+Copy seletiva
+
+CTA para conversa
+
+Nada de lead form nativo
+
+Ads alimentam o mesmo sistema, não um funil paralelo.
+
+5️⃣ DASHBOARDS (DECISÃO DE CEO)
+Métricas mínimas:
+
+% pagamento de consulta
+
+% no-show
+
+% fechamento por objeção
+
+Ticket médio
+
+Origem que mais fecha
+
+👉 Isso vira:
+
+argumento de venda
+
+otimização contínua
+
+autoridade da Mottivme
+
+COMO ISSO SE TORNA PRODUTO
+Você não vende:
+
+“Implementação no GHL”
+
+Você vende:
+
+“Instalamos o sistema operacional que transforma leads em consultas pagas e consultas em tratamentos High Ticket.”
+
+É o AI Aristotle versão saúde premium.
+
+PRÓXIMO PASSO (EXECUÇÃO REAL)
+Agora a decisão técnica:
+
+👉 Quer que eu comece pelo desenho detalhado dos Custom Objects (campos exatos + tipos + obrigatórios)?
+ou
+👉 Quer que eu desenhe primeiro os workflows críticos (pagamento, no-show, reativação)?
+
+Escolhe a próxima peça.
+A partir daqui é build pesado.
+
+Você disse:
+Não seria interessante a pipeline de pré vendas terminar em ganho quando o Lead pagar a consulta e seguir com as outras etapas em outra pipeline? Se eu tiver errado você deve dizer não precisa sempre concordar comigo
+O ChatGPT disse:
+Ótima pergunta — e vou ser direto, como você pediu:
+
+Sim, a sua lógica faz sentido.
+E sim, é melhor estruturar dessa forma.
+Mas com uma condição técnica clara, senão vira bagunça de métrica.
+
+Vou te explicar quando funciona, quando não, e qual é o desenho correto no GHL para o teu caso.
+
+RESPOSTA CURTA (executiva)
+👉 Sim, a pipeline de pré-vendas DEVE terminar em “Ganho” quando o lead paga a consulta.
+👉 Sim, o tratamento DEVE rodar em outra pipeline.
+
+👉 Não, isso não é só “bonitinho”.
+👉 É arquitetura de sistema madura.
+
+Agora vamos ao porquê.
+
+POR QUE FAZER ISSO É CERTO (NO SEU CONTEXTO)
+1️⃣ Consulta paga = conversão financeira real
+No GHL, pipeline existe para representar dinheiro, não intenção.
+
+Se:
+
+o lead pagou
+
+houve transação financeira
+
+houve comprometimento
+
+👉 Isso é um “Ganho”, ponto final.
+
+Tratar pagamento de consulta como “meio do caminho” é erro comum de agência fraca.
+
+2️⃣ Separação clara de objetivos
+Cada pipeline deve responder uma pergunta diferente:
+
+Pipeline 1 – Pré-vendas / Consulta paga
+Pergunta que ela responde:
+
+“Quanto custa gerar um paciente comprometido?”
+
+Métricas:
+
+% de leads que pagam consulta
+
+custo por consulta paga
+
+tempo até pagamento
+
+gargalos de objeção pré-consulta
+
+Pipeline 2 – Vendas / Tratamento
+Pergunta que ela responde:
+
+“Quanto faturamos a partir dos pacientes?”
+
+Métricas:
+
+% de fechamento pós-consulta
+
+ticket médio
+
+motivos de perda
+
+LTV
+
+Misturar isso numa pipeline só mata leitura de negócio.
+
+COMO FICA A ARQUITETURA CORRETA
+🔹 PIPELINE 1 — PRÉ-VENDAS (CONSULTA PAGA)
+Etapas
+
+Lead entrou
+
+Qualificado
+
+Consulta apresentada
+
+Pagamento pendente
+
+Ganho – Consulta paga
+
+Perdido (não pagou)
+
+🚨 Regra de ouro:
+
+“Ganho” = pagamento confirmado
+
+Agenda é detalhe operacional, não métrica comercial
+
+🔹 PIPELINE 2 — VENDAS (TRATAMENTO)
+Etapas
+
+Consulta realizada
+
+Orçamento criado
+
+Em negociação
+
+Ganho – Tratamento fechado
+
+Perdido
+
+👉 Essa pipeline só recebe leads que já passaram pelo filtro financeiro.
+
+O ERRO QUE VOCÊ TEM QUE EVITAR (IMPORTANTE)
+❌ Criar oportunidade duplicada sem controle
+❌ Mover a mesma oportunidade entre pipelines
+❌ Misturar “consulta paga” e “tratamento” no mesmo deal
+
+O certo no GHL:
+1 oportunidade = 1 objetivo financeiro
+
+Consulta = 1 opportunity
+
+Tratamento = outra opportunity
+
+Ambas ligadas ao mesmo contato
+
+Relacionadas via Custom Object Consulta
+
+COMO CONECTAR AS DUAS PIPELINES (SEM GAMBIA)
+Trigger-chave:
+Quando oportunidade da Pipeline 1 = Ganho
+
+Ações automáticas:
+Criar registro no Custom Object Consulta
+
+Criar nova oportunidade na Pipeline 2
+
+Atualizar status do contato → “Paciente”
+
+Disparar automações pré-consulta
+
+Preparar ambiente para fechamento
+
+Isso mantém:
+
+histórico limpo
+
+métricas separadas
+
+leitura de CEO
+
+VEREDITO FINAL (sem agradar)
+Você não está errado.
+Pelo contrário:
+
+👉 Essa é a forma correta para negócios com ticket alto e entrada paga.
+👉 Quem não faz isso não consegue escalar nem entender onde o dinheiro trava.
+
+Se você estivesse falando de lead gratuito ou aula experimental, eu diria não.
+Mas consulta paga = conversão.
+
+PRÓXIMO PASSO (técnico pesado)
+Agora que a arquitetura de pipelines está validada, o próximo passo lógico é:
+
+👉 Desenhar os triggers exatos que conectam Pipeline 1 → Pipeline 2
+(com nomes, condições e ações no GHL)
+
+ou
+
+👉 Desenhar o Custom Object Consulta já pensando nessa transição
+
+Qual você quer construir primeiro?
+
+Você disse:
+E onde entram as etapas de follow-up aí?
+O ChatGPT disse:
+Entram dentro das etapas como “camadas de cadência”, não como etapa de pipeline (na maioria dos casos).
+
+Pipeline é estado do deal.
+Follow-up é o que acontece enquanto o deal está parado naquele estado.
+
+Se você colocar “Follow-up 1 / 2 / 3” como etapas, você só está registrando que mandou mensagem, não que o lead avançou. Isso destrói métrica e vira teatro.
+
+O jeito certo: Follow-up por etapa + relógio
+Pipeline 1 — Consulta Paga (Pré-vendas)
+Etapas (como já alinhamos):
+
+Lead entrou
+
+Qualificado
+
+Consulta apresentada
+
+Pagamento pendente
+
+Ganho – Consulta paga
+
+Perdido
+
+Agora o follow-up entra assim:
+
+Etapa 1: Lead entrou
+Speed to lead imediato (<1 min)
+
+Se não respondeu:
+
+D+0: 2 tentativas (WhatsApp curto + áudio)
+
+D+1: vídeo curto (30–45s) “como funciona”
+
+D+2: mensagem de fechamento de loop (“posso encerrar?”)
+
+Trigger: “Lead entrou” + “sem resposta em X minutos/horas”.
+
+Etapa 2: Qualificado
+Aqui é condução para “Consulta apresentada”
+
+Cadência mais consultiva:
+
+D+0: pergunta final de diagnóstico + convite
+
+D+1: prova social/print/depoimento
+
+D+2: “agenda limitada / triagem” (sem mendigar)
+
+Trigger: “qualificado” + “não avançou para consulta apresentada”.
+
+Etapa 3: Consulta apresentada
+Objetivo: remover fricção e levar pro pagamento
+
+Cadência:
+
+H+1: link de pagamento + instrução simples
+
+H+6: áudio concierge (“pra garantir sua vaga…”)
+
+D+1: vídeo do médico (autoridade + exclusividade)
+
+D+2: “fechamento de loop” (ou vai, ou sai)
+
+Trigger: “consulta apresentada” + “sem pagamento”.
+
+Etapa 4: Pagamento pendente
+Aqui é onde você ganha dinheiro.
+
+Cadência deve ser por objeção (Custom Object Objeções):
+
+Preço → ancoragem + “investimento” + o que inclui
+
+Marido → roteiro específico (você “vende para eles”)
+
+Tempo → “encaixe” + urgência de agenda
+
+Medo → prova + acolhimento + “diagnóstico antes de prometer”
+
+Trigger: “pagamento pendente” + “objeção X” + “tempo parado”.
+
+Resultado: follow-up não é genérico. É objeção-dirigido.
+
+Etapa 5: Ganho – Consulta paga
+Aqui o follow-up muda de objetivo: show rate + preparo para fechar tratamento
+
+Confirmação premium
+
+Regras (exames / cancelamento 48h)
+
+Pré-consulta (anamnese + materiais)
+
+H-24 / H-3: confirmação e instruções
+
+Trigger: “pagamento confirmado”.
+
+Pipeline 2 — Tratamento (Vendas)
+Etapas:
+
+Consulta realizada
+
+Orçamento criado
+
+Em negociação
+
+Ganho – Tratamento fechado
+
+Perdido
+
+Follow-up entra principalmente em:
+
+“Orçamento criado” / “Em negociação”
+Cadência clássica de high ticket:
+
+D+0: resumo do plano (texto curto + áudio)
+
+D+1: vídeo “por que tratamento completo”
+
+D+3: prova social/case
+
+D+5: “o que te impede hoje?” (captura objeção → registra no Custom Object)
+
+D+7: última chamada (fechamento de loop)
+
+Trigger: “etapa X” + “parado há Y dias”.
+
+Onde você “vê” o follow-up no GHL (pra não ficar invisível)
+Você precisa de 3 coisas:
+
+Tasks automáticas (para humano entrar quando precisa)
+
+Last Outbound / Last Inbound (campos/relatórios pra medir cadência)
+
+Custom Object de Interações (opcional, mas poderoso)
+
+canal, data, tipo (áudio/vídeo/texto), resultado
+
+Sem isso, você não sabe se a operação está “seguindo o playbook” ou só “achando que segue”.
+
+Regra de ouro (pra sua arquitetura ficar premium)
+Pipeline mede avanço de decisão
+
+Follow-up mede esforço + cadência + conversão
+
+E a inteligência vem de: tempo parado + objeção + etapa
+
+Se você topar, eu já te devolvo o desenho pronto em formato de build:
+
+lista de triggers (nomeados)
+
+condições
+
+delays
+
+ações por etapa
+
+e quais mensagens/vídeos entram em cada ponto
+
+Quer que eu comece pelo Pipeline 1 (consulta paga) ou pelo reativação de base antiga?
+
+
+
+
+Nenhum arquivo escolhidoNenhum arquivo escolhido
+O ChatGPT pode cometer erros. Confira informações importantes. Consulte as Preferências de cookies.

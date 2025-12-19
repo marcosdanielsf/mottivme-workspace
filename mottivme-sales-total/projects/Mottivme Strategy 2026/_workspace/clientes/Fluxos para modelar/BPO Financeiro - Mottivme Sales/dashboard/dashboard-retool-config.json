@@ -1,0 +1,759 @@
+{
+  "name": "Dashboard Financeiro Mottivme",
+  "description": "Dashboard completo para controle financeiro PF + PJ",
+  "pages": [
+    {
+      "name": "Overview",
+      "layout": "responsive",
+      "components": [
+        {
+          "type": "statsCard",
+          "id": "total_saldo",
+          "title": "💰 Saldo Total",
+          "query": "query_saldo_total",
+          "format": "currency",
+          "prefix": "R$"
+        },
+        {
+          "type": "statsCard",
+          "id": "receitas_mes",
+          "title": "📥 Receitas (Mês)",
+          "query": "query_receitas_mes",
+          "format": "currency",
+          "prefix": "R$",
+          "trend": "up"
+        },
+        {
+          "type": "statsCard",
+          "id": "despesas_mes",
+          "title": "📤 Despesas (Mês)",
+          "query": "query_despesas_mes",
+          "format": "currency",
+          "prefix": "R$",
+          "trend": "down"
+        },
+        {
+          "type": "statsCard",
+          "id": "lucro_mes",
+          "title": "💵 Lucro (Mês)",
+          "query": "query_lucro_mes",
+          "format": "currency",
+          "prefix": "R$",
+          "conditional": {
+            "positive": "green",
+            "negative": "red"
+          }
+        },
+        {
+          "type": "statsCard",
+          "id": "inadimplencia",
+          "title": "⚠️ Inadimplência",
+          "query": "query_inadimplencia_total",
+          "format": "currency",
+          "prefix": "R$",
+          "color": "red",
+          "subtitle": "{{query_inadimplencia_count.data}} recebimentos"
+        },
+        {
+          "type": "statsCard",
+          "id": "vencimentos_proximos",
+          "title": "📅 Vencimentos (7 dias)",
+          "query": "query_vencimentos_proximos",
+          "format": "currency",
+          "prefix": "R$",
+          "subtitle": "{{query_vencimentos_count.data}} contas"
+        },
+        {
+          "type": "chart",
+          "id": "fluxo_caixa_6meses",
+          "title": "📊 Fluxo de Caixa - Últimos 6 Meses",
+          "chartType": "bar",
+          "query": "query_fluxo_caixa_mensal",
+          "xAxis": "mes_ano",
+          "series": [
+            {
+              "name": "Receitas",
+              "field": "receitas",
+              "color": "#10B981"
+            },
+            {
+              "name": "Despesas",
+              "field": "despesas",
+              "color": "#EF4444"
+            },
+            {
+              "name": "Lucro",
+              "field": "lucro",
+              "color": "#3B82F6",
+              "type": "line"
+            }
+          ],
+          "height": "400px"
+        },
+        {
+          "type": "chart",
+          "id": "receitas_despesas_pie",
+          "title": "🥧 Receitas vs Despesas (Mês Atual)",
+          "chartType": "pie",
+          "query": "query_receitas_despesas_mes",
+          "labelField": "tipo",
+          "valueField": "total",
+          "colors": ["#10B981", "#EF4444"],
+          "height": "300px"
+        },
+        {
+          "type": "table",
+          "id": "vencimentos_proximos_table",
+          "title": "📅 Próximos Vencimentos",
+          "query": "query_vencimentos_proximos_detalhes",
+          "columns": [
+            {
+              "field": "data_vencimento",
+              "header": "Vencimento",
+              "format": "date"
+            },
+            {
+              "field": "cliente_fornecedor",
+              "header": "Cliente/Fornecedor"
+            },
+            {
+              "field": "categoria",
+              "header": "Categoria"
+            },
+            {
+              "field": "valor_previsto",
+              "header": "Valor",
+              "format": "currency",
+              "prefix": "R$"
+            },
+            {
+              "field": "tipo",
+              "header": "Tipo",
+              "badge": {
+                "receita": "green",
+                "despesa": "red"
+              }
+            }
+          ],
+          "pageSize": 10,
+          "sortable": true,
+          "filterable": true
+        }
+      ]
+    },
+    {
+      "name": "Receitas",
+      "components": [
+        {
+          "type": "filters",
+          "id": "receitas_filters",
+          "fields": [
+            {
+              "type": "dateRange",
+              "id": "periodo",
+              "label": "Período",
+              "default": "currentMonth"
+            },
+            {
+              "type": "select",
+              "id": "cliente",
+              "label": "Cliente",
+              "query": "query_clientes_list",
+              "multiple": true
+            },
+            {
+              "type": "select",
+              "id": "categoria",
+              "label": "Categoria",
+              "query": "query_categorias_receitas",
+              "multiple": true
+            },
+            {
+              "type": "checkbox",
+              "id": "quitado",
+              "label": "Apenas quitados",
+              "default": false
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "id": "receitas_table",
+          "title": "💵 Todas as Receitas",
+          "query": "query_receitas",
+          "filters": "receitas_filters",
+          "columns": [
+            {
+              "field": "data_vencimento",
+              "header": "Vencimento",
+              "format": "date",
+              "sortable": true
+            },
+            {
+              "field": "cliente_fornecedor",
+              "header": "Cliente"
+            },
+            {
+              "field": "categoria",
+              "header": "Categoria"
+            },
+            {
+              "field": "valor_previsto",
+              "header": "Previsto",
+              "format": "currency",
+              "prefix": "R$"
+            },
+            {
+              "field": "valor_realizado",
+              "header": "Realizado",
+              "format": "currency",
+              "prefix": "R$"
+            },
+            {
+              "field": "quitado",
+              "header": "Status",
+              "badge": {
+                "true": {
+                  "label": "Quitado",
+                  "color": "green"
+                },
+                "false": {
+                  "label": "Pendente",
+                  "color": "yellow"
+                }
+              }
+            },
+            {
+              "field": "observacao",
+              "header": "Observação",
+              "truncate": 50
+            },
+            {
+              "type": "actions",
+              "header": "Ações",
+              "buttons": [
+                {
+                  "label": "Marcar Quitado",
+                  "action": "marcar_quitado",
+                  "icon": "check",
+                  "condition": "!row.quitado"
+                },
+                {
+                  "label": "Enviar Cobrança",
+                  "action": "enviar_cobranca",
+                  "icon": "mail",
+                  "condition": "!row.quitado && row.dias_vencido > 0"
+                },
+                {
+                  "label": "Editar",
+                  "action": "editar_receita",
+                  "icon": "edit"
+                }
+              ]
+            }
+          ],
+          "pageSize": 20,
+          "exportable": true,
+          "summary": {
+            "total_previsto": "sum(valor_previsto)",
+            "total_realizado": "sum(valor_realizado)"
+          }
+        },
+        {
+          "type": "chart",
+          "id": "receitas_por_categoria",
+          "title": "📊 Receitas por Categoria",
+          "chartType": "bar",
+          "query": "query_receitas_por_categoria",
+          "xAxis": "categoria",
+          "yAxis": "total",
+          "horizontal": true,
+          "height": "400px"
+        }
+      ]
+    },
+    {
+      "name": "Despesas",
+      "components": [
+        {
+          "type": "tabs",
+          "id": "despesas_tabs",
+          "tabs": [
+            {
+              "label": "PJ (Empresa)",
+              "filter": "tipo_entidade = 'pj'"
+            },
+            {
+              "label": "PF (Pessoal)",
+              "filter": "tipo_entidade = 'pf'"
+            },
+            {
+              "label": "Todas",
+              "filter": null
+            }
+          ]
+        },
+        {
+          "type": "filters",
+          "id": "despesas_filters",
+          "fields": [
+            {
+              "type": "dateRange",
+              "id": "periodo",
+              "label": "Período",
+              "default": "currentMonth"
+            },
+            {
+              "type": "select",
+              "id": "fornecedor",
+              "label": "Fornecedor",
+              "query": "query_fornecedores_list",
+              "multiple": true
+            },
+            {
+              "type": "select",
+              "id": "categoria",
+              "label": "Categoria",
+              "query": "query_categorias_despesas",
+              "multiple": true
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "id": "despesas_table",
+          "title": "💳 Todas as Despesas",
+          "query": "query_despesas",
+          "filters": "despesas_filters",
+          "columns": [
+            {
+              "field": "data_vencimento",
+              "header": "Vencimento",
+              "format": "date",
+              "sortable": true
+            },
+            {
+              "field": "cliente_fornecedor",
+              "header": "Fornecedor"
+            },
+            {
+              "field": "categoria",
+              "header": "Categoria"
+            },
+            {
+              "field": "tipo_entidade",
+              "header": "Tipo",
+              "badge": {
+                "pj": "blue",
+                "pf": "purple"
+              }
+            },
+            {
+              "field": "valor_previsto",
+              "header": "Previsto",
+              "format": "currency",
+              "prefix": "R$"
+            },
+            {
+              "field": "valor_realizado",
+              "header": "Realizado",
+              "format": "currency",
+              "prefix": "R$"
+            },
+            {
+              "field": "quitado",
+              "header": "Pago",
+              "badge": {
+                "true": {
+                  "label": "Sim",
+                  "color": "green"
+                },
+                "false": {
+                  "label": "Não",
+                  "color": "red"
+                }
+              }
+            },
+            {
+              "type": "actions",
+              "header": "Ações",
+              "buttons": [
+                {
+                  "label": "Marcar Pago",
+                  "action": "marcar_pago",
+                  "icon": "check"
+                },
+                {
+                  "label": "Editar",
+                  "action": "editar_despesa",
+                  "icon": "edit"
+                }
+              ]
+            }
+          ],
+          "pageSize": 20,
+          "exportable": true,
+          "summary": {
+            "total_previsto": "sum(valor_previsto)",
+            "total_realizado": "sum(valor_realizado)"
+          }
+        },
+        {
+          "type": "chart",
+          "id": "top_10_despesas",
+          "title": "📊 Top 10 Categorias de Despesas",
+          "chartType": "bar",
+          "query": "query_top_despesas_categorias",
+          "xAxis": "categoria",
+          "yAxis": "total",
+          "horizontal": true,
+          "limit": 10,
+          "height": "500px"
+        },
+        {
+          "type": "chart",
+          "id": "despesas_pf_vs_pj",
+          "title": "🥧 PF vs PJ",
+          "chartType": "pie",
+          "query": "query_despesas_pf_pj",
+          "labelField": "tipo_entidade",
+          "valueField": "total",
+          "height": "300px"
+        }
+      ]
+    },
+    {
+      "name": "Inadimplência",
+      "components": [
+        {
+          "type": "statsCard",
+          "id": "inadimplencia_total",
+          "title": "💰 Total Inadimplente",
+          "query": "query_inadimplencia_total",
+          "format": "currency",
+          "prefix": "R$",
+          "color": "red"
+        },
+        {
+          "type": "statsCard",
+          "id": "inadimplencia_quantidade",
+          "title": "📋 Quantidade",
+          "query": "query_inadimplencia_count",
+          "format": "number"
+        },
+        {
+          "type": "statsCard",
+          "id": "media_dias_atraso",
+          "title": "⏱️ Média Dias Atraso",
+          "query": "query_media_dias_atraso",
+          "format": "number",
+          "suffix": " dias"
+        },
+        {
+          "type": "chart",
+          "id": "inadimplencia_status",
+          "title": "📊 Status de Inadimplência",
+          "chartType": "pie",
+          "query": "query_inadimplencia_por_status",
+          "labelField": "status_cobranca",
+          "valueField": "quantidade",
+          "height": "300px"
+        },
+        {
+          "type": "table",
+          "id": "inadimplencia_table",
+          "title": "⚠️ Inadimplentes",
+          "query": "query_inadimplentes",
+          "columns": [
+            {
+              "field": "cliente_fornecedor",
+              "header": "Cliente"
+            },
+            {
+              "field": "telefone",
+              "header": "Telefone",
+              "format": "phone"
+            },
+            {
+              "field": "email",
+              "header": "Email"
+            },
+            {
+              "field": "data_vencimento",
+              "header": "Vencimento",
+              "format": "date"
+            },
+            {
+              "field": "dias_atraso",
+              "header": "Dias Atraso",
+              "badge": {
+                "0-7": "yellow",
+                "8-30": "orange",
+                "31-999": "red"
+              }
+            },
+            {
+              "field": "valor_total",
+              "header": "Valor",
+              "format": "currency",
+              "prefix": "R$"
+            },
+            {
+              "field": "status_cobranca",
+              "header": "Status",
+              "badge": {
+                "pendente": "yellow",
+                "em_cobranca": "orange",
+                "negociacao": "blue",
+                "inadimplente": "red"
+              }
+            },
+            {
+              "field": "tentativas_cobranca",
+              "header": "Tentativas"
+            },
+            {
+              "field": "ultima_cobranca",
+              "header": "Última Cobrança",
+              "format": "datetime"
+            },
+            {
+              "type": "actions",
+              "header": "Ações",
+              "buttons": [
+                {
+                  "label": "Enviar Cobrança",
+                  "action": "enviar_cobranca_inadimplencia",
+                  "icon": "mail",
+                  "color": "orange"
+                },
+                {
+                  "label": "Negociar",
+                  "action": "iniciar_negociacao",
+                  "icon": "handshake",
+                  "color": "blue"
+                },
+                {
+                  "label": "Ver Histórico",
+                  "action": "ver_historico_cobranca",
+                  "icon": "history"
+                },
+                {
+                  "label": "Marcar Irrecuperável",
+                  "action": "marcar_irrecuperavel",
+                  "icon": "ban",
+                  "color": "red",
+                  "confirm": true
+                }
+              ]
+            }
+          ],
+          "pageSize": 20,
+          "sortable": true
+        }
+      ]
+    },
+    {
+      "name": "Conciliação",
+      "components": [
+        {
+          "type": "filters",
+          "id": "conciliacao_filters",
+          "fields": [
+            {
+              "type": "dateRange",
+              "id": "periodo",
+              "label": "Período"
+            },
+            {
+              "type": "select",
+              "id": "conta",
+              "label": "Conta Bancária",
+              "query": "query_contas_bancarias"
+            },
+            {
+              "type": "checkbox",
+              "id": "apenas_pendentes",
+              "label": "Apenas Pendentes",
+              "default": true
+            }
+          ]
+        },
+        {
+          "type": "splitView",
+          "id": "conciliacao_split",
+          "left": {
+            "title": "📊 Extrato Bancário",
+            "query": "query_extratos_bancarios",
+            "table": {
+              "columns": [
+                {
+                  "field": "data_transacao",
+                  "header": "Data",
+                  "format": "date"
+                },
+                {
+                  "field": "descricao",
+                  "header": "Descrição"
+                },
+                {
+                  "field": "valor",
+                  "header": "Valor",
+                  "format": "currency",
+                  "prefix": "R$",
+                  "conditional": {
+                    "credito": "green",
+                    "debito": "red"
+                  }
+                },
+                {
+                  "field": "saldo",
+                  "header": "Saldo",
+                  "format": "currency",
+                  "prefix": "R$"
+                },
+                {
+                  "field": "conciliado",
+                  "header": "Conciliado",
+                  "checkbox": true
+                }
+              ]
+            }
+          },
+          "right": {
+            "title": "💰 Movimentações",
+            "query": "query_movimentacoes_nao_conciliadas",
+            "table": {
+              "columns": [
+                {
+                  "field": "data_vencimento",
+                  "header": "Vencimento",
+                  "format": "date"
+                },
+                {
+                  "field": "cliente_fornecedor",
+                  "header": "Cliente/Fornecedor"
+                },
+                {
+                  "field": "valor_previsto",
+                  "header": "Valor",
+                  "format": "currency",
+                  "prefix": "R$"
+                },
+                {
+                  "field": "categoria",
+                  "header": "Categoria"
+                }
+              ]
+            }
+          },
+          "actions": [
+            {
+              "label": "Conciliar Selecionados",
+              "action": "conciliar_manual",
+              "icon": "check-circle"
+            },
+            {
+              "label": "Conciliação Automática",
+              "action": "conciliar_automatico",
+              "icon": "magic"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Relatórios",
+      "components": [
+        {
+          "type": "filters",
+          "id": "relatorios_filters",
+          "fields": [
+            {
+              "type": "dateRange",
+              "id": "periodo",
+              "label": "Período",
+              "default": "currentMonth"
+            },
+            {
+              "type": "select",
+              "id": "tipo_relatorio",
+              "label": "Tipo de Relatório",
+              "options": [
+                {
+                  "value": "dre",
+                  "label": "DRE - Demonstrativo de Resultados"
+                },
+                {
+                  "value": "fluxo_caixa",
+                  "label": "Fluxo de Caixa"
+                },
+                {
+                  "value": "categorias",
+                  "label": "Análise por Categorias"
+                },
+                {
+                  "value": "pf_pj",
+                  "label": "Comparativo PF vs PJ"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "container",
+          "id": "dre_report",
+          "visible": "{{relatorios_filters.tipo_relatorio.value === 'dre'}}",
+          "components": [
+            {
+              "type": "table",
+              "id": "dre_table",
+              "title": "📊 DRE - Demonstrativo de Resultados do Exercício",
+              "query": "query_dre",
+              "columns": [
+                {
+                  "field": "item",
+                  "header": "Item",
+                  "bold": "row.nivel === 1"
+                },
+                {
+                  "field": "valor",
+                  "header": "Valor",
+                  "format": "currency",
+                  "prefix": "R$",
+                  "conditional": {
+                    "positive": "green",
+                    "negative": "red"
+                  }
+                }
+              ],
+              "groupBy": "categoria",
+              "summary": true
+            }
+          ]
+        },
+        {
+          "type": "buttonGroup",
+          "id": "export_buttons",
+          "buttons": [
+            {
+              "label": "Exportar PDF",
+              "action": "export_pdf",
+              "icon": "file-pdf"
+            },
+            {
+              "label": "Exportar Excel",
+              "action": "export_excel",
+              "icon": "file-excel"
+            },
+            {
+              "label": "Enviar por Email",
+              "action": "send_email",
+              "icon": "envelope"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,319 @@
+{
+  "name": "[TOOL] Chamar LLM com Custos",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "prompt"
+            },
+            {
+              "name": "system_prompt"
+            },
+            {
+              "name": "modelo",
+              "type": "string"
+            },
+            {
+              "name": "location_id"
+            },
+            {
+              "name": "location_name"
+            },
+            {
+              "name": "contact_id"
+            },
+            {
+              "name": "contact_name"
+            },
+            {
+              "name": "canal"
+            },
+            {
+              "name": "tipo_acao"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300],
+      "id": "trigger",
+      "name": "Quando Chamado"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Configuração dos modelos\nconst modelos = {\n  'gemini-2.0-flash': {\n    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',\n    provider: 'google'\n  },\n  'gemini-1.5-flash': {\n    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',\n    provider: 'google'\n  },\n  'gemini-1.5-pro': {\n    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent',\n    provider: 'google'\n  },\n  'gpt-4o-mini': {\n    url: 'https://api.openai.com/v1/chat/completions',\n    provider: 'openai',\n    model_id: 'gpt-4o-mini'\n  },\n  'gpt-4o': {\n    url: 'https://api.openai.com/v1/chat/completions',\n    provider: 'openai',\n    model_id: 'gpt-4o'\n  }\n};\n\nconst modeloSelecionado = input.modelo || 'gemini-2.0-flash';\nconst config = modelos[modeloSelecionado] || modelos['gemini-2.0-flash'];\n\nreturn {\n  json: {\n    prompt: input.prompt || '',\n    system_prompt: input.system_prompt || 'Você é um assistente útil.',\n    modelo: modeloSelecionado,\n    provider: config.provider,\n    url: config.url,\n    model_id: config.model_id || modeloSelecionado,\n    location_id: input.location_id || null,\n    location_name: input.location_name || null,\n    contact_id: input.contact_id || null,\n    contact_name: input.contact_name || null,\n    canal: input.canal || 'api',\n    tipo_acao: input.tipo_acao || 'llm_call'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "id": "preparar-request",
+      "name": "Preparar Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "is-google",
+              "leftValue": "={{ $json.provider }}",
+              "rightValue": "google",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [680, 300],
+      "id": "check-provider",
+      "name": "Google ou OpenAI?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.url }}?key={{ $env.GOOGLE_API_KEY }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"{{ $json.system_prompt }}\\n\\n{{ $json.prompt.replace(/\"/g, '\\\\\"').replace(/\\n/g, '\\\\n') }}\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.7,\n    \"maxOutputTokens\": 2048\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 200],
+      "id": "call-gemini",
+      "name": "Chamar Gemini"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.OPENAI_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"{{ $json.model_id }}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"{{ $json.system_prompt.replace(/\"/g, '\\\\\"').replace(/\\n/g, '\\\\n') }}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.prompt.replace(/\"/g, '\\\\\"').replace(/\\n/g, '\\\\n') }}\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 2048\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 400],
+      "id": "call-openai",
+      "name": "Chamar OpenAI"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrair resposta e tokens do Gemini\nconst response = $input.first().json;\nconst config = $('Preparar Request').first().json;\n\n// Extrair texto da resposta\nlet texto = '';\ntry {\n  texto = response.candidates?.[0]?.content?.parts?.[0]?.text || '';\n} catch (e) {\n  texto = 'Erro ao processar resposta';\n}\n\n// Extrair tokens (Gemini retorna em usageMetadata)\nconst usage = response.usageMetadata || {};\nconst tokens_input = usage.promptTokenCount || 0;\nconst tokens_output = usage.candidatesTokenCount || 0;\n\nreturn {\n  json: {\n    resposta: texto,\n    modelo: config.modelo,\n    tokens_input: tokens_input,\n    tokens_output: tokens_output,\n    tokens_total: tokens_input + tokens_output,\n    location_id: config.location_id,\n    location_name: config.location_name,\n    contact_id: config.contact_id,\n    contact_name: config.contact_name,\n    canal: config.canal,\n    tipo_acao: config.tipo_acao,\n    prompt_original: config.prompt\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 200],
+      "id": "extrair-gemini",
+      "name": "Extrair Resposta Gemini"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrair resposta e tokens do OpenAI\nconst response = $input.first().json;\nconst config = $('Preparar Request').first().json;\n\n// Extrair texto da resposta\nlet texto = '';\ntry {\n  texto = response.choices?.[0]?.message?.content || '';\n} catch (e) {\n  texto = 'Erro ao processar resposta';\n}\n\n// Extrair tokens (OpenAI retorna em usage)\nconst usage = response.usage || {};\nconst tokens_input = usage.prompt_tokens || 0;\nconst tokens_output = usage.completion_tokens || 0;\n\nreturn {\n  json: {\n    resposta: texto,\n    modelo: config.modelo,\n    tokens_input: tokens_input,\n    tokens_output: tokens_output,\n    tokens_total: tokens_input + tokens_output,\n    location_id: config.location_id,\n    location_name: config.location_name,\n    contact_id: config.contact_id,\n    contact_name: config.contact_name,\n    canal: config.canal,\n    tipo_acao: config.tipo_acao,\n    prompt_original: config.prompt\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 400],
+      "id": "extrair-openai",
+      "name": "Extrair Resposta OpenAI"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "mergeByFields": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [1340, 300],
+      "id": "merge-respostas",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Registrar custo real do LLM\nINSERT INTO llm_costs (\n  workflow_id,\n  workflow_name,\n  execution_id,\n  location_id,\n  location_name,\n  contact_id,\n  contact_name,\n  canal,\n  tipo_acao,\n  modelo_ia,\n  tokens_input,\n  tokens_output,\n  custo_usd,\n  mensagem_entrada,\n  mensagem_saida\n)\nVALUES (\n  '{{ $workflow.id }}',\n  '{{ $workflow.name }}',\n  '{{ $execution.id }}',\n  {{ $json.location_id ? \"'\" + $json.location_id + \"'\" : 'NULL' }},\n  {{ $json.location_name ? \"'\" + $json.location_name.replace(/'/g, \"''\") + \"'\" : 'NULL' }},\n  {{ $json.contact_id ? \"'\" + $json.contact_id + \"'\" : 'NULL' }},\n  {{ $json.contact_name ? \"'\" + $json.contact_name.replace(/'/g, \"''\") + \"'\" : 'NULL' }},\n  '{{ $json.canal }}',\n  '{{ $json.tipo_acao }}',\n  '{{ $json.modelo }}',\n  {{ $json.tokens_input }},\n  {{ $json.tokens_output }},\n  -- Calcular custo baseado no modelo\n  CASE '{{ $json.modelo }}'\n    WHEN 'gemini-2.0-flash' THEN ({{ $json.tokens_input }} * 0.10 + {{ $json.tokens_output }} * 0.40) / 1000000\n    WHEN 'gemini-1.5-flash' THEN ({{ $json.tokens_input }} * 0.075 + {{ $json.tokens_output }} * 0.30) / 1000000\n    WHEN 'gemini-1.5-pro' THEN ({{ $json.tokens_input }} * 1.25 + {{ $json.tokens_output }} * 5.00) / 1000000\n    WHEN 'gpt-4o-mini' THEN ({{ $json.tokens_input }} * 0.15 + {{ $json.tokens_output }} * 0.60) / 1000000\n    WHEN 'gpt-4o' THEN ({{ $json.tokens_input }} * 2.50 + {{ $json.tokens_output }} * 10.00) / 1000000\n    ELSE ({{ $json.tokens_input }} * 0.10 + {{ $json.tokens_output }} * 0.40) / 1000000\n  END,\n  '{{ ($json.prompt_original || '').substring(0, 500).replace(/'/g, \"''\").replace(/\\n/g, ' ') }}',\n  '{{ ($json.resposta || '').substring(0, 500).replace(/'/g, \"''\").replace(/\\n/g, ' ') }}'\n)\nRETURNING id, custo_usd;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1560, 300],
+      "id": "registrar-custo",
+      "name": "Registrar Custo",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preparar resposta final\nconst dados = $('Merge').first().json;\nconst custoRegistro = $input.first().json;\n\nreturn {\n  json: {\n    success: true,\n    resposta: dados.resposta,\n    modelo: dados.modelo,\n    tokens: {\n      input: dados.tokens_input,\n      output: dados.tokens_output,\n      total: dados.tokens_total\n    },\n    custo_usd: custoRegistro.custo_usd,\n    registro_id: custoRegistro.id\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 300],
+      "id": "resposta-final",
+      "name": "Resposta Final"
+    }
+  ],
+  "connections": {
+    "Quando Chamado": {
+      "main": [
+        [
+          {
+            "node": "Preparar Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Request": {
+      "main": [
+        [
+          {
+            "node": "Google ou OpenAI?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google ou OpenAI?": {
+      "main": [
+        [
+          {
+            "node": "Chamar Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Chamar OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chamar Gemini": {
+      "main": [
+        [
+          {
+            "node": "Extrair Resposta Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chamar OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Extrair Resposta OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Resposta Gemini": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Resposta OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Registrar Custo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Custo": {
+      "main": [
+        [
+          {
+            "node": "Resposta Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "v1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "n8n-bpo-financeiro"
+  },
+  "id": "tool-chamar-llm-com-custos",
+  "tags": []
+}

@@ -1,0 +1,213 @@
+{
+  "name": "🎬 Creative Modeler - Ads Baseados em Concorrentes",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "getAllRecords",
+        "application": "YOUR_AIRTABLE_APP_ID",
+        "table": "Transcricoes_Ads_Concorrentes"
+      },
+      "id": "input-transcricoes",
+      "name": "📥 Input: Transcrições Concorrentes",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "application": "YOUR_AIRTABLE_APP_ID",
+        "table": "Assembly_Context",
+        "id": "={{ $json.expert_id }}"
+      },
+      "id": "get-assembly-context",
+      "name": "📦 Get Assembly Context",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2,
+      "position": [100, 500],
+      "notes": "Pega todo o contexto do Assembly-line: identidade, avatares, big idea, etc."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preparar contexto completo para os agentes\nconst transcricoes = $input.first().json.transcricoes || [];\nconst assemblyContext = $('📦 Get Assembly Context').item.json;\n\n// Estruturar dados\nreturn [{\n  json: {\n    // Transcrições dos concorrentes\n    competitor_ads: transcricoes,\n    total_ads: transcricoes.length,\n    \n    // Contexto do Assembly-line\n    expert_name: assemblyContext.expert_name,\n    expert_context: assemblyContext.expert_context,\n    identidade_organizacional: assemblyContext.identidade_organizacional,\n    voz_marca: assemblyContext.voz_marca,\n    avatares: assemblyContext.avatares,\n    dores_mapeadas: assemblyContext.dores_mapeadas,\n    desejos_centrais: assemblyContext.desejos_centrais,\n    big_idea: assemblyContext.big_idea,\n    mecanismo_unico: assemblyContext.mecanismo_unico,\n    front_end_offer: assemblyContext.front_end_offer,\n    back_end_offer: assemblyContext.back_end_offer,\n    \n    // Timestamp\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "prepare-context",
+      "name": "🔧 Prepare Complete Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [300, 400]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Analise os anúncios dos concorrentes e identifique os padrões estratégicos que tornam esses criativos eficazes.\n\n## TAREFAS\n\n1. **ANÁLISE ESTRUTURAL**\n   - Estrutura narrativa (como contam a história)\n   - Progressão emocional (dor → desejo → ação)\n   - Timing de cada elemento\n   - Pontos de virada na narrativa\n\n2. **ANÁLISE DE HOOKS**\n   - Tipos de hooks usados (dor, desejo, curiosidade, urgência)\n   - Primeiras 3 palavras/segundos\n   - Pattern interrupts visuais e verbais\n   - Taxa de retenção estimada\n\n3. **ANÁLISE DE COPY**\n   - Linguagem e tom\n   - Comprimento das frases\n   - Uso de perguntas vs afirmações\n   - Palavras de poder identificadas\n   - Metáforas e analogias\n\n4. **ANÁLISE DE OBJEÇÕES**\n   - Quais objeções são endereçadas\n   - Como são neutralizadas\n   - Timing da neutralização\n\n5. **ANÁLISE DE CTA**\n   - Tipo de call-to-action\n   - Nível de fricção\n   - Urgência/escassez\n   - Clareza da próxima ação\n\n6. **ELEMENTOS VISUAIS** (se aplicável)\n   - Descrição do visual dominante\n   - Cores predominantes\n   - Elementos de atenção\n   - Text overlays\n\n## OUTPUT ESTRUTURADO\n\nRetorne em formato markdown:\n\n```markdown\n# ANÁLISE COMPETITIVA DE CRIATIVOS\n\n## RESUMO EXECUTIVO\n- Total de anúncios analisados: [X]\n- Padrões identificados: [X]\n- Nível de sofisticação: [1-5]\n\n## PADRÕES ESTRUTURAIS\n\n### Estrutura Narrativa Dominante\n[Descrição do padrão mais comum]\n\n**Exemplo:**\n[Transcrição de exemplo]\n\n**Por que funciona:**\n[Análise]\n\n### Progressão Emocional\n[Como movem o prospect emocionalmente]\n\n## BIBLIOTECA DE HOOKS EFETIVOS\n\n### Hook Tipo 1: [Categoria]\n**Exemplo 1:** \"[Transcrição exata]\"\n**Análise:** [Por que funciona]\n**Score de Efetividade:** [1-10]\n\n[Listar 10-15 melhores hooks]\n\n## PADRÕES DE COPY\n\n### Tom e Linguagem\n[Descrição do estilo]\n\n### Estrutura de Frases\n- Comprimento médio: [X] palavras\n- Ritmo: [rápido/moderado/lento]\n- Complexidade: [simples/moderada/complexa]\n\n### Palavras de Poder Identificadas\n[Lista de 20-30 palavras que aparecem com frequência]\n\n### Metáforas e Analogias\n[Exemplos de comparações efetivas]\n\n## TRATAMENTO DE OBJEÇÕES\n\n### Objeção 1: [Qual]\n**Como é tratada:** [Estratégia]\n**Exemplo:** [Transcrição]\n\n[Listar 5-7 objeções principais]\n\n## PADRÕES DE CTA\n\n### Tipo Dominante: [Qual]\n**Exemplos:**\n1. \"[CTA exato]\"\n2. \"[CTA exato]\"\n\n### Nível de Fricção\n[Análise do quanto pedem vs prometem]\n\n### Uso de Urgência/Escassez\n[Como criam senso de urgência]\n\n## ELEMENTOS VISUAIS\n\n### Visual Dominante\n[Descrição do que mais aparece]\n\n### Paleta de Cores\n[Cores mais usadas e por quê]\n\n### Text Overlays\n[Padrão de texto na tela]\n\n## INSIGHTS ESTRATÉGICOS\n\n### O que TODO mundo está fazendo\n[Padrão universal - evitar copiar]\n\n### Gaps Identificados\n[O que NINGUÉM está fazendo - oportunidade]\n\n### Nível de Sofisticação do Mercado\n[Análise de Eugene Schwartz 1-5]\n\n### Recomendações de Diferenciação\n[Como se destacar mantendo efetividade]\n\n## MATRIZ DE EFETIVIDADE\n\n| Elemento | Frequência | Efetividade | Usar? |\n|----------|-----------|-------------|-------|\n| [Hook tipo X] | [%] | [Score] | Sim/Não |\n| [Copy longa] | [%] | [Score] | Sim/Não |\n\n## CRIATIVOS BENCHMARKS\n\n### Top 3 Anúncios Mais Efetivos\n\n**AD #1:**\n[Transcrição completa]\n**Por que é top:**\n[Análise detalhada]\n\n**AD #2:**\n[Transcrição completa]\n\n**AD #3:**\n[Transcrição completa]\n```\n\n## DADOS DE ENTRADA\n\n**Transcrições dos Concorrentes:**\n{{ $json.competitor_ads }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Você é um estrategista de marketing direto especializado em análise competitiva de criativos de alta conversão.\n\nSua missão: Identificar EXATAMENTE o que torna os anúncios dos concorrentes efetivos, destrinchando cada elemento estratégico.\n\nAnalise com profundidade científica:\n- Estrutura narrativa\n- Hooks e pattern interrupts\n- Progressão emocional\n- Tratamento de objeções\n- CTAs e oferta\n- Elementos visuais\n\nIdentifique padrões que funcionam E gaps de oportunidade."
+            }
+          ]
+        }
+      },
+      "id": "agent-competitive-analysis",
+      "name": "🔍 Agent: Competitive Analysis",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [500, 400]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Extraia os padrões específicos que devem ser MODELADOS (não copiados) nos novos criativos.\n\n## TAREFAS\n\n1. **DESTILAÇÃO DE PADRÕES**\n   - Transformar análise em templates acionáveis\n   - Criar fórmulas de hooks\n   - Mapear estruturas narrativas\n   - Identificar timing ideal\n\n2. **BIBLIOTECA DE ELEMENTOS TESTADOS**\n   - Hooks que param scroll\n   - Progressões emocionais que convertem\n   - CTAs que geram clique\n   - Tratamentos de objeção que funcionam\n\n3. **ADAPTAÇÃO PARA O CONTEXTO**\n   - Como aplicar padrões mantendo identidade única\n   - Ajustes por avatar\n   - Diferenciação vs modelagem\n\n## OUTPUT\n\nRetorne estrutura pronta para alimentar o Creative Producer:\n\n```markdown\n# PADRÕES PARA MODELAGEM\n\n## FÓRMULAS DE HOOKS\n\n### Fórmula 1: [Nome]\n**Template:** \"[Estrutura com variáveis]\"\n**Exemplo Concorrente:** \"[Original]\"\n**Adaptação para {{ $json.expert_name }}:** \"[Versão adaptada]\"\n**Quando usar:** [Situação ideal]\n\n[Criar 15-20 fórmulas]\n\n## ESTRUTURAS NARRATIVAS\n\n### Estrutura A: [Nome]\n**Timing:**\n- 0-3s: [O que acontece]\n- 3-8s: [O que acontece]\n- 8-15s: [O que acontece]\n\n**Template:**\n1. [Passo 1 com variáveis]\n2. [Passo 2 com variáveis]\n3. [Passo 3 com variáveis]\n\n**Exemplo adaptado para Avatar 1:**\n[Script completo]\n\n[Criar 5-7 estruturas]\n\n## PROGRESSÕES EMOCIONAIS\n\n### Progressão 1: Dor → Amplificação → Esperança → Ação\n**Como aplicar:**\n[Passo a passo]\n\n**Exemplo para {{ $json.expert_name }}:**\n[Script usando Big Idea: {{ $json.big_idea }}]\n\n## BIBLIOTECA DE CTAs TESTADOS\n\n### Por Tipo de Oferta\n\n**Front End ({{ $json.front_end_offer }}):**\n1. \"[CTA adaptado 1]\"\n2. \"[CTA adaptado 2]\"\n3. \"[CTA adaptado 3]\"\n\n**Back End ({{ $json.back_end_offer }}):**\n1. \"[CTA adaptado 1]\"\n2. \"[CTA adaptado 2]\"\n\n## TRATAMENTOS DE OBJEÇÃO\n\n### Objeção: \"Não tenho tempo\"\n**Padrão que funciona:** [Descrição]\n**Script adaptado:**\n\"[Usando voz de {{ $json.voz_marca }}]\"\n\n[Mapear 7-10 objeções principais]\n\n## DIRETRIZES DE ADAPTAÇÃO\n\n### O que MODELAR (essência)\n- [Lista de elementos estruturais]\n\n### O que DIFERENCIAR (execução)\n- [Como manter identidade única]\n\n### Filtros de Brand\n- Voz da Marca: {{ $json.voz_marca }}\n- Big Idea: {{ $json.big_idea }}\n- Mecanismo Único: {{ $json.mecanismo_unico }}\n\n## MATRIX DE APLICAÇÃO POR AVATAR\n\n### Avatar 1: [Nome do avatar principal]\n**Dor:** {{ $json.dores_mapeadas }}\n**Desejo:** {{ $json.desejos_centrais }}\n\n**Hooks recomendados:** [Lista de fórmulas]\n**Estrutura recomendada:** [Qual usar]\n**CTA recomendado:** [Qual usar]\n\n[Repetir para cada avatar]\n```\n\n## DADOS DE ENTRADA\n\n**Análise Competitiva:**\n{{ $('🔍 Agent: Competitive Analysis').item.json.output }}\n\n**Contexto do Expert:**\n- Nome: {{ $json.expert_name }}\n- Identidade: {{ $json.identidade_organizacional }}\n- Voz: {{ $json.voz_marca }}\n- Avatares: {{ $json.avatares }}\n- Dores: {{ $json.dores_mapeadas }}\n- Desejos: {{ $json.desejos_centrais }}\n- Big Idea: {{ $json.big_idea }}\n- Mecanismo: {{ $json.mecanismo_unico }}\n- Ofertas: {{ $json.front_end_offer }} + {{ $json.back_end_offer }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Você é um engenheiro de copy especializado em transformar análise competitiva em templates acionáveis.\n\nSua missão: Criar FÓRMULAS e ESTRUTURAS que podem ser aplicadas mantendo a identidade única do expert.\n\nNão copie, MODELE:\n- Extraia a essência estrutural\n- Crie templates com variáveis\n- Adapte para o contexto específico\n- Mantenha diferenciação\n\nPense como um químico: você quer a fórmula molecular, não a molécula exata."
+            }
+          ]
+        }
+      },
+      "id": "agent-pattern-extractor",
+      "name": "🧬 Agent: Pattern Extractor",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [700, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Combinar todos os contextos para o Creative Producer Enhanced\nconst baseContext = $input.first().json;\nconst competitiveAnalysis = $('🔍 Agent: Competitive Analysis').item.json.output;\nconst patterns = $('🧬 Agent: Pattern Extractor').item.json.output;\n\nreturn [{\n  json: {\n    // Contexto completo do Assembly\n    ...baseContext,\n    \n    // Insights dos concorrentes\n    competitive_intelligence: competitiveAnalysis,\n    proven_patterns: patterns,\n    \n    // Flag de enhanced mode\n    mode: 'competitor_modeled',\n    enhanced: true\n  }\n}];"
+      },
+      "id": "merge-contexts",
+      "name": "🔗 Merge All Contexts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Crie criativos de alta conversão que MODELAM os padrões efetivos dos concorrentes mas MANTÊM a identidade única do expert.\n\n## INSTRUÇÕES ESPECIAIS - MODO ENHANCED\n\nVocê tem acesso a:\n1. ✅ Todo o contexto do Assembly-line (identidade, avatares, big idea)\n2. ✅ Análise competitiva completa\n3. ✅ Padrões e fórmulas testadas\n\n## PROCESSO DE CRIAÇÃO\n\n### Para CADA criativo:\n\n**PASSO 1: Escolher Padrão**\n- Selecione uma fórmula de hook dos padrões\n- Selecione uma estrutura narrativa\n- Selecione um CTA testado\n\n**PASSO 2: Adaptar para Identidade**\n- Aplicar voz da marca: {{ $json.voz_marca }}\n- Usar Big Idea: {{ $json.big_idea }}\n- Usar Mecanismo Único: {{ $json.mecanismo_unico }}\n\n**PASSO 3: Segmentar por Avatar**\n- Ativar dor específica do avatar\n- Falar para desejo específico\n- Tratar objeção específica\n\n**PASSO 4: Validar Diferenciação**\n- Garantir que NÃO é cópia\n- Garantir que É modelagem inteligente\n- Manter identidade única\n\n## ESTRUTURA DO OUTPUT\n\n```markdown\n# CRIATIVOS MODELADOS - {{ $json.expert_name }}\n\n## 🎯 ESTRATÉGIA DE MODELAGEM\n\n### O que modelamos dos concorrentes\n[Lista de elementos estruturais copiados]\n\n### Como nos diferenciamos\n[Lista de diferenciações mantidas]\n\n### Vantagem competitiva\n[Por que nossos ads serão melhores]\n\n---\n\n## AVATAR 1: [Nome]\n\n### AD 1.1: [Título] - MODELADO DE [Padrão X]\n\n**🧬 PADRÃO BASE:**\n[Qual fórmula/estrutura está sendo usada]\n\n**🎨 DIFERENCIAÇÃO:**\n[Como adaptamos para nossa identidade]\n\n#### CAMADA 1: ATENÇÃO (0-3s)\n\n**VISUAL:**\n[Descrição - pode ser inspirado nos concorrentes]\n\n**TEXTO NO CRIATIVO:**\n\"[Hook usando fórmula adaptada]\"\n\n**HOOK VERBAL:**\n\"[Primeira frase - modelada mas única]\"\n\n**📊 BASEADO EM:**\n- Hook Fórmula: [Qual dos padrões]\n- Efetividade estimada: [Score]\n- Concorrente referência: [Qual padrão]\n\n#### CAMADA 2: CONSCIÊNCIA (3-10s)\n\n**VISUAL:**\n[Progressão visual]\n\n**COPY:**\n[Usando progressão emocional dos padrões]\n\n**VERBAL:**\n\"[Script completo - estrutura modelada, conteúdo único]\"\n\n**📊 BASEADO EM:**\n- Estrutura Narrativa: [Qual dos padrões]\n- Progressão Emocional: [Qual tipo]\n\n#### CAMADA 3: CTA (10-15s)\n\n**VISUAL:**\n[Apresentação da oferta]\n\n**COPY:**\n[Benefício + CTA]\n\n**VERBAL:**\n\"[Script do CTA - usando fórmula testada]\"\n\n**CTA FINAL:**\n\"[Texto do botão - dos padrões testados]\"\n\n**📊 BASEADO EM:**\n- CTA Tipo: [Qual dos padrões]\n- Fricção: [Nível]\n\n---\n\n#### COPY DO POST (LEGENDA)\n\n**🧬 ESTRUTURA MODELADA:** [Qual padrão]\n**🎨 VOZ APLICADA:** {{ $json.voz_marca }}\n\n[Copy completa que usa estrutura dos concorrentes mas voz única]\n\n**HOOK:** [Primeira linha - fórmula aplicada]\n**PROBLEMA:** [Amplificação - seguindo timing dos padrões]\n**AGITAÇÃO:** [Consequências - estrutura modelada]\n**SOLUÇÃO:** [Big Idea apresentada - {{ $json.big_idea }}]\n**BENEFÍCIOS:** \n- [Lista usando mecanismo único: {{ $json.mecanismo_unico }}]\n**PROVA:** [Credibilidade]\n**CTA:** [Call to action - padrão testado]\n\n**📊 ANÁLISE DE MODELAGEM:**\n- Elementos dos concorrentes: [Lista]\n- Elementos únicos nossos: [Lista]\n- Diferenciação mantida: ✅\n- Efetividade esperada: [Score baseado nos padrões]\n\n---\n\n### AD 1.2: [Outro ângulo] - MODELADO DE [Padrão Y]\n\n[Repetir estrutura - criar 5-7 por avatar]\n\n---\n\n## COMPARATIVO: NOSSOS ADS VS CONCORRENTES\n\n| Elemento | Concorrentes | Nossos Criativos |\n|----------|--------------|------------------|\n| Hook | [Padrão deles] | [Nossa adaptação] |\n| Estrutura | [Padrão deles] | [Nossa adaptação] |\n| Big Idea | [Genérica/ausente] | [Nossa única] |\n| Voz | [Tom deles] | [Tom nosso] |\n| Oferta | [CTA deles] | [CTA nosso] |\n\n---\n\n## 📈 VANTAGEM COMPETITIVA\n\n### O que temos de melhor\n1. [Diferenciador 1]\n2. [Diferenciador 2]\n3. [Diferenciador 3]\n\n### Por que vamos converter melhor\n[Análise estratégica]\n\n---\n\n## 🧪 PLANO DE TESTES\n\n### Teste 1: Nossa versão vs padrão puro\n**Hipótese:** [O que esperamos provar]\n**Métrica:** [O que medir]\n\n[Criar 5-7 testes estratégicos]\n\n---\n\n[CONTINUAR com toda a estrutura do Agent 14 original, mas SEMPRE indicando:\n- 🧬 Qual padrão está sendo modelado\n- 🎨 Como foi adaptado para identidade\n- 📊 Efetividade esperada baseada nos dados]\n```\n\n## REGRAS CRÍTICAS\n\n1. **MODELAR, NÃO COPIAR**\n   - Use estruturas, não conteúdo literal\n   - Adapte para identidade única\n   - Mantenha diferenciação clara\n\n2. **TRANSPARÊNCIA**\n   - Sempre indique qual padrão está sendo usado\n   - Mostre as adaptações feitas\n   - Justifique escolhas com dados\n\n3. **IDENTIDADE FIRST**\n   - Voz da marca é inegociável\n   - Big Idea deve estar presente\n   - Mecanismo único deve diferenciar\n\n4. **DATA-DRIVEN**\n   - Use padrões com maior score de efetividade\n   - Referencie análise competitiva\n   - Crie hipóteses testáveis\n\n## DADOS DE ENTRADA\n\n**Padrões Testados:**\n{{ $json.proven_patterns }}\n\n**Análise Competitiva:**\n{{ $json.competitive_intelligence }}\n\n**Contexto do Expert:**\n{{ $json.expert_context }}\n\n**Identidade:**\n{{ $json.identidade_organizacional }}\n\n**Voz da Marca:**\n{{ $json.voz_marca }}\n\n**Avatares:**\n{{ $json.avatares }}\n\n**Dores:**\n{{ $json.dores_mapeadas }}\n\n**Desejos:**\n{{ $json.desejos_centrais }}\n\n**Big Idea:**\n{{ $json.big_idea }}\n\n**Mecanismo Único:**\n{{ $json.mecanismo_unico }}\n\n**Ofertas:**\n- Front End: {{ $json.front_end_offer }}\n- Back End: {{ $json.back_end_offer }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Você é o Creative Producer ENHANCED - versão turbinada com inteligência competitiva.\n\nVocê tem:\n✅ Todo o poder do Assembly-line (identidade, avatares, big idea)\n✅ Análise completa dos ads dos concorrentes\n✅ Padrões e fórmulas testadas que funcionam\n\nSua missão: Criar criativos que MODELAM o melhor dos concorrentes mas MANTÊM identidade única.\n\nPense como um artista que estuda os mestres mas cria obra própria:\n- Use as técnicas (estrutura, timing, progressão)\n- Mas mantenha seu estilo (voz, big idea, mecanismo)\n\nNunca copie. Sempre modele com diferenciação.\n\nSempre indique:\n- 🧬 Qual padrão está modelando\n- 🎨 Como adaptou para identidade\n- 📊 Por que vai funcionar melhor"
+            }
+          ]
+        }
+      },
+      "id": "agent-creative-producer-enhanced",
+      "name": "🎬 Agent 14 ENHANCED: Creative Producer",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [1100, 400]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "application": "YOUR_AIRTABLE_APP_ID",
+        "table": "Criativos_Gerados",
+        "id": "={{ $json.record_id }}",
+        "fields": {
+          "creative_output": "={{ $('🎬 Agent 14 ENHANCED: Creative Producer').item.json.output }}",
+          "competitive_analysis": "={{ $('🔍 Agent: Competitive Analysis').item.json.output }}",
+          "patterns_used": "={{ $('🧬 Agent: Pattern Extractor').item.json.output }}",
+          "expert_id": "={{ $json.expert_id }}",
+          "timestamp": "={{ $json.timestamp }}",
+          "mode": "competitor_modeled"
+        }
+      },
+      "id": "save-output",
+      "name": "💾 Save to Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2,
+      "position": [1300, 400]
+    }
+  ],
+  "connections": {
+    "📥 Input: Transcrições Concorrentes": {
+      "main": [
+        [
+          {
+            "node": "📦 Get Assembly Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📦 Get Assembly Context": {
+      "main": [
+        [
+          {
+            "node": "🔧 Prepare Complete Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Prepare Complete Context": {
+      "main": [
+        [
+          {
+            "node": "🔍 Agent: Competitive Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Agent: Competitive Analysis": {
+      "main": [
+        [
+          {
+            "node": "🧬 Agent: Pattern Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧬 Agent: Pattern Extractor": {
+      "main": [
+        [
+          {
+            "node": "🔗 Merge All Contexts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔗 Merge All Contexts": {
+      "main": [
+        [
+          {
+            "node": "🎬 Agent 14 ENHANCED: Creative Producer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🎬 Agent 14 ENHANCED: Creative Producer": {
+      "main": [
+        [
+          {
+            "node": "💾 Save to Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-01-24T00:00:00.000Z",
+  "versionId": "1"
+}

@@ -1,0 +1,607 @@
+{
+  "name": "GHL - Gerador de PDF Proposta",
+  "meta": {
+    "instanceId": "mottivme-production",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Gerador de PDF de Proposta - Mottivme Sales\n\n## Como funciona:\n1. Webhook recebe dados do lead qualificado\n2. IA gera problema/solucao personalizados\n3. Template HTML e preenchido com dados\n4. HTML e convertido para PDF (API gratuita)\n5. PDF e enviado por email via GHL\n\n## APIs Gratuitas de PDF:\n- html2pdf.app (1000/mes gratis)\n- pdfshift.io (500/mes gratis)\n- api2pdf.com (free tier)\n\n## Customizacao:\n- Edite o template HTML no node 'Template Proposta'\n- Ajuste cores, logo, textos conforme sua marca",
+        "height": 400,
+        "width": 500,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-200, -600],
+      "id": "sticky-instrucoes-pdf",
+      "name": "INSTRUCOES"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ghl-gerar-proposta-mottivme",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, -200],
+      "id": "webhook-gerar-proposta",
+      "name": "Webhook Gerar Proposta",
+      "webhookId": "ghl-gerar-proposta-mottivme"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "contact-id",
+              "name": "contact_id",
+              "value": "={{ $json.body?.contact_id || $json.body?.contactId }}",
+              "type": "string"
+            },
+            {
+              "id": "first-name",
+              "name": "first_name",
+              "value": "={{ $json.body?.first_name || $json.body?.firstName || 'Cliente' }}",
+              "type": "string"
+            },
+            {
+              "id": "last-name",
+              "name": "last_name",
+              "value": "={{ $json.body?.last_name || $json.body?.lastName || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "email",
+              "name": "email",
+              "value": "={{ $json.body?.email }}",
+              "type": "string"
+            },
+            {
+              "id": "phone",
+              "name": "phone",
+              "value": "={{ $json.body?.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "company",
+              "name": "company",
+              "value": "={{ $json.body?.company || $json.body?.companyName || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "problema",
+              "name": "problema",
+              "value": "={{ $json.body?.problem || $json.body?.problema || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "solucao",
+              "name": "solucao",
+              "value": "={{ $json.body?.solution || $json.body?.solucao || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "servico",
+              "name": "servico",
+              "value": "={{ $json.body?.service || $json.body?.servico || 'Consultoria Comercial' }}",
+              "type": "string"
+            },
+            {
+              "id": "preco",
+              "name": "preco",
+              "value": "={{ $json.body?.price || $json.body?.preco || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "desconto",
+              "name": "desconto",
+              "value": "={{ $json.body?.discount || $json.body?.desconto || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "prazo",
+              "name": "prazo",
+              "value": "={{ $json.body?.deadline || $json.body?.prazo || '30 dias' }}",
+              "type": "string"
+            },
+            {
+              "id": "api-key",
+              "name": "api_key",
+              "value": "={{ $json.body?.api_key || 'pit-7f333e6f-a839-4f58-b371-778fed9dc2ea' }}",
+              "type": "string"
+            },
+            {
+              "id": "location-id",
+              "name": "location_id",
+              "value": "={{ $json.body?.location_id || $json.body?.locationId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [200, -200],
+      "id": "extrair-dados-proposta",
+      "name": "Extrair Dados Proposta"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "tem-problema",
+              "leftValue": "={{ $json.problema }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [400, -200],
+      "id": "verificar-problema",
+      "name": "Tem Problema Definido?"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Voce e um especialista em criar propostas comerciais persuasivas. Gere um problema e solucao detalhados baseado nas informacoes do lead.\n\nRegras:\n1. Problema: Maximo 200 caracteres, descreva a dor do cliente\n2. Solucao: Maximo 250 caracteres, descreva como voce resolve\n3. Use linguagem profissional mas acessivel\n4. Seja especifico ao contexto do cliente",
+              "role": "system"
+            },
+            {
+              "content": "=Cliente: {{ $json.first_name }} {{ $json.last_name }}\nEmpresa: {{ $json.company }}\nServico: {{ $json.servico }}\n\nGere problema e solucao para a proposta.",
+              "role": "user"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 500,
+          "responseFormat": "json_object"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [600, -100],
+      "id": "ia-gerar-problema-solucao",
+      "name": "IA Gerar Problema/Solucao",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "problema-final",
+              "name": "problema_final",
+              "value": "={{ $('Verificar Problema Definido?').first().json.problema || $json.message?.content?.problema || $json.message?.content?.problem || 'Dificuldade em escalar vendas e estruturar processos comerciais eficientes.' }}",
+              "type": "string"
+            },
+            {
+              "id": "solucao-final",
+              "name": "solucao_final",
+              "value": "={{ $('Verificar Problema Definido?').first().json.solucao || $json.message?.content?.solucao || $json.message?.content?.solution || 'Implementacao de processos comerciais estruturados, treinamento de equipe e automacoes para aumentar conversao.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [800, -100],
+      "id": "definir-problema-solucao",
+      "name": "Definir Problema/Solucao"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "output": "first"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [800, -300],
+      "id": "merge-dados-proposta",
+      "name": "Merge Dados"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Dados do lead\nconst dados = $('Extrair Dados Proposta').first().json;\nconst problemaSolucao = $('Definir Problema/Solucao').first()?.json || {};\n\n// Calcular valores\nconst preco = dados.preco || 5000;\nconst desconto = dados.desconto || 0;\nconst precoFinal = preco - (preco * desconto / 100);\nconst dataHoje = new Date().toLocaleDateString('pt-BR');\nconst dataValidade = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR');\nconst numeroProposal = `PROP-${Date.now().toString().slice(-6)}`;\n\n// Template HTML da Proposta\nconst html = `\n<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Proposta Comercial - ${dados.first_name} ${dados.last_name}</title>\n  <style>\n    * {\n      margin: 0;\n      padding: 0;\n      box-sizing: border-box;\n    }\n    body {\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n      line-height: 1.6;\n      color: #333;\n      background: #fff;\n    }\n    .container {\n      max-width: 800px;\n      margin: 0 auto;\n      padding: 40px;\n    }\n    .header {\n      display: flex;\n      justify-content: space-between;\n      align-items: center;\n      border-bottom: 3px solid #2563eb;\n      padding-bottom: 20px;\n      margin-bottom: 40px;\n    }\n    .logo {\n      font-size: 28px;\n      font-weight: bold;\n      color: #2563eb;\n    }\n    .logo span {\n      color: #1e40af;\n    }\n    .proposal-info {\n      text-align: right;\n      font-size: 14px;\n      color: #666;\n    }\n    .proposal-number {\n      font-size: 18px;\n      font-weight: bold;\n      color: #2563eb;\n    }\n    .section {\n      margin-bottom: 30px;\n    }\n    .section-title {\n      font-size: 20px;\n      color: #2563eb;\n      margin-bottom: 15px;\n      padding-bottom: 8px;\n      border-bottom: 1px solid #e5e7eb;\n    }\n    .client-info {\n      background: #f8fafc;\n      padding: 20px;\n      border-radius: 8px;\n      margin-bottom: 30px;\n    }\n    .client-info p {\n      margin-bottom: 8px;\n    }\n    .client-info strong {\n      color: #1e40af;\n    }\n    .highlight-box {\n      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);\n      border-left: 4px solid #2563eb;\n      padding: 20px;\n      margin: 20px 0;\n      border-radius: 0 8px 8px 0;\n    }\n    .highlight-box h4 {\n      color: #1e40af;\n      margin-bottom: 10px;\n    }\n    .pricing-table {\n      width: 100%;\n      border-collapse: collapse;\n      margin: 20px 0;\n    }\n    .pricing-table th,\n    .pricing-table td {\n      padding: 15px;\n      text-align: left;\n      border-bottom: 1px solid #e5e7eb;\n    }\n    .pricing-table th {\n      background: #2563eb;\n      color: white;\n    }\n    .pricing-table tr:nth-child(even) {\n      background: #f8fafc;\n    }\n    .total-row {\n      font-weight: bold;\n      font-size: 18px;\n      background: #1e40af !important;\n      color: white;\n    }\n    .discount-badge {\n      background: #10b981;\n      color: white;\n      padding: 4px 12px;\n      border-radius: 20px;\n      font-size: 12px;\n      margin-left: 10px;\n    }\n    .cta-section {\n      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);\n      color: white;\n      padding: 30px;\n      border-radius: 12px;\n      text-align: center;\n      margin-top: 40px;\n    }\n    .cta-section h3 {\n      font-size: 24px;\n      margin-bottom: 15px;\n    }\n    .cta-button {\n      display: inline-block;\n      background: white;\n      color: #2563eb;\n      padding: 15px 40px;\n      border-radius: 30px;\n      text-decoration: none;\n      font-weight: bold;\n      font-size: 16px;\n      margin-top: 15px;\n    }\n    .footer {\n      margin-top: 40px;\n      padding-top: 20px;\n      border-top: 1px solid #e5e7eb;\n      text-align: center;\n      color: #666;\n      font-size: 12px;\n    }\n    .validity {\n      background: #fef3c7;\n      border: 1px solid #f59e0b;\n      padding: 10px 20px;\n      border-radius: 8px;\n      text-align: center;\n      margin: 20px 0;\n      color: #92400e;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <!-- Header -->\n    <div class=\"header\">\n      <div class=\"logo\">Mottivme<span>Sales</span></div>\n      <div class=\"proposal-info\">\n        <div class=\"proposal-number\">${numeroProposal}</div>\n        <div>Data: ${dataHoje}</div>\n      </div>\n    </div>\n\n    <!-- Titulo -->\n    <h1 style=\"font-size: 32px; margin-bottom: 30px; color: #1e3a5f;\">\n      Proposta Comercial\n    </h1>\n\n    <!-- Info Cliente -->\n    <div class=\"client-info\">\n      <p><strong>Para:</strong> ${dados.first_name} ${dados.last_name}</p>\n      ${dados.company ? `<p><strong>Empresa:</strong> ${dados.company}</p>` : ''}\n      <p><strong>Email:</strong> ${dados.email}</p>\n      ${dados.phone ? `<p><strong>Telefone:</strong> ${dados.phone}</p>` : ''}\n    </div>\n\n    <!-- Problema Identificado -->\n    <div class=\"section\">\n      <h2 class=\"section-title\">Desafio Identificado</h2>\n      <div class=\"highlight-box\">\n        <h4>O que identificamos:</h4>\n        <p>${problemaSolucao.problema_final || dados.problema || 'Necessidade de estruturacao e escalabilidade comercial.'}</p>\n      </div>\n    </div>\n\n    <!-- Solucao Proposta -->\n    <div class=\"section\">\n      <h2 class=\"section-title\">Nossa Solucao</h2>\n      <div class=\"highlight-box\">\n        <h4>Como vamos resolver:</h4>\n        <p>${problemaSolucao.solucao_final || dados.solucao || 'Implementacao de processos estruturados e treinamento especializado.'}</p>\n      </div>\n    </div>\n\n    <!-- Servicos e Precos -->\n    <div class=\"section\">\n      <h2 class=\"section-title\">Investimento</h2>\n      <table class=\"pricing-table\">\n        <thead>\n          <tr>\n            <th>Servico</th>\n            <th>Descricao</th>\n            <th style=\"text-align: right;\">Valor</th>\n          </tr>\n        </thead>\n        <tbody>\n          <tr>\n            <td><strong>${dados.servico}</strong></td>\n            <td>Pacote completo de consultoria e implementacao</td>\n            <td style=\"text-align: right;\">R$ ${preco.toLocaleString('pt-BR')}</td>\n          </tr>\n          ${desconto > 0 ? `\n          <tr>\n            <td colspan=\"2\"><strong>Desconto Especial</strong> <span class=\"discount-badge\">${desconto}% OFF</span></td>\n            <td style=\"text-align: right; color: #10b981;\">- R$ ${(preco * desconto / 100).toLocaleString('pt-BR')}</td>\n          </tr>\n          ` : ''}\n          <tr class=\"total-row\">\n            <td colspan=\"2\">TOTAL</td>\n            <td style=\"text-align: right;\">R$ ${precoFinal.toLocaleString('pt-BR')}</td>\n          </tr>\n        </tbody>\n      </table>\n\n      <p style=\"margin-top: 15px; color: #666;\">\n        <strong>Condicoes:</strong> Parcelamento em ate 12x no cartao ou 10% desconto a vista.\n      </p>\n    </div>\n\n    <!-- Prazo -->\n    <div class=\"section\">\n      <h2 class=\"section-title\">Prazo de Entrega</h2>\n      <p>Inicio imediato apos aprovacao. Prazo de implementacao: <strong>${dados.prazo}</strong></p>\n    </div>\n\n    <!-- Validade -->\n    <div class=\"validity\">\n      <strong>Esta proposta e valida ate ${dataValidade}</strong>\n    </div>\n\n    <!-- CTA -->\n    <div class=\"cta-section\">\n      <h3>Pronto para comecar?</h3>\n      <p>Agende uma conversa para tirarmos suas duvidas e iniciarmos a transformacao do seu comercial.</p>\n      <a href=\"https://client.socialfy.me/widget/bookings/sessao-estrategica-mottivmesales\" class=\"cta-button\">\n        AGENDAR CONVERSA\n      </a>\n    </div>\n\n    <!-- Footer -->\n    <div class=\"footer\">\n      <p><strong>Mottivme Sales</strong></p>\n      <p>Transformando equipes comerciais em maquinas de vendas</p>\n      <p style=\"margin-top: 10px;\">contato@mottivme.com | www.mottivme.com</p>\n    </div>\n  </div>\n</body>\n</html>\n`;\n\nreturn {\n  json: {\n    html_proposta: html,\n    numero_proposta: numeroProposal,\n    preco_original: preco,\n    desconto_percent: desconto,\n    preco_final: precoFinal,\n    data_emissao: dataHoje,\n    data_validade: dataValidade,\n    cliente: {\n      nome: `${dados.first_name} ${dados.last_name}`,\n      email: dados.email,\n      empresa: dados.company\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, -200],
+      "id": "template-proposta",
+      "name": "Template Proposta HTML"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.html2pdf.app/v1/generate",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "apiKey",
+              "value": "={{ $env.HTML2PDF_API_KEY || 'COLOQUE_SUA_API_KEY_AQUI' }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"html\": {{ JSON.stringify($json.html_proposta) }},\n  \"format\": \"A4\",\n  \"margin\": {\n    \"top\": \"20px\",\n    \"right\": \"20px\",\n    \"bottom\": \"20px\",\n    \"left\": \"20px\"\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1200, -200],
+      "id": "gerar-pdf-api",
+      "name": "Gerar PDF (html2pdf.app)",
+      "notes": "API Gratuita: 1000 PDFs/mes\nCrie conta em html2pdf.app e pegue sua API key"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "name": "=Proposta_{{ $('Template Proposta HTML').first().json.numero_proposta }}_{{ $('Extrair Dados Proposta').first().json.first_name }}.pdf",
+        "folderId": {
+          "__rl": true,
+          "value": "root",
+          "mode": "list",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [1400, -200],
+      "id": "salvar-google-drive",
+      "name": "Salvar no Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "COLOQUE_SEU_CREDENTIAL_ID",
+          "name": "Google Drive"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pdf-url",
+              "name": "pdf_url",
+              "value": "={{ $json.webViewLink || $json.webContentLink }}",
+              "type": "string"
+            },
+            {
+              "id": "pdf-id",
+              "name": "pdf_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1600, -200],
+      "id": "extrair-link-pdf",
+      "name": "Extrair Link PDF"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Extrair Dados Proposta').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"Email\",\n  \"contactId\": {{ JSON.stringify($('Extrair Dados Proposta').first().json.contact_id) }},\n  \"subject\": \"Proposta Comercial - {{ $('Template Proposta HTML').first().json.numero_proposta }}\",\n  \"message\": \"Ola {{ $('Extrair Dados Proposta').first().json.first_name }},\\n\\nConforme conversamos, segue sua proposta comercial personalizada.\\n\\nAcesse aqui: {{ $json.pdf_url }}\\n\\nQualquer duvida, estou a disposicao!\\n\\nAbs,\\nEquipe Mottivme Sales\",\n  \"html\": \"<p>Ola <strong>{{ $('Extrair Dados Proposta').first().json.first_name }}</strong>,</p><p>Conforme conversamos, segue sua proposta comercial personalizada.</p><p><a href='{{ $json.pdf_url }}' style='background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block; margin: 15px 0;'>VER PROPOSTA</a></p><p>Qualquer duvida, estou a disposicao!</p><p>Abs,<br>Equipe Mottivme Sales</p>\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1800, -200],
+      "id": "enviar-email-ghl",
+      "name": "Enviar Email via GHL"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $('Extrair Dados Proposta').first().json.contact_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Extrair Dados Proposta').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    {\n      \"key\": \"proposta_enviada\",\n      \"value\": \"true\"\n    },\n    {\n      \"key\": \"proposta_numero\",\n      \"value\": \"{{ $('Template Proposta HTML').first().json.numero_proposta }}\"\n    },\n    {\n      \"key\": \"proposta_valor\",\n      \"value\": \"{{ $('Template Proposta HTML').first().json.preco_final }}\"\n    },\n    {\n      \"key\": \"proposta_data\",\n      \"value\": \"{{ $('Template Proposta HTML').first().json.data_emissao }}\"\n    },\n    {\n      \"key\": \"proposta_link\",\n      \"value\": \"{{ $('Extrair Link PDF').first().json.pdf_url }}\"\n    }\n  ],\n  \"tags\": [\"proposta_enviada\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2000, -200],
+      "id": "atualizar-custom-fields-ghl",
+      "name": "Atualizar Custom Fields GHL"
+    },
+    {
+      "parameters": {
+        "dataToSave": {
+          "values": [
+            {
+              "key": "proposta_numero",
+              "value": "={{ $('Template Proposta HTML').first().json.numero_proposta }}"
+            },
+            {
+              "key": "proposta_valor",
+              "value": "={{ $('Template Proposta HTML').first().json.preco_final }}"
+            },
+            {
+              "key": "pdf_url",
+              "value": "={{ $('Extrair Link PDF').first().json.pdf_url }}"
+            },
+            {
+              "key": "cliente_email",
+              "value": "={{ $('Extrair Dados Proposta').first().json.email }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executionData",
+      "typeVersion": 1.1,
+      "position": [2200, -200],
+      "id": "salvar-execution",
+      "name": "Salvar Execution Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "problema-direto",
+              "name": "problema_final",
+              "value": "={{ $json.problema }}",
+              "type": "string"
+            },
+            {
+              "id": "solucao-direto",
+              "name": "solucao_final",
+              "value": "={{ $json.solucao }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [600, -300],
+      "id": "usar-problema-existente",
+      "name": "Usar Problema Existente"
+    }
+  ],
+  "connections": {
+    "Webhook Gerar Proposta": {
+      "main": [
+        [
+          {
+            "node": "Extrair Dados Proposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Dados Proposta": {
+      "main": [
+        [
+          {
+            "node": "Verificar Problema Definido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Problema Definido?": {
+      "main": [
+        [
+          {
+            "node": "Usar Problema Existente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IA Gerar Problema/Solucao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA Gerar Problema/Solucao": {
+      "main": [
+        [
+          {
+            "node": "Definir Problema/Solucao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Definir Problema/Solucao": {
+      "main": [
+        [
+          {
+            "node": "Merge Dados",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Usar Problema Existente": {
+      "main": [
+        [
+          {
+            "node": "Merge Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Dados": {
+      "main": [
+        [
+          {
+            "node": "Template Proposta HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Template Proposta HTML": {
+      "main": [
+        [
+          {
+            "node": "Gerar PDF (html2pdf.app)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar PDF (html2pdf.app)": {
+      "main": [
+        [
+          {
+            "node": "Salvar no Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar no Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Extrair Link PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Link PDF": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email via GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Email via GHL": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Custom Fields GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Custom Fields GHL": {
+      "main": [
+        [
+          {
+            "node": "Salvar Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "active": false
+}

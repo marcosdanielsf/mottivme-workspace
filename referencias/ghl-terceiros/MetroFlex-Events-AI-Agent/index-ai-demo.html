@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetroFlex Events - AI Agent Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: #999;
+            margin-bottom: 40px;
+        }
+
+        .hero {
+            background: rgba(220, 38, 38, 0.1);
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .feature h3 {
+            color: #dc2626;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .feature p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .cta {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: #fff;
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .cta:hover {
+            transform: scale(1.05);
+        }
+
+        .notice {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 40px;
+            color: #ffc107;
+        }
+
+        .code-section {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .code-section h3 {
+            color: #dc2626;
+            margin-bottom: 15px;
+        }
+
+        .code-section pre {
+            background: #000;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #0f0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ MetroFlex Events AI Assistant</h1>
+        <p class="subtitle">Research-Based RAG Agent | GPT-4o Powered | GHL Ready</p>
+
+        <div class="hero">
+            <h2 style="margin-bottom: 20px;">Click the ⚡ button in the bottom right!</h2>
+            <p style="font-size: 18px; line-height: 1.8; color: #ccc;">
+                This is a <strong>DEMO PREVIEW</strong> of the MetroFlex Events AI Assistant chat widget.
+                <br><br>
+                <strong>NOTE:</strong> The backend AI agent is NOT deployed yet (no webhook URL configured).
+                You'll see the chat interface, but it won't respond until you deploy the Python backend.
+                <br><br>
+                Try clicking the chat button to see the UI/UX design!
+            </p>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>💪 Research-Based Knowledge</h3>
+                <p>Built from actual research of MetroFlexEvents.com, BranchWarrenClassic.com, Better Bodies Classic, Ronnie Coleman Classic, and official NPC sources.</p>
+            </div>
+
+            <div class="feature">
+                <h3>⚡ GPT-4o Powered</h3>
+                <p>Latest OpenAI model - faster, smarter, cost-effective at ~$0.008 per chat. Budget: $17-132/mo depending on usage.</p>
+            </div>
+
+            <div class="feature">
+                <h3>🎯 GHL Integration Ready</h3>
+                <p>Copy-paste the chat widget code into GoHighLevel Footer Tracking Code. 100% compatible, no external dependencies.</p>
+            </div>
+
+            <div class="feature">
+                <h3>📊 100+ Indexed Documents</h3>
+                <p>2025 event dates, NPC division rules, Ronnie Coleman story, competition procedures, sponsorship packages, and more.</p>
+            </div>
+
+            <div class="feature">
+                <h3>🚀 <2 Second Responses</h3>
+                <p>ChromaDB vector search + GPT-4o generation delivers accurate, contextual answers in under 2 seconds.</p>
+            </div>
+
+            <div class="feature">
+                <h3>💰 Cost-Effective</h3>
+                <p>Start at $17/mo, scale to $58/mo. 10-40x ROI by saving support time and increasing registrations.</p>
+            </div>
+        </div>
+
+        <div class="notice">
+            <strong>⚠️ DEMO MODE:</strong> This is a UI preview only. The chat widget is visible but not connected to the AI backend.
+            <br><br>
+            To activate:
+            <ol style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                <li>Deploy the Python backend (<code>metroflex_ai_agent.py</code>) to Railway/Heroku/DigitalOcean</li>
+                <li>Get your webhook URL (e.g., <code>https://your-app.railway.app/webhook/chat</code>)</li>
+                <li>Update line 395 in <code>GHL_CHAT_WIDGET.html</code> with your webhook URL</li>
+                <li>Add the updated chat widget code to GoHighLevel Footer Tracking Code</li>
+            </ol>
+        </div>
+
+        <div class="code-section">
+            <h3>Quick Start Budget</h3>
+            <pre>
+Low Usage (50-100 chats/day):
+├─ OpenAI GPT-4o: $12/mo
+├─ Railway Hosting: $5/mo
+└─ TOTAL: $17/mo
+
+Moderate Usage (200-300 chats/day):
+├─ OpenAI GPT-4o: $48/mo
+├─ Railway Hosting: $10/mo
+└─ TOTAL: $58/mo
+
+High Usage (500+ chats/day):
+├─ OpenAI GPT-4o: $120/mo
+├─ DigitalOcean: $12/mo
+└─ TOTAL: $132/mo
+            </pre>
+        </div>
+
+        <div style="margin-top: 40px; text-align: center;">
+            <a href="AI_Agent/RESEARCH_BASED_SYSTEM_SUMMARY.md" class="cta" target="_blank">View Full Documentation</a>
+            <a href="AI_Agent/UPDATED_COST_BUDGET_GPT4o.md" class="cta" target="_blank" style="margin-left: 20px;">View Budget Details</a>
+        </div>
+    </div>
+
+    <!-- CHAT WIDGET DEMO (No backend - UI only) -->
+    <script src="AI_Agent/GHL_CHAT_WIDGET.html"></script>
+
+    <!-- Inline the chat widget since script src won't work for HTML -->
+    <style>
+    /* Chat Widget Styles */
+    #metroflex-chat-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    #metroflex-chat-button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        transition: all 300ms ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 28px;
+    }
+
+    #metroflex-chat-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6);
+    }
+
+    #metroflex-chat-window {
+        display: none;
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        width: 380px;
+        height: 550px;
+        background: #1a1a1a;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        flex-direction: column;
+        overflow: hidden;
+        border: 2px solid rgba(196, 30, 58, 0.3);
+    }
+
+    #metroflex-chat-window.open {
+        display: flex;
+    }
+
+    .metroflex-chat-header {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .metroflex-chat-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .metroflex-chat-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .metroflex-chat-title h4 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .metroflex-chat-title p {
+        margin: 0;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .metroflex-chat-close {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+        opacity: 0.8;
+        transition: opacity 200ms;
+    }
+
+    .metroflex-chat-close:hover {
+        opacity: 1;
+    }
+
+    .metroflex-chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: #0f0f0f;
+    }
+
+    .metroflex-chat-message {
+        display: flex;
+        gap: 10px;
+        animation: fadeIn 300ms ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .metroflex-chat-message.user {
+        flex-direction: row-reverse;
+    }
+
+    .metroflex-chat-message-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .metroflex-chat-message.assistant .metroflex-chat-message-avatar {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        font-size: 16px;
+    }
+
+    .metroflex-chat-message.user .metroflex-chat-message-avatar {
+        background: #333;
+        font-size: 16px;
+    }
+
+    .metroflex-chat-message-content {
+        max-width: 75%;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .metroflex-chat-message.assistant .metroflex-chat-message-content {
+        background: #2a2a2a;
+        color: #e5e5e5;
+        border-bottom-left-radius: 4px;
+    }
+
+    .metroflex-chat-message.user .metroflex-chat-message-content {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+    }
+
+    .metroflex-chat-input-container {
+        padding: 16px 20px;
+        background: #1a1a1a;
+        border-top: 1px solid #333;
+        display: flex;
+        gap: 10px;
+    }
+
+    .metroflex-chat-input {
+        flex: 1;
+        background: #2a2a2a;
+        border: 1px solid #444;
+        border-radius: 20px;
+        padding: 10px 16px;
+        color: #fff;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 200ms;
+    }
+
+    .metroflex-chat-input:focus {
+        border-color: #dc2626;
+    }
+
+    .metroflex-chat-send {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #fff;
+        font-size: 18px;
+        transition: transform 200ms;
+    }
+
+    .metroflex-chat-send:hover {
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 480px) {
+        #metroflex-chat-window {
+            width: calc(100vw - 40px);
+            height: calc(100vh - 120px);
+            right: 20px;
+            bottom: 90px;
+        }
+    }
+    </style>
+
+    <div id="metroflex-chat-widget">
+        <button id="metroflex-chat-button" aria-label="Open MetroFlex AI Assistant">⚡</button>
+
+        <div id="metroflex-chat-window">
+            <div class="metroflex-chat-header">
+                <div class="metroflex-chat-header-left">
+                    <div class="metroflex-chat-avatar">⚡</div>
+                    <div class="metroflex-chat-title">
+                        <h4>MetroFlex AI Assistant</h4>
+                        <p>DEMO MODE - UI Only</p>
+                    </div>
+                </div>
+                <button class="metroflex-chat-close" aria-label="Close chat">×</button>
+            </div>
+
+            <div class="metroflex-chat-messages" id="metroflex-chat-messages">
+                <div class="metroflex-chat-message assistant">
+                    <div class="metroflex-chat-message-avatar">⚡</div>
+                    <div class="metroflex-chat-message-content">
+                        <strong>⚠️ DEMO MODE</strong><br><br>
+                        This is a UI preview only. The AI backend is not deployed yet.<br><br>
+                        When deployed, I can help you with:<br>
+                        💪 NPC division rules & weight classes<br>
+                        📅 2025 event dates & registration<br>
+                        🎯 Sponsorship opportunities<br>
+                        ⚡ Competition procedures<br><br>
+                        See documentation for deployment instructions!
+                    </div>
+                </div>
+            </div>
+
+            <div class="metroflex-chat-input-container">
+                <input type="text" class="metroflex-chat-input" id="metroflex-chat-input" placeholder="Type your question..." disabled />
+                <button class="metroflex-chat-send" id="metroflex-chat-send" aria-label="Send message" disabled>➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Simple toggle functionality for demo
+    const chatButton = document.getElementById('metroflex-chat-button');
+    const chatWindow = document.getElementById('metroflex-chat-window');
+    const chatClose = document.querySelector('.metroflex-chat-close');
+
+    chatButton.addEventListener('click', function() {
+        chatWindow.classList.add('open');
+    });
+
+    chatClose.addEventListener('click', function() {
+        chatWindow.classList.remove('open');
+    });
+    </script>
+</body>
+</html>

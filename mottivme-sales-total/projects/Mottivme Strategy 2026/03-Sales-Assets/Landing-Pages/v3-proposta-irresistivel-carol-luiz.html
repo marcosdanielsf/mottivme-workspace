@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carol & Luiz - Proposta Final Irresistível | Mottivme Sales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0D1117;
+            --bg-card: #161B22;
+            --bg-card-hover: #1C2128;
+            --border: #30363D;
+            --blue-primary: #2F81F7;
+            --blue-electric: #58A6FF;
+            --green-success: #3FB950;
+            --red-danger: #F85149;
+            --yellow-warning: #D29922;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8B949E;
+            --text-muted: #6E7681;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--blue-electric);
+        }
+
+        .cta-button {
+            background: var(--blue-primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background: var(--blue-electric);
+            transform: translateY(-2px);
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-card) 100%);
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: var(--bg-card);
+            color: var(--blue-electric);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--blue-electric) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 32px;
+        }
+
+        /* Confession Section */
+        .confession {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            margin: 60px auto;
+            max-width: 900px;
+        }
+
+        .confession h2 {
+            color: var(--yellow-warning);
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .confession p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .confession strong {
+            color: var(--text-primary);
+        }
+
+        /* Section */
+        section {
+            padding: 60px 20px;
+        }
+
+        section h2 {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        section .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 48px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Problem/Solution Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--blue-electric);
+            transform: translateY(-4px);
+        }
+
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: var(--blue-electric);
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .card li:last-child {
+            border-bottom: none;
+        }
+
+        .card li::before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+
+        .card.negative li::before {
+            content: "❌ ";
+        }
+
+        /* Future Vision */
+        .future-vision {
+            background: linear-gradient(135deg, #1a4d2e 0%, #0d291a 100%);
+            border: 2px solid var(--green-success);
+            border-radius: 12px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+        }
+
+        .future-vision h3 {
+            color: var(--green-success);
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .future-vision p {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .future-vision strong {
+            color: var(--green-success);
+        }
+
+        /* Timeline */
+        .timeline {
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        .timeline-item {
+            background: var(--bg-card);
+            border-left: 4px solid var(--blue-electric);
+            padding: 24px;
+            margin-bottom: 24px;
+            border-radius: 8px;
+        }
+
+        .timeline-item h4 {
+            color: var(--blue-electric);
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .timeline-item ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .timeline-item li {
+            padding: 8px 0;
+            color: var(--text-secondary);
+        }
+
+        .timeline-item li::before {
+            content: "→ ";
+            color: var(--blue-electric);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* Pricing */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 32px;
+            margin-top: 40px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--blue-electric);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--blue-electric);
+            background: linear-gradient(135deg, var(--bg-card) 0%, #0a1929 100%);
+        }
+
+        .pricing-card.featured::before {
+            content: "⭐ RECOMENDADO";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--blue-electric);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pricing-card h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .price {
+            font-size: 48px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--blue-electric);
+            margin: 24px 0;
+        }
+
+        .discount {
+            background: var(--green-success);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            margin: 16px 0;
+            font-size: 16px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 24px 0;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+
+        .savings {
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 16px;
+            border: 1px solid var(--green-success);
+        }
+
+        .savings strong {
+            color: var(--green-success);
+            font-size: 20px;
+        }
+
+        /* ROI Table */
+        .roi-table {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 32px;
+            margin: 40px auto;
+            max-width: 900px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-primary);
+            color: var(--blue-electric);
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: var(--bg-card-hover);
+        }
+
+        /* Guarantee */
+        .guarantee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .guarantee-card {
+            background: var(--bg-card);
+            border: 2px solid var(--green-success);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .guarantee-card h3 {
+            color: var(--green-success);
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+
+        .guarantee-card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Cases */
+        .case {
+            background: var(--bg-card);
+            border-left: 4px solid var(--green-success);
+            padding: 32px;
+            margin: 24px auto;
+            max-width: 900px;
+            border-radius: 8px;
+        }
+
+        .case h3 {
+            color: var(--green-success);
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .case-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .metric {
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--green-success);
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* FAQ */
+        .faq {
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .faq-question {
+            color: var(--blue-electric);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Bonus */
+        .bonus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .bonus-card {
+            background: var(--bg-card);
+            border: 2px solid var(--yellow-warning);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .bonus-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .bonus-card h4 {
+            color: var(--yellow-warning);
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .bonus-value {
+            color: var(--green-success);
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        /* Urgency Banner */
+        .urgency-banner {
+            background: linear-gradient(135deg, #7a1a1a 0%, #4a0e0e 100%);
+            border: 2px solid var(--red-danger);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin: 60px auto;
+            max-width: 900px;
+        }
+
+        .urgency-banner h3 {
+            color: var(--red-danger);
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .urgency-banner .deadline {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            margin: 20px 0;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--blue-primary) 0%, #1a5cc4 100%);
+            padding: 80px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .cta-section h2 {
+            font-size: 42px;
+            margin-bottom: 24px;
+        }
+
+        .cta-section p {
+            font-size: 20px;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--blue-primary);
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            border: 2px solid white;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--blue-primary);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-info {
+            margin-top: 24px;
+        }
+
+        .contact-info a {
+            color: var(--blue-electric);
+            text-decoration: none;
+            margin: 0 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            section h2 {
+                font-size: 28px;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .price {
+                font-size: 36px;
+            }
+
+            .cta-section h2 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🚀 MOTTIVME SALES</div>
+                <a href="#cta" class="cta-button">AGENDAR CALL</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-tag">💎 PROPOSTA FINAL - CAROL & LUIZ</div>
+            <h1>Da Clínica à Mentoria<br>de R$ 150k/mês</h1>
+            <p class="subtitle">Estruturação completa + 6 meses de execução<br>Transforme sua expertise em mentoria
+                lucrativa</p>
+        </div>
+    </section>
+
+    <!-- Confession -->
+    <div class="container">
+        <div class="confession">
+            <h2>🙏 Oi Carol, Oi Luiz... Preciso Confessar Algo</h2>
+            <p>Saí da nossa call com um sentimento horrível no peito.</p>
+            <p><strong>Eu confundi vocês.</strong></p>
+            <p>Ao invés de simplificar, compliquei. Falei de 4 produtos diferentes, não somei os custos direito, e vocês
+                saíram da call <strong>SEM CLAREZA</strong> do que exatamente íamos fazer juntos.</p>
+            <p><strong>Minha culpa. Desculpa. 🙏</strong></p>
+            <p>Então fiz o seguinte: <strong>reescrevi TUDO do zero.</strong></p>
+            <p>Agora ficou <strong>cristalino</strong>. Sem confusão. Sem pegadinhas. Tudo claro.</p>
+        </div>
+    </div>
+
+    <!-- What You Want -->
+    <section>
+        <div class="container">
+            <h2>🎯 O Que Vocês Realmente Querem</h2>
+            <p class="section-subtitle">Deixa eu ver se entendi direito:</p>
+
+            <div class="grid-2">
+                <div class="card negative">
+                    <h3>❌ Vocês NÃO Querem</h3>
+                    <ul>
+                        <li>Mais pacientes na clínica (já tá indo bem)</li>
+                        <li>Trabalhar mais horas (já trabalham demais)</li>
+                        <li>Fazer algo que tire o foco da clínica</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>✅ Vocês QUEREM</h3>
+                    <ul>
+                        <li>Criar uma mentoria médica que impacta outros médicos</li>
+                        <li>Faturar R$ 100k-150k/mês EXTRA (para começar) com a mentoria</li>
+                        <li>Fazer isso sem trabalhar 24/7 (delegar execução)</li>
+                        <li>Ter previsibilidade (não depender só da clínica)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Problem -->
+    <section style="background: var(--bg-card);">
+        <div class="container">
+            <h2>😰 O Problema (E Por Que Você Ainda Não Tem Isso)</h2>
+            <p class="section-subtitle">Vou ser direto:</p>
+
+            <div class="card" style="max-width: 800px; margin: 0 auto;">
+                <h3>Vocês não têm a ESTRUTURA pronta</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li>❌ Não tem ICP claro (qual médico é seu cliente ideal?)</li>
+                    <li>❌ Não tem oferta definida (mentoria de quanto? Como? Formato?)</li>
+                    <li>❌ Não tem preço/garantias (R$ 8k? R$ 12k? R$ 15k?)</li>
+                    <li>❌ Não tem funis criados (como o médico vira lead?)</li>
+                    <li>❌ Não tem scripts prontos (o que falar na call?)</li>
+                    <li>❌ Não tem CRM organizado (onde gerenciar tudo?)</li>
+                </ul>
+                <p style="margin-top: 24px; font-size: 18px; color: var(--red-danger); font-weight: 600;">
+                    E sem estrutura, rodar tráfego é jogar dinheiro fora.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future Vision -->
+    <section>
+        <div class="container">
+            <h2>🚀 A Solução (E Por Que Vocês Vão Chegar Lá)</h2>
+            <p class="section-subtitle">Imagina o seguinte cenário daqui 6 meses:</p>
+
+            <div class="future-vision">
+                <h3>📅 30 de Maio de 2026, 19h37</h3>
+                <p>Você (Carol ou Luiz) está jantando tranquilo. Celular toca.</p>
+                <p>É uma notificação do Socialfy:</p>
+                <p
+                    style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px; font-size: 20px; margin: 20px 0;">
+                    <strong>"Nova venda! Dr. Ricardo fechou mentoria - R$ 12.000"</strong>
+                </p>
+                <p>Você sorri. É o 4º fechamento <strong>só essa semana</strong>.</p>
+                <p>Você nem participou da venda. Seu SDR agendou. Seu closer fechou.</p>
+                <p style="margin-top: 24px;"><strong>Nesse mês:</strong></p>
+                <ul style="list-style: none; padding: 0; margin-top: 12px;">
+                    <li>• 14 mentorados ativos</li>
+                    <li>• R$ 168.000 em faturamento recorrente</li>
+                    <li>• 22 reuniões agendadas pro mês que vem</li>
+                    <li>• Vocês trabalharam 6h/semana na mentoria (só estratégia + calls)</li>
+                </ul>
+                <p style="margin-top: 24px; font-size: 22px; font-weight: 700; color: var(--green-success);">
+                    A máquina está rodando sozinha.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Breakdown -->
+    <section style="background: var(--bg-card);">
+        <div class="container">
+            <h2>📦 A Solução Completa: ESTRUTURA + EXECUÇÃO</h2>
+            <p class="section-subtitle">Não adianta estruturar e não executar. Não adianta executar sem estruturar
+                antes.<br><strong>Precisa das duas coisas.</strong></p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>📘 FASE 1: Foundation Sprint (Mês 1)</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px;">Estruturamos TUDO em 30 dias:</p>
+                    <ul>
+                        <li>Brand Book completo (40 páginas)</li>
+                        <li>Offer Stack estruturado (Método Hormozi)</li>
+                        <li>3 funis completos (Orgânico + Pago + Outbound)</li>
+                        <li>20 scripts prontos (virais, anúncios, SDR, vendas)</li>
+                        <li>90 dias de conteúdo planejado</li>
+                        <li>3 lead magnets (quiz, PDF, webinar)</li>
+                        <li>CRM Socialfy configurado</li>
+                        <li>Messaging Matrix completa</li>
+                    </ul>
+                    <p style="margin-top: 16px; color: var(--blue-electric); font-weight: 600;">
+                        Valor: R$ 53.982
+                    </p>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>🚀 FASE 2: Demand Stack (Meses 2-7)</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px;">Executamos TUDO pra você durante 6
+                        meses:</p>
+                    <ul>
+                        <li>Gestão de 2 contas Instagram (Dr. Luiz + Dra. Carol)</li>
+                        <li>Criação de conteúdo (posts, stories, reels)</li>
+                        <li>Tráfego pago (Meta Ads otimizado)</li>
+                        <li>SDR Human+IA dedicado</li>
+                        <li>15-20 reuniões qualificadas por mês</li>
+                        <li>Show-Rate Guard (confirmações L-24h e L-2h)</li>
+                        <li>BI Essencial (dashboard + relatórios)</li>
+                    </ul>
+                    <p style="margin-top: 16px;">
+                        <span style="color: var(--text-secondary);">Gestão 2 contas:</span>
+                        <span style="color: var(--text-primary); font-weight: 600;">R$ 8.000/mês</span><br>
+                        <span style="color: var(--text-secondary);">Tráfego 2 contas:</span>
+                        <span style="color: var(--text-primary); font-weight: 600;">R$ 3.000/mês</span><br>
+                        <span style="color: var(--blue-electric); font-weight: 600; font-size: 18px;">Total: R$
+                            11.000/mês x 6 = R$ 66.000</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Investment -->
+    <section>
+        <div class="container">
+            <h2>💰 Investimento Total (Clareza Absoluta)</h2>
+            <p class="section-subtitle">Vou somar TUDO pra não ter confusão:</p>
+
+            <div class="roi-table">
+                <table>
+                    <tr>
+                        <td><strong>📘 Foundation Sprint (Mês 1)</strong><br><span
+                                style="color: var(--text-muted); font-size: 14px;">Estruturação completa</span></td>
+                        <td style="text-align: right; font-size: 24px; color: var(--blue-electric); font-weight: 700;">
+                            R$ 53.982</td>
+                    </tr>
+                    <tr>
+                        <td><strong>🚀 Demand Stack (Meses 2-7)</strong><br><span
+                                style="color: var(--text-muted); font-size: 14px;">Gestão + Tráfego (R$ 11.000/mês x
+                                6)</span></td>
+                        <td style="text-align: right; font-size: 24px; color: var(--blue-electric); font-weight: 700;">
+                            R$ 66.000</td>
+                    </tr>
+                    <tr style="background: var(--bg-primary);">
+                        <td><strong style="font-size: 20px;">INVESTIMENTO TOTAL (SEM DESCONTO)</strong></td>
+                        <td style="text-align: right; font-size: 32px; color: var(--text-primary); font-weight: 700;">R$
+                            119.982</td>
+                    </tr>
+                </table>
+                <p style="text-align: center; margin-top: 24px; font-size: 18px; color: var(--text-secondary);">
+                    Agora vem a parte boa... ⬇️
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Options -->
+    <section style="background: var(--bg-card);">
+        <div class="container">
+            <h2>🎁 2 Opções de Pagamento (Escolha a Sua)</h2>
+
+            <div class="pricing-grid">
+                <!-- Option 1 -->
+                <div class="pricing-card featured">
+                    <h3>💎 OPÇÃO 1: À VISTA<br>OFERTA MATADORA</h3>
+                    <div class="price">R$ 66.000</div>
+                    <div class="discount">
+                        🎁 GANHE FOUNDATION SPRINT GRÁTIS! 🎁<br>
+                        (Valor: R$ 53.982)
+                    </div>
+                    <ul class="pricing-features">
+                        <li><strong>Foundation Sprint COMPLETO</strong> (R$ 53.982) - GRÁTIS</li>
+                        <li>6 meses de execução (2 contas Instagram)</li>
+                        <li>Tráfego pago (R$ 3.000/mês)</li>
+                        <li>Gestão completa (R$ 8.000/mês)</li>
+                        <li>SDR dedicado</li>
+                        <li>15-20 reuniões/mês</li>
+                        <li>Show-Rate Guard 65%+</li>
+                        <li>Bônus R$ 12.700</li>
+                    </ul>
+                    <div class="savings">
+                        <p>Valor real: R$ 119.982</p>
+                        <p>Você paga: R$ 66.000</p>
+                        <p><strong>ECONOMIA: R$ 53.982 (45%)</strong></p>
+                    </div>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="pricing-card">
+                    <h3>📅 OPÇÃO 2: PARCELADO<br>50% À VISTA + 3X</h3>
+                    <div class="price">R$ 95.986</div>
+                    <p style="text-align: center; color: var(--text-secondary); margin: 16px 0;">
+                        50% à vista: R$ 47.993<br>
+                        50% parcelado: 3x de R$ 15.998
+                    </p>
+                    <ul class="pricing-features">
+                        <li><strong>Foundation Sprint COMPLETO</strong> (incluso)</li>
+                        <li>6 meses de execução (2 contas Instagram)</li>
+                        <li>Tráfego pago (R$ 3.000/mês)</li>
+                        <li>Gestão completa (R$ 8.000/mês)</li>
+                        <li>SDR dedicado</li>
+                        <li>15-20 reuniões/mês</li>
+                        <li>Show-Rate Guard 65%+</li>
+                        <li>Bônus R$ 12.700</li>
+                    </ul>
+                    <div class="savings">
+                        <p>Valor real: R$ 119.982</p>
+                        <p>Você paga: R$ 95.986</p>
+                        <p><strong>ECONOMIA: R$ 23.996 (20%)</strong></p>
+                    </div>
+                    <p style="text-align: center; color: var(--yellow-warning); margin-top: 16px; font-weight: 600;">
+                        + Bônus: Foundation Sprint EXTRA<br>com 50% OFF (R$ 26.991)
+                    </p>
+                </div>
+            </div>
+
+            <div
+                style="max-width: 800px; margin: 40px auto; padding: 32px; background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border);">
+                <h3 style="color: var(--blue-electric); text-align: center; margin-bottom: 20px;">💡 Minha Recomendação
+                    Sincera</h3>
+                <p style="text-align: center; color: var(--text-secondary); line-height: 1.8;">
+                    Se vocês têm os R$ 66K disponíveis → <strong style="color: var(--green-success);">Opção 1 SEM
+                        DÚVIDA.</strong><br>
+                    A economia de R$ 53K é <strong>absurda</strong>. É quase metade do investimento de volta.<br><br>
+                    Se não tem R$ 66K agora → <strong style="color: var(--text-primary);">Opção 2
+                        tranquilo.</strong><br>
+                    Ainda economiza R$ 24K e tem flexibilidade de parcelar.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI -->
+    <section>
+        <div class="container">
+            <h2>📊 ROI Esperado (Conservador)</h2>
+            <p class="section-subtitle">Deixa eu ser <strong>bem conservador</strong> nas projeções:</p>
+
+            <div class="roi-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mês</th>
+                            <th>Reuniões</th>
+                            <th>Fechamentos</th>
+                            <th>Faturamento</th>
+                            <th>MRR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Mês 1</strong><br><span
+                                    style="font-size: 12px; color: var(--text-muted);">Foundation</span></td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>R$ 0</td>
+                            <td>R$ 0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mês 2</strong></td>
+                            <td>15-20</td>
+                            <td>4-6</td>
+                            <td>R$ 40-60k</td>
+                            <td>R$ 40-60k</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mês 3</strong></td>
+                            <td>20-25</td>
+                            <td>6-8</td>
+                            <td>R$ 100-140k</td>
+                            <td>R$ 100-140k</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Meses 4-7</strong></td>
+                            <td>25-30</td>
+                            <td>8-10</td>
+                            <td>R$ 164-200k</td>
+                            <td>R$ 164-200k</td>
+                        </tr>
+                        <tr style="background: var(--bg-primary); font-weight: 700;">
+                            <td colspan="3"><strong>TOTAL (6 meses execução)</strong></td>
+                            <td colspan="2" style="text-align: center; font-size: 24px; color: var(--green-success);">R$
+                                800k - R$ 1.2M</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 32px; text-align: center;">
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 24px;">
+                        <div class="metric">
+                            <div class="metric-value">R$ 66.000</div>
+                            <div class="metric-label">Investido</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">R$ 800k-1.2M</div>
+                            <div class="metric-label">Faturado</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">12x - 18x</div>
+                            <div class="metric-label">ROI</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">Mês 2</div>
+                            <div class="metric-label">Payback</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guarantees -->
+    <section style="background: var(--bg-card);">
+        <div class="container">
+            <h2>🛡️ Garantias (Zero Risco)</h2>
+
+            <div class="guarantee-grid">
+                <div class="guarantee-card">
+                    <h3>✅ Garantia #1:<br>Foundation Sprint</h3>
+                    <p>Se ao final de 30 dias você NÃO receber todos os 8 entregáveis completos:</p>
+                    <p style="margin-top: 16px; font-weight: 700; color: var(--green-success); font-size: 18px;">
+                        = REEMBOLSO 100%<br>sem perguntas
+                    </p>
+                </div>
+
+                <div class="guarantee-card">
+                    <h3>✅ Garantia #2:<br>Transparência Total</h3>
+                    <p>Dashboard com TODAS as métricas em tempo real. Não gostou? Cancela sem multa a qualquer momento.
+                    </p>
+                </div>
+
+                <div class="guarantee-card">
+                    <h3>✅ Garantia #3:<br>Leads Qualificados</h3>
+                    <p>100% dos leads passam por tripla qualificação (perfil + interesse + budget). Zero curiosos.</p>
+                </div>
+
+                <div class="guarantee-card">
+                    <h3>✅ Garantia #4:<br>Show-Rate Guard</h3>
+                    <p>Confirmação L-24h + L-2h via WhatsApp/SMS. Maximizamos presença nas reuniões agendadas.</p>
+                </div>
+            </div>
+
+            <div
+                style="text-align: center; margin-top: 40px; padding: 32px; background: var(--bg-primary); border-radius: 12px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                <p style="font-size: 20px; line-height: 1.8;">
+                    <strong style="color: var(--green-success);">Zero risco. Tudo no seu time.</strong>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cases -->
+    <section>
+        <div class="container">
+            <h2>🏆 Por Que Confiar na Mottivme?</h2>
+            <p class="section-subtitle">Cases Reais de Clientes</p>
+
+            <div class="case">
+                <h3>Case #1: Agentes Financeiros</h3>
+                <div class="case-metrics">
+                    <div class="metric">
+                        <div class="metric-value">+160%</div>
+                        <div class="metric-label">Crescimento<br>50 → 130 agentes</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">4.2x</div>
+                        <div class="metric-label">ROI em 5 meses</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">72%</div>
+                        <div class="metric-label">Show-Rate<br>(antes: 35%)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">28%</div>
+                        <div class="metric-label">Conversão<br>(antes: 12%)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="case">
+                <h3>Case #2: Recrutamento Acelerado</h3>
+                <div class="case-metrics">
+                    <div class="metric">
+                        <div class="metric-value">+40</div>
+                        <div class="metric-label">Agentes<br>em &lt;3 meses</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">3.8x</div>
+                        <div class="metric-label">ROI</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">68%</div>
+                        <div class="metric-label">Show-Rate<br>(antes: 28%)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">-58%</div>
+                        <div class="metric-label">Tempo líder<br>60h → 25h/semana</div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="background: var(--bg-card); padding: 32px; border-radius: 12px; margin-top: 32px; text-align: center;">
+                <h3 style="color: var(--blue-electric); margin-bottom: 20px;">📊 Métricas Consolidadas</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
+                    <div>
+                        <div style="font-size: 36px; font-weight: 700; color: var(--green-success);">74%</div>
+                        <div style="color: var(--text-muted); margin-top: 8px;">Show-Rate médio<br>(vs 43% mercado)
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 36px; font-weight: 700; color: var(--green-success);">85+</div>
+                        <div style="color: var(--text-muted); margin-top: 8px;">NPS</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 36px; font-weight: 700; color: var(--green-success);">&gt;90%</div>
+                        <div style="color: var(--text-muted); margin-top: 8px;">Retenção</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bonuses -->
+    <section style="background: var(--bg-card);">
+        <div class="container">
+            <h2>🎁 Bônus (Se Fechar Até 8/DEZ)</h2>
+
+            <div class="bonus-grid">
+                <div class="bonus-card">
+                    <div class="bonus-icon">🤝</div>
+                    <h4>Conexão Ronny Alligare - CEO/Founder da Mentorfy</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Introdução direta com Ronny (Mentalf)</p>
+                    <div class="bonus-value">R$ 5.000</div>
+                </div>
+
+                <div class="bonus-card">
+                    <div class="bonus-icon">📦</div>
+                    <h4>Produto Validado</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Estrutura validada no mercado médico</p>
+                    <div class="bonus-value">R$ 3.000</div>
+                </div>
+
+                <div class="bonus-card">
+                    <div class="bonus-icon">💎</div>
+                    <h4>Socialfy Premium</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px;">6 meses grátis</p>
+                    <div class="bonus-value">R$ 2.982</div>
+                </div>
+
+                <div class="bonus-card">
+                    <div class="bonus-icon">🔍</div>
+                    <h4>Auditoria Completa</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Análise de 5 concorrentes</p>
+                    <div class="bonus-value">R$ 2.000</div>
+                </div>
+            </div>
+
+            <div
+                style="text-align: center; margin-top: 32px; padding: 24px; background: var(--bg-primary); border-radius: 12px; border: 2px solid var(--yellow-warning);">
+                <p style="font-size: 24px; font-weight: 700; color: var(--yellow-warning);">
+                    TOTAL BÔNUS: R$ 12.982
+                </p>
+                <p style="color: var(--text-secondary); margin-top: 8px;">
+                    Esses bônus EXPIRAM em 8/12/2025 às 23h59
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Urgency -->
+    <div class="container">
+        <div class="urgency-banner">
+            <h3>⏰ URGÊNCIA REAL (NÃO É FAKE)</h3>
+            <p style="color: white; margin: 16px 0;">Esta proposta expira em:</p>
+            <div class="deadline">09 DEZEMBRO 2025</div>
+            <p style="color: white; margin: 20px 0; font-size: 16px;">23h59</p>
+
+            <div style="text-align: left; max-width: 600px; margin: 32px auto 0;">
+                <p style="color: white; margin-bottom: 12px;"><strong>Por quê?</strong></p>
+                <ul style="list-style: none; padding: 0; color: white;">
+                    <li style="margin-bottom: 8px;">• Só pego 5 clientes novos por mês (já temos 3 confirmados)</li>
+                    <li style="margin-bottom: 8px;">• Preciso alocar equipe com antecedência</li>
+                    <li style="margin-bottom: 8px;">• Se fecharem até 09/12, começamos dia 10/12 (quarta)</li>
+                </ul>
+
+                <p style="margin-top: 24px; color: white;"><strong>Depois de 09/12:</strong></p>
+                <ul style="list-style: none; padding: 0; color: var(--red-danger); font-weight: 600;">
+                    <li style="margin-bottom: 8px;">❌ Opção 1 (Foundation grátis) expira</li>
+                    <li style="margin-bottom: 8px;">❌ Bônus de R$ 12.700 expiram</li>
+                    <li style="margin-bottom: 8px;">❌ Vagas podem estar preenchidas</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ -->
+    <section>
+        <div class="container">
+            <h2>❓ Respondendo as Dúvidas da Call</h2>
+
+            <div class="faq">
+                <div class="faq-item">
+                    <div class="faq-question">1. "Divulgar faturamento vai afastar pacientes atuais?"</div>
+                    <div class="faq-answer">
+                        ✅ <strong>Solução:</strong> Criamos conta NOVA pra mentoria após primeiros clientes. Perfil
+                        atual da clínica continua
+                        focado em pacientes. Zero risco de misturar as coisas.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">2. "Quanto custa NO TOTAL?"</div>
+                    <div class="faq-answer">
+                        ✅ <strong>Opção 1:</strong> R$ 66.000 à vista (Foundation grátis)<br>
+                        ✅ <strong>Opção 2:</strong> R$ 95.986 parcelado (50% + 3x)<br><br>
+                        Não tem pegadinha. Não tem custo escondido. É isso.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">3. "Medo de investir e não ter retorno"</div>
+                    <div class="faq-answer">
+                        ✅ <strong>Garantia 100%</strong> no Foundation Sprint<br>
+                        ✅ <strong>Garantia de reuniões</strong> no Demand Stack<br>
+                        ✅ <strong>Pode cancelar sem multa</strong> se não entregar<br><br>
+                        + Opção 1 você economiza R$ 53K. É quase sem risco.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">4. "Não está claro o que você faz"</div>
+                    <div class="faq-answer">
+                        ✅ <strong>Mês 1:</strong> Estruturamos TUDO (8 entregáveis)<br>
+                        ✅ <strong>Meses 2-7:</strong> Executamos TUDO (2 contas + tráfego + SDR)<br><br>
+                        Você foca na clínica. Nós tocamos a mentoria.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">5. "Começar com 1 ou 2 perfis?"</div>
+                    <div class="faq-answer">
+                        ✅ <strong>Recomendo 2 perfis</strong> (Luiz + Carol)<br>
+                        • Duplica alcance<br>
+                        • Audiências complementares<br>
+                        • Acelera resultados<br><br>
+                        Mas se quiser começar com 1, podemos ajustar o investimento.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="cta">
+        <div class="container">
+            <h2>🚀 Próximo Passo (É Só Isso)</h2>
+            <p>Vamos esclarecer qualquer dúvida que ainda tenha.<br>Marque 15min comigo ou mande mensagem direto.</p>
+
+            <div class="cta-buttons">
+                <a href="https://calendly.com/mottivme/15min" class="btn-primary">📅 AGENDAR CALL 15MIN</a>
+                <a href="mailto:marcos@mottivme.com" class="btn-secondary">📧 ENVIAR EMAIL</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final Reflection -->
+    <section style="background: var(--bg-card);">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <h2>💭 Reflexão Final</h2>
+                <p style="color: var(--text-secondary); font-size: 18px; line-height: 1.8; margin: 24px 0;">
+                    Carol e Luiz, vocês são <strong style="color: var(--text-primary);">médicos excepcionais</strong>.
+                    Clínica indo bem. Pacientes satisfeitos.
+                </p>
+                <p style="color: var(--text-secondary); font-size: 18px; line-height: 1.8; margin: 24px 0;">
+                    Mas vocês querem <strong style="color: var(--blue-electric);">mais</strong>.
+                </p>
+                <p style="color: var(--text-secondary); font-size: 18px; line-height: 1.8; margin: 24px 0;">
+                    Querem impactar outros médicos. Querem criar uma mentoria que mude vidas. Querem faturar R$
+                    100k-150k/mês de forma previsível.
+                </p>
+                <p style="color: var(--green-success); font-size: 24px; font-weight: 700; margin: 32px 0;">
+                    Vocês PODEM ter isso.
+                </p>
+                <p style="color: var(--text-secondary); font-size: 18px; line-height: 1.8; margin: 24px 0;">
+                    Eu não tô vendendo "talvez". Não tô vendendo "esperança".<br>
+                    Tô vendendo <strong style="color: var(--text-primary);">método testado + execução
+                        garantida</strong>.
+                </p>
+                <p style="color: var(--text-secondary); font-size: 18px; line-height: 1.8; margin: 24px 0;">
+                    Se vocês toparem construir isso COMIGO, em 6 meses vocês vão estar jantando tranquilos enquanto as
+                    notificações de "Nova venda!" chegam no celular.
+                </p>
+                <p style="color: var(--blue-electric); font-size: 22px; font-weight: 700; margin: 32px 0;">
+                    É isso que vocês querem?
+                </p>
+                <p style="color: var(--text-primary); font-size: 22px; font-weight: 700; margin: 32px 0;">
+                    Então vamos fazer acontecer.
+                </p>
+                <p style="color: var(--text-secondary); font-size: 18px; margin: 32px 0;">
+                    Tô esperando o call de vocês. 🤝
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p style="font-size: 18px; margin-bottom: 8px;">
+                    <strong>Um abraço (e desculpa pela confusão da call anterior),</strong>
+                </p>
+                <p style="font-size: 20px; font-weight: 700; color: var(--blue-electric); margin: 16px 0;">
+                    Marcos Daniel
+                </p>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Founder & CEO - Mottivme Sales
+                </p>
+
+                <div class="contact-info">
+                    <a href="mailto:marcos@mottivme.com">📧 marcos@mottivme.com</a>
+                    <a href="https://mottivme.com">🌐 mottivme.com</a>
+                </div>
+
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 32px;">
+                    Proposta Final Irresistível - v1.0<br>
+                    Documento confidencial - Dra. Carol & Dr. Luiz<br>
+                    Válido até 12/12/2025
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

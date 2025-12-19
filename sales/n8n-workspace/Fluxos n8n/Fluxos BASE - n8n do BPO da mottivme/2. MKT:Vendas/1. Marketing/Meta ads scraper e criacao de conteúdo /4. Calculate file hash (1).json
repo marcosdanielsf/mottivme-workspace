@@ -1,0 +1,103 @@
+{
+  "name": "4. Calculate file hash",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{ $json.file_URL }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        48,
+        -160
+      ],
+      "id": "dc1c4dd0-22a0-44ff-923a-37ca8702f319",
+      "name": "Download file"
+    },
+    {
+      "parameters": {
+        "binaryData": true,
+        "dataPropertyName": "file_hash"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -160
+      ],
+      "id": "86b287bd-0d89-44dc-9d04-3f7bc14c15d2",
+      "name": "Calculate hash"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "file_URL",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "id": "7a3a9590-99d7-4170-a955-d1a460092e7d",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -160,
+        -160
+      ]
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "file_URL": "https://video.ftpe7-1.fna.fbcdn.net/o1/v/t2/f2/m69/AQMGaKgWMXB1IzNNyqgqVOrtBhz4Hx54M-tnK5vr8rKUZKQHUE17me46Seg-30YD1R1xtobBdCWpsUdYhiIdKTqI.mp4?strext=1&_nc_cat=100&_nc_oc=AdmZzUZZVT_hjoac6LziINcBab4uAb0Kuv_vrh7N9y9NWKX_UF4s4tjGd21WW0CkDNQ&_nc_sid=8bf8fe&_nc_ht=video.ftpe7-1.fna.fbcdn.net&_nc_ohc=D9SWTvjaW6wQ7kNvwHb8yjR&efg=eyJ2ZW5jb2RlX3RhZyI6Inhwdl9wcm9ncmVzc2l2ZS5WSV9VU0VDQVNFX1BST0RVQ1RfVFlQRS4uQzMuMzYwLnN2ZV9zZCIsInhwdl9hc3NldF9pZCI6Mjk1MDUzNjM0NTEyMzAzMywiYXNzZXRfYWdlX2RheXMiOjM1NSwidmlfdXNlY2FzZV9pZCI6MTA3OTksImR1cmF0aW9uX3MiOjM2LCJ1cmxnZW5fc291cmNlIjoid3d3In0%3D&ccb=17-1&_nc_gid=2x9GsLLQjJRpSQAL3wwmmQ&_nc_zt=28&oh=00_AfhSMQkt9vQUb65ZeDv8wDatFVd-4jx0KjD85OzQxzdacg&oe=692444BE"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Calculate hash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ee89b93e-1f39-4275-8a07-1375d61a5fe7",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "KJGHl53oQm1w7xe4",
+  "tags": [
+    {
+      "updatedAt": "2025-11-03T19:28:46.270Z",
+      "createdAt": "2025-11-03T19:28:46.270Z",
+      "id": "3znkt8vlq1yubGAB",
+      "name": "on"
+    }
+  ]
+}

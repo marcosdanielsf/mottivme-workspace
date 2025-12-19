@@ -1,0 +1,1597 @@
+{
+  "name": "Gerar PDF Proposta BPOSS",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto}}",
+        "options": {
+          "systemMessage": "=Você é um assistente especializado em vendas B2B de outsourcing de pré-vendas.\n\nTAREFA: Extrair dados estruturados de uma transcrição de call de diagnóstico.\n\n## DADOS A EXTRAIR:\n\n### 1. DADOS BÁSICOS\n- Nome completo do cliente\n- Nome da empresa\n- Faturamento mensal atual (em R$)\n- Ticket médio de venda (em R$)\n- Meta ou objetivo principal\n\n### 2. SITUAÇÃO ATUAL\n- Número de reuniões comerciais por mês (HOJE)\n- Percentual de reuniões qualificadas (HOJE)\n- Taxa de fechamento/conversão atual (em %)\n- Número de vendas fechadas por mês (HOJE)\n- Tempo semanal gasto em prospecção (em horas)\n\n### 3. DORES IDENTIFICADAS (3 principais)\nPara cada dor, extraia:\n- Descrição usando palavras EXATAS do cliente\n- Intensidade (Alta/Média/Baixa)\n- Contexto ou exemplo mencionado\n\n**Dor #1:** Principal frustração ou problema\n**Dor #2:** O que trava/bloqueia o crescimento\n**Dor #3:** Se pudesse resolver 1 coisa, seria o quê\n\n### 4. RECOMENDAÇÃO DE PLANO\nBaseado nos dados coletados, recomende UM dos planos:\n\n- **ESSENCIAL** (R$7.997/mês): Faturamento R$50-150k/mês, Ticket R$2-5k, Meta: 12 reuniões/mês\n- **PROFESSIONAL** (R$9.997/mês): Faturamento R$150-500k/mês, Ticket R$5-15k, Meta: 18 reuniões/mês\n- **ENTERPRISE** (R$14.997/mês): Faturamento >R$500k/mês, Ticket >R$15k, Meta: 30 reuniões/mês\n\nJustifique a escolha em 1-2 frases.\n\n## FORMATO DE OUTPUT:\n\nRetorne APENAS um JSON válido no seguinte formato:\n\n```json\n{\n  \"dados_cliente\": {\n    \"nome_completo\": \"string\",\n    \"empresa\": \"string\",\n    \"faturamento_mensal\": 0,\n    \"ticket_medio\": 0,\n    \"meta_objetivo\": \"string\"\n  },\n  \"situacao_atual\": {\n    \"reunioes_mes_hoje\": 0,\n    \"percentual_qualificadas_hoje\": 0,\n    \"taxa_fechamento_atual\": 0,\n    \"vendas_mes_hoje\": 0,\n    \"tempo_prospeccao_semanal\": 0\n  },\n  \"dores\": {\n    \"problema_1\": {\n      \"descricao\": \"string (palavras exatas)\",\n      \"intensidade\": \"Alta|Média|Baixa\",\n      \"contexto\": \"string\"\n    },\n    \"problema_2\": {\n      \"descricao\": \"string (palavras exatas)\",\n      \"intensidade\": \"Alta|Média|Baixa\",\n      \"contexto\": \"string\"\n    },\n    \"problema_3\": {\n      \"descricao\": \"string (palavras exatas)\",\n      \"intensidade\": \"Alta|Média|Baixa\",\n      \"contexto\": \"string\"\n    }\n  },\n  \"plano_recomendado\": {\n    \"nome\": \"ESSENCIAL|PROFESSIONAL|ENTERPRISE\",\n    \"valor_mensal\": 0,\n    \"meta_reunioes\": 0,\n    \"justificativa\": \"string\"\n  }\n}\n```\n\n## REGRAS IMPORTANTES:\n1. Use APENAS informações presentes na transcrição\n2. Se um dado não foi mencionado, use null\n3. Para dores, priorize trechos onde o cliente demonstra emoção/frustração\n4. Seja conservador nas estimativas numéricas\n5. Retorne APENAS o JSON válido, sem texto adicional antes ou depois\n6. Não use markdown code blocks (```), retorne o JSON puro"
+        }
+      },
+      "id": "c84fd535-fbff-4401-b258-5b6012900342",
+      "name": "AI Agent - Extração",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -1232,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse resposta do AI Agent\nlet dados;\ntry {\n  const output = $input.first().json.output;\n  // Tenta fazer parse direto\n  dados = typeof output === 'string' ? JSON.parse(output) : output;\n} catch (e) {\n  // Se falhar, tenta extrair JSON do texto\n  const text = $input.first().json.output || $input.first().json.text;\n  const jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\n  dados = JSON.parse(jsonMatch[0]);\n}\n\n// ===== CENÁRIO ATUAL =====\nconst reunioes_mes = dados.situacao_atual.reunioes_mes_hoje || 0;\nconst perc_qual_atual = (dados.situacao_atual.percentual_qualificadas_hoje || 0) / 100;\nconst taxa_fech_atual = (dados.situacao_atual.taxa_fechamento_atual || 0) / 100;\nconst ticket_medio = dados.dados_cliente.ticket_medio || 0;\n\nconst reunioes_qual_atual = Math.round(reunioes_mes * perc_qual_atual);\nconst vendas_mes_atual = Math.round(reunioes_qual_atual * taxa_fech_atual);\nconst receita_atual_mes = vendas_mes_atual * ticket_medio;\n\n// ===== CENÁRIO BPOSS =====\nconst metas_plano = {\n  \"ESSENCIAL\": 12,\n  \"PROFESSIONAL\": 18,\n  \"ENTERPRISE\": 30\n};\n\nconst plano_nome = dados.plano_recomendado?.nome || \"PROFESSIONAL\";\nconst meta_reunioes = metas_plano[plano_nome] || 18;\nconst taxa_qual_bposs = 0.85; // 85% fixo\n\n// Estima melhora na taxa de fechamento\nlet taxa_fech_bposs;\nif (taxa_fech_atual < 0.15) {\n  taxa_fech_bposs = 0.25;\n} else if (taxa_fech_atual < 0.20) {\n  taxa_fech_bposs = 0.30;\n} else {\n  taxa_fech_bposs = 0.40;\n}\n\nconst reunioes_qual_bposs = Math.round(meta_reunioes * taxa_qual_bposs);\nconst vendas_mes_bposs = Math.round(reunioes_qual_bposs * taxa_fech_bposs);\nconst receita_nova_mes = vendas_mes_bposs * ticket_medio;\n\n// ===== ROI =====\nconst receita_incremental = receita_nova_mes - receita_atual_mes;\nconst investimento_bposs = dados.plano_recomendado?.valor_mensal || 9997;\nconst lucro_liquido = receita_incremental - investimento_bposs;\nconst roi = receita_incremental > 0 ? (receita_incremental / investimento_bposs).toFixed(1) : \"0.0\";\nconst projecao_12_meses = lucro_liquido * 12;\n\n// ===== PROJEÇÃO POR MÊS =====\n\n// Mês 1: 50% da meta\nconst mes1_reunioes = Math.round(meta_reunioes * 0.5);\nconst mes1_vendas = Math.round(mes1_reunioes * taxa_qual_bposs * taxa_fech_bposs);\nconst mes1_receita = mes1_vendas * ticket_medio;\nconst mes1_extra = mes1_receita - receita_atual_mes;\n\n// Mês 2-3: 75% da meta\nconst mes2_reunioes = Math.round(meta_reunioes * 0.75);\nconst mes2_vendas = Math.round(mes2_reunioes * taxa_qual_bposs * taxa_fech_bposs);\nconst mes2_receita = mes2_vendas * ticket_medio;\nconst mes2_extra = mes2_receita - receita_atual_mes;\n\n// Mês 4+: 100% da meta\nconst mes4_reunioes = meta_reunioes;\nconst mes4_vendas = vendas_mes_bposs;\nconst mes4_receita = receita_nova_mes;\nconst mes4_extra = receita_incremental;\n\n// Helper para formatar moeda\nconst formatMoeda = (valor) => {\n  return `R$ ${Math.round(valor).toLocaleString('pt-BR')}`;\n};\n\n// ===== OUTPUT FINAL =====\nreturn {\n  json: {\n    dados_cliente: dados.dados_cliente,\n    situacao_atual: dados.situacao_atual,\n    dores: dados.dores,\n    plano_recomendado: dados.plano_recomendado,\n    cenario_atual: {\n      reunioes_mes: reunioes_mes,\n      reunioes_qualificadas: reunioes_qual_atual,\n      taxa_qualificacao: Math.round(perc_qual_atual * 100),\n      taxa_fechamento: Math.round(taxa_fech_atual * 100),\n      vendas_mes: vendas_mes_atual,\n      receita_mes: receita_atual_mes,\n      receita_mes_formatada: formatMoeda(receita_atual_mes)\n    },\n    cenario_bposs: {\n      reunioes_meta: meta_reunioes,\n      reunioes_qualificadas: reunioes_qual_bposs,\n      taxa_qualificacao: 85,\n      taxa_fechamento: Math.round(taxa_fech_bposs * 100),\n      vendas_mes: vendas_mes_bposs,\n      receita_mes: receita_nova_mes,\n      receita_mes_formatada: formatMoeda(receita_nova_mes)\n    },\n    roi: {\n      receita_incremental: receita_incremental,\n      receita_incremental_formatada: formatMoeda(receita_incremental),\n      investimento_bposs: investimento_bposs,\n      investimento_bposs_formatado: formatMoeda(investimento_bposs),\n      lucro_liquido: lucro_liquido,\n      lucro_liquido_formatado: formatMoeda(lucro_liquido),\n      roi_multiplo: roi,\n      projecao_12_meses: projecao_12_meses,\n      projecao_12_meses_formatada: formatMoeda(projecao_12_meses)\n    },\n    projecao_meses: {\n      mes_1: {\n        reunioes: mes1_reunioes,\n        vendas: mes1_vendas,\n        receita_extra: mes1_extra,\n        receita_extra_formatada: formatMoeda(mes1_extra)\n      },\n      mes_2_3: {\n        reunioes: mes2_reunioes,\n        vendas: mes2_vendas,\n        receita_extra: mes2_extra,\n        receita_extra_formatada: formatMoeda(mes2_extra)\n      },\n      mes_4_mais: {\n        reunioes: mes4_reunioes,\n        vendas: mes4_vendas,\n        receita_extra: mes4_extra,\n        receita_extra_formatada: formatMoeda(mes4_extra)\n      }\n    },\n    metadata: {\n      data_calculo: new Date().toISOString(),\n      versao_calculo: \"2.0\"\n    }\n  }\n};"
+      },
+      "id": "57f0027d-3de9-4e65-a6f6-e58f7d00bf55",
+      "name": "Code - Calcular ROI",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Gere uma proposta comercial COMPLETA em Markdown usando estes dados:\n\n{{ JSON.stringify($json, null, 2) }}",
+        "options": {
+          "systemMessage": "=Você é um consultor comercial especializado em outsourcing de pré-vendas.\n\nTAREFA: Gerar proposta comercial COMPLETA e personalizada em Markdown.\n\nVocê receberá um JSON com todos os dados do cliente, situação atual, dores, plano recomendado e projeções de ROI.\n\nESTRUTURA DA PROPOSTA:\n\n```markdown\n# PROPOSTA COMERCIAL\n## Outsourcing de Pré-Vendas - BPOSS\n\n**Cliente:** [nome_completo do JSON]\n**Empresa:** [empresa do JSON]\n**Data:** [data de hoje formatada]\n**Proposta:** #[número baseado em timestamp]\n**Validade:** [hoje + 7 dias]\n\n---\n\n## 📊 RESUMO EXECUTIVO\n\n**Situação Atual:**\n- Faturamento: [dados_cliente.faturamento_mensal formatado]\n- Ticket Médio: [dados_cliente.ticket_medio formatado]\n- Reuniões/mês: [cenario_atual.reunioes_mes]\n- Taxa de Fechamento: [cenario_atual.taxa_fechamento]%\n\n**Resultado Esperado em 90 Dias:**\n- [cenario_bposs.reunioes_meta] reuniões qualificadas/mês (vs [cenario_atual.reunioes_mes] hoje)\n- +[roi.receita_incremental_formatada] em receita incremental mensal\n- ROI de [roi.roi_multiplo]x sobre o investimento\n\n---\n\n## 🎯 DESAFIOS IDENTIFICADOS\n\n### 1. [Criar título impactante para dores.problema_1.descricao]\n\n> \"[dores.problema_1.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_1.intensidade]\n\n### 2. [Criar título impactante para dores.problema_2.descricao]\n\n> \"[dores.problema_2.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_2.intensidade]\n\n### 3. [Criar título impactante para dores.problema_3.descricao]\n\n> \"[dores.problema_3.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_3.intensidade]\n\n---\n\n## ✅ SOLUÇÃO PROPOSTA\n\n### BPOSS - Business Process Outsourcing Sales\n\n**O que faremos por você:**\n\n1. **Prospecção Ativa Qualificada**\n   - Identificação e qualificação de leads no seu ICP\n   - Abordagem multicanal (LinkedIn, Email, WhatsApp)\n   - Nutrição até estar pronto para reunião\n\n2. **Agendamento de Reuniões Qualificadas**\n   - Apenas leads que passaram por BANT completo\n   - Taxa de show-up de 73% (vs 40% do mercado)\n   - Briefing completo antes de cada reunião\n\n3. **CRM & Gestão Completa**\n   - Plataforma Socialfy inclusa (R$997/mês grátis)\n   - Dashboard em tempo real\n   - Relatórios semanais de performance\n\n4. **SDR Dedicado + IA**\n   - Profissional sênior 100% focado na sua conta\n   - Apoio de IA para escala e qualidade\n   - Treinamento contínuo no seu produto\n\n---\n\n## 💰 INVESTIMENTO & PLANOS\n\n[Apresentar os 3 planos, mas destacar o recomendado com ⭐]\n\n### Plano ESSENCIAL\n**R$ 7.997/mês**\n\n✅ 12 reuniões qualificadas/mês\n✅ 1 SDR dedicado\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n\n**Ideal para:** Empresas faturando R$50-150k/mês, ticket R$2-5k\n\n---\n\n### ⭐ Plano [plano_recomendado.nome] (RECOMENDADO)\n**[plano_recomendado.valor_mensal formatado]/mês**\n\n✅ **[plano_recomendado.meta_reunioes] reuniões qualificadas/mês**\n✅ SDR(s) dedicado(s)\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n[adicionar benefícios específicos do plano]\n\n**POR QUE RECOMENDAMOS ESTE PLANO PARA [empresa]:**\n\n[plano_recomendado.justificativa]\n\n---\n\n### Plano ENTERPRISE\n**R$ 14.997/mês**\n\n✅ 30 reuniões qualificadas/mês\n✅ Time dedicado (2-3 SDRs)\n✅ Socialfy CRM incluso\n✅ Account Manager exclusivo\n✅ Suporte 24/7\n\n**Ideal para:** Empresas faturando >R$500k/mês, ticket >R$15k\n\n---\n\n## 📈 PROJEÇÃO DE RESULTADOS\n\n### CENÁRIO ATUAL (sem BPOSS):\n\n| Métrica | Valor Atual |\n|---------|-------------|\n| Reuniões/mês | [cenario_atual.reunioes_mes] |\n| % Qualificadas | [cenario_atual.taxa_qualificacao]% |\n| Reuniões qualificadas | [cenario_atual.reunioes_qualificadas] |\n| Taxa de fechamento | [cenario_atual.taxa_fechamento]% |\n| Vendas/mês | [cenario_atual.vendas_mes] |\n| **Receita/mês** | **[cenario_atual.receita_mes_formatada]** |\n\n### CENÁRIO PROJETADO (com BPOSS - Plano [plano_recomendado.nome]):\n\n| Métrica | Valor Projetado |\n|---------|------------------|\n| Reuniões/mês | [cenario_bposs.reunioes_meta] |\n| % Qualificadas | **[cenario_bposs.taxa_qualificacao]%** |\n| Reuniões qualificadas | [cenario_bposs.reunioes_qualificadas] |\n| Taxa de fechamento | [cenario_bposs.taxa_fechamento]% |\n| Vendas/mês | [cenario_bposs.vendas_mes] |\n| **Receita/mês** | **[cenario_bposs.receita_mes_formatada]** |\n\n### 💎 ROI DETALHADO:\n\n```\nRECEITA INCREMENTAL:     [roi.receita_incremental_formatada]/mês\nINVESTIMENTO BPOSS:      [roi.investimento_bposs_formatado]/mês\n─────────────────────────────────────\nLUCRO LÍQUIDO:           [roi.lucro_liquido_formatado]/mês\nROI:                     [roi.roi_multiplo]x\n\nEM 12 MESES:             [roi.projecao_12_meses_formatada] líquido\n```\n\n---\n\n## 📅 PROJEÇÃO POR MÊS (Plano [plano_recomendado.nome]):\n\n### Mês 1 (Ramp-up)\n- **Reuniões:** [projecao_meses.mes_1.reunioes] (50% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_1.vendas]\n- **Receita extra:** [projecao_meses.mes_1.receita_extra_formatada]\n\n### Mês 2-3 (Aceleração)\n- **Reuniões:** [projecao_meses.mes_2_3.reunioes] (75% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_2_3.vendas]\n- **Receita extra:** [projecao_meses.mes_2_3.receita_extra_formatada]/mês\n\n### Mês 4+ (Full Speed)\n- **Reuniões:** [projecao_meses.mes_4_mais.reunioes] (100% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_4_mais.vendas]\n- **Receita extra:** [projecao_meses.mes_4_mais.receita_extra_formatada]/mês\n\n---\n\n## 🎁 BÔNUS EXCLUSIVO\n\n### Se fechar até [hoje + 3 dias formatado]:\n\n✅ **Setup acelerado:** Kickoff em 48h (vs 7 dias)\n✅ **1 mês de Socialfy PRO grátis:** R$ 997 em valor\n✅ **Script de vendas customizado:** Baseado nas suas melhores calls\n✅ **Treinamento da equipe:** 2h de onboarding ao vivo\n\n**Valor total do bônus:** R$ 3.500\n\n---\n\n## ✅ PRÓXIMOS PASSOS\n\n### Se aprovar esta proposta:\n\n**1. Hoje:** Confirmar proposta via WhatsApp/Email\n\n**2. Amanhã:** Assinatura do contrato + Kickoff call\n\n**3. Dia 3-7:** Setup completo\n   - Integração CRM\n   - Treinamento no produto\n   - Definição de ICP\n   - Aprovação de scripts\n\n**4. Dia 8:** Início da prospecção ativa\n\n**5. Semana 3:** Primeiras reuniões agendadas\n\n**Data sugerida para kickoff:** [próxima segunda-feira]\n\n---\n\n## 📋 CONDIÇÕES COMERCIAIS\n\n**Forma de Pagamento:**\n- Cartão de crédito (até 12x)\n- Boleto bancário (à vista ou parcelado)\n- Pix (5% de desconto à vista)\n\n**Faturamento:**\n- Recorrência mensal\n- Reajuste anual (IPCA)\n\n**Contrato:**\n- Vigência mínima: 3 meses\n- Renovação automática mensal após período mínimo\n- Cancelamento com 30 dias de antecedência\n\n**Garantia:**\n- Se não atingirmos 70% da meta de reuniões em 60 dias, devolvemos 50% do investimento do 1º mês\n\n---\n\n## ❓ PERGUNTAS FREQUENTES\n\n**Quanto tempo até as primeiras reuniões?**\nEm média, 15-21 dias após o kickoff.\n\n**E se o lead não comparecer?**\nReagendamos sem custo. Nossa taxa de show-up é 73%.\n\n**Posso cancelar se não funcionar?**\nSim, após 3 meses você pode cancelar com 30 dias de aviso.\n\n**Vocês garantem vendas?**\nGarantimos reuniões qualificadas. A conversão depende do seu produto e fechamento.\n\n**Como é o treinamento do SDR?**\n1 semana intensiva: produto, ICP, objeções, cases. Treinamento contínuo mensal.\n\n---\n\n## 📞 CONTATO\n\n**[SEU NOME]**\nHead of Sales - BPOSS\n\n📧 Email: [seu@email.com]\n📱 WhatsApp: [seu telefone]\n🔗 LinkedIn: [seu linkedin]\n\n**Horário de atendimento:** Seg-Sex, 9h-18h\n\n---\n\n**Validade desta proposta:** [hoje + 7 dias]\n**Validade do bônus:** [hoje + 3 dias]\n\n---\n\n*\"Prospecção é ciência, não arte. A BPOSS domina a ciência.\"*\n\n**Vamos escalar juntos?** 🚀\n```\n\nREGRAS DE GERAÇÃO:\n\n1. **Tom:** Profissional mas friendly. Confiante sem ser arrogante.\n2. **Personalização:** Use dados EXATOS do JSON fornecido.\n3. **Números:** Seja CONSERVADOR (já estão calculados conservadoramente).\n4. **Formatação:** Use Markdown correto (tabelas, listas, destaques).\n5. **Persuasão:** Foque em ROI e redução de risco.\n6. **Datas:** Calcule corretamente (hoje, hoje+3, hoje+7).\n7. **Substituições:** ZERO [COLCHETES] não preenchidos.\n8. **Tamanho:** Completa mas objetiva. 8-12 páginas.\n\nRetorne APENAS o Markdown da proposta, sem mensagens adicionais."
+        }
+      },
+      "id": "66422004-0d90-4d30-8eea-7d1124de8e8a",
+      "name": "AI Agent - Proposta",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -656,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Gerar pdf"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -624,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "fb28ef12-c35b-4d72-8a78-be0f0e140b9e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -1184,
+        1200
+      ],
+      "id": "97d5e7f5-8b9b-4fb4-9951-d94a4a9450c6",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "nNkFTZpNoiBCbO1I",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Conversor Profissional de Markdown para HTML\nfor (const item of $input.all()) {\n  const markdown = item.json.output || '';\n  \n  let html = markdown\n    // Remove --- divisores\n    .replace(/^---$/gim, '<hr>')\n    \n    // Headers (ordem importante: do mais específico para o mais genérico)\n    .replace(/^####\\s+(.*)$/gim, '<h4>$1</h4>')\n    .replace(/^###\\s+(.*)$/gim, '<h3>$1</h3>')\n    .replace(/^##\\s+(.*)$/gim, '<h2>$1</h2>')\n    .replace(/^#\\s+(.*)$/gim, '<h1>$1</h1>')\n    \n    // Blockquotes\n    .replace(/^>\\s*(.*)$/gim, '<blockquote>$1</blockquote>')\n    \n    // Bold\n    .replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>')\n    \n    // Italic\n    .replace(/\\*([^*]+)\\*/g, '<em>$1</em>')\n    \n    // Code blocks (```)\n    .replace(/```([\\s\\S]*?)```/g, '<pre><code>$1</code></pre>')\n    \n    // Inline code\n    .replace(/`([^`]+)`/g, '<code>$1</code>')\n    \n    // Listas com checkmark\n    .replace(/^\\s*-\\s*✅\\s*(.+)$/gim, '<li class=\"check\">✅ $1</li>')\n    \n    // Listas normais\n    .replace(/^\\s*-\\s+(.+)$/gim, '<li>$1</li>')\n    \n    // Processa parágrafos\n    .split('\\n\\n')\n    .map(para => {\n      // Se já é uma tag HTML, não envolve em <p>\n      if (para.match(/^<(h[1-6]|blockquote|hr|pre)/)) {\n        return para;\n      }\n      // Se tem <li>, envolve em <ul>\n      if (para.includes('<li')) {\n        return '<ul>' + para + '</ul>';\n      }\n      // Caso contrário, vira parágrafo\n      return '<p>' + para.replace(/\\n/g, '<br>') + '</p>';\n    })\n    .join('\\n');\n  \n  // Template HTML completo\n  const htmlCompleto = `<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Proposta Comercial - BPOSS</title>\n  <style>\n    @page {\n      size: A4;\n      margin: 2cm;\n    }\n    \n    * {\n      margin: 0;\n      padding: 0;\n      box-sizing: border-box;\n    }\n    \n    body {\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n      line-height: 1.8;\n      color: #2c3e50;\n      background: white;\n      padding: 40px;\n      max-width: 900px;\n      margin: 0 auto;\n    }\n    \n    h1 {\n      font-size: 32px;\n      color: #1a1a1a;\n      margin: 30px 0 20px 0;\n      padding-bottom: 15px;\n      border-bottom: 4px solid #3498db;\n      font-weight: 700;\n    }\n    \n    h2 {\n      font-size: 24px;\n      color: #2c3e50;\n      margin: 35px 0 20px 0;\n      padding-left: 15px;\n      border-left: 5px solid #3498db;\n      font-weight: 600;\n    }\n    \n    h3 {\n      font-size: 20px;\n      color: #34495e;\n      margin: 25px 0 15px 0;\n      font-weight: 600;\n    }\n    \n    h4 {\n      font-size: 18px;\n      color: #555;\n      margin: 20px 0 10px 0;\n      font-weight: 600;\n    }\n    \n    p {\n      margin: 15px 0;\n      text-align: justify;\n      font-size: 15px;\n    }\n    \n    blockquote {\n      border-left: 5px solid #3498db;\n      background: #f8f9fa;\n      padding: 15px 25px;\n      margin: 20px 0;\n      font-style: italic;\n      color: #555;\n      border-radius: 4px;\n    }\n    \n    strong {\n      color: #e74c3c;\n      font-weight: 600;\n    }\n    \n    em {\n      font-style: italic;\n      color: #555;\n    }\n    \n    code {\n      background: #f4f4f4;\n      padding: 3px 8px;\n      border-radius: 4px;\n      font-family: 'Courier New', Consolas, monospace;\n      font-size: 14px;\n      color: #c7254e;\n    }\n    \n    pre {\n      background: #2c3e50;\n      color: #ecf0f1;\n      padding: 20px;\n      border-radius: 6px;\n      overflow-x: auto;\n      margin: 20px 0;\n    }\n    \n    pre code {\n      background: none;\n      color: inherit;\n      padding: 0;\n    }\n    \n    ul {\n      margin: 15px 0;\n      padding-left: 30px;\n      list-style: none;\n    }\n    \n    li {\n      margin: 10px 0;\n      padding-left: 10px;\n      position: relative;\n    }\n    \n    li:before {\n      content: \"▸\";\n      position: absolute;\n      left: -15px;\n      color: #3498db;\n      font-weight: bold;\n    }\n    \n    li.check:before {\n      content: \"\";\n    }\n    \n    hr {\n      border: none;\n      border-top: 2px solid #ecf0f1;\n      margin: 30px 0;\n    }\n    \n    @media print {\n      body {\n        padding: 0;\n      }\n      \n      h1, h2 {\n        page-break-after: avoid;\n      }\n      \n      p, blockquote {\n        page-break-inside: avoid;\n      }\n    }\n  </style>\n</head>\n<body>\n${html}\n</body>\n</html>`;\n  \n  item.json.html = htmlCompleto;\n  item.json.pdfReady = true;\n}\n\nreturn $input.all();"
+      },
+      "id": "0ab08f90-9439-41fa-ae85-ab8feda10633",
+      "name": "Code - Markdown → HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "output_field",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "db6f4b0e-7c6b-460b-a981-dfe70f659273",
+      "name": "AI Agent - Proposta1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -304,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "html",
+        "options": {}
+      },
+      "id": "c7a4fab2-1a40-4aec-b7b4-a381f82ccc7d",
+      "name": "Convert to File - PDF1",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -272,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "texto",
+        "formDescription": "teste",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "texto",
+              "placeholder": "teste"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1536,
+        560
+      ],
+      "id": "a280ac6a-4b0b-47f7-8e5f-2f3e1dc16846",
+      "name": "On form submission",
+      "webhookId": "271c9cc3-52d6-44a8-8547-d93f9e598657"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.html }}",
+        "operation": "getPDF",
+        "margin": {
+          "top": "2cm",
+          "bottom": "2cm",
+          "left": "2cm",
+          "right": "2cm"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-puppeteer.puppeteer",
+      "typeVersion": 1,
+      "position": [
+        256,
+        48
+      ],
+      "id": "a735f99e-553b-427d-82bc-af78e97bafb8",
+      "name": "Puppeteer"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.texto}}",
+        "options": {
+          "systemMessage": "=Você é o CS Call Analyzer da Mottivme.\n\nSua função é analisar a transcrição de calls de Customer Success e gerar um relatório estruturado.\n\n## CONTEXTO DO CLIENTE\n- Nome: {{ $json.cliente_nome }}\n- Empresa: {{ $json.empresa }}\n- Vertical: {{ $json.vertical }}\n- Plano Atual: {{ $json.plano_atual }}\n- MRR: R${{ $json.mrr }}\n- CS Responsável: {{ $json.cs_responsavel }}\n- Tipo da Call: {{ $json.tipo_call }}\n\n## TRANSCRIÇÃO DA CALL\n{{ $json.transcricao }}\n\n## SUA TAREFA\n\nAnalise a transcrição acima e retorne um JSON com a seguinte estrutura:\n\n{\n  \"resumo_executivo\": {\n    \"health_score\": <0-100>,\n    \"health_status\": \"saudavel|atencao|risco|critico\",\n    \"insight_principal\": \"<uma frase resumindo o estado do cliente>\"\n  },\n  \"analise\": {\n    \"sentimento\": \"positivo|neutro|negativo\",\n    \"uso_plataforma\": \"alto|medio|baixo|nao_mencionado\",\n    \"satisfacao\": \"positiva|neutra|negativa\",\n    \"resultados_mencionados\": <true|false>,\n    \"resultados_detalhes\": \"<o que foi mencionado>\"\n  },\n  \"riscos\": [\n    {\n      \"tipo\": \"churn|insatisfacao|baixo_uso|preco\",\n      \"evidencia\": \"<frase exata ou paráfrase>\",\n      \"timestamp\": \"<se disponível>\",\n      \"severidade\": \"alta|media|baixa\"\n    }\n  ],\n  \"oportunidades\": [\n    {\n      \"tipo\": \"upsell|cross_sell|indicacao|expansao\",\n      \"evidencia\": \"<frase exata ou paráfrase>\",\n      \"produto_sugerido\": \"<se aplicável>\",\n      \"valor_potencial\": <número ou null>\n    }\n  ],\n  \"acoes\": [\n    {\n      \"descricao\": \"<ação necessária>\",\n      \"responsavel\": \"<quem deve fazer>\",\n      \"prazo\": \"<em dias ou data>\",\n      \"prioridade\": \"alta|media|baixa\"\n    }\n  ],\n  \"decisoes_tomadas\": [\"<lista de decisões da call>\"],\n  \"momentos_chave\": [\n    {\n      \"timestamp\": \"<se disponível>\",\n      \"descricao\": \"<o que aconteceu>\",\n      \"importancia\": \"alta|media|baixa\"\n    }\n  ],\n  \"alertas\": [\n    {\n      \"tipo\": \"churn_iminente|oportunidade_urgente|escalacao\",\n      \"mensagem\": \"<descrição do alerta>\",\n      \"destinatario\": \"<quem deve receber>\"\n    }\n  ]\n}\n\n## REGRAS DE ANÁLISE\n\n1. Health Score:\n   - 80-100: Saudável (🟢)\n   - 60-79: Atenção (🟡)\n   - 40-59: Risco (🟠)\n   - 0-39: Crítico (🔴)\n\n2. Sinais de Risco (procurar ativamente):\n   - \"não estou usando\", \"não vi resultado\", \"está caro\"\n   - \"pensando em cancelar\", \"avaliar outras opções\"\n   - Tom frustrado, respostas curtas, desânimo\n\n3. Sinais de Oportunidade:\n   - \"quero aumentar\", \"preciso de mais\", \"funciona muito bem\"\n   - \"meu colega também precisa\", \"vocês fazem X?\"\n   - Entusiasmo, perguntas sobre features premium\n\n4. Seja objetivo e baseado em evidências\n5. Priorize riscos sobre oportunidades\n6. Cite frases exatas quando possível\n\nRetorne APENAS o JSON, sem texto adicional."
+        }
+      },
+      "id": "8bd27ed4-3fea-4f07-94b0-30e975b5f536",
+      "name": "AI Agent - Extração1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1456,
+        2000
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse resposta do AI Agent\nlet dados;\ntry {\n  const output = $input.first().json.output;\n  // Tenta fazer parse direto\n  dados = typeof output === 'string' ? JSON.parse(output) : output;\n} catch (e) {\n  // Se falhar, tenta extrair JSON do texto\n  const text = $input.first().json.output || $input.first().json.text;\n  const jsonMatch = text.match(/\\{[\\s\\S]*\\}/);\n  dados = JSON.parse(jsonMatch[0]);\n}\n\n// ===== CENÁRIO ATUAL =====\nconst reunioes_mes = dados.situacao_atual.reunioes_mes_hoje || 0;\nconst perc_qual_atual = (dados.situacao_atual.percentual_qualificadas_hoje || 0) / 100;\nconst taxa_fech_atual = (dados.situacao_atual.taxa_fechamento_atual || 0) / 100;\nconst ticket_medio = dados.dados_cliente.ticket_medio || 0;\n\nconst reunioes_qual_atual = Math.round(reunioes_mes * perc_qual_atual);\nconst vendas_mes_atual = Math.round(reunioes_qual_atual * taxa_fech_atual);\nconst receita_atual_mes = vendas_mes_atual * ticket_medio;\n\n// ===== CENÁRIO BPOSS =====\nconst metas_plano = {\n  \"ESSENCIAL\": 12,\n  \"PROFESSIONAL\": 18,\n  \"ENTERPRISE\": 30\n};\n\nconst plano_nome = dados.plano_recomendado?.nome || \"PROFESSIONAL\";\nconst meta_reunioes = metas_plano[plano_nome] || 18;\nconst taxa_qual_bposs = 0.85; // 85% fixo\n\n// Estima melhora na taxa de fechamento\nlet taxa_fech_bposs;\nif (taxa_fech_atual < 0.15) {\n  taxa_fech_bposs = 0.25;\n} else if (taxa_fech_atual < 0.20) {\n  taxa_fech_bposs = 0.30;\n} else {\n  taxa_fech_bposs = 0.40;\n}\n\nconst reunioes_qual_bposs = Math.round(meta_reunioes * taxa_qual_bposs);\nconst vendas_mes_bposs = Math.round(reunioes_qual_bposs * taxa_fech_bposs);\nconst receita_nova_mes = vendas_mes_bposs * ticket_medio;\n\n// ===== ROI =====\nconst receita_incremental = receita_nova_mes - receita_atual_mes;\nconst investimento_bposs = dados.plano_recomendado?.valor_mensal || 9997;\nconst lucro_liquido = receita_incremental - investimento_bposs;\nconst roi = receita_incremental > 0 ? (receita_incremental / investimento_bposs).toFixed(1) : \"0.0\";\nconst projecao_12_meses = lucro_liquido * 12;\n\n// ===== PROJEÇÃO POR MÊS =====\n\n// Mês 1: 50% da meta\nconst mes1_reunioes = Math.round(meta_reunioes * 0.5);\nconst mes1_vendas = Math.round(mes1_reunioes * taxa_qual_bposs * taxa_fech_bposs);\nconst mes1_receita = mes1_vendas * ticket_medio;\nconst mes1_extra = mes1_receita - receita_atual_mes;\n\n// Mês 2-3: 75% da meta\nconst mes2_reunioes = Math.round(meta_reunioes * 0.75);\nconst mes2_vendas = Math.round(mes2_reunioes * taxa_qual_bposs * taxa_fech_bposs);\nconst mes2_receita = mes2_vendas * ticket_medio;\nconst mes2_extra = mes2_receita - receita_atual_mes;\n\n// Mês 4+: 100% da meta\nconst mes4_reunioes = meta_reunioes;\nconst mes4_vendas = vendas_mes_bposs;\nconst mes4_receita = receita_nova_mes;\nconst mes4_extra = receita_incremental;\n\n// Helper para formatar moeda\nconst formatMoeda = (valor) => {\n  return `R$ ${Math.round(valor).toLocaleString('pt-BR')}`;\n};\n\n// ===== OUTPUT FINAL =====\nreturn {\n  json: {\n    dados_cliente: dados.dados_cliente,\n    situacao_atual: dados.situacao_atual,\n    dores: dados.dores,\n    plano_recomendado: dados.plano_recomendado,\n    cenario_atual: {\n      reunioes_mes: reunioes_mes,\n      reunioes_qualificadas: reunioes_qual_atual,\n      taxa_qualificacao: Math.round(perc_qual_atual * 100),\n      taxa_fechamento: Math.round(taxa_fech_atual * 100),\n      vendas_mes: vendas_mes_atual,\n      receita_mes: receita_atual_mes,\n      receita_mes_formatada: formatMoeda(receita_atual_mes)\n    },\n    cenario_bposs: {\n      reunioes_meta: meta_reunioes,\n      reunioes_qualificadas: reunioes_qual_bposs,\n      taxa_qualificacao: 85,\n      taxa_fechamento: Math.round(taxa_fech_bposs * 100),\n      vendas_mes: vendas_mes_bposs,\n      receita_mes: receita_nova_mes,\n      receita_mes_formatada: formatMoeda(receita_nova_mes)\n    },\n    roi: {\n      receita_incremental: receita_incremental,\n      receita_incremental_formatada: formatMoeda(receita_incremental),\n      investimento_bposs: investimento_bposs,\n      investimento_bposs_formatado: formatMoeda(investimento_bposs),\n      lucro_liquido: lucro_liquido,\n      lucro_liquido_formatado: formatMoeda(lucro_liquido),\n      roi_multiplo: roi,\n      projecao_12_meses: projecao_12_meses,\n      projecao_12_meses_formatada: formatMoeda(projecao_12_meses)\n    },\n    projecao_meses: {\n      mes_1: {\n        reunioes: mes1_reunioes,\n        vendas: mes1_vendas,\n        receita_extra: mes1_extra,\n        receita_extra_formatada: formatMoeda(mes1_extra)\n      },\n      mes_2_3: {\n        reunioes: mes2_reunioes,\n        vendas: mes2_vendas,\n        receita_extra: mes2_extra,\n        receita_extra_formatada: formatMoeda(mes2_extra)\n      },\n      mes_4_mais: {\n        reunioes: mes4_reunioes,\n        vendas: mes4_vendas,\n        receita_extra: mes4_extra,\n        receita_extra_formatada: formatMoeda(mes4_extra)\n      }\n    },\n    metadata: {\n      data_calculo: new Date().toISOString(),\n      versao_calculo: \"2.0\"\n    }\n  }\n};"
+      },
+      "id": "194a1341-aa51-4a4f-b845-f578ecea534a",
+      "name": "Code - Calcular ROI1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1808,
+        2000
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Gere uma proposta comercial COMPLETA em Markdown usando estes dados:\n\n{{ JSON.stringify($json, null, 2) }}",
+        "options": {
+          "systemMessage": "=Você é um consultor comercial especializado em outsourcing de pré-vendas.\n\nTAREFA: Gerar proposta comercial COMPLETA e personalizada em Markdown.\n\nVocê receberá um JSON com todos os dados do cliente, situação atual, dores, plano recomendado e projeções de ROI.\n\nESTRUTURA DA PROPOSTA:\n\n```markdown\n# PROPOSTA COMERCIAL\n## Outsourcing de Pré-Vendas - BPOSS\n\n**Cliente:** [nome_completo do JSON]\n**Empresa:** [empresa do JSON]\n**Data:** [data de hoje formatada]\n**Proposta:** #[número baseado em timestamp]\n**Validade:** [hoje + 7 dias]\n\n---\n\n## 📊 RESUMO EXECUTIVO\n\n**Situação Atual:**\n- Faturamento: [dados_cliente.faturamento_mensal formatado]\n- Ticket Médio: [dados_cliente.ticket_medio formatado]\n- Reuniões/mês: [cenario_atual.reunioes_mes]\n- Taxa de Fechamento: [cenario_atual.taxa_fechamento]%\n\n**Resultado Esperado em 90 Dias:**\n- [cenario_bposs.reunioes_meta] reuniões qualificadas/mês (vs [cenario_atual.reunioes_mes] hoje)\n- +[roi.receita_incremental_formatada] em receita incremental mensal\n- ROI de [roi.roi_multiplo]x sobre o investimento\n\n---\n\n## 🎯 DESAFIOS IDENTIFICADOS\n\n### 1. [Criar título impactante para dores.problema_1.descricao]\n\n> \"[dores.problema_1.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_1.intensidade]\n\n### 2. [Criar título impactante para dores.problema_2.descricao]\n\n> \"[dores.problema_2.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_2.intensidade]\n\n### 3. [Criar título impactante para dores.problema_3.descricao]\n\n> \"[dores.problema_3.contexto - citação exata]\"\n\n[Explicar como isso impacta os resultados em 2-3 linhas]\n\n**Intensidade:** [dores.problema_3.intensidade]\n\n---\n\n## ✅ SOLUÇÃO PROPOSTA\n\n### BPOSS - Business Process Outsourcing Sales\n\n**O que faremos por você:**\n\n1. **Prospecção Ativa Qualificada**\n   - Identificação e qualificação de leads no seu ICP\n   - Abordagem multicanal (LinkedIn, Email, WhatsApp)\n   - Nutrição até estar pronto para reunião\n\n2. **Agendamento de Reuniões Qualificadas**\n   - Apenas leads que passaram por BANT completo\n   - Taxa de show-up de 73% (vs 40% do mercado)\n   - Briefing completo antes de cada reunião\n\n3. **CRM & Gestão Completa**\n   - Plataforma Socialfy inclusa (R$997/mês grátis)\n   - Dashboard em tempo real\n   - Relatórios semanais de performance\n\n4. **SDR Dedicado + IA**\n   - Profissional sênior 100% focado na sua conta\n   - Apoio de IA para escala e qualidade\n   - Treinamento contínuo no seu produto\n\n---\n\n## 💰 INVESTIMENTO & PLANOS\n\n[Apresentar os 3 planos, mas destacar o recomendado com ⭐]\n\n### Plano ESSENCIAL\n**R$ 7.997/mês**\n\n✅ 12 reuniões qualificadas/mês\n✅ 1 SDR dedicado\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n\n**Ideal para:** Empresas faturando R$50-150k/mês, ticket R$2-5k\n\n---\n\n### ⭐ Plano [plano_recomendado.nome] (RECOMENDADO)\n**[plano_recomendado.valor_mensal formatado]/mês**\n\n✅ **[plano_recomendado.meta_reunioes] reuniões qualificadas/mês**\n✅ SDR(s) dedicado(s)\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n[adicionar benefícios específicos do plano]\n\n**POR QUE RECOMENDAMOS ESTE PLANO PARA [empresa]:**\n\n[plano_recomendado.justificativa]\n\n---\n\n### Plano ENTERPRISE\n**R$ 14.997/mês**\n\n✅ 30 reuniões qualificadas/mês\n✅ Time dedicado (2-3 SDRs)\n✅ Socialfy CRM incluso\n✅ Account Manager exclusivo\n✅ Suporte 24/7\n\n**Ideal para:** Empresas faturando >R$500k/mês, ticket >R$15k\n\n---\n\n## 📈 PROJEÇÃO DE RESULTADOS\n\n### CENÁRIO ATUAL (sem BPOSS):\n\n| Métrica | Valor Atual |\n|---------|-------------|\n| Reuniões/mês | [cenario_atual.reunioes_mes] |\n| % Qualificadas | [cenario_atual.taxa_qualificacao]% |\n| Reuniões qualificadas | [cenario_atual.reunioes_qualificadas] |\n| Taxa de fechamento | [cenario_atual.taxa_fechamento]% |\n| Vendas/mês | [cenario_atual.vendas_mes] |\n| **Receita/mês** | **[cenario_atual.receita_mes_formatada]** |\n\n### CENÁRIO PROJETADO (com BPOSS - Plano [plano_recomendado.nome]):\n\n| Métrica | Valor Projetado |\n|---------|------------------|\n| Reuniões/mês | [cenario_bposs.reunioes_meta] |\n| % Qualificadas | **[cenario_bposs.taxa_qualificacao]%** |\n| Reuniões qualificadas | [cenario_bposs.reunioes_qualificadas] |\n| Taxa de fechamento | [cenario_bposs.taxa_fechamento]% |\n| Vendas/mês | [cenario_bposs.vendas_mes] |\n| **Receita/mês** | **[cenario_bposs.receita_mes_formatada]** |\n\n### 💎 ROI DETALHADO:\n\n```\nRECEITA INCREMENTAL:     [roi.receita_incremental_formatada]/mês\nINVESTIMENTO BPOSS:      [roi.investimento_bposs_formatado]/mês\n─────────────────────────────────────\nLUCRO LÍQUIDO:           [roi.lucro_liquido_formatado]/mês\nROI:                     [roi.roi_multiplo]x\n\nEM 12 MESES:             [roi.projecao_12_meses_formatada] líquido\n```\n\n---\n\n## 📅 PROJEÇÃO POR MÊS (Plano [plano_recomendado.nome]):\n\n### Mês 1 (Ramp-up)\n- **Reuniões:** [projecao_meses.mes_1.reunioes] (50% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_1.vendas]\n- **Receita extra:** [projecao_meses.mes_1.receita_extra_formatada]\n\n### Mês 2-3 (Aceleração)\n- **Reuniões:** [projecao_meses.mes_2_3.reunioes] (75% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_2_3.vendas]\n- **Receita extra:** [projecao_meses.mes_2_3.receita_extra_formatada]/mês\n\n### Mês 4+ (Full Speed)\n- **Reuniões:** [projecao_meses.mes_4_mais.reunioes] (100% da meta)\n- **Vendas estimadas:** [projecao_meses.mes_4_mais.vendas]\n- **Receita extra:** [projecao_meses.mes_4_mais.receita_extra_formatada]/mês\n\n---\n\n## 🎁 BÔNUS EXCLUSIVO\n\n### Se fechar até [hoje + 3 dias formatado]:\n\n✅ **Setup acelerado:** Kickoff em 48h (vs 7 dias)\n✅ **1 mês de Socialfy PRO grátis:** R$ 997 em valor\n✅ **Script de vendas customizado:** Baseado nas suas melhores calls\n✅ **Treinamento da equipe:** 2h de onboarding ao vivo\n\n**Valor total do bônus:** R$ 3.500\n\n---\n\n## ✅ PRÓXIMOS PASSOS\n\n### Se aprovar esta proposta:\n\n**1. Hoje:** Confirmar proposta via WhatsApp/Email\n\n**2. Amanhã:** Assinatura do contrato + Kickoff call\n\n**3. Dia 3-7:** Setup completo\n   - Integração CRM\n   - Treinamento no produto\n   - Definição de ICP\n   - Aprovação de scripts\n\n**4. Dia 8:** Início da prospecção ativa\n\n**5. Semana 3:** Primeiras reuniões agendadas\n\n**Data sugerida para kickoff:** [próxima segunda-feira]\n\n---\n\n## 📋 CONDIÇÕES COMERCIAIS\n\n**Forma de Pagamento:**\n- Cartão de crédito (até 12x)\n- Boleto bancário (à vista ou parcelado)\n- Pix (5% de desconto à vista)\n\n**Faturamento:**\n- Recorrência mensal\n- Reajuste anual (IPCA)\n\n**Contrato:**\n- Vigência mínima: 3 meses\n- Renovação automática mensal após período mínimo\n- Cancelamento com 30 dias de antecedência\n\n**Garantia:**\n- Se não atingirmos 70% da meta de reuniões em 60 dias, devolvemos 50% do investimento do 1º mês\n\n---\n\n## ❓ PERGUNTAS FREQUENTES\n\n**Quanto tempo até as primeiras reuniões?**\nEm média, 15-21 dias após o kickoff.\n\n**E se o lead não comparecer?**\nReagendamos sem custo. Nossa taxa de show-up é 73%.\n\n**Posso cancelar se não funcionar?**\nSim, após 3 meses você pode cancelar com 30 dias de aviso.\n\n**Vocês garantem vendas?**\nGarantimos reuniões qualificadas. A conversão depende do seu produto e fechamento.\n\n**Como é o treinamento do SDR?**\n1 semana intensiva: produto, ICP, objeções, cases. Treinamento contínuo mensal.\n\n---\n\n## 📞 CONTATO\n\n**[SEU NOME]**\nHead of Sales - BPOSS\n\n📧 Email: [seu@email.com]\n📱 WhatsApp: [seu telefone]\n🔗 LinkedIn: [seu linkedin]\n\n**Horário de atendimento:** Seg-Sex, 9h-18h\n\n---\n\n**Validade desta proposta:** [hoje + 7 dias]\n**Validade do bônus:** [hoje + 3 dias]\n\n---\n\n*\"Prospecção é ciência, não arte. A BPOSS domina a ciência.\"*\n\n**Vamos escalar juntos?** 🚀\n```\n\nREGRAS DE GERAÇÃO:\n\n1. **Tom:** Profissional mas friendly. Confiante sem ser arrogante.\n2. **Personalização:** Use dados EXATOS do JSON fornecido.\n3. **Números:** Seja CONSERVADOR (já estão calculados conservadoramente).\n4. **Formatação:** Use Markdown correto (tabelas, listas, destaques).\n5. **Persuasão:** Foque em ROI e redução de risco.\n6. **Datas:** Calcule corretamente (hoje, hoje+3, hoje+7).\n7. **Substituições:** ZERO [COLCHETES] não preenchidos.\n8. **Tamanho:** Completa mas objetiva. 8-12 páginas.\n\nRetorne APENAS o Markdown da proposta, sem mensagens adicionais."
+        }
+      },
+      "id": "ebdc9bbd-dbca-4179-8ea6-e99e64137c48",
+      "name": "AI Agent - Proposta2",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        2032,
+        2000
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1520,
+        2224
+      ],
+      "id": "7a993aef-ec92-4bee-992e-b7935e22960b",
+      "name": "Anthropic Chat Model2",
+      "credentials": {
+        "anthropicApi": {
+          "id": "nNkFTZpNoiBCbO1I",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Conversor Profissional de Markdown para HTML\nfor (const item of $input.all()) {\n  const markdown = item.json.output || '';\n  \n  let html = markdown\n    // Remove --- divisores\n    .replace(/^---$/gim, '<hr>')\n    \n    // Headers (ordem importante: do mais específico para o mais genérico)\n    .replace(/^####\\s+(.*)$/gim, '<h4>$1</h4>')\n    .replace(/^###\\s+(.*)$/gim, '<h3>$1</h3>')\n    .replace(/^##\\s+(.*)$/gim, '<h2>$1</h2>')\n    .replace(/^#\\s+(.*)$/gim, '<h1>$1</h1>')\n    \n    // Blockquotes\n    .replace(/^>\\s*(.*)$/gim, '<blockquote>$1</blockquote>')\n    \n    // Bold\n    .replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>')\n    \n    // Italic\n    .replace(/\\*([^*]+)\\*/g, '<em>$1</em>')\n    \n    // Code blocks (```)\n    .replace(/```([\\s\\S]*?)```/g, '<pre><code>$1</code></pre>')\n    \n    // Inline code\n    .replace(/`([^`]+)`/g, '<code>$1</code>')\n    \n    // Listas com checkmark\n    .replace(/^\\s*-\\s*✅\\s*(.+)$/gim, '<li class=\"check\">✅ $1</li>')\n    \n    // Listas normais\n    .replace(/^\\s*-\\s+(.+)$/gim, '<li>$1</li>')\n    \n    // Processa parágrafos\n    .split('\\n\\n')\n    .map(para => {\n      // Se já é uma tag HTML, não envolve em <p>\n      if (para.match(/^<(h[1-6]|blockquote|hr|pre)/)) {\n        return para;\n      }\n      // Se tem <li>, envolve em <ul>\n      if (para.includes('<li')) {\n        return '<ul>' + para + '</ul>';\n      }\n      // Caso contrário, vira parágrafo\n      return '<p>' + para.replace(/\\n/g, '<br>') + '</p>';\n    })\n    .join('\\n');\n  \n  // Template HTML completo\n  const htmlCompleto = `<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Proposta Comercial - BPOSS</title>\n  <style>\n    @page {\n      size: A4;\n      margin: 2cm;\n    }\n    \n    * {\n      margin: 0;\n      padding: 0;\n      box-sizing: border-box;\n    }\n    \n    body {\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n      line-height: 1.8;\n      color: #2c3e50;\n      background: white;\n      padding: 40px;\n      max-width: 900px;\n      margin: 0 auto;\n    }\n    \n    h1 {\n      font-size: 32px;\n      color: #1a1a1a;\n      margin: 30px 0 20px 0;\n      padding-bottom: 15px;\n      border-bottom: 4px solid #3498db;\n      font-weight: 700;\n    }\n    \n    h2 {\n      font-size: 24px;\n      color: #2c3e50;\n      margin: 35px 0 20px 0;\n      padding-left: 15px;\n      border-left: 5px solid #3498db;\n      font-weight: 600;\n    }\n    \n    h3 {\n      font-size: 20px;\n      color: #34495e;\n      margin: 25px 0 15px 0;\n      font-weight: 600;\n    }\n    \n    h4 {\n      font-size: 18px;\n      color: #555;\n      margin: 20px 0 10px 0;\n      font-weight: 600;\n    }\n    \n    p {\n      margin: 15px 0;\n      text-align: justify;\n      font-size: 15px;\n    }\n    \n    blockquote {\n      border-left: 5px solid #3498db;\n      background: #f8f9fa;\n      padding: 15px 25px;\n      margin: 20px 0;\n      font-style: italic;\n      color: #555;\n      border-radius: 4px;\n    }\n    \n    strong {\n      color: #e74c3c;\n      font-weight: 600;\n    }\n    \n    em {\n      font-style: italic;\n      color: #555;\n    }\n    \n    code {\n      background: #f4f4f4;\n      padding: 3px 8px;\n      border-radius: 4px;\n      font-family: 'Courier New', Consolas, monospace;\n      font-size: 14px;\n      color: #c7254e;\n    }\n    \n    pre {\n      background: #2c3e50;\n      color: #ecf0f1;\n      padding: 20px;\n      border-radius: 6px;\n      overflow-x: auto;\n      margin: 20px 0;\n    }\n    \n    pre code {\n      background: none;\n      color: inherit;\n      padding: 0;\n    }\n    \n    ul {\n      margin: 15px 0;\n      padding-left: 30px;\n      list-style: none;\n    }\n    \n    li {\n      margin: 10px 0;\n      padding-left: 10px;\n      position: relative;\n    }\n    \n    li:before {\n      content: \"▸\";\n      position: absolute;\n      left: -15px;\n      color: #3498db;\n      font-weight: bold;\n    }\n    \n    li.check:before {\n      content: \"\";\n    }\n    \n    hr {\n      border: none;\n      border-top: 2px solid #ecf0f1;\n      margin: 30px 0;\n    }\n    \n    @media print {\n      body {\n        padding: 0;\n      }\n      \n      h1, h2 {\n        page-break-after: avoid;\n      }\n      \n      p, blockquote {\n        page-break-inside: avoid;\n      }\n    }\n  </style>\n</head>\n<body>\n${html}\n</body>\n</html>`;\n  \n  item.json.html = htmlCompleto;\n  item.json.pdfReady = true;\n}\n\nreturn $input.all();"
+      },
+      "id": "9db77054-7518-4980-9bad-8f373d704100",
+      "name": "Code - Markdown → HTML1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'proposta_comercial_' + $now.toFormat('yyyy-MM-dd_HH-mm') + '.pdf' }}",
+        "operation": "getPDF",
+        "margin": {
+          "top": "2cm",
+          "bottom": "2cm",
+          "left": "2cm",
+          "right": "2cm"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-puppeteer.puppeteer",
+      "typeVersion": 1,
+      "position": [
+        144,
+        992
+      ],
+      "id": "fd8a7266-c325-46f0-88f9-eabad7da1cee",
+      "name": "Puppeteer1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1376,
+        1088
+      ],
+      "id": "023ed567-76f8-4f96-a3a3-9613c6aba065",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        1232
+      ],
+      "id": "494edf2c-af5f-403e-8985-2942be07d471",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Treinamento de conhecimento\nMonitoramos uma pasta específica para usar\no conteúdo e salvar como fonte de conhecimento\n",
+        "height": 660,
+        "width": 1340,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        1920
+      ],
+      "id": "b9760eee-932e-447c-b232-cac184df5f4f",
+      "name": "Sticky Note22"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1WTJrbMl8HLppIHIeHT94Qsbog9XpxOx2",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        816,
+        2016
+      ],
+      "id": "b0dd9580-f9de-4561-bbb3-824c1f8b431b",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        976,
+        2016
+      ],
+      "id": "533eb93f-47e6-4995-9716-c1e01d6f7036",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ufivD8NvmVAh2iOk",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "wav",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "30eae7ed-6f12-470a-b732-8eabb004ada3"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "47ab0555-05ec-4b95-b600-3c2922718e3e",
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "jpeg",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "32482184-5470-4227-9a5f-7fe662d24dc5",
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pdf"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cfd94c12-9229-4022-9563-4ab63565a61c",
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "png",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1008,
+        2112
+      ],
+      "id": "94220046-2f70-43ef-ae20-791c67b94a67",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "translate",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -768,
+        1968
+      ],
+      "id": "c0a8b315-3192-4b85-b981-0b828ef0c6bd",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -528,
+        1952
+      ],
+      "id": "6c748e21-a7ca-45f0-ae55-ab765e842139",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "mYXkuakjLHipCkZF",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -512,
+        2080
+      ],
+      "id": "e03bd60a-567a-49e2-96ec-8a8fa2ca133c",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        2080
+      ],
+      "id": "b380ef04-c85f-4f4e-9272-d3cc491669cf",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "resource": "assistant",
+        "assistantId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -768,
+        2128
+      ],
+      "id": "ea3cfaac-0db9-49a3-8a21-bc71f24f5db3",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -768,
+        2288
+      ],
+      "id": "ea2341ae-0727-4fa6-aba0-d78fc44b48b1",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "mYXkuakjLHipCkZF",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -752,
+        2432
+      ],
+      "id": "a958a600-a2d7-4c4c-b422-a9a432130890",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -608,
+        2432
+      ],
+      "id": "c67387ee-8367-43fd-9dea-c266640b0de6",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "=Você é o CS Call Analyzer da Mottivme.\n\nSua função é analisar a transcrição de calls de Customer Success e gerar um relatório estruturado.\n\n## CONTEXTO DO CLIENTE\n- Nome: {{ $json.cliente_nome }}\n- Empresa: {{ $json.empresa }}\n- Vertical: {{ $json.vertical }}\n- Plano Atual: {{ $json.plano_atual }}\n- MRR: R${{ $json.mrr }}\n- CS Responsável: {{ $json.cs_responsavel }}\n- Tipo da Call: {{ $json.tipo_call }}\n\n## TRANSCRIÇÃO DA CALL\n{{ $json.transcricao }}\n\n## SUA TAREFA\n\nAnalise a transcrição acima e retorne um JSON com a seguinte estrutura:\n\n{\n  \"resumo_executivo\": {\n    \"health_score\": <0-100>,\n    \"health_status\": \"saudavel|atencao|risco|critico\",\n    \"insight_principal\": \"<uma frase resumindo o estado do cliente>\"\n  },\n  \"analise\": {\n    \"sentimento\": \"positivo|neutro|negativo\",\n    \"uso_plataforma\": \"alto|medio|baixo|nao_mencionado\",\n    \"satisfacao\": \"positiva|neutra|negativa\",\n    \"resultados_mencionados\": <true|false>,\n    \"resultados_detalhes\": \"<o que foi mencionado>\"\n  },\n  \"riscos\": [\n    {\n      \"tipo\": \"churn|insatisfacao|baixo_uso|preco\",\n      \"evidencia\": \"<frase exata ou paráfrase>\",\n      \"timestamp\": \"<se disponível>\",\n      \"severidade\": \"alta|media|baixa\"\n    }\n  ],\n  \"oportunidades\": [\n    {\n      \"tipo\": \"upsell|cross_sell|indicacao|expansao\",\n      \"evidencia\": \"<frase exata ou paráfrase>\",\n      \"produto_sugerido\": \"<se aplicável>\",\n      \"valor_potencial\": <número ou null>\n    }\n  ],\n  \"acoes\": [\n    {\n      \"descricao\": \"<ação necessária>\",\n      \"responsavel\": \"<quem deve fazer>\",\n      \"prazo\": \"<em dias ou data>\",\n      \"prioridade\": \"alta|media|baixa\"\n    }\n  ],\n  \"decisoes_tomadas\": [\"<lista de decisões da call>\"],\n  \"momentos_chave\": [\n    {\n      \"timestamp\": \"<se disponível>\",\n      \"descricao\": \"<o que aconteceu>\",\n      \"importancia\": \"alta|media|baixa\"\n    }\n  ],\n  \"alertas\": [\n    {\n      \"tipo\": \"churn_iminente|oportunidade_urgente|escalacao\",\n      \"mensagem\": \"<descrição do alerta>\",\n      \"destinatario\": \"<quem deve receber>\"\n    }\n  ]\n}\n\n## REGRAS DE ANÁLISE\n\n1. Health Score:\n   - 80-100: Saudável (🟢)\n   - 60-79: Atenção (🟡)\n   - 40-59: Risco (🟠)\n   - 0-39: Crítico (🔴)\n\n2. Sinais de Risco (procurar ativamente):\n   - \"não estou usando\", \"não vi resultado\", \"está caro\"\n   - \"pensando em cancelar\", \"avaliar outras opções\"\n   - Tom frustrado, respostas curtas, desânimo\n\n3. Sinais de Oportunidade:\n   - \"quero aumentar\", \"preciso de mais\", \"funciona muito bem\"\n   - \"meu colega também precisa\", \"vocês fazem X?\"\n   - Entusiasmo, perguntas sobre features premium\n\n4. Seja objetivo e baseado em evidências\n5. Priorize riscos sobre oportunidades\n6. Cite frases exatas quando possível\n\nRetorne APENAS o JSON, sem texto adicional.",
+        "options": {}
+      },
+      "id": "5375f985-ea9e-43cf-ba38-935ef1fd460f",
+      "name": "System Prompt CS Analyzer",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        2016
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        992,
+        2720
+      ],
+      "id": "790bdd0b-1395-4126-af99-77aac85382fc",
+      "name": "📥 Download Arquivo",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pegar dados do node anterior (Extract From Text File)\nconst item = $input.first();\n\n// Pegar dados originais do Download (antes do Extract)\nconst downloadNode = $('📥 Download Arquivo').first();\n\n// CORREÇÃO: Pegar o fileName do node de download original\nconst fileName = downloadNode.json.name || 'Arquivo sem nome';\n\n// Pegar a transcrição que foi extraída\nlet transcricao = item.json.data || '';\n\n// Limpar HTML se vier com tags (Google Docs às vezes retorna HTML)\nif (transcricao.includes('<html>') || transcricao.includes('<li>')) {\n  // Remover tags HTML básicas\n  transcricao = transcricao\n    .replace(/<style[^>]*>.*?<\\/style>/gs, '')\n    .replace(/<script[^>]*>.*?<\\/script>/gs, '')\n    .replace(/<[^>]+>/g, ' ')\n    .replace(/&nbsp;/g, ' ')\n    .replace(/&amp;/g, '&')\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\n// Extrair informações do nome do arquivo\nconst partes = fileName.split(' - ');\nlet clienteNome = 'Não identificado';\nlet dataCall = new Date().toISOString().split('T')[0];\n\nif (partes.length >= 2) {\n  clienteNome = partes[1].trim();\n}\n\n// Tentar extrair data do nome do arquivo\nconst regexData = /(\\d{4})_(\\d{2})_(\\d{2})/;\nconst matchData = fileName.match(regexData);\nif (matchData) {\n  dataCall = `${matchData[1]}-${matchData[2]}-${matchData[3]}`;\n}\n\n// Log para debug\nconsole.log('=== DEBUG ===');\nconsole.log('Nome do arquivo:', fileName);\nconsole.log('Cliente:', clienteNome);\nconsole.log('Data:', dataCall);\nconsole.log('Tamanho da transcrição:', transcricao.length, 'caracteres');\nconsole.log('Primeiros 200 chars:', transcricao.substring(0, 200));\n\n// Retornar dados estruturados para a IA\nreturn [{\n  json: {\n    // Metadados do arquivo\n    arquivo_id: downloadNode.json.id,\n    arquivo_nome: fileName,\n    arquivo_link: downloadNode.json.webViewLink,\n    data_call: dataCall,\n    \n    // Dados do cliente\n    cliente_nome: clienteNome,\n    empresa: '',\n    vertical: '',\n    plano_atual: '',\n    mrr: '',\n    cs_responsavel: '',\n    tipo_call: 'Customer Success',\n    \n    // Transcrição completa (limpa)\n    transcricao: transcricao,\n    \n    // Timestamp\n    processado_em: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1424,
+        2720
+      ],
+      "id": "0a9c4a76-2794-4960-9dbe-154605878197",
+      "name": "⚙️ Processar Dados"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json) }}",
+        "options": {
+          "systemMessage": "=Você é o CS Call Analyzer da Mottivme.\n\nSua função é analisar a transcrição de calls de Customer Success e gerar um relatório estruturado.\n\n## CONTEXTO DO CLIENTE\n- Nome: {{ $json.cliente_nome }}\n- Empresa: {{ $json.empresa || 'Não informado' }}\n- Vertical: {{ $json.vertical || 'Não informado' }}\n- Plano Atual: {{ $json.plano_atual || 'Não informado' }}\n- MRR: {{ $json.mrr || 'Não informado' }}\n- CS Responsável: {{ $json.cs_responsavel || 'Não informado' }}\n- Tipo da Call: {{ $json.tipo_call }}\n- Data da Call: {{ $json.data_call }}\n\n## TRANSCRIÇÃO DA CALL\n{{ $json.transcricao }}\n\n## SUA TAREFA\n\nAnalise a transcrição acima e retorne um JSON com a seguinte estrutura:\n\n```json\n{\n  \"resumo_executivo\": {\n    \"health_score\": 0-100,\n    \"health_status\": \"saudavel|atencao|risco|critico\",\n    \"insight_principal\": \"uma frase resumindo o estado do cliente\"\n  },\n  \"analise\": {\n    \"sentimento\": \"positivo|neutro|negativo\",\n    \"uso_plataforma\": \"alto|medio|baixo|nao_mencionado\",\n    \"satisfacao\": \"positiva|neutra|negativa\",\n    \"resultados_mencionados\": true/false,\n    \"resultados_detalhes\": \"o que foi mencionado\",\n    \"principais_topicos\": [\"lista\", \"de\", \"topicos\"]\n  },\n  \"riscos\": [\n    {\n      \"tipo\": \"churn|insatisfacao|baixo_uso|preco|outro\",\n      \"evidencia\": \"frase exata ou paráfrase da transcrição\",\n      \"severidade\": \"alta|media|baixa\",\n      \"acao_sugerida\": \"o que fazer sobre isso\"\n    }\n  ],\n  \"oportunidades\": [\n    {\n      \"tipo\": \"upsell|cross_sell|indicacao|expansao\",\n      \"evidencia\": \"frase exata ou paráfrase\",\n      \"produto_sugerido\": \"se aplicável\",\n      \"valor_potencial_estimado\": \"estimativa em reais ou null\"\n    }\n  ],\n  \"acoes_imediatas\": [\n    {\n      \"descricao\": \"ação necessária\",\n      \"responsavel\": \"CS|Gestor|Comercial|Tech\",\n      \"prazo\": \"24h|3dias|1semana|1mes\",\n      \"prioridade\": \"alta|media|baixa\"\n    }\n  ],\n  \"decisoes_tomadas\": [\n    \"lista de decisões acordadas na call\"\n  ],\n  \"proximos_passos\": [\n    {\n      \"acao\": \"descrição\",\n      \"responsavel\": \"quem\",\n      \"prazo\": \"quando\"\n    }\n  ],\n  \"momentos_chave\": [\n    {\n      \"descricao\": \"o que aconteceu\",\n      \"importancia\": \"alta|media|baixa\",\n      \"citacao\": \"frase relevante se houver\"\n    }\n  ],\n  \"alertas\": [\n    {\n      \"tipo\": \"churn_iminente|oportunidade_urgente|escalacao|suporte_tecnico\",\n      \"mensagem\": \"descrição do alerta\",\n      \"destinatario\": \"CS Manager|CEO|Suporte|Comercial\",\n      \"urgencia\": \"alta|media|baixa\"\n    }\n  ],\n  \"metricas_extraidas\": {\n    \"ticket_medio_mencionado\": null,\n    \"volume_vendas_mencionado\": null,\n    \"roi_mencionado\": null,\n    \"tempo_uso_plataforma\": null,\n    \"nps_percebido\": \"0-10 ou null\"\n  },\n  \"resumo_narrativo\": \"Um parágrafo resumindo a call de forma humanizada e executiva, como se você estivesse contando para o CEO o que rolou.\"\n}\n```\n\n## REGRAS DE ANÁLISE\n\n### Health Score (0-100):\n- **80-100 - Saudável 🟢**: Cliente engajado, usando bem, resultados positivos, sem sinais de risco\n- **60-79 - Atenção 🟡**: Cliente ok mas com alguns pontos de melhoria ou dúvidas\n- **40-59 - Risco 🟠**: Sinais claros de problemas, baixo uso, insatisfação moderada\n- **0-39 - Crítico 🔴**: Risco iminente de churn, frustração alta, não está usando\n\n### Sinais de Risco (procure ativamente):\n- ❌ \"não estou usando\", \"não vi resultado\", \"está caro\", \"não vale a pena\"\n- ❌ \"pensando em cancelar\", \"vou avaliar outras opções\", \"pausar por um tempo\"\n- ❌ Tom frustrado, respostas curtas, evasivas, desânimo\n- ❌ \"não tenho tempo\", \"muito complicado\", \"não entendo\"\n- ❌ Reclamações sobre suporte, bugs, lentidão\n\n### Sinais de Oportunidade (procure ativamente):\n- ✅ \"quero aumentar\", \"preciso de mais\", \"funciona muito bem\", \"adorando\"\n- ✅ \"meu colega/sócio também precisa\", \"vocês fazem X?\", \"tem feature Y?\"\n- ✅ Entusiasmo, perguntas sobre features premium, interesse em novos produtos\n- ✅ Menções de crescimento, expansão, novos projetos\n- ✅ Satisfação com resultados, ROI positivo\n\n### Instruções Importantes:\n1. **Seja objetivo e baseado em evidências** - cite frases quando possível\n2. **Priorize RISCOS sobre oportunidades** - é melhor prevenir churn\n3. **Extraia métricas concretas** quando mencionadas\n4. **Identifique o sentimento geral** da conversa\n5. **Sugira ações práticas e específicas**\n6. **Se não houver informação, use null ou array vazio** - não invente\n\n## FORMATO DE RESPOSTA\n\nRetorne APENAS o JSON válido, sem markdown, sem ```json, sem texto adicional antes ou depois."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        1648,
+        2720
+      ],
+      "id": "52a67801-5f89-4e51-a0b6-b4a5eced3725",
+      "name": "🤖 IA - Análise de CS",
+      "notesInFlow": true,
+      "notes": "Analisa a transcrição e gera relatório estruturado"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Processar resposta da IA e preparar para salvar\nconst inputData = $input.first().json;\n\n// Pegar dados originais do processamento\nconst dadosOriginais = $('⚙️ Processar Dados').first().json;\n\n// Tentar fazer parse do JSON retornado pela IA\nlet analiseIA = {};\n\ntry {\n  let jsonString = '';\n  \n  // A IA pode retornar como string ou já como objeto\n  if (typeof inputData.output === 'string') {\n    jsonString = inputData.output;\n  } else if (inputData.output) {\n    analiseIA = inputData.output;\n  } else {\n    jsonString = JSON.stringify(inputData);\n  }\n  \n  // CORREÇÃO: Limpar markdown (```json e ```) da resposta\n  if (jsonString) {\n    jsonString = jsonString\n      .replace(/```json\\n?/g, '')  // Remove ```json\n      .replace(/```\\n?/g, '')       // Remove ```\n      .trim();\n    \n    analiseIA = JSON.parse(jsonString);\n  }\n  \n  console.log('✅ Parse da IA realizado com sucesso!');\n  console.log('Health Score:', analiseIA.resumo_executivo?.health_score);\n  \n} catch (error) {\n  console.error('❌ Erro ao fazer parse do JSON da IA:', error.message);\n  console.log('Resposta original:', inputData.output?.substring(0, 500));\n  \n  analiseIA = {\n    erro: 'Erro ao processar resposta da IA',\n    erro_detalhes: error.message,\n    resposta_original: inputData\n  };\n}\n\n// Montar objeto final para salvar\nconst resultado = {\n  // Metadados\n  id: `cs_${dadosOriginais.arquivo_id}_${Date.now()}`,\n  arquivo_id: dadosOriginais.arquivo_id,\n  arquivo_nome: dadosOriginais.arquivo_nome,\n  arquivo_link: dadosOriginais.arquivo_link,\n  \n  // Dados do cliente\n  cliente_nome: dadosOriginais.cliente_nome,\n  data_call: dadosOriginais.data_call,\n  tipo_call: dadosOriginais.tipo_call,\n  \n  // Análise completa da IA\n  analise: analiseIA,\n  \n  // Status e health\n  health_score: analiseIA.resumo_executivo?.health_score || 0,\n  health_status: analiseIA.resumo_executivo?.health_status || 'nao_analisado',\n  sentimento: analiseIA.analise?.sentimento || 'neutro',\n  \n  // Flags importantes\n  tem_risco_churn: (analiseIA.riscos?.some(r => r.tipo === 'churn') || false),\n  tem_oportunidade: ((analiseIA.oportunidades?.length || 0) > 0),\n  requer_atencao_urgente: (analiseIA.alertas?.some(a => a.urgencia === 'alta') || false),\n  \n  // Resumos\n  insight_principal: analiseIA.resumo_executivo?.insight_principal || '',\n  resumo_narrativo: analiseIA.resumo_narrativo || '',\n  \n  // Contadores\n  qtd_riscos: analiseIA.riscos?.length || 0,\n  qtd_oportunidades: analiseIA.oportunidades?.length || 0,\n  qtd_acoes: analiseIA.acoes_imediatas?.length || 0,\n  qtd_alertas: analiseIA.alertas?.length || 0,\n  \n  // Timestamps\n  processado_em: new Date().toISOString(),\n  criado_em: new Date().toISOString()\n};\n\nconsole.log('📊 Resultado final preparado:');\nconsole.log('- Cliente:', resultado.cliente_nome);\nconsole.log('- Health Score:', resultado.health_score);\nconsole.log('- Status:', resultado.health_status);\nconsole.log('- Riscos:', resultado.qtd_riscos);\nconsole.log('- Oportunidades:', resultado.qtd_oportunidades);\n\nreturn [{ json: resultado }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        2720
+      ],
+      "id": "04ab5857-66fc-4d8c-9e67-3feb8ef19252",
+      "name": "📊 Processar Resultado"
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2224,
+        2624
+      ],
+      "id": "12b83318-579b-492c-8dd2-9c2dc78320a2",
+      "name": "💾 Salvar no Drive",
+      "notesInFlow": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      },
+      "notes": "Salva o JSON da análise no Google Drive"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://seu-projeto.supabase.co/rest/v1/cs_analises",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2224,
+        2816
+      ],
+      "id": "086e87d1-9f41-4335-8281-ec01dfda7a43",
+      "name": "💾 Salvar no Supabase",
+      "notesInFlow": true,
+      "disabled": true,
+      "notes": "OPCIONAL: Ative se quiser salvar no Supabase.\nCrie a tabela 'cs_analises' antes."
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        2704
+      ],
+      "id": "d97898c4-4019-4302-97d2-4195bb0b939c",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        2928
+      ],
+      "id": "1d2e0a9d-12f2-4c76-846d-29a19cb2f880",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "WVbQ0d3w6cnLwPtX",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1WTJrbMl8HLppIHIeHT94Qsbog9XpxOx2",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        784,
+        2768
+      ],
+      "id": "72e01653-76e4-4a4d-b0ce-418973a0cdcf",
+      "name": "Google Drive Trigger1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "huUvmVlBHgVbw2p1",
+          "name": "drive marcos - supabase - supercérebro"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Code - Markdown → HTML": [
+      {
+        "json": {
+          "output": "# PROPOSTA COMERCIAL\n## Outsourcing de Pré-Vendas - BPOSS\n\n**Cliente:** Ana Scott\n**Empresa:** Método Boss (Mentoria + Empresa de Limpeza)\n**Data:** 23 de Novembro de 2025\n**Proposta:** #202511232038\n**Validade:** 30 de Novembro de 2025\n\n---\n\n## 📊 RESUMO EXECUTIVO\n\n**Situação Atual:**\n- Faturamento: A definir (variável)\n- Ticket Médio: R$ 5.000,00 (mentoria 3 meses individual)\n- Reuniões/mês: 12 (não qualificadas de forma consistente)\n- Taxa de Fechamento: Inconsistente\n- Operação: EUA + mercados português/espanhol/inglês\n\n**Resultado Esperado em 90 Dias:**\n- 18 reuniões qualificadas/mês (vs 12 não qualificadas hoje)\n- +R$ 20.000,00 em receita incremental mensal\n- ROI de 2.0x sobre o investimento\n- Pipeline previsível e escalável\n\n---\n\n## 🎯 DESAFIOS IDENTIFICADOS\n\n### 1. O Paradoxo da Entrega Real vs. Monetização\n\n> \"Tem gente que tá mentindo que não tem resultado, que não tem metade do que eu tenho e tá fazendo mais dinheiro que eu. Alguma coisa ali tá errada, alguma coisa não tá se encaixando.\"\n\nAna, essa é a frustração de TODOS os mentorias de verdade. Você tem os 8 pilares estruturados, empresa de limpeza lucrativa nos EUA, resultado real de alunos... mas delegou vendas para assessora e não funcionou. O problema não é a sua entrega - é que vendas de mentoria de R$ 5k não podem ser delegadas SEM um processo estruturado de qualificação antes. Você perdeu meses tentando delegar do jeito errado.\n\n**Intensidade:** Alta\n\n### 2. Tentativa de Delegação sem Estrutura de Prospecção\n\n> \"A questão do lead, de responder, de estar ali no acesso com as pessoas é mais uma função. A coisa não estava andando. Não estava andando.\"\n\nVocê tentou contratar seller, mas ela não tinha O QUE vender - porque não havia leads qualificados chegando. Daí voltou a fazer vendas você mesma (2-4 calls/semana), mas isso te prende na operação. O gargalo não é fechar - é QUALIFICAR antes de você entrar. Você precisa receber apenas leads prontos para comprar, não curiosos.\n\n**Intensidade:** Alta\n\n### 3. Paralisia de Posicionamento e Expansão de Mercado\n\n> \"Quando estou comunicando, para quem vou comunicar? Essa parte é muito confusa para mim até hoje. Tem gente que fala, não fica falando com todo mundo.\"\n\nVocê fala 3 idiomas, tem expertise em limpeza E mentoria empresarial, mas não quer ser \"a mentora da limpeza\". Essa confusão de posicionamento está te impedindo de prospectar de forma assertiva. E a expansão para espanhol/inglês está parada porque você não tem TIME para testar essas frentes enquanto toca tudo sozinha.\n\n**Intensidade:** Média\n\n---\n\n## ✅ SOLUÇÃO PROPOSTA\n\n### BPOSS - Business Process Outsourcing Sales\n\n**O que faremos por você:**\n\n1. **Prospecção Ativa Qualificada (Multimercado)**\n   - Identificação de empresárias empreendedoras no seu ICP (limpeza, serviços, varejo físico)\n   - Abordagem multicanal em **português, espanhol E inglês** (LinkedIn, Email, WhatsApp)\n   - Nutrição até BANT completo: Budget R$ 5k+, Authority (donos), Need (faturamento estagnado 50-200k/mês), Timing (próximos 30 dias)\n\n2. **Agendamento de Reuniões 100% Qualificadas**\n   - Apenas leads que confirmaram orçamento, interesse real e disponibilidade\n   - Taxa de show-up de 73% (vs 40% do mercado)\n   - Briefing completo antes de cada call: desafios, faturamento, objeções já trabalhadas\n   - **Você só entra na call para FECHAR, não para qualificar**\n\n3. **CRM & Gestão Completa do Pipeline**\n   - Plataforma Socialfy inclusa (R$ 997/mês grátis)\n   - Dashboard em tempo real com previsão de fechamentos\n   - Relatórios semanais: quantas reuniões, taxa de conversão, objeções recorrentes\n   - Funil visível: você sabe EXATAMENTE quantas vendas virão nos próximos 30 dias\n\n4. **SDR Sênior Dedicado + IA de Escala**\n   - Profissional com experiência em venda consultiva (não é VA nem júnior)\n   - Treinado nos 8 pilares do Método Boss, no seu case de limpeza, na sua jornada\n   - Apoio de IA para escalar abordagem em 3 idiomas simultaneamente\n   - Testes A/B contínuos de posicionamento (mentoria empresarial vs limpeza vs híbrido)\n\n---\n\n## 💰 INVESTIMENTO & PLANOS\n\n### Plano ESSENCIAL\n**R$ 7.997/mês**\n\n✅ 12 reuniões qualificadas/mês\n✅ 1 SDR dedicado (português apenas)\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n\n**Ideal para:** Empresas faturando R$ 50-150k/mês, ticket R$ 2-5k, operação nacional\n\n---\n\n### ⭐ Plano PROFESSIONAL (RECOMENDADO PARA VOCÊ)\n**R$ 9.997/mês**\n\n✅ **18 reuniões qualificadas/mês**\n✅ 1-2 SDRs dedicados (multimercado)\n✅ **Prospecção em português, espanhol E inglês**\n✅ Socialfy CRM incluso\n✅ **Testes de posicionamento (3 abordagens simultâneas)**\n✅ Relatórios semanais + reunião mensal de estratégia\n✅ Suporte prioritário\n\n**POR QUE RECOMENDAMOS ESTE PLANO PARA MÉTODO BOSS:**\n\nAna, você está na transição perfeita para o Professional:\n\n1. **Ticket de R$ 5.000** justifica investimento em qualificação premium (vs Essencial que é para tickets menores)\n\n2. **Operação nos EUA + 3 idiomas** = você PRECISA testar mercados simultaneamente. O Essencial só cobre português. Com Professional, testamos:\n   - Brasileiras empreendedoras nos EUA (português)\n   - Latinas (espanhol - maior mercado de limpeza nos EUA)\n   - Americanas (inglês - ticket pode subir para $5k-7k USD)\n\n3. **Confusão de posicionamento** = Professional permite rodar 3 abordagens em paralelo por 60 dias:\n   - \"Mentora de escala empresarial\" (genérico)\n   - \"Especialista em empresas de limpeza 6-7 dígitos\" (nicho)\n   - \"Case: de Brasil para EUA em 5 anos\" (diferencial geográfico)\n   \n   Em 60 dias você SABE qual converte melhor, sem precisar ficar testando você mesma.\n\n4. **Você já tem demanda reprimida** na base, mas precisa de PROCESSO para não depender só de você. Com 18 reuniões/mês qualificadas, você foca em fechar e entregar (seu forte), não",
+          "html": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Proposta Comercial - BPOSS</title>\n  <style>\n    @page {\n      size: A4;\n      margin: 2cm;\n    }\n    \n    * {\n      margin: 0;\n      padding: 0;\n      box-sizing: border-box;\n    }\n    \n    body {\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n      line-height: 1.8;\n      color: #2c3e50;\n      background: white;\n      padding: 40px;\n      max-width: 900px;\n      margin: 0 auto;\n    }\n    \n    h1 {\n      font-size: 32px;\n      color: #1a1a1a;\n      margin: 30px 0 20px 0;\n      padding-bottom: 15px;\n      border-bottom: 4px solid #3498db;\n      font-weight: 700;\n    }\n    \n    h2 {\n      font-size: 24px;\n      color: #2c3e50;\n      margin: 35px 0 20px 0;\n      padding-left: 15px;\n      border-left: 5px solid #3498db;\n      font-weight: 600;\n    }\n    \n    h3 {\n      font-size: 20px;\n      color: #34495e;\n      margin: 25px 0 15px 0;\n      font-weight: 600;\n    }\n    \n    h4 {\n      font-size: 18px;\n      color: #555;\n      margin: 20px 0 10px 0;\n      font-weight: 600;\n    }\n    \n    p {\n      margin: 15px 0;\n      text-align: justify;\n      font-size: 15px;\n    }\n    \n    blockquote {\n      border-left: 5px solid #3498db;\n      background: #f8f9fa;\n      padding: 15px 25px;\n      margin: 20px 0;\n      font-style: italic;\n      color: #555;\n      border-radius: 4px;\n    }\n    \n    strong {\n      color: #e74c3c;\n      font-weight: 600;\n    }\n    \n    em {\n      font-style: italic;\n      color: #555;\n    }\n    \n    code {\n      background: #f4f4f4;\n      padding: 3px 8px;\n      border-radius: 4px;\n      font-family: 'Courier New', Consolas, monospace;\n      font-size: 14px;\n      color: #c7254e;\n    }\n    \n    pre {\n      background: #2c3e50;\n      color: #ecf0f1;\n      padding: 20px;\n      border-radius: 6px;\n      overflow-x: auto;\n      margin: 20px 0;\n    }\n    \n    pre code {\n      background: none;\n      color: inherit;\n      padding: 0;\n    }\n    \n    ul {\n      margin: 15px 0;\n      padding-left: 30px;\n      list-style: none;\n    }\n    \n    li {\n      margin: 10px 0;\n      padding-left: 10px;\n      position: relative;\n    }\n    \n    li:before {\n      content: \"▸\";\n      position: absolute;\n      left: -15px;\n      color: #3498db;\n      font-weight: bold;\n    }\n    \n    li.check:before {\n      content: \"\";\n    }\n    \n    hr {\n      border: none;\n      border-top: 2px solid #ecf0f1;\n      margin: 30px 0;\n    }\n    \n    @media print {\n      body {\n        padding: 0;\n      }\n      \n      h1, h2 {\n        page-break-after: avoid;\n      }\n      \n      p, blockquote {\n        page-break-inside: avoid;\n      }\n    }\n  </style>\n</head>\n<body>\n<h1>PROPOSTA COMERCIAL</h1>\n<h2>Outsourcing de Pré-Vendas - BPOSS</h2>\n<p><strong>Cliente:</strong> Ana Scott<br><strong>Empresa:</strong> Método Boss (Mentoria + Empresa de Limpeza)<br><strong>Data:</strong> 23 de Novembro de 2025<br><strong>Proposta:</strong> #202511232038<br><strong>Validade:</strong> 30 de Novembro de 2025</p>\n<hr>\n<h2>📊 RESUMO EXECUTIVO</h2>\n<ul><strong>Situação Atual:</strong>\n<li>Faturamento: A definir (variável)</li>\n<li>Ticket Médio: R$ 5.000,00 (mentoria 3 meses individual)</li>\n<li>Reuniões/mês: 12 (não qualificadas de forma consistente)</li>\n<li>Taxa de Fechamento: Inconsistente</li>\n<li>Operação: EUA + mercados português/espanhol/inglês</li></ul>\n<ul><strong>Resultado Esperado em 90 Dias:</strong>\n<li>18 reuniões qualificadas/mês (vs 12 não qualificadas hoje)</li>\n<li>+R$ 20.000,00 em receita incremental mensal</li>\n<li>ROI de 2.0x sobre o investimento</li>\n<li>Pipeline previsível e escalável</li></ul>\n<hr>\n<h2>🎯 DESAFIOS IDENTIFICADOS</h2>\n<h3>1. O Paradoxo da Entrega Real vs. Monetização</h3>\n<blockquote>\"Tem gente que tá mentindo que não tem resultado, que não tem metade do que eu tenho e tá fazendo mais dinheiro que eu. Alguma coisa ali tá errada, alguma coisa não tá se encaixando.\"</blockquote>\n<p>Ana, essa é a frustração de TODOS os mentorias de verdade. Você tem os 8 pilares estruturados, empresa de limpeza lucrativa nos EUA, resultado real de alunos... mas delegou vendas para assessora e não funcionou. O problema não é a sua entrega - é que vendas de mentoria de R$ 5k não podem ser delegadas SEM um processo estruturado de qualificação antes. Você perdeu meses tentando delegar do jeito errado.</p>\n<p><strong>Intensidade:</strong> Alta</p>\n<h3>2. Tentativa de Delegação sem Estrutura de Prospecção</h3>\n<blockquote>\"A questão do lead, de responder, de estar ali no acesso com as pessoas é mais uma função. A coisa não estava andando. Não estava andando.\"</blockquote>\n<p>Você tentou contratar seller, mas ela não tinha O QUE vender - porque não havia leads qualificados chegando. Daí voltou a fazer vendas você mesma (2-4 calls/semana), mas isso te prende na operação. O gargalo não é fechar - é QUALIFICAR antes de você entrar. Você precisa receber apenas leads prontos para comprar, não curiosos.</p>\n<p><strong>Intensidade:</strong> Alta</p>\n<h3>3. Paralisia de Posicionamento e Expansão de Mercado</h3>\n<blockquote>\"Quando estou comunicando, para quem vou comunicar? Essa parte é muito confusa para mim até hoje. Tem gente que fala, não fica falando com todo mundo.\"</blockquote>\n<p>Você fala 3 idiomas, tem expertise em limpeza E mentoria empresarial, mas não quer ser \"a mentora da limpeza\". Essa confusão de posicionamento está te impedindo de prospectar de forma assertiva. E a expansão para espanhol/inglês está parada porque você não tem TIME para testar essas frentes enquanto toca tudo sozinha.</p>\n<p><strong>Intensidade:</strong> Média</p>\n<hr>\n<h2>✅ SOLUÇÃO PROPOSTA</h2>\n<h3>BPOSS - Business Process Outsourcing Sales</h3>\n<p><strong>O que faremos por você:</strong></p>\n<ul>1. <strong>Prospecção Ativa Qualificada (Multimercado)</strong>\n<li>Identificação de empresárias empreendedoras no seu ICP (limpeza, serviços, varejo físico)</li>\n<li>Abordagem multicanal em <strong>português, espanhol E inglês</strong> (LinkedIn, Email, WhatsApp)</li>\n<li>Nutrição até BANT completo: Budget R$ 5k+, Authority (donos), Need (faturamento estagnado 50-200k/mês), Timing (próximos 30 dias)</li></ul>\n<ul>2. <strong>Agendamento de Reuniões 100% Qualificadas</strong>\n<li>Apenas leads que confirmaram orçamento, interesse real e disponibilidade</li>\n<li>Taxa de show-up de 73% (vs 40% do mercado)</li>\n<li>Briefing completo antes de cada call: desafios, faturamento, objeções já trabalhadas</li>\n<li><strong>Você só entra na call para FECHAR, não para qualificar</strong></li></ul>\n<ul>3. <strong>CRM & Gestão Completa do Pipeline</strong>\n<li>Plataforma Socialfy inclusa (R$ 997/mês grátis)</li>\n<li>Dashboard em tempo real com previsão de fechamentos</li>\n<li>Relatórios semanais: quantas reuniões, taxa de conversão, objeções recorrentes</li>\n<li>Funil visível: você sabe EXATAMENTE quantas vendas virão nos próximos 30 dias</li></ul>\n<ul>4. <strong>SDR Sênior Dedicado + IA de Escala</strong>\n<li>Profissional com experiência em venda consultiva (não é VA nem júnior)</li>\n<li>Treinado nos 8 pilares do Método Boss, no seu case de limpeza, na sua jornada</li>\n<li>Apoio de IA para escalar abordagem em 3 idiomas simultaneamente</li>\n<li>Testes A/B contínuos de posicionamento (mentoria empresarial vs limpeza vs híbrido)</li></ul>\n<hr>\n<h2>💰 INVESTIMENTO & PLANOS</h2>\n<h3>Plano ESSENCIAL</h3>\n<strong>R$ 7.997/mês</strong>\n<p>✅ 12 reuniões qualificadas/mês<br>✅ 1 SDR dedicado (português apenas)<br>✅ Socialfy CRM incluso<br>✅ Relatórios semanais<br>✅ Suporte prioritário</p>\n<p><strong>Ideal para:</strong> Empresas faturando R$ 50-150k/mês, ticket R$ 2-5k, operação nacional</p>\n<hr>\n<h3>⭐ Plano PROFESSIONAL (RECOMENDADO PARA VOCÊ)</h3>\n<strong>R$ 9.997/mês</strong>\n<p>✅ <strong>18 reuniões qualificadas/mês</strong><br>✅ 1-2 SDRs dedicados (multimercado)<br>✅ <strong>Prospecção em português, espanhol E inglês</strong><br>✅ Socialfy CRM incluso<br>✅ <strong>Testes de posicionamento (3 abordagens simultâneas)</strong><br>✅ Relatórios semanais + reunião mensal de estratégia<br>✅ Suporte prioritário</p>\n<p><strong>POR QUE RECOMENDAMOS ESTE PLANO PARA MÉTODO BOSS:</strong></p>\n<p>Ana, você está na transição perfeita para o Professional:</p>\n<p>1. <strong>Ticket de R$ 5.000</strong> justifica investimento em qualificação premium (vs Essencial que é para tickets menores)</p>\n<ul>2. <strong>Operação nos EUA + 3 idiomas</strong> = você PRECISA testar mercados simultaneamente. O Essencial só cobre português. Com Professional, testamos:\n<li>Brasileiras empreendedoras nos EUA (português)</li>\n<li>Latinas (espanhol - maior mercado de limpeza nos EUA)</li>\n<li>Americanas (inglês - ticket pode subir para $5k-7k USD)</li></ul>\n<ul>3. <strong>Confusão de posicionamento</strong> = Professional permite rodar 3 abordagens em paralelo por 60 dias:\n<li>\"Mentora de escala empresarial\" (genérico)</li>\n<li>\"Especialista em empresas de limpeza 6-7 dígitos\" (nicho)</li>\n<li>\"Case: de Brasil para EUA em 5 anos\" (diferencial geográfico)</li>\n   \n   Em 60 dias você SABE qual converte melhor, sem precisar ficar testando você mesma.</ul>\n<p>4. <strong>Você já tem demanda reprimida</strong> na base, mas precisa de PROCESSO para não depender só de você. Com 18 reuniões/mês qualificadas, você foca em fechar e entregar (seu forte), não</p>\n</body>\n</html>",
+          "pdfReady": true
+        }
+      }
+    ],
+    "On form submission": [
+      {
+        "json": {
+          "texto": "M Marcos Daniel 00:00 Aí eu fui fazer.  A Ana Scott 00:01 Que benção. Parabéns. Parabéns pelo trabalho. Parabéns. Tenho certeza que foi aí fruto de muito esforço.  M Marcos Daniel 00:10 E eu trouxe...  A Ana Scott 00:11 Fala dos resultados, fala rindo, aí fica parecendo que é fácil, né?  M Marcos Daniel 00:16 É... Ou...  A Ana Scott 00:18 Fala rindo. Você falando aí de uma facilidade. O rapaz só acha graça. Parece assim que ele só apertou três botões e saiu esses 40, né?  R Renan porto 00:29 Olha, se tiver esses três botões aí, você me fala onde eu compro, porque eu quero.  A Ana Scott 00:33 Porque o povo acha que é tão simples, né?  você ir falando na internet, vai chover. Eu acredito que eu, quando eu comecei, eu achava que era assim. Mas apanhei tanto, tanto, foi tanta surra, que até hoje o corpo tá doído.  M Marcos Daniel 00:54 Eu nunca ouvi pessoas passarem por esses desafios aí que tu tá falando. Eu nunca passei por esse negócio, nunca! Embora eu já tenha assistido a Síndrome do Chicó, tu sabe qual é? E do João Grima?  A Ana Scott 01:08 Qual é?  M Marcos Daniel 01:09 Eu não acredito que tu nunca assistiu Alta Compadecida!  A Ana Scott 01:12 Já, mas eu não sei qual é a síndrome do Chico.  M Marcos Daniel 01:15 Tem uma cena que ele faz... Eu tive essa danada, essa... Pensa no vírus chato. Me pegou duas vezes, rapaz. Quase que ia terceira-ligar. Agora não faz mais, não. Eu já aprendi, papai. Eu já entendi, viu? Não passo mais por isso. Tira essa síndrome maluca aqui de perto. Essa é a jornada do empreendedor, né, minha amiga? Você é uma pessoa que já... É, pra mim, uma referência. Não pelos resultados que você tem, que eu não faço a mínima ideia dos resultados que você tem, de coração, tá? Eu não fiz nem meu trabalho de closer, tá vendo que não? Nem estudei quem era a Hannah Scott. Mas sabe por quê? Porque a referência... Quem falou sobre você, eu não preciso ver nada sobre você.  M Marcos Daniel 02:09 Você poderia ser multimilionário, você poderia ser o que fosse, pra mim, o Daenath, você ia ser humano maravilhoso, do jeitinho que eu ouvi a seu respeito. O André, ele tem muita consideração sobre você.  A Ana Scott 02:21 Ele é o irmão que a vida me deu. Eu sou louca nele e na Bárbara. Adoro aquele casal, assim, de paixão. Eu amo a vida deles demais. E o André, ele é muito parecido comigo.  M Marcos Daniel 02:38 Vasco, eu também sou parecido com ele.  A Ana Scott 02:40 A gente é muito parecido. Então, assim, eu consigo entender e eu me emociono por cada vitória dele, me inspiro nele. Então, assim, eu sou muito fã. Sou muito fã. Muito.  M Marcos Daniel 02:54 Ele também. Eu sou suspeito dele. Minha filha também. Ela já perdeu a bênção, falta aqui. Tá? Esse rapaz aqui, o Enam, ele é sócio meu. Eu sou sócio dele. Eu fui servir lá no Protagon. Eu paguei pra servir. A história é boa. Aí ele... Irmão, como é que tu paga pra mim? Se lascar feito, tu se lascou. Não, a gente tem que crescer e contribuir. Sempre. Eu sou grato. Minha vida foi transformada em 2017, em 2019, quando eu vivenci o Protagon, minha vida foi transformada. Aí eu não tenho... Hoje eu acredito que ele tem, porque foi por conta daquele evento que eu fui servir, eu paguei, me lasquei todinho, porque mais de 3 mil pessoas eram para ter uns 100 staffs. Tinha 30. No outro dia, metade desistiu. Ficou 15. No último dia, tinha uns oito.  M Marcos Daniel 03:56 Mas o papai disse sempre, sempre, a conta sempre fecha por ele. E porque está aqui na sala. O André falou que você é uma grande mentora.  A Ana Scott 04:07 Eu sou o quê?  M Marcos Daniel 04:08 Uma grande mentora.  A Ana Scott 04:10 Em nome de Jesus, eu sou.  M Marcos Daniel 04:13 Às vezes, só tá faltando empurrãozinho de quem entende o que faz. E não é quem tem papinho bonito e vendedor. Não, é quem, de fato, domina o que faz, porque já faz por muitos anos. Eu tenho uma proposta irrecusável pra você, minha amiga. Irresistível, irrecusável.  A Ana Scott 04:34 Ok, vamos lá.  M Marcos Daniel 04:36 No final é que eu vou lhe passar. Eu quero entender pouquinho sobre você agora, tá? Me fala como é que tá o seu momento no seu business? Quais são os desafios? Pode falar.  A Ana Scott 04:51 O meu desafio, a gente, eu e o André, a gente até teve uma conversa sobre isso. Eu disse pra ele que eu consegui A internet veio me trazendo para mundo completamente novo. É desafio e desafio. E, no início, eu não conseguia nem fazer stories, só para você ter uma ideia. Eu não sabia nem o que era stories. Aí alinhei nos stories. Depois, eu não sabia nem fazer vídeo. Aí alinhei no vídeo. E sempre tem uma coisa que esbarra. E aí depois, hoje em dia, o que esbarra é na venda. É na venda mesmo, na hora de... Eu estava fazendo uma estratégia de venda que acho que não estava legal, e era a pessoa que estava, que era a minha assessora, que tentava fazer as vendas para mim, E eu acho que esse foi o meu maior erro.  A Ana Scott 05:58 Inclusive, eu gosto de estar trocando figurinha com o André. Muita gente conversa muito. Quando eu falo, ele quase me pára. Simão.  M Marcos Daniel 06:19 Eu estou revoltado aqui, cara. A gente tem que ajudar a manter a cidade, cara.  A Ana Scott 06:24 Aí eu disse assim, disse ao André, eu tava fazendo porque eu tinha uma pessoa, eu por mim eu faço as vendas, eu respondo, eu não tenho problema de fazer isso, apesar de que... É mais uma função para eu fazer. A questão do lead, de responder, de estar ali no acesso com as pessoas é mais uma função. Então, assim, eu tenho uma pessoa que me ajuda com algumas coisas, me ajuda com o material, me ajuda na minha mentoria de, mais ou menos, me direcionar, e ela disse assim, Ana, você tem que ter seller. Você tem que ter uma pessoa que faça esse trabalho de vender porque aí você não precisa estar sobrecarregada com isso. Então, realmente, acabei passando essa questão para a pessoa e a coisa não estava andando. Não estava andando. Eu tenho uma bagagem muito grande.  A Ana Scott 07:32 Hoje em dia, o meu público ele é público que é dos imigrantes e isso para brasileiros aqui faz ano também por enquanto eu só falo português no meu produto eu só tô vendendo no português mas eu falo espanhol e falo fluente o inglês eu.  M Marcos Daniel 08:04 Não falo inglês espanhol fluente e me aprendi por dois públicos. Vamos ajudar esse trem aí.  A Ana Scott 08:10 Pois é, mas a questão é, quando estou comunicando, para quem vou comunicar? Essa parte é muito confusa para mim até hoje. Tem gente que fala, não fica falando com todo mundo. Quem fala com todo mundo não está falando com ninguém. Eu disse, então, deixa eu ver a questão do português engrenar. E aí eu começo a falar espanhol, até porque os meus funcionários, eu também tenho uma empresa aqui de limpeza, que é de onde eu trabalho. Meu resultado vem disso. Eu não sou uma pessoa que estou fazendo mentoria vendendo para as pessoas sem resultado. Eu tenho grande resultado no que faço. Não vivo de mentoria, vivo da empresa de limpeza, vivo muito bem disso. E como eu consegui processo, sistema na minha empresa e só tenho que fazer a liderança dela, sobrou tempo.  A Ana Scott 09:16 Então, se sobrou tempo, deixa eu fazer uma outra coisa que me permite dentro daqui de onde estou, sem precisar fazer algo de... Que eu tenha que sair daqui do meu escritório, que eu tenha que ir para outro lugar. E aí veio a questão da mentoria, que era uma coisa que já vinha no meu coração. Eu tenho uma facilidade de comunicar muito grande e as pessoas têm uma facilidade de solucionar problemas. E aí as pessoas diziam sempre para mim, Ana, você precisa ser mentora, você precisa ser mentora, você precisa ensinar as pessoas. Cara, o que você faz na sua vida é uma coisa impressionante. Você tem uma vida próspera que todo brasileiro quer ter e tem que passar isso adiante. Então, eu tomei como missão, fui para a FEBRACIS, fiz a jornada FEBRACIS e comecei o processo da mentoria do zero. E estou nessa jornada.  A Ana Scott 10:22 Fiz o Método Boss, que é o meu produto hoje. É a mentoria Método Boss, uma mentoria de três meses. Hoje em dia ela é individual. Ela não é em grupo, não porque eu não quero, mas por falta de público, para fechar grupo. Então, hoje em dia ela é individual.  M Marcos Daniel 10:43 Estou só lhe ouvindo, viu? Estou só lhe ouvindo, estou só guardando. Se prepara, no final tem uma surpresa.  A Ana Scott 10:52 Eu estou aqui sendo bem vulnerável para você falando mesmo, porque isso é uma dor minha e até uma frustração. Parabéns pela unidade. Eu vejo pessoas, eu fico naquela situação... Cara, tem gente que tá mentindo que não tem resultado, que não tem metade do que eu tenho e tá fazendo mais dinheiro que eu. Alguma coisa ali tá errada, alguma coisa não tá se encaixando. Porque não é possível. Eu preparei material muito bom eu dou uma aula muito boa as minhas mentoradas elas têm resultado e o que tá o que tá aí que não tá que não tá engrenando porque então Então a gente tá nessa fase, né?  A Ana Scott 11:41 Depois que eu voltei da Flórida, que eu tava lá na Flórida com a André e a Bárbara, uma, duas semanas atrás, eu já comecei eu a ir pra ação, eu começar a tentar fazer o fechamento, eu falar com as pessoas, eu entrar em contato, eu comecei a apostar mais Ficar mesmo no movimento. E aí a coisa começou a acontecer. Eu comecei a ter dois, três, quatro calls por semana de tentar fechar. Já fechei com uma pessoa. Tem outras aí que já estão engatilhadas. Então, eu fui para a ação. Eu realmente parei delegar o que eu estava delegando e eu disse, Se é para ser assim, eu nunca tive medo mesmo de ir para o campo. Então, eu vou embora e vou me jogar, não tem problema. O produto é meu. Ninguém vai saber falar melhor do que é meu do que eu.  A Ana Scott 12:35 Então, estou aí. E aí o André me falou de você. O André falou, Ana, tem o meu amigo e tudo. Eu acho que ele vai poder te ajudar em relação a isso, porque precisa crescer, mulher. Não é possível isso, né?  M Marcos Daniel 12:53 Minha amiga, dá pra ver a leveza que você leva a sua vida. Fazer a monitoria, entregar a monitoria de fato proposta. Existem pessoas que falam que eu vivo por propósito. Para com isso, tem que faturar, amigo. Mas tem outras que já tem uma estrutura que permite que ela de fato viva a missão e propósito dela. Isso é assim, tá estampado no teu rosto. Parabéns pela sua história, parabéns pela humildade, pela vulnerabilidade. Eu já gostei de tudo, meu Deus do céu, diga, eu não vou gostar de quem é cliente, mas tem jeito, eu acabo gostando. Tem jeito. Deixa eu entender pouco mais a respeito do teu business. Hoje, tu tem esteira de produtos, tu tem... Qual o teu piquete médio hoje?  A Ana Scott 13:49 5 mil.  M Marcos Daniel 13:51 5K, né?  A Ana Scott 13:52 Hoje eu tenho, até o final do ano, eu tô lançando mais produtos, eu tô agora na fase de finalização, por quê? Eu tenho uma empresa de limpeza, mas eu não quis me posicionar fazendo mentoria pra gente da limpeza. Não quis por quê? Porque eu não queria que as pessoas colocassem label em mim dizendo que ela é a mentora da limpeza, não queria. Dois, eu nunca gostei de limpar, e eu falo isso nas minhas palestras, porque a minha pegada sempre foi a liderança. Tanto é que eu fiquei três anos nisso, saí fora, Botei gente para trabalhar para mim e a minha empresa cresceu três vezes mais. Essa é a minha história de real. Então, eu não vou falar algo que não é a minha história.  A Ana Scott 14:54 Eu não vou dizer, vá ter produto de limpeza, vá trabalhar na limpeza que é muito bom, que não é a verdade. Então, não estava no meu coração, eu não vou ser hipócrita e dizer que eu tenho amor sobre a limpeza, que não é, eu não vou começar com mentira, eu tenho que começar com a verdade. Então, assim, depois desse ano trabalhando só com o método boss, que é realmente como você se posicionar como boss aqui na América, como você fazer trabalho de liderança com o funcionário, aí a gente ensina treinamento de funcionário, a gente ensina a tua escala de produto. Hoje em dia, você tem produto, eu tenho uma mentorada, que ela, na nossa mentoria, lançou a mentoria dela, lançou o produto dela e ela aprendeu a se posicionar com os funcionários, porque os funcionários só faltavam bater nela.  A Ana Scott 15:58 Então, a gente organizou tudo isso. E que são coisas que já faço na minha vida, faço na minha empresa.  M Marcos Daniel 16:07 O teu produto tem três gestões também. Gestão, liderança, postura de dono empresário.  A Ana Scott 16:18 Gestão, aí a gente vem para a parte da gestão de entender o que é dinheiro da empresa, o que é o teu dinheiro, qual é a saúde financeira da tua empresa, entender que você tem que ter salário, que a tua empresa tem que ter uma outra... Tem gente que não sabe nem que tem que ter dinheiro, conta da empresa e conta pessoal. Tem gente que não sabe o básico. Por isso, a gente vem trazendo consciência para essa pessoa entender que o buraco mais embaixo, que não é só estar aqui nos Estados Unidos, fazer dinheiro e depois se frustrar porque não tem nada. Né o que então assim tem toda uma ação são oito pilares né aí vem a questão do cliente de você encontrar cliente para você oito pilares por cinco mil dólares oito pilares por.  M Marcos Daniel 17:18 Cinco mil dólares me diz uma coisa você acredita que tem pessoas que compram produtos mais caros aí nos Estados Unidos mas cada é com valor agregado.  A Ana Scott 17:27 Mais alto acredito E por que tá.  M Marcos Daniel 17:30 Por 5 mil dólares?  A Ana Scott 17:33 Porque eu estou, a demanda tá baixa, se a demanda tivesse alto o valor já teria aumentado.  M Marcos Daniel 17:39 Tu aceita?  A Ana Scott 17:40 Quando a demanda aumentar o valor vai aumentar, porque o resultado aumenta também.  M Marcos Daniel 17:45 Eu posso ser dois mil pessoas aqui, o cara que só vai querer vender. E eu sou dono de vendas, eu vendo o que é uma beleza. Pensa em rapaz que vende e eu nem sou o vendedor da empresa. Quando eu entro em uma e eu gosto tanto do que eu faço, eu acredito tanto no produto que eu vendo que só acontece. A pessoa fica envergonhada de não comprar. Ponto. Já se prepare, viu? Vai ficar com os cheiros vermelhos, vai dizer, meu Deus, eu não posso não comprar essa solução, porque vai resolver meus desafios, tudo que eu preciso ter aqui, vai resolver agora. Mas deixa eu te falar uma coisa, eu posso ser exigente e boa, e posso também já ser alimento hoteu, se tu permitir. E te ensinar algumas coisas com uma outra ótica. Tu deixa eu te ensinar alguma coisa?  A Ana Scott 18:32 Deixa, várias.  M Marcos Daniel 18:34 O preço, ele te posiciona. Rapaz, eu sou matuto do Nordeste, perna do cano e tenho produto de 21 mil dólares, rapaz. E tu tem produto de 5 mil, como é que pode? Tá errado, vamos resolver esse treino. Marcos, quando eu aumentar a demanda é que eu subo o preço. Pelo contrário, você sobe o preço para aumentar a demanda. Não significa que você vai vender pelo preço que você subir.  A Ana Scott 19:03 Entendi.  M Marcos Daniel 19:04 Eu utilizo uma técnica que nunca falha. Todo produto que eu crio, ó, qualquer produto que eu tenho hoje, eu criei primeiro pra me servir, pra servir meus negócios. Servir meus negócios funcionou pra mim, isso vai se espalhando pela base de clientes que a gente tem. Certo? A gente tem software no mercado, a gente tem a Mentor Fire, que é a única plataforma pra entrega de menores do país. Inclusive, o Pabllo Massaro é nosso sócio.  A Ana Scott 19:31 O André me falou sobre a Mentor.  M Marcos Daniel 19:32 Pronto. E aí, o que acontece? Minha filha chorou e eu quebrei minha ração assim. Eu tenho filho de ano e pouquinho.  A Ana Scott 19:45 Eu sei, daqui a pouco meu cachorro late. Eu sei, daqui a pouco meu cachorro late a você.  M Marcos Daniel 19:51 O preço ele te posiciona e eu sempre ancoro o próximo preço que eu quero vender. Mas vendo pelo preço que dá. Eu prefiro cliente dentro da casa do que eu ficar com... Eu vou dizer uma palavra que a gente usa lá nordeste, tá? Com cu doce, eu não vou vender. Não, por que eu vou vender, rapaz? Bora vender, depois a gente vende mais.  A Ana Scott 20:18 Nossa, essa é antiga, ainda se usa.  M Marcos Daniel 20:20 Essa foi das antigas, né?  A Ana Scott 20:22 Eu sou do Pará. Tu é nada. Eu sou do Berlim, Pará.  M Marcos Daniel 20:26 Mas tu não come açaí com peixe não. É horrível.  A Ana Scott 20:30 Eu não sou do raiz que come açaí, o açaí puro, sem açúcar, com peixe. Nunca gostei. Gostei igual as tuas.  M Marcos Daniel 20:40 A minha, meu irmão, é com leite condensado, é com leite vermelho.  A Ana Scott 20:46 Também não.  M Marcos Daniel 20:46 O negócio é granola, rapaz.  A Ana Scott 20:48 Não, não é granola nada. É farinha e açúcar.  M Marcos Daniel 20:53 Farinha de açúcar. O pai da minha esposa é distribuidor de açaí. Então, eu como açaí desde que eu tô com ela. Eu gosto desse trem também.  A Ana Scott 21:03 Mas tu toma o trem verdadeiro, né?  M Marcos Daniel 21:06 O verdadeiro mesmo. Aqui tá frio da bexiga aqui em São Paulo. Trinta gotas.  A Ana Scott 21:11 São Paulo.  M Marcos Daniel 21:13 Em Alphaville. Alphaville, São Paulo.  A Ana Scott 21:14 E ele, o Renan também.  M Marcos Daniel 21:16 Renan, achei ele embaixo da ponta e resgatei ele.  A Ana Scott 21:21 Não tá onde?  M Marcos Daniel 21:22 Eu moro na Vila Mariana.  A Ana Scott 21:24 Onde é isso?  R Renan porto 21:26 É na Zona Sul de São Paulo.  A Ana Scott 21:27 tá.  M Marcos Daniel 21:28 Por pouco tempo. Por pouco tempo, vem pra cá. Pode ficar longe não. Então, assim, Ana. Uma das primeiras coisas a se fazer é posicionar o teu produto melhor. Pra quem te posiciona? Porque o preço ele te posiciona.  A Ana Scott 21:45 Entendi.  M Marcos Daniel 21:46 Quanto mais caro você cobra, mais valorizado você é. Eu tenho produto que eu não quero vender e eu vendi esses dias, rapaz. Pensa no trenchado, você criava produto que não quer vender e você vende. É produto caro pra não vender, que é só pra me posicionar. Então já anota aí, que é uma tarefinha pra você. Porque assim, a Ana Scott, ela tem uma história, ela tem anos fazendo o que ela faz, ela não cresceu, não foi sorte, não é por acaso, ela não tá na posição que ela tá, não é do nada não, assim, foi muito trabalho. Faz sentido?  A Ana Scott 22:24 Faz.  M Marcos Daniel 22:25 Então, não é qualquer pessoa. Pode estar pertinho da Arnais Scott. Imagina que existe castelo, o castelo da Arnais Scott. Você está no seu redado. Você está na sua poltrona ali. É poltrona? É negócio de rei? Num lugar lá que os reis têm asassim. Trono. Nos tronos do trono. Existem as pessoas que sentam na mesa com o rei. É acesso. Existem as pessoas que não sentam na mesa com o rei, mas elas entram no palácio. E elas até veem o povo jantando, confraternizando. Existe outro público que tá lá fora, não entra no palácio, ele não tem esse acesso. E ainda existe outro público que tá lá fora do castelo, doido pra entrar, mas não tem o cacique ainda pra entrar. Ou não acredita que pode. Isso é, de forma metafórica, é o seu business se tornando business milionário.  M Marcos Daniel 23:22 Marcos tá dizendo que é negócio milionário, mas tu já faturou milhão de dólar? Dólar não. A gente já faturou milhão de dólar, mas pra somar tudo. Mas ainda não faz milhão por ano dólar não. Em real a gente já faz esse negócio aí. Você lembra da síndrome de Chipotle, né? De João Grilo? Acabou esse negócio, graças a Deus. A gente tá só crescendo de forma progressiva.  A Ana Scott 23:46 Amém.  M Marcos Daniel 23:47 E desde que eu entendi isso aqui que eu tô te falando, meu jogo mudou completamente. Porque o meu jogo é o jogo high ticket. Eu não jogo low ticket. Eu não tenho produto barato. Eu não vendo... Eu não perco meu tempo com cliente que não pode pagar. Porque são os clientes que mais dão dor de cabeça, são os clientes que mais te cobram, são os clientes querem sugar a tua alma, eles acham que aquele dinheirinho suado que eles estão pagando, conta a tua vida. Eu tô pagando e me dê atenção, eu não sei se já aconteceu isso com o cliente. Já?  A Ana Scott 24:18 Já.  M Marcos Daniel 24:20 A gente tem uma política aqui demitir clientes. A gente não demitiu dois esses dias. Faz tempo que eu demiti, tô tentando demitir . Porque não existe nada que pague a gente ter paz fazendo o que a gente faz. Eu aprendi a me divertir durante o processo, Ana. Eu amo o que eu faço. Sou apaixonado pelo que eu faço. Então, eu não quero que qualquer pessoa venha pra estar colocando viruzinhos negativos. Então, eu filtro até quem é pra sair dinheiro. E já tomo tudo isso que eu tô falando aqui pra você, tá? Leve tudo isso que eu tô lhe falando com filtro, o que der pra filtrar, fizer sentido, mas absorva algumas coisas do que eu tô falando aqui, porque eu não saio falando isso em pau de venda nunca na vida. Eu não tô dando uma mentoria, eu tô no pau de vendas.  M Marcos Daniel 25:08 Só que eu vou ter e tu, aí eu saio soltando as coisas pra ajudar o máximo que eu posso. Tá? Tá fazendo sentido isso que eu tô falando por enquanto?  A Ana Scott 25:15 Tá fazendo.  M Marcos Daniel 25:17 O mais difícil tu já construiu, Ana. Mais difícil que foi o terrestre dado. Agora, a sua voz só precisa alcançar mais pessoas. E eu posso até levar confiante dele aqui, ele manda mais nesses trens aí. Mas eu não entendo uma coisa, ó, enquanto não tiver fazendo volume legal de vendas mês, que tem que vender tudo. Mas por que eu não tenho tempo, Marcos Arminuni? É a inteligência que você tá aprendendo pra delegar e não delargar. Faz sentido o que eu tô falando? Eu tenho cliente, tenho player que chega já querendo voltar a operação sem fazer qualquer problema. Você é de gay, filho? Vai pro front. Baixa o ego, mas não precisa, o contrato precisa, aí quer que você precisa. Tá dizendo que não precisa, porque precisa. Por que não quer vender? Porque não tempo. Quem quer dar jeito?  M Marcos Daniel 26:21 Quem quer a minha desculpa? Isso é inteligência, porque você vai construindo o método. Você vai construindo com o seu jeitão. Pode falar, irmão. Tá no mudo, tá? Não, não.  R Renan porto 26:32 É a melhor forma de você ganhar propriedade pra você chegar pro vendedor e falar assim, não, dá pra fazer, porque eu já fiz.  M Marcos Daniel 26:38 Agora, pra ficar eternamente assim, não. Pelo amor deus. Tá repreendido, nome de Jesus. É só pra construir o método. Agora, quando você tem uma base pra construir o método mais rápido, aí o negócio acelera de uma forma absurda. Porque só fazer caldo e vendas, mas não ter método sendo construído, também não ajuda em muita coisa. Você falou algo que é dom que pouquíssimos empresários têm, que é o da liderança. A pessoa não sabe viver de visão. A maioria dos empresários, eles são chefes, não são empresários, são líderes. Você é nítido, você é líder?  A Ana Scott 27:15 Nada.  M Marcos Daniel 27:16 Você tem jeito de falar que faz com que as pessoas elas se fixem no que você tá falando e absorvam o que você tá falando. Isso tem poder muito grande. Porque seus alunos podem ser beneficiados de uma forma assustadora. Vidas podem ser transformadas. Casamentos podem ser restaurados. Negócios que estavam prestes a quebrar, eles podem, de fato, voltar a crescer e a prosperar. Só pelo fato das pessoas estarem próximas a você. Faz sentido o que eu estou dizendo?  A Ana Scott 27:46 Faz. E o final é esse, né? É realmente a prosperidade e ser bênção na vida delas. Ser canal de bênção com elas.  M Marcos Daniel 27:57 Que isso aqui não é papinho de vendedor, tá? Eu tenho raiva, Ana, quando eu tô inspirado, bicho, eu tenho que estar ganhando ouro aí, pessoal. Não é bom de lá, minha filha, ficar desgraçada. Eu tenho que estar ganhando o melhor.  A Ana Scott 28:11 Que eu posso aqui pra tu, eu.  M Marcos Daniel 28:12 Tô nem preocupado com venda. Então, Ana, dentro de tudo isso aqui que eu falei, ouvindo a história, eu comprei a tua visão, Você tem baita business, eu preciso entender pouquinho mais do teu produto, porque talvez até esses oito pilares, eles possam ser desemprados. Talvez esses oito pilares, ele de fato seja produto premium. Sim, ultra mega power, high ticket assim, no extremo, porque são os oito pilares. A gente consegue, a gente consegue comer salão de todo uma vez só, vai sair fatia.  A Ana Scott 28:48 Eu não acho que.  M Marcos Daniel 28:49 É para baixar mais do que R$ 5.000 não, R$ 5.000 está ótimo. Menos que isso, eu custo menos.  A Ana Scott 28:57 Eu não baixo. O que eu faço é, tipo, a pessoa quer pagar menos, ela vai receber menos, mas ela não vai receber mais os outros, entendeu?  M Marcos Daniel 29:11 Então assim, a gente tem vários caminhos aqui para te ajudar, vários. Mas eu não vou ser bobo de vomitar todas as soluções que a gente tem pra te entregar. Até porque tu ia olhar assim e dizer, meu Deus, não deu certo em muita coisa. Então a gente vai entregando por partes. Da mesma forma que os oito vilares foram entregues por partes, é insulto a muito mais efeito, porque traz a pessoa pra perto. Trouxe pra perto, entrou no coração, já era. Aí você consegue introduzir, você consegue direcionar, você consegue mostrar outro caminho. Faz sentido?  A Ana Scott 29:44 Faz.  M Marcos Daniel 29:45 Mas só pra tu ter lampejo do futuro, eu tenho BPO comercial, terceirizo a etapa da pré-venda, certo? O Renan, ele tem BPO também de closer. Ele terceiriza closer. Então, imagina aí que essas duas dores que tu tem, a gente consegue resolver em custo infinitamente mais barato do que aí nos Estados Unidos. Eu não estou dizendo que vai pagar em real não, só cobre em dólar Só que pra gente poder entregar pra você essa solução de entregar uma pré-venda que vai estar gerando leads em massa pra você e ter time que vai conseguir estar vendendo o seu produto, mas não vender por vender, mas sim ter a tua essência, tu precisa estar com os processos pouco mais estruturados Tu já tá utilizando algum CLM?  A Ana Scott 30:43 Não.  M Marcos Daniel 30:44 Não? Merece uma pisa, desde já, viu? Nem na empresa de cliente?  A Ana Scott 30:51 Não, na empresa de cliente.  M Marcos Daniel 30:53 sim. E olha, se eu falar errado em inglês, me corrija, me ajuda, viu? Eu sempre digo ao pessoal, qualquer palavra que eu falar, me corrija, me ajuda, que eu acelero o processo de aprendizagem, tá? Então, lá você já tem, você já tem uma... Experiência em relação a como é que você utiliza não sei qual.  A Ana Scott 31:12 Seria que tu usa né a a ver aqui entendi agora aí não sei não e depois eu vejo ele tem.  M Marcos Daniel 31:28 Chefe interno ou é só sistema.  A Ana Scott 31:31 Você consertar não é só o sistema que vai me enviando o O perfil, né? Do cliente.  M Marcos Daniel 31:42 Perfeito. Tu bota tráfego já?  A Ana Scott 31:45 Não.  M Marcos Daniel 31:46 Nem pra ir pra tua empresa principal?  A Ana Scott 31:50 Não, não. Eu já fiz. Aí parei.  M Marcos Daniel 31:54 Tá. Então, as vendas que tu tá fazendo de fato são vendas orgânicas e indicação, boca a boca, o relacionamento. Tem network e que acabam chegando ali pelo Instagram, né? Tu tem algum processo de social selling sendo executado pelo Instagram?  A Ana Scott 32:12 Tem a minha assistente, que ela fica ali na minha rede social pescando quem ali tá de olho, se comunicando com as mulheres que estão ali se comunicando comigo, E aí ela vai, faz a interação, aí eu pedi pra ela fazer trelo, me colocar lá com quem ela tá se comunicando, com quem ela tá interagindo, com quem ela tá falando sobre o método.  M Marcos Daniel 32:43 Então, ela fala sobre o método lá no direct? Ela já conversa sobre o método com as pessoas?  A Ana Scott 32:50 Ela conversa, ela fala pouquinho sobre o método pra tentar pegar as pessoas pra chegar até mim, né? Pra conversar.  M Marcos Daniel 33:00 Perfeito. Você faz link de vendas com ela aí?  A Ana Scott 33:05 Isso.  M Marcos Daniel 33:06 Passa sua proposta? Você tem proposta desenhada?  A Ana Scott 33:08 Tenho. Tenho. Tenho três propostas. Tenho uma proposta vista, que é 4,800. Tenho uma proposta, eu acho, que é entrada de 15%, mais duas. E tenho uma proposta que é da entrada de 30% e a pessoa pode pagar semanalmente.  M Marcos Daniel 33:30 Legal. Você já tem desenhado algumas linhas de negociações. Dá pra aumentar essas linhas de negociações de uma forma absurda.  A Ana Scott 33:38 Já faz tempo que eu vendo e.  M Marcos Daniel 33:40 Eu aprendi esses dias que eu tenho que montar linha de negociação. Que eu sofro pra criar slide. Eu não tenho uma única apresentação de venda.  A Ana Scott 33:51 Eu tô perdido.  M Marcos Daniel 33:51 É verdade, hein? Jesus amado, se eu colocar uma apresentação assim pra robô, então sou eu.  A Ana Scott 33:57 São os dois.  M Marcos Daniel 33:59 Rapaz, é desafiador demais pra mim, sabe? Estão vendo? Sim. Embora seja necessário quando a gente tá escalando a nossa operação. É. Então, eu vou te mostrar aqui o CRM interno da gente aqui pra você entender como é o processo, mas já quero te dar uma clareza de que o teu produto aí pode ser, pelo menos, Ana, pelo menos, Vendido por duas vezes o baluco tá sendo vendido. Menino que venda só uma. Depois das primeiras fotos se abre.  A Ana Scott 34:33 Amém, amém.  M Marcos Daniel 34:36 Tá? Já conversa com o papai do céu, já pergunta aí, papai, aquele maluco galeiro que eu conheci naquele dia, será que ele tinha razão mesmo? Pergunte-se sim que parte do coração só vai.  A Ana Scott 34:52 Olha... Eu acredito, eu não acredito em coincidência, eu acredito em Deucidência.  M Marcos Daniel 35:00 Deucidência, isso aí. Eu também. Renan, de todos os players que tu ajuda, que tu trabalha com eles, não sei se tu conhece, Ana, Tato de Andela?  A Ana Scott 35:12 Quem?  M Marcos Daniel 35:13 É porque ela mora nos Estados Unidos há muito tempo, né?  A Ana Scott 35:16 É eu tô aqui 16 anos eu não sei quem é quem eu só conheço os players que são os mais famosos assim mas eu não vou falar o fulano parece que é o que eu conheço eu não sei nem quem é e o homem tiver do meu lado e e achar que ele é o homem mais rico do mundo eu vou boiar porque eu não sei nem.  M Marcos Daniel 35:37 Quem é o bom é assim que é só gente é tudo bem e você nem Deus Então, Renan, dos clientes que tu atende aí, tu tem mulheres que são reis de sucesso?  A Ana Scott 35:50 Sim.  M Marcos Daniel 35:51 Que tem produtos ultra high-picketing?  A Ana Scott 35:53 E elas fizeram produto pra elas?  M Marcos Daniel 35:57 Eu perguntei pra Renan. Sim, tem. Que coisa horrível eu falei agora, bicho. Eu dei cortado em tua, não me desculpa. Mas não foi a intenção, viu? Trouxe até o microfone pra perto aqui. Tem, tem.  R Renan porto 36:15 Algumas mulheres.  M Marcos Daniel 36:17 Qual o ticket médio dessas pessoas?  R Renan porto 36:19 Dessas com ultra high ticket, 150 mil. Tem umas que tem 250, que é.  M Marcos Daniel 36:26 A própria Tati Leandrila.  R Renan porto 36:28 E tem aí a média, assim, high ticket legal, 35, 40 mil. Que é a Fernanda Leal.  M Marcos Daniel 36:36 E aí você tem que se basear pelo valor nos Estados Unidos aí é.  A Ana Scott 36:41 Outra coisa é 40 mil é tipo 10 mil dólares 10 a 15 mil dólares que foi o valor que você.  M Marcos Daniel 36:50 Tá falando é por aí mas você tem que é por exemplo eu moro no Brasil mas eu tenho produto e 21 mil dólares São 21 mil dólares. Mas por que não são 21 mil reais? Rapaz, porque são 21 mil dólares. Mas tu mora no Brasil? É não, só cobro e só pago em dólar, só gasto em dólar. Toda a minha estrutura, eu tô aqui fisicamente. Doido que saio em casa pra poder ir embora pra índia. Mas toda a nossa estrutura é em dólar. Então eu já vendo em dólar já faz bom tempo. Minha mente ela já opera em dólar há bom tempo. Então, eu conheço o Play Zen nos Estados Unidos, que tem menos bagagem que eu sei que tem produtos de 20 mil dólares. Tem produtos de 15 mil dólares, é normal?  R Renan porto 37:30 Eu tenho cliente que ele tá rodando produto a 12 mil dólares e ele só pegou e traduziu.  A Ana Scott 37:37 Quem é?  R Renan porto 37:38 A super aprendizagem, ele vende IA. Cara, não é nem uma mentoria, é produto, entende?  M Marcos Daniel 37:46 Então é loucura. Então, assim, Ana, a gente consegue te ajudar a empapotar pouquinho melhor o que tu já tem, não em relação a deixar bonitinho, deixar frufu, eu sou a pior pessoa pra isso, mas sou a melhor pessoa pra pegar o teu produto e ajudar ele a valer pelo menos umas três vezes mais. Aí tu vai lá assim e vai dizer, rapaz, viu que vale mesmo? Tava barato. Você começa a entender que de fato tava barato. Porque se tu tem alunos que, no teu trabalho, eles ganham mais dinheiro, Eu entendi isso quando eu vendia produto a dois mil reais por mês, Ana. E aí eu tinha cliente, eu tive cliente num mesmo ano, ele triplicou o resultado. E era normal os clientes subirem 200% de faturamento. E eu ganhando dois mil por dois mil reais. Meu Jesus amado.  M Marcos Daniel 38:36 Eu tenho que mudar minha mentalidade primeiro, depois a gente fala pouquinho mais sobre isso, tá? Não é o meu core business mas eu me disponibilizo para ajudar agora vou dar chacoalhinho em tu que eu já tô vendo que a turma tá dizendo não tá querendo aceitar não não.  A Ana Scott 38:49 Eu tô super amiga tá bom então.  M Marcos Daniel 38:54 Tá bom então pode comigo que eu.  A Ana Scott 38:55 Acredito ajuda má como é mais preciso é de ajuda perfeita a receber eu tô com muita humildade só agora só.  M Marcos Daniel 39:07 Agora ó Como eu te disse, a gente tem BPO comercial. A gente terceiriza a etapa da pré-venda para os nossos clientes. E todos os nossos clientes, 99% vendem produtos high-ticket. Tem produtos que a margem de lucro deles é muito alta. E se você já tem produto que vale pelo menos 200 dólares por mês, Você já tem que ter time de inside sales. Cinco mil dólares, você já tem que ter uma estrutura muito bacana. Quando eu digo que já tem que ter, assim, vai ter. Que já precisava começar com isso. É porque com ticket pouquinho mais alto, você consegue comissionar melhor seu time. Você consegue contratar mais pessoas. Você consegue acelerar o processo. Mas pra isso você tem que ter ferramentas, tem que ter processos que potencializa o seu crescimento. Faz sentido?  M Marcos Daniel 40:12 Aqui o CRM que a gente usa, o CRM interno da gente, é porque a gente consegue integrar WhatsApp e Instagram aqui dentro. O CRM que tu usa não tem, né? Não. Então, aqui a gente tem chat interno. Aqui a gente vê tudo o que tá sendo conversado com os nossos leads, seja pelo Instagram, seja pelo WhatsApp, por qualquer lugar a gente consegue estar acompanhando, qualquer canal de comunicação, qualquer canal de redes a gente consegue acompanhar o que é que nosso time está conversando com os leads. Faz sentido?  A Ana Scott 40:57 Faz.  M Marcos Daniel 40:58 A gente consegue ter... Olha o André aqui. Você está vendo a tela? Eu vou te mostrar o processo de vendas que a gente usa pra André. Tu quer ver? Que vai se encaixar perfeitamente com o teu.  A Ana Scott 41:13 Tá.  M Marcos Daniel 41:13 Porque o foco de André é qualificar leads, agendar reuniões para fechar vendas, tá? Ó. Deixa eu limpar o chato, todas as conversas. Pronto. Isso aqui foi lead que a gente prospectou. Não foi lead que veio do tráfego. Foi lead prospectado. Ele nem seguiu o André, esse cara aqui. Certo? Então a gente viu algum perfil do Instagram que tivesse a persona dele, foi lá, abordou a pessoa, ela respondeu, tá desse jeito aqui porque tá traduzido, mas é em português, tá? E aí começamos a conversa. Isso no processo social, você fala, opa, irmão, tranquilo, e você? Então, eu tô aqui em Orlando, morei em Nova Jéssica, assim, vai estreitando o relacionamento. A gente tem horário hoje, às 6 PM e às 7 PM. Qual o horário que tá melhor pra você?  M Marcos Daniel 42:11 Ele vai lá respondendo, a gente segue a conversa, com o objetivo de fazer o quê? Viagem da reunião, certo? Tu tá vendo o nomezinho aqui? Dá pra ver se tem nomezinho?  A Ana Scott 42:26 Não.  M Marcos Daniel 42:27 É Motive AI. Tá vendo agora?  A Ana Scott 42:34 E aí né isso me disse é.  M Marcos Daniel 42:39 Que essa mensagem aqui e parece que foi uma inteligência artificial que mandou olha o jeito de escrever e eu uso.  A Ana Scott 42:50 Bastante o chat gpt então eu tô eu tô Eu já tô familiarizada aqui falando que parece que é uma pessoa. No início, antes de eu ser adepta ao chat GPT, hoje a minha amiga me mandou uma... Eu não sei quantos anos você tem, eu tenho 43.  M Marcos Daniel 43:13 É o quê, Ana?  A Ana Scott 43:14 É, uma amiga... Tu tá brincando. É sério?  M Marcos Daniel 43:18 Eu achei que tinha uns 38 no máximo.  A Ana Scott 43:21 Olha só, uma amiga me mandou uma mensagem mostrando, o cara falando que as pessoas que nasceram na década de 80 são insobrevidentes, porque eles passaram da máquina de datilografia, que eu lembro, eu estudava em escola pública e ia oferecer curso de datilografia e eu gostava de escrever, eu sempre gostei de escrever. E fui fazer o curso de didatilografia. Quando eu me profissionalizei no curso, tirei o curso e veio a era da computação. Aí eu tive que aprender sobre o computador. E depois, agora, a gente está entrando na época do AI. Olha só o que a gente vem vivendo. Então, assim, eu... Agora que eu tô assim, nossa, agora é chato de GPT, é chato de GPT, AI pra tudo. Então, assim, vocês estão andando e surfando na onda do AI e tá certíssimo, né?  A Ana Scott 44:28 Porque daqui a pouco o AI já vai ficar acessível pra tudo. E aí já vem uma outra coisa, quem se aproveitou, quem enriqueceu. Quem aproveitou e assim vai. E eu estava falando sobre isso. Nossa, olha que doido isso, a gente entrando nessa era. E aí eu estou super familiarizada, eu sei como é que fala mesmo. Fala como... Eu peço, uso nos meus stories que eu tenho, às vezes, dificuldade de ter alguma coisa para falar, não sei o quê, aí me dá monte de coisa.  M Marcos Daniel 45:03 De insights, né?  A Ana Scott 45:05 Muito bom.  M Marcos Daniel 45:06 A gente só conseguiu pegar chat GPT da vida, a gente nem usa mais chat GPT, a gente usa outros LLMs, que são as inteligências artificiais. O chat GPT é o mais famoso, só que tem outros que tem, cada LLM ele serve pra uma coisa, ele é mais poderoso pra uma coisa. O melhor pra conversa é o Gemini, que é o do Google. É caro que sobe cheia, mas é o melhor pra conversa, aí conversa como se fosse humano isso. E mais doido ainda é quando ele faz ligação.  A Ana Scott 45:36 Uau!  M Marcos Daniel 45:37 Aí você não percebe de fato que é uma AI. Marcos, por que é que tu disse que não percebe mesmo de fato? Porque a gente construiu e vem construindo isso aqui já há tempo de uma forma muito séria, de uma forma muito profissional e refinando tudo aqui que a gente já construiu pra fazer com que seja tão humano, mas tão humano quanto a gente nem precisar mais tanto de humanos. Não é à toa que era para eu ter quatro SDRs aqui na nossa operação e a gente não tem mais quatro SDRs. Eu tenho .. Não, tenho três SDRs.  A Ana Scott 46:06 O que é SDR?  M Marcos Daniel 46:08 Você tem que... SDR é pré-vendedor.  A Ana Scott 46:11 tá.  M Marcos Daniel 46:11 Pré-vendedor. É a pessoa que vai conversar com os leads, vai qualificar os leads e vai agendar reuniões com os leads qualificados para que o time faça reunião de vendas.  A Ana Scott 46:24 Entendi.  M Marcos Daniel 46:24 Fez sentido?  A Ana Scott 46:25 Fez sentido.  M Marcos Daniel 46:26 Então, tudo isso aqui que você tá vendo, Ana, não é só sisteminha que tem o WhatsApp aqui dentro, isso aqui é uma máquina que a gente construiu, uma máquina milionária. Uma máquina milionária em dólar já, que vem potencializando os negócios dos nossos clientes. E a gente consegue... Minha Ia tá falando aqui, dizendo que tem uma reunião daqui a pouco. Sessão estratégica com o Filipe daqui a 10 minutos.  A Ana Scott 46:54 Olha só.  M Marcos Daniel 46:55 Então assim, para você conseguir escalar a sua operação, você precisa ter uma estrutura, uma base sólida para dar conta de receber os dentes que chegarem. E principalmente, não deixar ninguém para trás. A gente tem funil que a gente chama de funil eterno. A gente não deixa ninguém para trás. É o follow-up eterno que a gente faz. Tudo isso aqui são funis. Funis de vendas. E dentro desses funis tem várias etapas de processo de vendas que o lead precisa percorrer. Se ele percorrer o ponto A ou o ponto B, vai sair venda. Então a gente faz o possível e o impossível para acompanhar esses leads até eles chegarem na ponta final para que a gente consiga fazer as reuniões de vendas. E fechar negócio. Tá fazendo sentido pra você estar aqui?  A Ana Scott 47:56 Sim.  M Marcos Daniel 47:57 Tu acha que teu negócio precisa de fato de uma solução como essa ou não?  A Ana Scott 48:01 Sim, com certeza.  M Marcos Daniel 48:03 Perfeito. Tu tem uma pessoa que faz o atendimento desses livros, não tem?  A Ana Scott 48:07 Sim.  M Marcos Daniel 48:10 Show. Agora imagina aqui comigo, Ana. Que tu fosse privilegiada. E o produto que são 20 mil dólares, ele pudesse ser produto bem prato pra você. Até porque se eu não fizesse isso, o André me matava. E que produto é esse, Marcos? É o produto onde você já tem todo o seu funil de vendas, seu processo de vendas estruturado dentro de software, dentro de uma plataforma, com automações que vão estar acompanhando os leads pra que eles não fiquem pra trás E além disso, tem a nossa bebezinha, a nossa queridinha. Isso aqui é o amor da minha vida, eu tô apaixonado por essa AI. Se a gente pudesse introduzir a AI pra você, pra que além de ter todo esse processo estruturado, tivesse também funcionário que vai estar alimentando esse CRM, ó.  M Marcos Daniel 49:12 Isso aqui não é ninguém do time que tá alimentando, é a AI. Que vai estar movendo o livre de etapa quando ele for agendado, vai estar colocando o horário, a data e o horário que foi agendada a reunião, que vai estar preenchendo os campos, conversando com os livres, reaquecendo os livres, e principalmente, fazendo com que a gente não deixe ninguém para trás, até mesmo lembrando a gente das reuniões agendadas. Eita, estou te mostrando uma bela, meu Deus do céu. Eu achei que eu estava nessa aqui. E eu te mostrando tudo aqui a gente... Ô Jesus!  A Ana Scott 49:50 Tá tudo tão pequenininho, Marcos. É difícil de ver porque é muito pequenininho.  M Marcos Daniel 49:56 Melhorou? Tá vendo isso aqui tudo alimentado?  A Ana Scott 49:59 Melhorou.  M Marcos Daniel 50:00 Tá vendo isso aqui tudo alimentado?  A Ana Scott 50:01 Bom, agora tô.  M Marcos Daniel 50:02 Isso aqui é tudo AI que preenche. Não somos nós. Mas eu tenho humaninho aqui. Tem que ter humano por trás fazendo a gestão. É que humano hoje ele consegue fazer a gestão de 10 clientes. E André, ele pegou no meu pé e disse, irmão, tu precisa entregar esse business aí pra mim. Mas primeiro eu preciso entender se faz sentido pra você, pra sua operação, você conseguir ter processo estruturado, processo validado, não é só estruturado, mas é validado aí nos Estados Unidos, porque tem cliente que no começo, é, mas eu não moro aqui. É, mas quem é que tu tem que é esse sucesso aqui? A gente já tem vários que é esse sucesso. A gente tem que é esse sucesso que faz 7 dígitos aí nos Estados Unidos.  M Marcos Daniel 50:56 A gente tem vários outros que tem até contrato exigido pra gente. O povo é bixta. Não quer que ninguém sai pra trabalhar comigo aqui? Tá bom, você vai pagar mais. Então, Ana, o que a gente construiu já tá validadíssimo aí nos Estados Unidos e eu quero te entregar o processo todo estruturado. O CRM todo organizado. As etapas estruturadas de acordo com o teu modelo de negócio pra que potencialize tuas vendas. E durante o processo a gente vai entendendo outras dores que tu tem e vai conseguindo te ajudar no teu tempo e no teu momento. É como eu disse, a gente tem uma porrada de coisa aqui pra entregar, mas se eu chegar vomitando todas as soluções que a gente tem aqui, tu vai se perder.  M Marcos Daniel 51:46 Então, a princípio, o que é que eu enxergo que teu negócio precisa pra ele acelerar de uma forma muito rápida? Precisa de uma estrutura de vendas. Precisa de processo de vendas. E processo de vendas mapeado. E processo de vendas à prova de falhas. Como assim à prova de falhas? A gente coloca campos que eles precisam ser preenchidos, senão o livro não sai do canto.  A Ana Scott 52:16 Verdade.  M Marcos Daniel 52:17 Só vai pra lugar se preencher do jeitinho certo.  A Ana Scott 52:21 Verdade.  M Marcos Daniel 52:22 Que é pra que a gente consiga construir business baseado em receita previsível. Eu sei que a cada 10 reuniões que eu faço, eu posso ter uma venda. Então, se eu quero ter 20 vendas, eu tenho que fazer quantas reuniões? Tenho que fazer pelo menos 20. Eu tô dando exemplo, tá? Isso aqui é exemplo em números, mas pra grande maioria dos closers que tão começando, a cada 10 é pelo menos . Então, tu precisa aumentar a geração demanda do teu negócio Enquanto a gente conversava aqui, tu tá bem posicionada, tu tem pouco seguidor Mas eu tenho certeza que os seguidores que tu tem, a grande maioria já te segue há bom tempo Já! Já!  M Marcos Daniel 53:03 Então tem uma demanda muito reprimida ali Que tá só esperando que você chegue até elas, do jeitinho certo tá fazendo sentido o que eu falei até aqui?  A Ana Scott 53:18 Tá, tá fazendo muito sentido.  M Marcos Daniel 53:20 Então qual o chequemato do chequemato da série E no Bolo que eu vou te entregar. O processo que a gente fecha, Ana, eles, ele é processo, esse é programa de aceleração que a gente criou ainda nos Estados Unidos, que é pra pegar mentores, que tão começando pra fazer com que eles escalem ainda mais. Com que eles, com que eles caem em voo, tá? Esse programa, ele já vem o sistema Plug & Play com o nosso método, com o nosso processo, não é você que vai criar, a gente vai entregar, pronto, você precisa seguir o nosso processo para que você tenha resultado. Faz sentido? Inclusive, a gente tem contrato devolução do dinheiro, se a pessoa não tiver o resultado. Porque a gente sabe que é respeito do dinheiro.  A Ana Scott 54:09 Em quanto tempo vocês garantem o resultado? Começando?  M Marcos Daniel 54:14 Tu tem que ter resultado em pelo menos 90 dias. Se tu não tiver, o bicho perde. Eu vou aí nos Estados Unidos só puxar a torneira. Que é obrigado tu ter resultado. Se tu não tem, eu vou ter que te pagar, devolver dinheiro. Eu não quero. Vai ser uma comprovação de que o que a gente entrega gera resultado. Agora vocês precisam seguir exatamente o passo a passo que a gente passa. Faz sentido até aqui?  A Ana Scott 54:34 Faz.  M Marcos Daniel 54:35 Marcos, qual o valor dessa solução? Enrolada da bexiga. Fala logo isso. São 12 mil dólares, Ana. Mas pra quem não é amiga do André. Para quem é amigo do André são seis, sem IA, sem CRN, sem a cerejinha do bolo que eu vou dar aqui no final, só o CRN mesmo e a pessoa vai costumizar junto a mim, eu vou entregar o meu processo para ela, porque o meu processo é caro mas eu quero pegar toda a parapernália de coisas que eu tenho aqui e o André vai estar bem pertinho de tudo, não vai nem deixar eu mentir e a gente vai te entregar absolutamente tudo para potencializar teus negócios, mas tem condição para isso É que tu cresça e tu seja leal. É que tu cresça e tu cresça juntinho com a gente. É que a gente possa...  M Marcos Daniel 55:21 Que a gente possa crescer juntos. Faz sentido? Uhum. Te vender uma vez, pra mim, não faz muito sentido. É muito chato vender uma única vez pra alguém. Eu não tenho MTV. Então meu processo é de venda eterna. Eu tenho cliente que tá comigo há quase 5 anos. O André tá comigo desde janeiro do ano passado. Hoje virou inclusive sócio em outro negócio. E só a AI aí nos Estados Unidos anda, são 6 mil dólares, só a AI. Então eu quero entregar todo o processo junto com a AI e segurar na tua mão para que nos próximos 90 dias tu sai da ará, e nessa se tratando de processo comercial, processo de vendas, pra ter processo estrutural.  M Marcos Daniel 56:14 Até porque, eu falo assim, quer crescer juntos, mas se em algum momento você quiser parar de trabalhar junto, tá tudo bem, mas o que você construiu, o que nós construímos é seu, não é meu. E o que eu mais vejo por aí são prestadores de serviço que constroem o processo, e quando sai, quando para trabalhar, pega o processo e leva pra casa. Isso é uma baita sacanagem. Dito isso, de tudo que eu falei aqui, do que foi que tu mais gostou, Ana? No papo, eu sou gente boa, eu tenho certeza disso. De entender que tu vai ter uma estrutura, tu vai ter suporte, tu vai ter uma base que vai deixar o teu negócio alicerçado para que tu possa crescer, ou das ferramentas e a AI que vai estar trabalhando por você 24 horas por dia.  A Ana Scott 57:08 Olha, eu sou movida por resultado.  M Marcos Daniel 57:12 Show de bola.  A Ana Scott 57:13 O que mais gostei foi da questão do resultado.  M Marcos Daniel 57:17 Gostou?  A Ana Scott 57:18 Da questão do resultado. Como vai chegar, portanto que seja honesto e abençoado por Deus, para mim, se é EIA, se é gente falando, se é ligando, se é mandando carta, para mim tanto faz, mas o resultado para mim é o mais importante. Eu gosto da tua filosofia de dar honra, né? De você dizer assim mesmo, Ana, eu te prometo dar o resultado, mas discretamente dizendo, não esquece da gente, não esquece daquelas pessoas que te ajudaram lá atrás. E isso é muito bom, porque eu compartilho do mesmo princípio. Você é mentor também, e a gente sabe que tem mentorados, que às vezes eles simplesmente pegam para eles todo aquele conhecimento e vão embora, e às vezes a gente pede para ele, pode me dar depoimento e a pessoa simplesmente some da sua vida.  A Ana Scott 58:37 Porque não quer te honrar, não quer te dar a importância que você teve para ela. E a gente sabe o quanto isso às vezes dói. A gente tenta não ligar porque não é sobre a gente, é sobre eles. O pessoal que faz isso é sobre eles, não é sobre a gente. Mas eu entendo o que você tá falando.  M Marcos Daniel 58:59 Vamos juntos crescer, prosperar e praticamente todos os meus clientes fiéis. Tem empresa juntamente.  A Ana Scott 59:10 Olha só que bacana.  M Marcos Daniel 59:12 Olha que doido. O que me pagaram foi o esforço do acesso.  A Ana Scott 59:16 Olha só, que legal. E Daniel, aí teu nome é super confuso, é Marcos Daniel.  M Marcos Daniel 59:25 Pode chamar como você quiser.  A Ana Scott 59:27 Eu chamo de Marcos, tem horas para viver a cabeça, Daniel. E ia te falar que o teu produto ele vai ser CRM que você vai tá me entregando é CRM ou é mais do que isso?  M Marcos Daniel 59:46 É mais do que isso, CRM por CRM tem outro aí.  A Ana Scott 59:50 Entendi.  M Marcos Daniel 59:51 É muito mais do que isso. Marcos, por que tu não explicou todos os detalhes aqui? Porque até hoje não teve único cliente na vida aqui E tem todas as dúvidas sanadas na primeira reunião que a gente teve.  A Ana Scott 01:00:03 Entendeu, né?  M Marcos Daniel 01:00:04 Porque a gente tá tratando de tecnologia, tratando de sistema. Vai entrar uma coisa e a pessoa já vai dizer, meu Deus, que troço doido é esse?  A Ana Scott 01:00:11 Como é que eu vou fazer negócio desse?  M Marcos Daniel 01:00:13 Aí depois ela, entendi, mas como é que faz isso aqui? Então, a gente ainda vai ter outro momento, que é o momento onde a gente vai assinar o contrato, mas a gente só assina o contrato se a gente lê o contrato juntos.  A Ana Scott 01:00:25 Tá.  M Marcos Daniel 01:00:27 Olha que doido. E por que eu coloco pra gente ler o contrato juntos? Pra você ficar assegurado e pra eu ficar assegurado. Entendi. Faz sentido?  A Ana Scott 01:00:36 Faz sentido.  M Marcos Daniel 01:00:38 E principalmente pra que tenha clareza. Clareza é poder. Uma coisa, você pode ter convicção. Convicção. Eu não tô tendo essa aula aqui com você só por grana, tá? É muito mais do que isso. Eu jamais... André me conhece. Eu jamais, André, jamais venderia e entregaria o que eu vou te entregar pelo valor que eu te passei. Não faz sentido pra mim. Não é assim que eu jogo o jogo. Mas tem algumas pessoas que eu entrego até de graça. Tem outras que precisam pagar pra valorizar. E tem outras que precisam entrar no processo para descobrir que elas podem ir muito mais longe e muito mais rápido, se tiver o direcionamento correto, as ferramentas corretas e a base, a estrutura correta. Eu disse que ele dá uma cereja do bolo, né? E eu vou lhe dar a cereja do bolo e vou correr.  M Marcos Daniel 01:01:39 Já vou entrar em outra reunião. Tu não vai fazer o fechamento de vendas aqui, não. Vou não, porque se tiver que fechar, o negócio é aqui, porque não precisa de pressão para fechar. Não tem necessidade. Eu não tenho que estar aqui com milhares de técnicas, gatinho mental aqui. Não, você sabe vender também sem pesar, não precisa disso. Se tiver que fechar, a gente vai fechar. Pronto. Faz sentido? Qual é a cereja do bolo que eu vou te dar? Nos 90 dias que estivemos juntos, além de toda essa estrutura, eu vou te dar, eu vou separar BTR nosso que vai ficar prospectando todo santo dia não né porque não é escravo mas que segunda a sexta-feira vai estar prospectando de 30 a 50 CDZ para que você fecha e venda sabe o que é CDZ?  A Ana Scott 01:02:31 Não, toda vez que tu fala CDZ.  M Marcos Daniel 01:02:33 Aqui no Brasil é CDP que é o cara de Pix nos Estados Unidos é o CDZ que é o cara de Zelle.  A Ana Scott 01:02:40 tá bom.  M Marcos Daniel 01:02:42 Nós vamos entender quem é a tua persona, a gente vai desenhar, você vai preencher formulário. A gente tem processo muito bem organizado, que você vai ter CS, que vai estar acompanhando, vai estar em grupo de WhatsApp, a gente vai ter todo suporte assim. Muito mais do que eu mesmo poderia dar, graças a Deus. Para que você esteja sempre acompanhada, sempre. Que esteja recebendo e vendo o crescimento do seu negócio todos os dias. Porque são de 30 a 50 potenciais clientes que a gente vai abordar, que a gente vai prospectar pro teu negócio. Faz sentido isso aqui que eu tô falando?  A Ana Scott 01:03:17 Faz muito sentido. Faz muito sentido. Me deixa muito animada e esperançosa. E que realmente há a possibilidade de ir para o nível que o produto merece, o nível da entrega que eu faço, deixa muito feliz mesmo.  M Marcos Daniel 01:03:40 Só bora, minha amiga, já deu certo, já deu tudo certo, vai ser prazer ter você, cumprimento. E que a gente possa estreitar esse relacionamento e possa ser muito mais do que só negócio. Que ele possa se conectar em Cristo. Amém. Todos os nossos passos, todas as ações que a gente tiver relacionadas a negócios e relacionadas a grana, que seja, não basta a direção do pai, que seja ele que nos direcione, que seja ele que nos mostra o caminho que a gente deve seguir. Os negócios que a gente deve fechar e os que a gente não deve fechar, porque tem dinheiro que é lícito, mas é maldição. Então, que não seja por nós, que seja por ele. Que a gente possa, de fato, abençoar, iluminar e transbordar na vida de outras pessoas.  A Ana Scott 01:04:28 Amém.  M Marcos Daniel 01:04:29 Vamos nessa? Vamos junto?  A Ana Scott 01:04:30 Vamos com tudo. Vamos pra frente.  M Marcos Daniel 01:04:33 Então, simbora. Eu já vou falar para o time aqui, criar grupo nosso, vou colocar no greve também, já pra gente tá alinhando os próximos passos lá e tirando dúvidas que tu vai ter de montão e vai vir monte de insight na tua cabeça. Vai dizer, vocês fazem isso, fazem aquilo. O que a gente conseguir fazer a mais do que o que a gente entrega, a gente vai fazer. Que é ouvir de livre. Mas a gente vai alinhando e deixando tudo as claras. Que é acordar, não secar. Tá bom? Ó, beijo carinhoso. Gostei muito de você. Deus abençoe. Seja bem-vindo, desligado.  A Ana Scott 01:05:07 Amém.  M Marcos Daniel 01:05:08 Tá bom? Saborar. Tchau, gente.  A Ana Scott 01:05:12 Tchau.  M Marcos Daniel 01:05:12 Valeu, Renazão.     Cancel  Save",
+          "submittedAt": "2025-11-23T17:36:04.337-03:00",
+          "formMode": "test"
+        }
+      }
+    ],
+    "AI Agent - Extração": [
+      {
+        "json": {
+          "output": "```json\n{\n  \"dados_cliente\": {\n    \"nome_completo\": \"Ana Scott\",\n    \"empresa\": \"Método Boss (Mentoria + Empresa de Limpeza)\",\n    \"faturamento_mensal\": null,\n    \"ticket_medio\": 5000,\n    \"meta_objetivo\": \"Escalar a mentoria e aumentar vendas de forma consistente\"\n  },\n  \"situacao_atual\": {\n    \"reunioes_mes_hoje\": 12,\n    \"percentual_qualificadas_hoje\": null,\n    \"taxa_fechamento_atual\": null,\n    \"vendas_mes_hoje\": null,\n    \"tempo_prospeccao_semanal\": null\n  },\n  \"dores\": {\n    \"problema_1\": {\n      \"descricao\": \"Tem gente que tá mentindo que não tem resultado, que não tem metade do que eu tenho e tá fazendo mais dinheiro que eu. Alguma coisa ali tá errada, alguma coisa não tá se encaixando.\",\n      \"intensidade\": \"Alta\",\n      \"contexto\": \"Frustração por ter resultado real e entrega de qualidade, mas não conseguir monetizar proporcionalmente ao valor que entrega. Delegou vendas para assessora e não funcionou.\"\n    },\n    \"problema_2\": {\n      \"descricao\": \"A questão do lead, de responder, de estar ali no acesso com as pessoas é mais uma função. A coisa não estava andando. Não estava andando.\",\n      \"intensidade\": \"Alta\",\n      \"contexto\": \"Tentou delegar vendas para uma pessoa (seller), mas o processo não engrenava. Teve que voltar a fazer ela mesma as vendas e começou a ter 2-4 calls por semana.\"\n    },\n    \"problema_3\": {\n      \"descricao\": \"Quando estou comunicando, para quem vou comunicar? Essa parte é muito confusa para mim até hoje. Tem gente que fala, não fica falando com todo mundo.\",\n      \"intensidade\": \"Média\",\n      \"contexto\": \"Dúvida sobre posicionamento e nicho. Fala português, espanhol e inglês, mas não sabe se deve expandir para outros idiomas ou manter foco. Não quer ser 'a mentora da limpeza' apesar de ter expertise nisso.\"\n  }\n  },\n  \"plano_recomendado\": {\n    \"nome\": \"PROFESSIONAL\",\n    \"valor_mensal\": 9997,\n    \"meta_reunioes\": 18,\n    \"justificativa\": \"Ana tem ticket médio de $5.000 (mentoria 3 meses individual), produto estabelecido com 8 pilares, opera nos EUA com empresa de limpeza lucrativa paralela, e já tem demanda reprimida na base. Está na transição entre Essencial e Professional, mas a qualidade da entrega e posicionamento internacional justificam o plano intermediário para estruturar processos antes de escalar para Enterprise.\"\n  }\n}\n```"
+        }
+      }
+    ],
+    "AI Agent - Proposta": [
+      {
+        "json": {
+          "output": "# PROPOSTA COMERCIAL\n## Outsourcing de Pré-Vendas - BPOSS\n\n**Cliente:** Ana Scott\n**Empresa:** Método Boss (Mentoria + Empresa de Limpeza)\n**Data:** 23 de Novembro de 2025\n**Proposta:** #202511232038\n**Validade:** 30 de Novembro de 2025\n\n---\n\n## 📊 RESUMO EXECUTIVO\n\n**Situação Atual:**\n- Faturamento: A definir (variável)\n- Ticket Médio: R$ 5.000,00 (mentoria 3 meses individual)\n- Reuniões/mês: 12 (não qualificadas de forma consistente)\n- Taxa de Fechamento: Inconsistente\n- Operação: EUA + mercados português/espanhol/inglês\n\n**Resultado Esperado em 90 Dias:**\n- 18 reuniões qualificadas/mês (vs 12 não qualificadas hoje)\n- +R$ 20.000,00 em receita incremental mensal\n- ROI de 2.0x sobre o investimento\n- Pipeline previsível e escalável\n\n---\n\n## 🎯 DESAFIOS IDENTIFICADOS\n\n### 1. O Paradoxo da Entrega Real vs. Monetização\n\n> \"Tem gente que tá mentindo que não tem resultado, que não tem metade do que eu tenho e tá fazendo mais dinheiro que eu. Alguma coisa ali tá errada, alguma coisa não tá se encaixando.\"\n\nAna, essa é a frustração de TODOS os mentorias de verdade. Você tem os 8 pilares estruturados, empresa de limpeza lucrativa nos EUA, resultado real de alunos... mas delegou vendas para assessora e não funcionou. O problema não é a sua entrega - é que vendas de mentoria de R$ 5k não podem ser delegadas SEM um processo estruturado de qualificação antes. Você perdeu meses tentando delegar do jeito errado.\n\n**Intensidade:** Alta\n\n### 2. Tentativa de Delegação sem Estrutura de Prospecção\n\n> \"A questão do lead, de responder, de estar ali no acesso com as pessoas é mais uma função. A coisa não estava andando. Não estava andando.\"\n\nVocê tentou contratar seller, mas ela não tinha O QUE vender - porque não havia leads qualificados chegando. Daí voltou a fazer vendas você mesma (2-4 calls/semana), mas isso te prende na operação. O gargalo não é fechar - é QUALIFICAR antes de você entrar. Você precisa receber apenas leads prontos para comprar, não curiosos.\n\n**Intensidade:** Alta\n\n### 3. Paralisia de Posicionamento e Expansão de Mercado\n\n> \"Quando estou comunicando, para quem vou comunicar? Essa parte é muito confusa para mim até hoje. Tem gente que fala, não fica falando com todo mundo.\"\n\nVocê fala 3 idiomas, tem expertise em limpeza E mentoria empresarial, mas não quer ser \"a mentora da limpeza\". Essa confusão de posicionamento está te impedindo de prospectar de forma assertiva. E a expansão para espanhol/inglês está parada porque você não tem TIME para testar essas frentes enquanto toca tudo sozinha.\n\n**Intensidade:** Média\n\n---\n\n## ✅ SOLUÇÃO PROPOSTA\n\n### BPOSS - Business Process Outsourcing Sales\n\n**O que faremos por você:**\n\n1. **Prospecção Ativa Qualificada (Multimercado)**\n   - Identificação de empresárias empreendedoras no seu ICP (limpeza, serviços, varejo físico)\n   - Abordagem multicanal em **português, espanhol E inglês** (LinkedIn, Email, WhatsApp)\n   - Nutrição até BANT completo: Budget R$ 5k+, Authority (donos), Need (faturamento estagnado 50-200k/mês), Timing (próximos 30 dias)\n\n2. **Agendamento de Reuniões 100% Qualificadas**\n   - Apenas leads que confirmaram orçamento, interesse real e disponibilidade\n   - Taxa de show-up de 73% (vs 40% do mercado)\n   - Briefing completo antes de cada call: desafios, faturamento, objeções já trabalhadas\n   - **Você só entra na call para FECHAR, não para qualificar**\n\n3. **CRM & Gestão Completa do Pipeline**\n   - Plataforma Socialfy inclusa (R$ 997/mês grátis)\n   - Dashboard em tempo real com previsão de fechamentos\n   - Relatórios semanais: quantas reuniões, taxa de conversão, objeções recorrentes\n   - Funil visível: você sabe EXATAMENTE quantas vendas virão nos próximos 30 dias\n\n4. **SDR Sênior Dedicado + IA de Escala**\n   - Profissional com experiência em venda consultiva (não é VA nem júnior)\n   - Treinado nos 8 pilares do Método Boss, no seu case de limpeza, na sua jornada\n   - Apoio de IA para escalar abordagem em 3 idiomas simultaneamente\n   - Testes A/B contínuos de posicionamento (mentoria empresarial vs limpeza vs híbrido)\n\n---\n\n## 💰 INVESTIMENTO & PLANOS\n\n### Plano ESSENCIAL\n**R$ 7.997/mês**\n\n✅ 12 reuniões qualificadas/mês\n✅ 1 SDR dedicado (português apenas)\n✅ Socialfy CRM incluso\n✅ Relatórios semanais\n✅ Suporte prioritário\n\n**Ideal para:** Empresas faturando R$ 50-150k/mês, ticket R$ 2-5k, operação nacional\n\n---\n\n### ⭐ Plano PROFESSIONAL (RECOMENDADO PARA VOCÊ)\n**R$ 9.997/mês**\n\n✅ **18 reuniões qualificadas/mês**\n✅ 1-2 SDRs dedicados (multimercado)\n✅ **Prospecção em português, espanhol E inglês**\n✅ Socialfy CRM incluso\n✅ **Testes de posicionamento (3 abordagens simultâneas)**\n✅ Relatórios semanais + reunião mensal de estratégia\n✅ Suporte prioritário\n\n**POR QUE RECOMENDAMOS ESTE PLANO PARA MÉTODO BOSS:**\n\nAna, você está na transição perfeita para o Professional:\n\n1. **Ticket de R$ 5.000** justifica investimento em qualificação premium (vs Essencial que é para tickets menores)\n\n2. **Operação nos EUA + 3 idiomas** = você PRECISA testar mercados simultaneamente. O Essencial só cobre português. Com Professional, testamos:\n   - Brasileiras empreendedoras nos EUA (português)\n   - Latinas (espanhol - maior mercado de limpeza nos EUA)\n   - Americanas (inglês - ticket pode subir para $5k-7k USD)\n\n3. **Confusão de posicionamento** = Professional permite rodar 3 abordagens em paralelo por 60 dias:\n   - \"Mentora de escala empresarial\" (genérico)\n   - \"Especialista em empresas de limpeza 6-7 dígitos\" (nicho)\n   - \"Case: de Brasil para EUA em 5 anos\" (diferencial geográfico)\n   \n   Em 60 dias você SABE qual converte melhor, sem precisar ficar testando você mesma.\n\n4. **Você já tem demanda reprimida** na base, mas precisa de PROCESSO para não depender só de você. Com 18 reuniões/mês qualificadas, você foca em fechar e entregar (seu forte), não"
+        }
+      }
+    ],
+    "Google Drive Trigger": [
+      {
+        "json": {
+          "exportLinks": {
+            "application/rtf": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=rtf",
+            "application/vnd.oasis.opendocument.text": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=odt",
+            "text/html": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=html",
+            "application/pdf": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=pdf",
+            "text/x-markdown": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=markdown",
+            "text/markdown": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=markdown",
+            "application/epub+zip": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=epub",
+            "application/zip": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=zip",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=docx",
+            "text/plain": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=txt"
+          },
+          "parents": [
+            "1WTJrbMl8HLppIHIeHT94Qsbog9XpxOx2"
+          ],
+          "lastModifyingUser": {
+            "displayName": "Marcos Daniel",
+            "kind": "drive#user",
+            "me": true,
+            "permissionId": "17593624161997979916",
+            "emailAddress": "ceo@marcosdaniels.com",
+            "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64"
+          },
+          "owners": [
+            {
+              "displayName": "Marcos Daniel",
+              "kind": "drive#user",
+              "me": true,
+              "permissionId": "17593624161997979916",
+              "emailAddress": "ceo@marcosdaniels.com",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64"
+            }
+          ],
+          "permissions": [
+            {
+              "kind": "drive#permission",
+              "id": "04781390080190356985",
+              "type": "user",
+              "emailAddress": "hallennaiane@gmail.com",
+              "role": "writer",
+              "displayName": "hallennaiane",
+              "photoLink": "https://lh3.googleusercontent.com/a-/ALV-UjUrOu8WKyR8TMCIzVsXhnK7_ZWphq8_wP3HGGvwf4KVlozrn1c=s64",
+              "deleted": false,
+              "pendingOwner": false
+            },
+            {
+              "kind": "drive#permission",
+              "id": "17593624161997979916",
+              "type": "user",
+              "emailAddress": "ceo@marcosdaniels.com",
+              "role": "owner",
+              "displayName": "Marcos Daniel",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64",
+              "deleted": false,
+              "pendingOwner": false
+            }
+          ],
+          "spaces": [
+            "drive"
+          ],
+          "capabilities": {
+            "canAcceptOwnership": false,
+            "canAddChildren": false,
+            "canAddMyDriveParent": false,
+            "canChangeCopyRequiresWriterPermission": true,
+            "canChangeItemDownloadRestriction": true,
+            "canChangeSecurityUpdateEnabled": false,
+            "canChangeViewersCanCopyContent": true,
+            "canComment": true,
+            "canCopy": true,
+            "canDelete": true,
+            "canDisableInheritedPermissions": false,
+            "canDownload": true,
+            "canEdit": true,
+            "canEnableInheritedPermissions": true,
+            "canListChildren": false,
+            "canModifyContent": true,
+            "canModifyContentRestriction": true,
+            "canModifyEditorContentRestriction": true,
+            "canModifyOwnerContentRestriction": true,
+            "canModifyLabels": false,
+            "canMoveChildrenWithinDrive": false,
+            "canMoveItemIntoTeamDrive": true,
+            "canMoveItemOutOfDrive": true,
+            "canMoveItemWithinDrive": true,
+            "canReadLabels": false,
+            "canReadRevisions": true,
+            "canRemoveChildren": false,
+            "canRemoveContentRestriction": false,
+            "canRemoveMyDriveParent": true,
+            "canRename": true,
+            "canShare": true,
+            "canTrash": true,
+            "canUntrash": true
+          },
+          "permissionIds": [
+            "04781390080190356985",
+            "17593624161997979916"
+          ],
+          "linkShareMetadata": {
+            "securityUpdateEligible": false,
+            "securityUpdateEnabled": true
+          },
+          "downloadRestrictions": {
+            "itemDownloadRestriction": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            },
+            "effectiveDownloadRestrictionWithContext": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            }
+          },
+          "kind": "drive#file",
+          "id": "1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A",
+          "name": "Custommer Success - Milton de Abreu - 2025_11_28 17_00 GMT-03_00 - Anotações do Gemini (1)",
+          "mimeType": "application/vnd.google-apps.document",
+          "starred": false,
+          "trashed": false,
+          "explicitlyTrashed": false,
+          "version": "6",
+          "webViewLink": "https://docs.google.com/document/d/1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A/edit?usp=drivesdk",
+          "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.document",
+          "hasThumbnail": true,
+          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBNTFush_4up9eAiq9ct_K84lrzpRMLZ7m5S1Rt_4XkELlhnKEY1qdarfo7pZYiEpgD3LbGfdFOCEaOyDclyHwwFJaczL3DKi1Cfz40JNqmCvapD-NrCCEoS_fiVFQ=s220",
+          "thumbnailVersion": "2",
+          "viewedByMe": true,
+          "viewedByMeTime": "2025-11-29T17:42:32.409Z",
+          "createdTime": "2025-11-29T17:42:32.409Z",
+          "modifiedTime": "2025-11-29T17:42:32.645Z",
+          "modifiedByMeTime": "2025-11-29T17:42:32.645Z",
+          "modifiedByMe": true,
+          "shared": true,
+          "ownedByMe": true,
+          "viewersCanCopyContent": true,
+          "copyRequiresWriterPermission": false,
+          "writersCanShare": true,
+          "size": "45000",
+          "quotaBytesUsed": "45000",
+          "isAppAuthorized": false,
+          "inheritedPermissionsDisabled": false
+        }
+      }
+    ],
+    "Google Drive Trigger1": [
+      {
+        "json": {
+          "exportLinks": {
+            "application/rtf": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=rtf",
+            "application/vnd.oasis.opendocument.text": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=odt",
+            "text/html": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=html",
+            "application/pdf": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=pdf",
+            "text/x-markdown": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=markdown",
+            "text/markdown": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=markdown",
+            "application/epub+zip": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=epub",
+            "application/zip": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=zip",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=docx",
+            "text/plain": "https://docs.google.com/feeds/download/documents/export/Export?id=1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A&exportFormat=txt"
+          },
+          "parents": [
+            "1WTJrbMl8HLppIHIeHT94Qsbog9XpxOx2"
+          ],
+          "lastModifyingUser": {
+            "displayName": "Marcos Daniel",
+            "kind": "drive#user",
+            "me": true,
+            "permissionId": "17593624161997979916",
+            "emailAddress": "ceo@marcosdaniels.com",
+            "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64"
+          },
+          "owners": [
+            {
+              "displayName": "Marcos Daniel",
+              "kind": "drive#user",
+              "me": true,
+              "permissionId": "17593624161997979916",
+              "emailAddress": "ceo@marcosdaniels.com",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64"
+            }
+          ],
+          "permissions": [
+            {
+              "kind": "drive#permission",
+              "id": "04781390080190356985",
+              "type": "user",
+              "emailAddress": "hallennaiane@gmail.com",
+              "role": "writer",
+              "displayName": "hallennaiane",
+              "photoLink": "https://lh3.googleusercontent.com/a-/ALV-UjUrOu8WKyR8TMCIzVsXhnK7_ZWphq8_wP3HGGvwf4KVlozrn1c=s64",
+              "deleted": false,
+              "pendingOwner": false
+            },
+            {
+              "kind": "drive#permission",
+              "id": "17593624161997979916",
+              "type": "user",
+              "emailAddress": "ceo@marcosdaniels.com",
+              "role": "owner",
+              "displayName": "Marcos Daniel",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocIxThQOKn67oYJ_d9CnClrZihFO_WHmcBS38rmK-BOgakQn-Cek4A=s64",
+              "deleted": false,
+              "pendingOwner": false
+            }
+          ],
+          "spaces": [
+            "drive"
+          ],
+          "capabilities": {
+            "canAcceptOwnership": false,
+            "canAddChildren": false,
+            "canAddMyDriveParent": false,
+            "canChangeCopyRequiresWriterPermission": true,
+            "canChangeItemDownloadRestriction": true,
+            "canChangeSecurityUpdateEnabled": false,
+            "canChangeViewersCanCopyContent": true,
+            "canComment": true,
+            "canCopy": true,
+            "canDelete": true,
+            "canDisableInheritedPermissions": false,
+            "canDownload": true,
+            "canEdit": true,
+            "canEnableInheritedPermissions": true,
+            "canListChildren": false,
+            "canModifyContent": true,
+            "canModifyContentRestriction": true,
+            "canModifyEditorContentRestriction": true,
+            "canModifyOwnerContentRestriction": true,
+            "canModifyLabels": false,
+            "canMoveChildrenWithinDrive": false,
+            "canMoveItemIntoTeamDrive": true,
+            "canMoveItemOutOfDrive": true,
+            "canMoveItemWithinDrive": true,
+            "canReadLabels": false,
+            "canReadRevisions": true,
+            "canRemoveChildren": false,
+            "canRemoveContentRestriction": false,
+            "canRemoveMyDriveParent": true,
+            "canRename": true,
+            "canShare": true,
+            "canTrash": true,
+            "canUntrash": true
+          },
+          "permissionIds": [
+            "04781390080190356985",
+            "17593624161997979916"
+          ],
+          "linkShareMetadata": {
+            "securityUpdateEligible": false,
+            "securityUpdateEnabled": true
+          },
+          "downloadRestrictions": {
+            "itemDownloadRestriction": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            },
+            "effectiveDownloadRestrictionWithContext": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            }
+          },
+          "kind": "drive#file",
+          "id": "1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A",
+          "name": "Custommer Success - Milton de Abreu - 2025_11_28 17_00 GMT-03_00 - Anotações do Gemini (1)",
+          "mimeType": "application/vnd.google-apps.document",
+          "starred": false,
+          "trashed": false,
+          "explicitlyTrashed": false,
+          "version": "6",
+          "webViewLink": "https://docs.google.com/document/d/1CsCAUA5v47XBz333vyf8I0g-9XjVuwAIegWbssYDR9A/edit?usp=drivesdk",
+          "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.document",
+          "hasThumbnail": true,
+          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBNTFush_4up9eAiq9ct_K84lrzpRMLZ7m5S1Rt_4XkELlhnKEY1qdarfo7pZYiEpgD3LbGfdFOCEaOyDclyHwwFJaczL3DKi1Cfz40JNqmCvapD-NrCCEoS_fiVFQ=s220",
+          "thumbnailVersion": "2",
+          "viewedByMe": true,
+          "viewedByMeTime": "2025-11-29T17:42:32.409Z",
+          "createdTime": "2025-11-29T17:42:32.409Z",
+          "modifiedTime": "2025-11-29T17:42:32.645Z",
+          "modifiedByMeTime": "2025-11-29T17:42:32.645Z",
+          "modifiedByMe": true,
+          "shared": true,
+          "ownedByMe": true,
+          "viewersCanCopyContent": true,
+          "copyRequiresWriterPermission": false,
+          "writersCanShare": true,
+          "size": "45000",
+          "quotaBytesUsed": "45000",
+          "isAppAuthorized": false,
+          "inheritedPermissionsDisabled": false
+        }
+      }
+    ]
+  },
+  "connections": {
+    "AI Agent - Extração": {
+      "main": [
+        [
+          {
+            "node": "Code - Calcular ROI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Calcular ROI": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Proposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Proposta": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Proposta1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Code - Markdown → HTML": {
+      "main": [
+        [
+          {
+            "node": "Convert to File - PDF1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Proposta1": {
+      "main": [
+        [
+          {
+            "node": "Code - Markdown → HTML1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Extração",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File - PDF1": {
+      "main": [
+        [
+          {
+            "node": "Puppeteer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Extração1": {
+      "main": [
+        [
+          {
+            "node": "Code - Calcular ROI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Calcular ROI1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Proposta2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Proposta2": {
+      "main": [
+        []
+      ]
+    },
+    "Anthropic Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Extração1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent - Proposta2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Markdown → HTML1": {
+      "main": [
+        [
+          {
+            "node": "Puppeteer1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Extração",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Proposta",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Extração1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Download Arquivo": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Processar Dados": {
+      "main": [
+        [
+          {
+            "node": "🤖 IA - Análise de CS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🤖 IA - Análise de CS": {
+      "main": [
+        [
+          {
+            "node": "📊 Processar Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Processar Resultado": {
+      "main": [
+        [
+          {
+            "node": "💾 Salvar no Drive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "💾 Salvar no Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Processar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "🤖 IA - Análise de CS",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger1": {
+      "main": [
+        [
+          {
+            "node": "📥 Download Arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a62ff88d-d68c-4593-af66-42d0e047c90a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "iwc6Jx2zaHTszkLs",
+  "tags": []
+}

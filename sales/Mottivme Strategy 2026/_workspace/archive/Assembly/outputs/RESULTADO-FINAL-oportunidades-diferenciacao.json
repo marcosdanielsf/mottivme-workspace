@@ -1,0 +1,95 @@
+{
+  "oportunidades_diferenciacao": {
+    "gaps_mercado": [
+      {
+        "gap": "Transparência Radical com Métricas Operacionais",
+        "oportunidade": "Internacional usa métricas específicas (Hormozi: CAC $2,000, LTV $48,000), Brasil opera com 'faturei 6 dígitos' sem contexto",
+        "potencial": "Alto",
+        "tamanho": "Grande",
+        "dificuldade": "Baixa",
+        "fit_expert": "100%"
+      },
+      {
+        "gap": "Playbooks Operacionais Documentados",
+        "oportunidade": "Internacional entrega sistemas completos (Brunson: 200+ templates), Brasil entrega 'mentorias' abstratas sem material tangível",
+        "potencial": "Alto",
+        "tamanho": "Grande",
+        "dificuldade": "Média",
+        "fit_expert": "95%"
+      },
+      {
+        "gap": "Pricing Premium Justificado por ROI",
+        "oportunidade": "Internacional cobra $25k-100k com ROI documentado, Brasil limitado a R$15k-30k sem métricas de retorno",
+        "potencial": "Médio-Alto",
+        "tamanho": "Médio-Grande",
+        "dificuldade": "Alta",
+        "fit_expert": "90%"
+      },
+      {
+        "gap": "Foco em Team Building vs Individual Coaching",
+        "oportunidade": "Internacional foca em times autônomos, Brasil centrado em coaching individual do empresário",
+        "potencial": "Médio",
+        "tamanho": "Médio",
+        "dificuldade": "Média",
+        "fit_expert": "85%"
+      },
+      {
+        "gap": "Anti-Guru Positioning Explícito",
+        "oportunidade": "Internacional emergindo movimento 'anti-guru' com foco em operação, Brasil dominado por 'gurus de palco'",
+        "potencial": "Alto",
+        "tamanho": "Grande",
+        "dificuldade": "Baixa",
+        "fit_expert": "100%"
+      }
+    ],
+    "propostas_valor": [
+      "Transparência Radical: CAC R$47, LTV 24x, conversão 20% - métricas reais do próprio negócio como prova",
+      "Playbooks 100% Documentados: scripts, cadências, rituais - entrega tangível vs mentoria abstrata",
+      "Anti-Guru Explícito: 'Guru de palco não paga suas contas' ressoa com mercado cansado",
+      "Garantia por Métricas: '20% melhoria no LTV em 90 dias ou devolução' elimina risco",
+      "Liberdade vem de Processo: antítese perfeita do guru motivacional brasileiro"
+    ],
+    "nichos_inexplorados": [
+      "Empresários high-ticket (R$50k-200k/mês) dependentes de indicação (70%+ receita)",
+      "Profissionais liberais premium querendo sistematizar sem perder exclusividade",
+      "Time Autônomo em 90 dias: rituais de governança para PMEs brasileiras",
+      "Operadores de Elite: primeiro programa focado em operação vs mindset no Brasil"
+    ],
+    "inovacoes_sugeridas": [
+      "Relatório Mensal de Transparência público com métricas do próprio negócio",
+      "Playbooks em português com exemplos BR e integração com ferramentas locais (RD Station, Hotmart)",
+      "Termômetro de Previsibilidade visual: 70% acurácia em 90 dias ou mentoria grátis até conseguir",
+      "Manifesto Anti-Guru viral atacando cultura de 'guru de palco' brasileira",
+      "Certificação 'Operador Elite' para alunos avançados"
+    ],
+    "estrategias_posicionamento": [
+      "Posicionar R$50,000-75,000 (2-3x mercado BR mas 50% internacional) com garantia baseada em métricas",
+      "Ser o primeiro 'Operador de Elite Anti-Guru' do Brasil com transparência de Hormozi + sistemas de Dalio",
+      "Criar 'Índice de Maturidade Operacional' como padrão de mercado",
+      "Usar casos reais com números (Wendell: 1% para 5% conversão com 35k leads = R$1.4M a mais/mês)",
+      "Atacar diretamente cultura 'guru de palco' com transparência brutal e casos verificáveis"
+    ],
+    "prioridades": [
+      {
+        "prioridade": "Alta",
+        "acao": "Lançar série 'Transparência Radical' mostrando métricas reais semanalmente - diferenciação imediata"
+      },
+      {
+        "prioridade": "Alta",
+        "acao": "Publicar 3 casos detalhados com números verificáveis (Wendell, Super Aprendizagem, Central Gospel)"
+      },
+      {
+        "prioridade": "Alta",
+        "acao": "Criar Manifesto Anti-Guru viral - janela de 18-24 meses antes da maturação do mercado"
+      },
+      {
+        "prioridade": "Média",
+        "acao": "Desenvolver Playbook MVP para early adopters com quick wins de 7-14 dias"
+      },
+      {
+        "prioridade": "Média",
+        "acao": "Implementar Garantia de Previsibilidade como diferencial único no mercado BR"
+      }
+    ]
+  }
+}

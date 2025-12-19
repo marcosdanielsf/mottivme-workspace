@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{COMPANY_NAME}} — Proposta Exclusiva para {{CLIENT_NAME}}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           PROPOSTAL TEMPLATE - WHITE LABEL
+           Variáveis para customização:
+           --brand-primary: cor principal da marca
+           --brand-secondary: cor secundária
+           --brand-accent: cor de destaque
+           ============================================ */
+        
+        :root {
+            /* CUSTOMIZE ESTAS VARIÁVEIS */
+            --brand-primary: #d4af37;
+            --brand-secondary: #0a0a0a;
+            --brand-accent: #f4e4bc;
+            --brand-text: #fafafa;
+            --brand-muted: #888;
+            
+            /* Sistema (não alterar) */
+            --bg: var(--brand-secondary);
+            --text: var(--brand-text);
+            --accent: var(--brand-primary);
+            --accent-dim: rgba(212, 175, 55, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.3s;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, var(--bg), transparent);
+        }
+
+        .nav-logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .nav-meta {
+            font-size: 0.8rem;
+            color: var(--brand-muted);
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 100px 20px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero h1 .highlight {
+            font-style: italic;
+            background: linear-gradient(135deg, var(--accent), var(--brand-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--brand-muted);
+            max-width: 500px;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        /* Video Container - Luna Avatar */
+        .video-container {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            overflow: hidden;
+            margin-bottom: 40px;
+            position: relative;
+            animation: fadeIn 1s ease 0.6s both;
+        }
+
+        .video-container::after {
+            content: '▶ PLAY';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--accent);
+            color: var(--bg);
+            padding: 15px 25px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+
+        .video-container.playing::after {
+            display: none;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator span {
+            display: block;
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .scroll-indicator span::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: scrollAnim 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+
+        @keyframes scrollAnim {
+            0% { opacity: 1; top: 8px; }
+            100% { opacity: 0; top: 20px; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Base */
+        .section {
+            padding: 100px 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s, transform 0.8s;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 30px;
+            line-height: 1.3;
+        }
+
+        .section p {
+            font-size: 1.1rem;
+            color: var(--brand-muted);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        /* Problem Section */
+        .problem-list {
+            list-style: none;
+            margin-top: 40px;
+        }
+
+        .problem-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 25px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .problem-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-dim);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .problem-text h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .problem-text p {
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        /* Solution Section */
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .solution-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 30px;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .solution-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .solution-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .solution-card h4::before {
+            content: '→';
+            color: var(--accent);
+        }
+
+        .solution-card p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* Results Section */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 40px 30px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .result-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: var(--brand-muted);
+        }
+
+        /* Testimonial */
+        .testimonial {
+            background: var(--accent-dim);
+            padding: 50px;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .testimonial::before {
+            content: '"';
+            font-family: 'Playfair Display', serif;
+            font-size: 8rem;
+            color: var(--accent);
+            opacity: 0.3;
+            position: absolute;
+            top: 10px;
+            left: 30px;
+            line-height: 1;
+        }
+
+        .testimonial-text {
+            font-size: 1.3rem;
+            font-style: italic;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            color: var(--text);
+        }
+
+        .testimonial-author {
+            font-size: 0.9rem;
+            color: var(--brand-muted);
+        }
+
+        .testimonial-author strong {
+            color: var(--accent);
+        }
+
+        /* Pricing Section */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        .price-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .price-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .price-card.featured {
+            border-color: var(--accent);
+            background: linear-gradient(180deg, var(--accent-dim) 0%, transparent 100%);
+        }
+
+        .price-card.featured::before {
+            content: 'RECOMENDADO';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: var(--bg);
+            padding: 5px 15px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .price-name {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .price-value {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .price-value span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--brand-muted);
+        }
+
+        .price-desc {
+            font-size: 0.85rem;
+            color: var(--brand-muted);
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .price-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .price-features li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .price-features li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .price-cta {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .price-cta.primary {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .price-cta.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .price-cta.secondary {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--text);
+        }
+
+        .price-cta.secondary:hover {
+            border-color: var(--accent);
+        }
+
+        /* Guarantee */
+        .guarantee {
+            text-align: center;
+            padding: 60px 40px;
+            background: rgba(255,255,255,0.02);
+            margin-top: 60px;
+        }
+
+        .guarantee-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .guarantee h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .guarantee p {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* CTA Final */
+        .cta-final {
+            text-align: center;
+            padding: 100px 40px;
+            position: relative;
+        }
+
+        .cta-final::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+        }
+
+        .cta-final h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .cta-final p {
+            color: var(--brand-muted);
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 20px 50px;
+            background: var(--accent);
+            color: var(--bg);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+        }
+
+        .expiry-notice {
+            margin-top: 30px;
+            font-size: 0.85rem;
+            color: var(--brand-muted);
+            position: relative;
+        }
+
+        .expiry-notice strong {
+            color: #ef4444;
+        }
+
+        /* Chat Widget */
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chat-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+            transition: transform 0.3s;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-toggle svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--bg);
+        }
+
+        .chat-bubble {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: var(--accent);
+            color: var(--bg);
+            padding: 12px 20px;
+            border-radius: 20px 20px 0 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            animation: bubbleFade 3s ease 5s both;
+        }
+
+        @keyframes bubbleFade {
+            0% { opacity: 0; transform: translateY(10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .chat-window {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 350px;
+            height: 450px;
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: var(--accent-dim);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--bg);
+        }
+
+        .chat-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .chat-info p {
+            font-size: 0.75rem;
+            color: var(--brand-muted);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+
+        .chat-message.bot {
+            margin-right: auto;
+        }
+
+        .chat-message.user {
+            margin-left: auto;
+        }
+
+        .chat-message .bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .chat-message.bot .bubble {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px 16px 16px 4px;
+        }
+
+        .chat-message.user .bubble {
+            background: var(--accent);
+            color: var(--bg);
+            border-radius: 16px 16px 4px 16px;
+        }
+
+        .chat-input {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .chat-input input::placeholder {
+            color: var(--brand-muted);
+        }
+
+        .chat-input button {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-input button svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--bg);
+        }
+
+        /* Footer */
+        footer {
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        footer p {
+            font-size: 0.85rem;
+            color: var(--brand-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .solution-grid,
+            .results-grid,
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav {
+                padding: 15px 20px;
+            }
+
+            .section {
+                padding: 60px 20px;
+            }
+
+            .chat-window {
+                width: 300px;
+                height: 400px;
+                right: -10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <nav class="nav">
+        <div class="nav-logo">{{COMPANY_NAME}}</div>
+        <div class="nav-meta">Proposta válida até <strong id="expiryDate">{{EXPIRY_DATE}}</strong></div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">Proposta exclusiva</div>
+        
+        <!-- Luna Avatar Video -->
+        <div class="video-container" id="videoContainer">
+            <!-- Inserir vídeo HeyGen/Synthesia aqui -->
+        </div>
+
+        <h1>Olá, <span class="highlight">{{CLIENT_NAME}}</span></h1>
+        <p>Preparamos esta proposta especialmente para você. Role para baixo e descubra como podemos transformar seu negócio.</p>
+
+        <div class="scroll-indicator">
+            <span></span>
+        </div>
+    </section>
+
+    <section class="section" id="problem">
+        <div class="section-label">O Problema</div>
+        <h2>Você está perdendo dinheiro sem perceber</h2>
+        <p>{{PROBLEM_INTRO}}</p>
+        
+        <ul class="problem-list">
+            <li>
+                <div class="problem-icon">💸</div>
+                <div class="problem-text">
+                    <h4>{{PROBLEM_1_TITLE}}</h4>
+                    <p>{{PROBLEM_1_DESC}}</p>
+                </div>
+            </li>
+            <li>
+                <div class="problem-icon">⏰</div>
+                <div class="problem-text">
+                    <h4>{{PROBLEM_2_TITLE}}</h4>
+                    <p>{{PROBLEM_2_DESC}}</p>
+                </div>
+            </li>
+            <li>
+                <div class="problem-icon">😓</div>
+                <div class="problem-text">
+                    <h4>{{PROBLEM_3_TITLE}}</h4>
+                    <p>{{PROBLEM_3_DESC}}</p>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <section class="section" id="solution">
+        <div class="section-label">A Solução</div>
+        <h2>É aqui que entramos</h2>
+        <p>{{SOLUTION_INTRO}}</p>
+
+        <div class="solution-grid">
+            <div class="solution-card">
+                <h4>{{SOLUTION_1_TITLE}}</h4>
+                <p>{{SOLUTION_1_DESC}}</p>
+            </div>
+            <div class="solution-card">
+                <h4>{{SOLUTION_2_TITLE}}</h4>
+                <p>{{SOLUTION_2_DESC}}</p>
+            </div>
+            <div class="solution-card">
+                <h4>{{SOLUTION_3_TITLE}}</h4>
+                <p>{{SOLUTION_3_DESC}}</p>
+            </div>
+            <div class="solution-card">
+                <h4>{{SOLUTION_4_TITLE}}</h4>
+                <p>{{SOLUTION_4_DESC}}</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="results">
+        <div class="section-label">Resultados</div>
+        <h2>O que nossos clientes conquistaram</h2>
+
+        <div class="results-grid">
+            <div class="result-card">
+                <div class="result-number">{{RESULT_1_NUMBER}}</div>
+                <div class="result-label">{{RESULT_1_LABEL}}</div>
+            </div>
+            <div class="result-card">
+                <div class="result-number">{{RESULT_2_NUMBER}}</div>
+                <div class="result-label">{{RESULT_2_LABEL}}</div>
+            </div>
+            <div class="result-card">
+                <div class="result-number">{{RESULT_3_NUMBER}}</div>
+                <div class="result-label">{{RESULT_3_LABEL}}</div>
+            </div>
+        </div>
+
+        <div class="testimonial">
+            <p class="testimonial-text">"{{TESTIMONIAL_TEXT}}"</p>
+            <p class="testimonial-author">— <strong>{{TESTIMONIAL_AUTHOR}}</strong>, {{TESTIMONIAL_ROLE}}</p>
+        </div>
+    </section>
+
+    <section class="section" id="pricing">
+        <div class="section-label">Investimento</div>
+        <h2>Escolha a melhor opção para você</h2>
+
+        <div class="pricing-grid">
+            <div class="price-card">
+                <div class="price-name">{{PLAN_1_NAME}}</div>
+                <div class="price-value">{{PLAN_1_PRICE}}<span>/{{PLAN_1_PERIOD}}</span></div>
+                <div class="price-desc">{{PLAN_1_DESC}}</div>
+                <ul class="price-features">
+                    <li>{{PLAN_1_FEATURE_1}}</li>
+                    <li>{{PLAN_1_FEATURE_2}}</li>
+                    <li>{{PLAN_1_FEATURE_3}}</li>
+                </ul>
+                <a href="{{PLAN_1_CTA_LINK}}" class="price-cta secondary" data-track="plan-1-click">ESCOLHER</a>
+            </div>
+            
+            <div class="price-card featured">
+                <div class="price-name">{{PLAN_2_NAME}}</div>
+                <div class="price-value">{{PLAN_2_PRICE}}<span>/{{PLAN_2_PERIOD}}</span></div>
+                <div class="price-desc">{{PLAN_2_DESC}}</div>
+                <ul class="price-features">
+                    <li>{{PLAN_2_FEATURE_1}}</li>
+                    <li>{{PLAN_2_FEATURE_2}}</li>
+                    <li>{{PLAN_2_FEATURE_3}}</li>
+                    <li>{{PLAN_2_FEATURE_4}}</li>
+                </ul>
+                <a href="{{PLAN_2_CTA_LINK}}" class="price-cta primary" data-track="plan-2-click">ESCOLHER</a>
+            </div>
+            
+            <div class="price-card">
+                <div class="price-name">{{PLAN_3_NAME}}</div>
+                <div class="price-value">{{PLAN_3_PRICE}}<span>/{{PLAN_3_PERIOD}}</span></div>
+                <div class="price-desc">{{PLAN_3_DESC}}</div>
+                <ul class="price-features">
+                    <li>{{PLAN_3_FEATURE_1}}</li>
+                    <li>{{PLAN_3_FEATURE_2}}</li>
+                    <li>{{PLAN_3_FEATURE_3}}</li>
+                    <li>{{PLAN_3_FEATURE_4}}</li>
+                    <li>{{PLAN_3_FEATURE_5}}</li>
+                </ul>
+                <a href="{{PLAN_3_CTA_LINK}}" class="price-cta secondary" data-track="plan-3-click">ESCOLHER</a>
+            </div>
+        </div>
+
+        <div class="guarantee">
+            <div class="guarantee-icon">🛡️</div>
+            <h3>Garantia de {{GUARANTEE_DAYS}} dias</h3>
+            <p>{{GUARANTEE_TEXT}}</p>
+        </div>
+    </section>
+
+    <section class="cta-final">
+        <h2>Pronto para transformar seu negócio?</h2>
+        <p>{{CTA_SUBTITLE}}</p>
+        <a href="{{CTA_LINK}}" class="cta-btn" data-track="cta-final-click">{{CTA_TEXT}}</a>
+        <p class="expiry-notice">⚠️ Esta proposta expira em <strong id="countdown"></strong></p>
+    </section>
+
+    <footer>
+        <p>© {{YEAR}} {{COMPANY_NAME}} • Proposta gerada por Propostal</p>
+    </footer>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <div class="chat-bubble">Tem alguma dúvida? 💬</div>
+        <button class="chat-toggle" id="chatToggle">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <div class="chat-avatar">L</div>
+                <div class="chat-info">
+                    <h4>Luna</h4>
+                    <p>Online • Respondo em segundos</p>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <div class="bubble">Olá {{CLIENT_NAME}}! 👋 Sou a Luna, assistente virtual da {{COMPANY_NAME}}. Como posso ajudar você hoje?</div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
+                <button id="chatSend">
+                    <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tracking Script -->
+    <script>
+        // ================================================
+        // PROPOSTAL TRACKING SYSTEM
+        // Envia eventos para o dashboard em tempo real
+        // ================================================
+
+        const CONFIG = {
+            leadId: '{{LEAD_ID}}',
+            proposalId: '{{PROPOSAL_ID}}',
+            trackingEndpoint: '{{TRACKING_ENDPOINT}}',
+            companyName: '{{COMPANY_NAME}}',
+            clientName: '{{CLIENT_NAME}}'
+        };
+
+        // Track page view
+        function trackEvent(eventType, data = {}) {
+            const payload = {
+                leadId: CONFIG.leadId,
+                proposalId: CONFIG.proposalId,
+                eventType,
+                timestamp: new Date().toISOString(),
+                ...data
+            };
+            
+            // Send to tracking endpoint
+            if (CONFIG.trackingEndpoint) {
+                fetch(CONFIG.trackingEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(() => {});
+            }
+            
+            console.log('📊 Track:', eventType, data);
+        }
+
+        // Track initial page view
+        trackEvent('page_view', { url: window.location.href });
+
+        // Track time on page
+        let startTime = Date.now();
+        let sectionTimes = {};
+        let currentSection = null;
+
+        window.addEventListener('beforeunload', () => {
+            const totalTime = Math.round((Date.now() - startTime) / 1000);
+            trackEvent('page_exit', { 
+                totalTimeSeconds: totalTime,
+                sectionTimes 
+            });
+        });
+
+        // Progress bar
+        const progressBar = document.getElementById('progressBar');
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / docHeight) * 100;
+            progressBar.style.width = progress + '%';
+        });
+
+        // Section visibility tracking
+        const sections = document.querySelectorAll('.section');
+        const observerOptions = {
+            threshold: 0.3,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    const sectionId = entry.target.id;
+                    
+                    // Track section enter
+                    if (currentSection !== sectionId) {
+                        if (currentSection) {
+                            const timeInSection = Math.round((Date.now() - sectionTimes[currentSection + '_start']) / 1000);
+                            sectionTimes[currentSection] = (sectionTimes[currentSection] || 0) + timeInSection;
+                            trackEvent('section_exit', { section: currentSection, timeSeconds: timeInSection });
+                        }
+                        
+                        currentSection = sectionId;
+                        sectionTimes[sectionId + '_start'] = Date.now();
+                        trackEvent('section_enter', { section: sectionId });
+                    }
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => sectionObserver.observe(section));
+
+        // Track clicks on CTAs
+        document.querySelectorAll('[data-track]').forEach(el => {
+            el.addEventListener('click', () => {
+                trackEvent('cta_click', { 
+                    element: el.dataset.track,
+                    text: el.textContent.trim()
+                });
+            });
+        });
+
+        // Chat functionality
+        const chatToggle = document.getElementById('chatToggle');
+        const chatWindow = document.getElementById('chatWindow');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+        const chatMessages = document.getElementById('chatMessages');
+
+        chatToggle.addEventListener('click', () => {
+            chatWindow.classList.toggle('active');
+            if (chatWindow.classList.contains('active')) {
+                trackEvent('chat_opened');
+                chatInput.focus();
+            }
+        });
+
+        function addMessage(text, isUser = false) {
+            const msg = document.createElement('div');
+            msg.className = `chat-message ${isUser ? 'user' : 'bot'}`;
+            msg.innerHTML = `<div class="bubble">${text}</div>`;
+            chatMessages.appendChild(msg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function handleSend() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            
+            addMessage(text, true);
+            trackEvent('chat_message', { message: text, from: 'user' });
+            chatInput.value = '';
+
+            // Simulate bot response (replace with actual AI endpoint)
+            setTimeout(() => {
+                const responses = [
+                    "Ótima pergunta! Deixa eu verificar isso para você...",
+                    "Entendi! Posso te ajudar com isso.",
+                    "Vou encaminhar sua dúvida para nossa equipe. Eles entrarão em contato em breve!"
+                ];
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(response);
+                trackEvent('chat_message', { message: response, from: 'bot' });
+            }, 1000);
+        }
+
+        chatSend.addEventListener('click', handleSend);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+
+        // Countdown timer
+        const expiryDate = new Date('{{EXPIRY_DATE}}');
+        function updateCountdown() {
+            const now = new Date();
+            const diff = expiryDate - now;
+            
+            if (diff <= 0) {
+                document.getElementById('countdown').textContent = 'EXPIRADA';
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            let text = '';
+            if (days > 0) text += `${days}d `;
+            text += `${hours}h ${minutes}m`;
+            
+            document.getElementById('countdown').textContent = text;
+        }
+        
+        updateCountdown();
+        setInterval(updateCountdown, 60000);
+
+        // Video play tracking
+        const videoContainer = document.getElementById('videoContainer');
+        videoContainer.addEventListener('click', () => {
+            videoContainer.classList.add('playing');
+            trackEvent('video_play');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+{
+  "name": "6. Relatório Semanal Automático",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 400],
+      "id": "schedule-trigger",
+      "name": "Segunda-feira 9h"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ghl-location",
+              "name": "location_id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "admin-contact",
+              "name": "admin_contact_id",
+              "value": "={{ $env.ADMIN_CONTACT_ID || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [460, 400],
+      "id": "config-ghl",
+      "name": "Config GHL"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Resumo completo da semana\nWITH receitas AS (\n  SELECT \n    COUNT(*) as quantidade,\n    COALESCE(SUM(valor_realizado), 0) as valor_realizado,\n    COALESCE(SUM(valor_previsto), 0) as valor_previsto,\n    COUNT(*) FILTER (WHERE quitado = true) as quitados\n  FROM fin_movimentacoes\n  WHERE tipo = 'receita' AND data_vencimento >= CURRENT_DATE - INTERVAL '7 days' AND data_vencimento <= CURRENT_DATE\n),\ndespesas AS (\n  SELECT \n    COUNT(*) as quantidade,\n    COALESCE(SUM(valor_realizado), 0) as valor_realizado,\n    COALESCE(SUM(valor_previsto), 0) as valor_previsto,\n    COUNT(*) FILTER (WHERE quitado = true) as quitados\n  FROM fin_movimentacoes\n  WHERE tipo = 'despesa' AND data_vencimento >= CURRENT_DATE - INTERVAL '7 days' AND data_vencimento <= CURRENT_DATE\n),\ninadimplencia AS (\n  SELECT \n    COUNT(*) as qtd_inadimplentes,\n    COALESCE(SUM(valor_previsto), 0) as valor_total\n  FROM fin_movimentacoes\n  WHERE tipo = 'receita' AND quitado = false AND data_vencimento < CURRENT_DATE\n),\nprevisao AS (\n  SELECT \n    COALESCE(SUM(CASE WHEN tipo = 'receita' THEN valor_previsto ELSE 0 END), 0) as entradas,\n    COALESCE(SUM(CASE WHEN tipo = 'despesa' THEN valor_previsto ELSE 0 END), 0) as saidas\n  FROM fin_movimentacoes\n  WHERE quitado = false AND data_vencimento BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'\n)\nSELECT \n  r.quantidade as receitas_qtd,\n  r.valor_realizado as receitas_realizadas,\n  r.valor_previsto as receitas_previstas,\n  r.quitados as receitas_quitados,\n  d.quantidade as despesas_qtd,\n  d.valor_realizado as despesas_realizadas,\n  d.valor_previsto as despesas_previstas,\n  d.quitados as despesas_quitados,\n  i.qtd_inadimplentes,\n  i.valor_total as valor_inadimplencia,\n  p.entradas as entradas_previstas,\n  p.saidas as saidas_previstas\nFROM receitas r, despesas d, inadimplencia i, previsao p;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [680, 400],
+      "id": "query-resumo",
+      "name": "Resumo Semana",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Top 5 maiores despesas da semana\nSELECT \n  m.descricao,\n  m.valor_previsto as valor,\n  cat.nome as categoria,\n  c.nome as fornecedor\nFROM fin_movimentacoes m\nLEFT JOIN fin_categorias cat ON m.categoria_id = cat.id\nLEFT JOIN fin_clientes_fornecedores c ON m.cliente_fornecedor_id = c.id\nWHERE \n  m.tipo = 'despesa'\n  AND m.data_vencimento >= CURRENT_DATE - INTERVAL '7 days'\n  AND m.data_vencimento <= CURRENT_DATE\nORDER BY m.valor_previsto DESC\nLIMIT 5;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [900, 400],
+      "id": "query-top-despesas",
+      "name": "Top 5 Despesas",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Consolidar relatório semanal\nconst config = $('Config GHL').first().json;\nconst resumo = $('Resumo Semana').first().json;\nconst topDespesas = $('Top 5 Despesas').all().filter(i => i.json && i.json.descricao);\n\n// Função para formatar valor\nconst formatarValor = (valor) => new Intl.NumberFormat('pt-BR', {\n  style: 'currency',\n  currency: 'BRL'\n}).format(Number(valor || 0));\n\n// Calcular saldo\nconst receitasRealizadas = parseFloat(resumo.receitas_realizadas) || 0;\nconst despesasRealizadas = parseFloat(resumo.despesas_realizadas) || 0;\nconst saldoSemana = receitasRealizadas - despesasRealizadas;\n\nconst entradasPrevistas = parseFloat(resumo.entradas_previstas) || 0;\nconst saidasPrevistas = parseFloat(resumo.saidas_previstas) || 0;\nconst saldoPrevisto = entradasPrevistas - saidasPrevistas;\n\n// Data do relatório\nconst hoje = new Date();\nconst semanaAnteriorInicio = new Date(hoje);\nsemanaAnteriorInicio.setDate(hoje.getDate() - 7);\n\nconst formatarDataCurta = (d) => d.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'});\n\n// Montar mensagem\nlet mensagem = `*RELATÓRIO SEMANAL FINANCEIRO*\\n`;\nmensagem += `Período: ${formatarDataCurta(semanaAnteriorInicio)} a ${formatarDataCurta(hoje)}\\n\\n`;\n\n// Resumo da semana\nmensagem += `*RESUMO DA SEMANA*\\n`;\nmensagem += `Receitas: ${formatarValor(receitasRealizadas)} (${resumo.receitas_quitados || 0} recebidos)\\n`;\nmensagem += `Despesas: ${formatarValor(despesasRealizadas)} (${resumo.despesas_quitados || 0} pagos)\\n`;\nmensagem += `*Saldo: ${formatarValor(saldoSemana)}* ${saldoSemana >= 0 ? '(positivo)' : '(negativo)'}\\n\\n`;\n\n// Top despesas\nif (topDespesas.length > 0) {\n  mensagem += `*MAIORES GASTOS*\\n`;\n  topDespesas.slice(0, 5).forEach((item, idx) => {\n    const d = item.json;\n    mensagem += `${idx + 1}. ${d.descricao}: ${formatarValor(d.valor)}\\n`;\n  });\n  mensagem += `\\n`;\n}\n\n// Inadimplência\nconst valorInadimplencia = parseFloat(resumo.valor_inadimplencia) || 0;\nif (valorInadimplencia > 0) {\n  mensagem += `*INADIMPLÊNCIA*\\n`;\n  mensagem += `${resumo.qtd_inadimplentes || 0} títulos em atraso\\n`;\n  mensagem += `Total: *${formatarValor(valorInadimplencia)}*\\n\\n`;\n}\n\n// Previsão\nmensagem += `*PRÓXIMOS 7 DIAS*\\n`;\nmensagem += `Entradas previstas: ${formatarValor(entradasPrevistas)}\\n`;\nmensagem += `Saídas previstas: ${formatarValor(saidasPrevistas)}\\n`;\nmensagem += `Saldo previsto: *${formatarValor(saldoPrevisto)}*\\n\\n`;\n\nmensagem += `---\\nMottivme Sales - BPO Financeiro`;\n\nreturn [{\n  json: {\n    mensagem,\n    admin_contact_id: config.admin_contact_id,\n    ghl_api_key: config.ghl_api_key,\n    dados: {\n      receitas_realizadas: receitasRealizadas,\n      despesas_realizadas: despesasRealizadas,\n      saldo_semana: saldoSemana,\n      inadimplencia: valorInadimplencia,\n      entradas_previstas: entradasPrevistas,\n      saidas_previstas: saidasPrevistas\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 400],
+      "id": "consolidar-relatorio",
+      "name": "Consolidar Relatório"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-contact",
+              "leftValue": "={{ $json.admin_contact_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1340, 400],
+      "id": "check-enviar",
+      "name": "Tem Destinatário?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $json.admin_contact_id }}\",\n  \"message\": \"{{ $json.mensagem.replace(/\"/g, '\\\\\"').replace(/\\n/g, '\\\\n') }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1560, 300],
+      "id": "send-relatorio",
+      "name": "Enviar Relatório GHL"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1560, 500],
+      "id": "noop-skip",
+      "name": "Sem Destinatário"
+    }
+  ],
+  "connections": {
+    "Segunda-feira 9h": {
+      "main": [
+        [
+          {
+            "node": "Config GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config GHL": {
+      "main": [
+        [
+          {
+            "node": "Resumo Semana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resumo Semana": {
+      "main": [
+        [
+          {
+            "node": "Top 5 Despesas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Top 5 Despesas": {
+      "main": [
+        [
+          {
+            "node": "Consolidar Relatório",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consolidar Relatório": {
+      "main": [
+        [
+          {
+            "node": "Tem Destinatário?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Destinatário?": {
+      "main": [
+        [
+          {
+            "node": "Enviar Relatório GHL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sem Destinatário",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "v1.1.0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "n8n-bpo-financeiro"
+  },
+  "id": "relatorio-semanal",
+  "tags": []
+}

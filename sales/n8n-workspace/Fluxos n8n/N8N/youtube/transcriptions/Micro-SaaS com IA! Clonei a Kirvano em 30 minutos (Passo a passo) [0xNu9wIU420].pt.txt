@@ -1,0 +1,545 @@
+Olha como ficou a nossa Kirvanix. Ó, eu
+vou acessar aqui com o meu usuário. Eu
+já fiz o cadastro, inclusive, ó, nós
+fizemos uma tela de cadastro bem
+parecida ali com a da Kirvano, nome,
+sobrenome, tudo certinho. Eu já fiz meu
+cadastro, ó. Eu também fiz a parte de
+envio de e-mail, olha, bem-vindo a
+Kirvaniqu, é onde a pessoa pode
+confirmar o e-mail dela. Então, vou
+logar aqui com o meu e-mail.
+Aqui, ó, já tem uma mensagem de
+boas-vindas. E aqui, ó, um dashboard
+aqui da Kirvanix, nossa plataforma. Tem
+a parte de criar produto. Se você clicar
+aqui, ó, em criar um produto, deixa eu
+tirar minha câmera aqui da frente. Opa,
+não é aqui não. Aqui nós temos um menu
+bem parecido ali com o da Kirvano, aonde
+você consegue montar a sua área de
+membros.
+Bom, a primeira coisa que a gente
+analisa aqui é que a Kirvana, ela tem
+uma tela de login, uma tela bem bonita.
+Inclusive, eu gosto muito do layout da
+Kirvana.
+Dentro da tela de login, nós temos uma
+função esqueceu a senha e nós temos uma
+função aqui para se cadastrar. O que nós
+vamos fazer é mapear cada um desses
+pontos. Então, nós vamos mapear a tela
+de login, nós vamos mapear a tela de
+esqueceu a senha e nós vamos mapear a
+tela de cadastres. E como nós vamos
+fazer isso? Nós vamos utilizar um bloco
+de notas. Então vou abrir aqui um bloco
+de notas. E com o bloco de notas aqui
+aberto, você vai digitar o quê? Login. E
+dentro da tela de login, você vai
+colocar o que tem
+cadastres
+e
+esqueci
+[Aplausos]
+a senha.
+Então nós vamos fazer isso agora. Nós
+vamos ir para a tela de cadastre-se e
+pegar tudo que tem dentro dela. Clique
+aqui, cadastre-se.
+E vamos fazer a mesma coisa.
+Cadastre-se.
+E vamos colocar aqui o que possui dentro
+dela. Nome,
+sobrenome.
+O que eu vou fazer? Eu vou cortar o
+vídeo para ficar mais rápido, pro vídeo
+ficar mais dinâmico. Então, já mapei
+aqui o que tem o que tem dentro da tela.
+cadastre esse nome, sobrenome, e-mail,
+telefone, senha, confirmar senha e botão
+criar conta grátis. Que nós vamos fazer
+agora? Vou pegar um e-mail meu, um
+e-mail pessoal que eu nunca utilizei na
+Kirvano e vou aqui cadastrar para ver
+para onde nós vamos. Próximo passo aqui,
+ele enviou pro meu e-mail aqui um uma
+confirmação. Então eu preciso acessar e
+verificar essa confirmação.
+Basicamente eu recebi um e-mail parecido
+com esse, que é para confirmar o meu
+cadastro. Eu vou clicar aqui em
+confirmar cadastro. Agora que eu
+confirmei cadastro, eu já caí aqui
+dentro dos sistemas. Então eu vou
+colocar aqui, ó, enviar um e-mail para
+confirmar o cadastro.
+Perfeito. Então, depois do cadastro, se
+ele envia um e-mail para confirmar o
+cadastro.
+E aí existe um onboarding. Que que é o
+onboarding? é um processo, uma etapa que
+a o usuário passa eh no primeiro acesso.
+Então eu vou colocar aqui, ó, pular uma
+linha,
+primeiro acesso,
+vou colocar onboarding,
+tudo junto aqui. Onboarding.
+E aí, que que tem dentro do onboard?
+Eu
+vou eu vou eu vou deixar só dentro do
+onboard um modal
+de boasvindas.
+Vou deixar dentro do onboard só um modal
+de boas-vindas. Então aqui já vende, eu
+vou preencher essas informações, já
+vendeu online, tudo certinho para
+mostrar o dashboard.
+Perfeito. Agora que eu fiz preencher as
+etapas, eu caí aqui no meu dashboard. E
+aí eu vou coletar agora as informações
+do dashboard. E eu vou colocar aqui, ó,
+dashboard.
+O que nós temos no dashboard? No
+dashboard nós temos
+a data,
+filtro de data,
+nós temos
+uma um olá, é um card de olá e nome.
+Nós temos saldo disponível,
+pessoal, pro vídeo não ficar longo,
+mesma coisa. Vou pausar aqui e vou
+digitando aqui para não perder tempo e
+aí eu já monto o dashboard completo.
+Então, basicamente eu já mapei tudo aqui
+dentro do dashboard, montei essa lista.
+OK? Agora nós vamos pra tela de
+produtos. Nós vamos clicar aqui em
+produtos.
+Ele vai pedir para eu finalizar o
+cadastro, né? Então eu vou configurar
+aqui meu perfil. Bom, estou na tela de
+produtos. Ele não deixou eu concluir o
+cadastro da outra conta porque fica
+atrelado ao meu CPF aqui no caso, né?
+Então o que que nós vamos fazer agora?
+Nós vamos pegar todos os dados aqui de
+adicionar produto e da tela de produtos.
+Então ó, produtos.
+Basicamente em produto eu tenho card dos
+produtos,
+OK? Eu tenho filtro,
+eu tenho adicionar.
+produto.
+É isso.
+Dentro de adicionar produto, eu tenho o
+quê? Deixa eu reduzir aqui. Eu tenho se
+é um ebook, se é um serviço ou um curso.
+Ebook,
+serviço ou curso.
+Eu tenho aqui as informações do produto,
+nome do produto.
+Eu tenho a descrição,
+eu tenho a categoria,
+eu tenho o idioma,
+eu tenho aqui a moeda,
+só tem em real enquanto
+e eu tenho
+a página de vendas. Beleza, vou colocar
+página
+e venda
+um checkbox
+de
+ciência.
+Aí, botão cadastrar e cancelar. Botão
+cadastrar,
+botão cadastrar e cancelar. Bom, é isso.
+Bom, é isso. Eu acredito que levantei
+todas as informações necessárias para
+cadastrar, para fazer uma plataforma
+parecida com a Kivano. O que nós vamos
+fazer agora? Nós vamos colocar a mão na
+massa, né? Vamos realmente criar a
+plataforma. E para isso eu vou usar uma
+IA que chama Cloud. Eu gosto muito dessa
+IA. Vou logar aqui. Já loguei aqui no
+cloud. A minha a minha versão do cloud é
+paga, então eu tenho a possibilidade de
+criar um projeto aqui. E é exatamente o
+que eu vou fazer. cria um projeto aqui.
+E agora a partir desse projeto é que eu
+vou desenvolver toda todo o nosso nosso
+sistema, né? Eh, vamos lá. O que eu vou
+fazer? Eu vou copiar essas informações.
+Mas antes de copiar essas informações,
+eu vou pegar aqui um prompt meu que eu
+já tenho pronto.
+Esse é o prompt que eu já tenho pronto.
+O que eu vou fazer aqui, ó? Eu tô
+pedindo para ele, deixa eu dar um zoom
+aqui por aqui, né?
+Tô pedindo aqui para ele criar um SAS em
+PHP+ Kell. O nome do app vai ser
+Kirvanix,
+plataforma de venda de produto. Aqui nas
+funcionalidades, eu vou copiar tudo o
+que eu
+mapeei. Então, ó, funcionalidades. Colei
+tudo aqui que eu já mapei, tá vendo, ó?
+E aí, ó, coloquei as cores, o resultado
+que eu espero e, OK, eu vou copiar todo
+esse prompt,
+copio todo ele, venho aqui no cloud, no
+meu projeto, e vou colar ele aqui. Só
+que tem um detalhe agora. Esse detalhe
+vai fazer toda a diferença no seu
+projeto. Qual que é o detalhe? Eu vou
+tirar print por print de cada tela da
+Kirvana. Vamos lá. Primeira tela que eu
+vou tirar o print é dessa daqui.
+Tirei o print. Venho aqui no cloud, cont
+e ele já cola o print aqui embaixo. Tá
+vendo, ó? Eu vou fazer isso para todas
+as telas. Vou fazer pra tela de
+Então, venho aqui na tela de cadastro,
+ó.
+Tiro um print
+e cola aqui no meu cloud.
+Agora eu vou fazer isso dentro da tela
+de login.
+Vou tirar um print aqui dentro da tela
+de login da conta que eu acabei de
+criar.
+Vou vir aqui no cloud, vou colar.
+Agora vou vir na tela de produtos.
+Como esse aqui não vai deixar, ó, vou
+tirar do meu da minha tela original,
+porém eu vou pausar o vídeo justamente
+por questão de segurança, né, gente?
+Pronto, eu já coloquei aqui embaixo
+todos os prints, tá vendo? Da tela do
+sistema. Meu prompt já tá pronto e eu
+vou mandar agora pro cloud e vou
+aguardar ele processar.
+Eu acredito que eu tenha, é, o Cloud deu
+um erro aqui, mas enfim, ele começou a
+processar. O que ele tá fazendo?
+Primeira coisa, ele tá criando o arquivo
+do banco de dados do meu Kirvanix, do
+meu projeto.
+Em paralelo, enquanto ele tá criando
+aqui, o que eu vou fazer? Eu vou abrir
+eh eu vou abrir aqui um site chamado e
+vou procurar por o aplicativo chamado
+Shamp, que é esse aplicativo aqui, ó.
+Perdão o barulho, tá, gente? Passou uma
+moto aqui. Você vai baixar aqui, ó,
+champ.
+e vai instalar o champ. Eu tenho
+instalado aqui na minha máquina já, ó.
+Eu tenho ele instalado. Depois de
+instalar, ele vai abrir essa tela. Você
+vai vir aqui, ó, em start, no primeiro,
+aguarda ficar verde. Perfeito. Start no
+segundo, aguarda ficar verde. Depois que
+fica verde, você vai vir nessa pasta
+aqui, ó, chamado Explorer, tá? Tem uma
+pastinha aqui chamada Explorer. Você vai
+clicar nela.
+Quando você clicar nessa pasta Explorer,
+ele vai abrir esse monte de pasta. Você
+vai procurar uma pasta chamada HTDX.
+Opa, minha câmera desfocou aqui. Deixa
+eu focar ela de novo aqui. HTDX.
+Boa. Dentro dessa pasta HTDX, eu tenho
+vários projetos. Você vai clicar, você
+vai criar uma nova pasta com um projeto
+chamado Kirvanix.
+cria uma projeto chamado Kanix e entra
+dentro dessa pasta. Perfeito. OK. Agora
+você vai baixar um outro programa
+chamado Visual Code.
+Baixa esse programa aqui, Visual Code,
+e entra dentro dele. Baixou, instalou o
+Visual Code. Você vai abrir o Visual
+Code na sua máquina. Eu também já tenho
+instalado aqui. Eu vou abrir ele.
+Perfeito. Já abri o Visual Code aqui na
+minha máquina. Que que você vai fazer?
+Você vai vir aqui em file, open folder.
+E aí, ó, no meu caso, eu já tô aqui na
+pasta do HTDS. No seu caso, você não vai
+entrar. Então, o que que você vai fazer?
+Se você tiver window, você vai no disco
+local Champ
+HDOs e abre a pasta Kirvanix e clica
+aqui embaixo selecionar pasta. É
+exatamente isso que você vai fazer aqui.
+Eh, bom, nossa pasta Kirvanix está
+zerada. Eu já iniciei os dois, o Apache
+e o maiskell. Então, verdinho. O que eu
+preciso fazer agora aqui no meu
+navegador, você vai digitar assim, ó,
+local host/php
+my admin, tudo junto e dá um enter.
+Ele vai abrir o seu arquivo de banco de
+dados que tá que o Champ instala.
+Enquanto ele abre aqui, se eu der uma
+olhada aqui, ó, ele já finalizou o
+arquivo, ó. Criei o arquivo de SQL com
+toda a estrutura do banco de dados para
+Kivanix. Agora preciso das configurações
+do banco para gerar o arquivo eh php pon
+e ponto config.php.
+Então, sem problema. Que que eu vou
+fazer? Vou vir aqui na aba que eu abri.
+Vou vir aqui, ó, em SQL,
+OK? Vou voltar aqui nesse arquivo que
+ele fez, tá vendo, ó? Vou vir aqui em
+cima na opção copiar.
+Vou voltar aqui no meu banco e vou vir
+em colar e vou vir em continuar.
+Que que ele vai fazer aqui agora? Ele
+vai criar meu banco de dados. Se eu vir
+aqui e dar um refresh aqui no botãozinho
+verde, eu tenho aqui um banco chamado
+Kirvanix.
+Perfeito. Ó, já tem um Kirvanix aqui.
+Agora o que eu vou fazer? Eu vou passar
+a instrução para ele, ó. O nome do meu
+banco de dados. Nome do banco de dados.
+Banco de dados.
+O usuário. O usuário quando você instala
+o champ, o usuário por padrão é rot, tá?
+A senha é em branco,
+não tem senha. A URL, URL do site vai
+ser http/localhost/Kvanix,
+tá? Kirvanix.
+E o nome do nosso site
+vai ser Kirvanix.
+deu enter, mandou essas informações para
+ele, ele vai começar a criar o arquivo
+config, ó. Ó, ele já tá criando o
+arquivo config com todas as informações
+que eu passei para ele.
+Vamos aguardar ele terminar.
+Ele terminou o primeiro arquivo aqui. O
+que eu vou fazer? Eu vou copiar esse
+arquivo,
+vou vir aqui no meu visual code, vou
+clicar no com botão direito novo, vou
+colocar aqui, ó, config.php.
+Dou um enter, coloqu
+s para salvar e ele salvou. Eu vou fazer
+isso para todos os arquivos que o cloud
+criar. Então, ó, ele criou um arquivo
+chamadoer.php.
+Vou vir aqui em cima, copiar
+no botão direito aqui no visual
+codeer.php
+conttrl V para colar, contrtrl S para
+salvar. Aí ele criou um footer agora
+fazer a mesma coisa e você vai fazer
+isso para realmente todos os arquivos.
+Eh, eu vou fazer o quê? Vou pausar o
+vídeo aqui, vou esperar ele terminar de
+fazer todos e aí nós vamos ver como vai
+ficar o nosso projeto. Bom, pessoal,
+depois que você cadastrar todos os
+produtos, os produtos, não, as telas
+aqui dentro do seu projeto, né, você vai
+acessar no seu navegador
+localhostirvanix.
+Que que ele vai fazer? Ele vai cair na
+tela de login aqui da Kirvanix.
+E aqui embaixo você tem um botão de
+cadastres. Quando você clicar, ó, ele
+pede nome, sobrenome, e-mail. Tá vendo,
+ó? Telefone, senha e confirmar senha. E
+aí, criar conta grátis. Que que eu vou
+fazer aqui para ficar bem legal mesmo?
+Eu vou fazer que quando clicar em criar
+conta grátis, ele mande um e-mail eh
+para confirmar a conta. E como que eu
+faço isso? Nós vamos utilizar AREVO.
+Abrevo é uma plataforma basicamente de
+e-mails e grátis que você pode criar.
+Tanto que se você vier aqui em preço, ó,
+na versão gratuita, você tem até 300
+e-mails por dia. E você pode usar, ó,
+API SMTP, que é basicamente o que a
+gente quer usar. A gente quer usar da
+Brevo para mandar esses e-mails aqui
+gratuitos. Então, nós vamos fazer isso.
+Crie sua conta aqui, tá? Cri, coloca
+aqui, ó, inscreva-se grátis.
+Depois que você criar sua conta na
+Brevo, basicamente você vai vir aqui, ó,
+em gerar nova chave de API, aonde nós
+vamos cadastrar uma chave de API e
+utilizar ela para enviar o e-mail. Aqui
+no nosso chat do cloud, eu vou fazer o
+quê, ó? Eh, na tela no refaço o arquivo
+e registro, né?
+Para enviar e-mail.
+usando a API do Brevo.
+E aí você vai fazer o quê? Eu vou pausar
+porque eu vou colar minha chave de API e
+aí eu vou passar o e-mail para ele. Qual
+de qual e-mail que ele vai enviar? Do
+não responda @udomínio, né? Então vou
+pausar aqui simplesmente para colocar
+por segurança. Pronto, já implementei
+aqui a funcionalidade. Nós vamos fazer
+um teste agora. Eu vou fazer um cadastro
+aqui.
+Ah, outra coisa, se você quiser, você
+pode fazer algumas alterações, que nem,
+ó, nome, sobrenome, tá na mesma linha.
+Quer deixar numa linha nova, é só pedir
+pro cloud fazer essa alteração aqui.
+Vamos pro cadastro.
+Ó, ele falou aqui que ele acabou de de
+enviar o e-mail. Eu vou verificar aqui
+se chegou o e-mail para mim.
+Ó, o e-mail chegou certinho aqui, tá
+vendo, ó? Chegou certinho. Bem-vindo a
+Eh, tem um botão aqui, ó, verificar meu
+e-mail. Vou clicar nele e ele vai
+direcionar. Ou posso copiar o link aqui
+do meu local host e colar aqui.
+Ah, eu não criei o arquiva ainda
+verificar e-mail.php. Então, eu vou
+fazer o quê? Vou pedir pro cloud criar
+esse arquivo.
+Vim aqui no chat e pedir para ele criar,
+ó. Cria o arquivo, verificar e-mail.php,
+porque é justamente o arquivo que ele
+não encontrou aqui em cima, ó. Kirvanix
+verificar e-mail.php.
+Vou vou esperar ele terminar aqui de
+criar e vou fazer a mesma coisa. Vou vir
+aqui criar o arquivo verifica
+traço e-mail.php.
+Ó, é verificar, tá? Tome cuidado até com
+os nomes, porque se você colocar um nome
+errado, vai dar vai continuar dando
+erro. Então é verificar meio, não é
+e-mail. Eu
+escrevi só meio, é e-mail. Então, criei
+o arquivo, vou esperar ele terminar aqui
+para copiar e colar. Finalizou, vou
+copiar agora. Vou colar aqui no arquivo.
+Colei. Vou vir aqui onde tava dando erro
+e vou dar um um atualizar. Aí, ó, e-mail
+verificado. Tá vendo, ó? Ele até fez um
+negocinho bonitinho aqui. Agora, bom,
+vamos logar e ver o resultado aí do do
+nosso
+projeto, né? Vamos ver se ele acertou,
+se ele errou. Ó, beleza. Ele já deu a
+mensagem de boas-vindas,
+tá vendo, ó? Bem-vinda, ô Kirvanix. Olá,
+John. A gente pode deixar essa mensagem
+mais bonita, tá? Bem feinha assim o
+estilo. Mas vamos lá, vamos nessa.
+Então, ó. Olá, John. Aí um tchauzinho.
+Saldo disponível, saldo pendente,
+gráfico de faturamento. A gente pode
+ajustar para ficar mais bonito. Métodos
+de pagamento aqui, ó. E a porcentagem
+aqui. Deixa eu tirar minha minha câmera
+daqui. Opa.
+Clicar aqui. Aí está pro lado. Então, ó,
+saúde da conta. Em breve você pode
+acompanhar sua conta. Jornada de
+conquista. Primeira venda. Explorador
+avançado. Mestre, mestre de novo ali. A
+gente pode ajustar depois
+aqui do lado produtos. Vamos ver como é
+que ficou. Ó, nenhum produto encontrado.
+Perfeito. Vamos criar o primeiro
+produto. Vamos ver se ele deixa. Ó, a
+função criar primeiro produto não tá
+funcionando. A gente, ó, ele separou até
+bonitinho aqui, ó. Que que é ebook, que
+que é curso, que que é serviço. Que que
+eu vou fazer? Eu vou colocar uma função
+nesse botão paraa gente criar um
+produto, OK? Como que eu faço isso? Eu
+vou pedir aqui pro cloud refazer o
+arquivo produtos para ter a função criar
+produto. Então eu vou pedir isso para
+ele, ó. Refaça
+o arquivo criarprutos
+ponph para que tenha a função de criar
+É isso que eu vou pedir.
+Eh, e aí, ó, eu vou querer no mesmo
+estilo lá da Kirvana, que é ele abrir
+aqui, ó. Inclusive, ele criou aqui, ó, o
+menuzinho bonitinho, igual da Kirvana. E
+me perdoe aí, a câmera tá na frente.
+Deixa eu descer um pouco aqui. A ideia é
+quando clicar aqui, ele abrir uma um
+side bar do lado direito com a função
+criar produto. OK? Então vamos lá. Eu
+vou só fazer essa solicitação aqui, ó.
+criar produto que abra um side par
+do lado direito
+com as informações
+para criar o produto.
+Então, vou aguardar ele refazer esse
+arquivo aqui, vou dar um enter, vou
+aguardar ele refazer e já vejo aqui com
+vocês. Bom, terminei aqui de criar o
+arquivo. Deixa eu mover minha câmera
+aqui pro lado de cá. E agora vamos ver
+se deu certo. Vou clicar em aqui em
+adicionar produto. E aí, ó, se você
+perceber,
+ficou bem bonito, ó. Ebook.
+Selecione o tipo de produto. Ebook,
+serviço ou curso. Digite o nome do
+produto. Colocar aqui teste. Descreva
+ele. Teste também, ó. E ele vai contando
+os caracter aqui, ó. Deixa eu dar um
+zoom aqui para você ver, ó. Bem legal,
+né? Ó, teste.
+Voltei.
+Selecione a categoria, ó.
+Desenvolvimento pessoal, finança,
+marketing. Depois você pode
+personalizar.
+Ó, o nosso aqui já tem dólar, hein?
+Inglês ou espanhol.
+Informações complementares e a página de
+vendas. Aqui marquei. Vamos cadastrar.
+Ah, ele não criou a função cadastrar,
+porém, eh, nós poderíamos aperfeiçoar
+isso, mas você entendeu aqui como como
+seria aí para você criar a sua
+plataforma igual. Vamos voltar aqui pro
+dashboard, né? Opa, voltamos pro
+Vamos alterar aqui, ó, KVN para KVX, né,
+que é Kirvanix. Então, vamos. Como é que
+eu posso fazer essa alteração? Tem duas
+formas. Ou você pode pedir pro cloud
+para ele alterar o KVN para CVX, ou você
+pode vir aqui no arquivo que é o index,
+dá um control F aqui, buscar KVN. Deixa
+eu ver se ele tem aqui. Não, deve tá no
+header. Então vou buscar aqui dentro do
+header KVN. Ó, ele achou. E vou trocar
+aqui para KVX. Control S para salvar. E
+se eu vir aqui e atualizar, ó, KVX.
+Então o nosso é Kirvanix. Bom, é isso.
+Espero que você tenha gostado dessa
+aula. Procurei ser bem prático. E se
+você procura um treinamento para montar
+uma área de membros, não só área de
+membros, se procura um treinamento para
+montar um SAS, eu tenho um treinamento
+completo onde eu ensino montar o SAS do
+zero a até fazer a parte do checkout,
+todas as transações e vai estar
+disponível aqui no link abaixo.

@@ -1,0 +1,120 @@
+CODE function isString(v) {
+  return typeof v === 'string' && v.trim().length > 0;
+}
+
+function cleanToken(t) {
+  if (!isString(t)) return '';
+  return t.replace(/^\)\:\*\*[\s\r\n]*/,'').replace(/^[\*\-\s]+/,'').replace(/\s+/g,' ').trim();
+}
+
+function splitList(s) {
+  if (!isString(s)) return [];
+  return s.split(',').map(x => cleanToken(x)).filter(x => x.length > 0);
+}
+
+function uniqueCI(arr) {
+  const seen = new Set();
+  const out = [];
+  for (const s of arr) {
+    const k = s.toLowerCase();
+    if (!seen.has(k)) { seen.add(k); out.push(s); }
+  }
+  return out;
+}
+
+function sanitizeVocabulary(arr) {
+  return uniqueCI(arr.map(cleanToken).filter(x => x.length > 1 && !/^\*+$/.test(x)));
+}
+
+function gatherText(rec) {
+  const segs = [];
+  const cc = rec.clone_config || {};
+  const pb = Array.isArray(cc.prohibited_behaviors) ? cc.prohibited_behaviors : [];
+  const mb = Array.isArray(cc.mandatory_behaviors) ? cc.mandatory_behaviors : [];
+  segs.push(pb.join('\n'));
+  segs.push(mb.join('\n'));
+  const bordoes = rec.bordoes && Array.isArray(rec.bordoes.principais) ? rec.bordoes.principais : [];
+  bordoes.forEach(b => segs.push(isString(b && b.frase) ? b.frase : ''));
+  const ctx = rec.contexts || {};
+  if (isString(ctx.system_prompt)) segs.push(ctx.system_prompt);
+  if (isString(ctx.user_message)) segs.push(ctx.user_message);
+  const sp = ctx.json_api && Array.isArray(ctx.json_api.signature_phrases) ? ctx.json_api.signature_phrases : [];
+  segs.push(sp.join('\n'));
+  return segs.join('\n');
+}
+
+function extractListAfterHeading(text, headingRegex) {
+  const m = headingRegex.exec(text);
+  if (!m) return [];
+  const rest = text.slice(m.index + m[0].length);
+  const lines = rest.split('\n').map(l => l.trim());
+  const firstNonEmpty = lines.find(l => l.length > 0) || '';
+  return splitList(firstNonEmpty);
+}
+
+function extractAlways(text) {
+  const r = /Palavras\s+Caracter[íi]sticas\s*\(SEMPRE\s+usar\)\s*:\s*\*{0,2}/i;
+  return extractListAfterHeading(text, r);
+}
+
+function extractNever(text) {
+  const r = /Palavras\s+Proibidas\s*\(NUNCA\s+usar\)\s*:\s*\*{0,2}/i;
+  return extractListAfterHeading(text, r);
+}
+
+function fallbackNever(text) {
+  const matches = text.match(/milagroso|m[áa]gico|instant[âa]neo|f[áa]cil|garantido|revolucion[áa]rio\s*\(sem\s*base\)|modismo|superficial|gen[eé]rico/gi);
+  return sanitizeVocabulary(matches || []);
+}
+
+function updateContexts(rec, always, never) {
+  if (rec.contexts && rec.contexts.json_api && rec.contexts.json_api.vocabulary) {
+    rec.contexts.json_api.vocabulary.always = always.slice();
+    rec.contexts.json_api.vocabulary.never = never.slice();
+  }
+}
+
+function processRecord(rec) {
+  const text = gatherText(rec);
+  let always = extractAlways(text);
+  let never = extractNever(text);
+
+  const existingAlways = rec.vocabulario && Array.isArray(rec.vocabulario.sempre_usar) ? rec.vocabulario.sempre_usar : [];
+  const existingNever = rec.vocabulario && Array.isArray(rec.vocabulario.nunca_usar) ? rec.vocabulario.nunca_usar : [];
+  const ctxAlways = rec.contexts && rec.contexts.json_api && Array.isArray(rec.contexts.json_api.vocabulary && rec.contexts.json_api.vocabulary.always) ? rec.contexts.json_api.vocabulary.always : [];
+  const ctxNever = rec.contexts && rec.contexts.json_api && Array.isArray(rec.contexts.json_api.vocabulary && rec.contexts.json_api.vocabulary.never) ? rec.contexts.json_api.vocabulary.never : [];
+
+  if (always.length === 0) {
+    always = sanitizeVocabulary(ctxAlways.length ? ctxAlways : existingAlways);
+  }
+  if (never.length === 0) {
+    never = sanitizeVocabulary(ctxNever.length ? ctxNever : existingNever);
+  }
+
+  always = sanitizeVocabulary(always);
+  never = sanitizeVocabulary(never);
+
+  if (never.length === 0 || never.map(x => x.toLowerCase()).join(',') === always.map(x => x.toLowerCase()).join(',')) {
+    never = fallbackNever(text);
+  }
+
+  never = sanitizeVocabulary(never).filter(x => !always.map(y => y.toLowerCase()).includes(x.toLowerCase()));
+
+  rec.vocabulario = rec.vocabulario || {};
+  rec.vocabulario.sempre_usar = always;
+  rec.vocabulario.nunca_usar = never;
+  updateContexts(rec, always, never);
+  return rec;
+}
+
+function inputToArray(it) {
+  if (!it || it.length === 0) return [];
+  const j = it[0].json;
+  if (Array.isArray(j)) return j;
+  if (j && typeof j === 'object') return [j];
+  return [];
+}
+
+const records = inputToArray(items);
+const result = records.map(processRecord);
+return result.map(r => ({ json: r }));

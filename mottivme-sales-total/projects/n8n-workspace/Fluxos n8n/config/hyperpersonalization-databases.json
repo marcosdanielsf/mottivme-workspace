@@ -1,0 +1,396 @@
+{
+  "DDD_DATABASE": {
+    "11": {
+      "cidade": "São Paulo",
+      "estado": "SP",
+      "regiao": "Sudeste",
+      "cultura": "objetiva",
+      "frase_local": "paulistano",
+      "expressoes": ["mano", "firmeza", "é nóis"],
+      "ritmo": "acelerado",
+      "formalidade": "baixa",
+      "referencias_locais": ["Paulista", "Faria Lima", "Augusta"]
+    },
+    "21": {
+      "cidade": "Rio de Janeiro",
+      "estado": "RJ",
+      "regiao": "Sudeste",
+      "cultura": "descontraída",
+      "frase_local": "carioca",
+      "expressoes": ["cara", "beleza", "tranquilo"],
+      "ritmo": "moderado",
+      "formalidade": "baixa",
+      "referencias_locais": ["Zona Sul", "Barra", "Centro"]
+    },
+    "31": {
+      "cidade": "Belo Horizonte",
+      "estado": "MG",
+      "regiao": "Sudeste",
+      "cultura": "acolhedora",
+      "frase_local": "mineiro",
+      "expressoes": ["uai", "sô", "trem"],
+      "ritmo": "tranquilo",
+      "formalidade": "média",
+      "referencias_locais": ["Savassi", "Pampulha", "Praça da Liberdade"]
+    },
+    "41": {
+      "cidade": "Curitiba",
+      "estado": "PR",
+      "regiao": "Sul",
+      "cultura": "formal",
+      "frase_local": "curitibano",
+      "expressoes": ["bah", "tchê"],
+      "ritmo": "organizado",
+      "formalidade": "alta",
+      "referencias_locais": ["Batel", "Centro Cívico", "Jardim Botânico"]
+    },
+    "51": {
+      "cidade": "Porto Alegre",
+      "estado": "RS",
+      "regiao": "Sul",
+      "cultura": "direta",
+      "frase_local": "gaúcho",
+      "expressoes": ["bah", "tchê", "guri"],
+      "ritmo": "intenso",
+      "formalidade": "média",
+      "referencias_locais": ["Moinhos", "Cidade Baixa", "Redenção"]
+    },
+    "61": {
+      "cidade": "Brasília",
+      "estado": "DF",
+      "regiao": "Centro-Oeste",
+      "cultura": "institucional",
+      "frase_local": "candango",
+      "expressoes": ["véi", "é isso aí"],
+      "ritmo": "burocrático",
+      "formalidade": "alta",
+      "referencias_locais": ["Asa Sul", "Asa Norte", "Lago Sul"]
+    },
+    "71": {
+      "cidade": "Salvador",
+      "estado": "BA",
+      "regiao": "Nordeste",
+      "cultura": "calorosa",
+      "frase_local": "baiano",
+      "expressoes": ["meu rei", "oxe", "é massa"],
+      "ritmo": "relaxado",
+      "formalidade": "baixa",
+      "referencias_locais": ["Pelourinho", "Barra", "Ondina"]
+    },
+    "81": {
+      "cidade": "Recife",
+      "estado": "PE",
+      "regiao": "Nordeste",
+      "cultura": "acolhedora",
+      "frase_local": "pernambucano",
+      "expressoes": ["visse", "oxente", "arretado"],
+      "ritmo": "moderado",
+      "formalidade": "média",
+      "referencias_locais": ["Boa Viagem", "Recife Antigo", "Marco Zero"]
+    },
+    "85": {
+      "cidade": "Fortaleza",
+      "estado": "CE",
+      "regiao": "Nordeste",
+      "cultura": "hospitaleira",
+      "frase_local": "cearense",
+      "expressoes": ["macho", "abestado", "é bom demais"],
+      "ritmo": "tranquilo",
+      "formalidade": "baixa",
+      "referencias_locais": ["Aldeota", "Meireles", "Praia de Iracema"]
+    },
+    "62": {
+      "cidade": "Goiânia",
+      "estado": "GO",
+      "regiao": "Centro-Oeste",
+      "cultura": "sertaneja",
+      "frase_local": "goiano",
+      "expressoes": ["uai", "trem bão"],
+      "ritmo": "moderado",
+      "formalidade": "média",
+      "referencias_locais": ["Setor Marista", "Setor Bueno", "Jardim Goiás"]
+    },
+    "default": {
+      "cidade": "Brasil",
+      "estado": "BR",
+      "regiao": "Nacional",
+      "cultura": "neutra",
+      "frase_local": "brasileiro",
+      "expressoes": [],
+      "ritmo": "moderado",
+      "formalidade": "média",
+      "referencias_locais": []
+    }
+  },
+
+  "SETOR_DATABASE": {
+    "saude": {
+      "analogias": ["diagnóstico", "tratamento", "prevenção", "check-up", "sintomas"],
+      "dores_comuns": ["agenda vazia", "no-show", "pacientes que não retornam", "concorrência de preço"],
+      "metricas_setor": ["taxa de retorno", "ticket médio", "ocupação de agenda"],
+      "linguagem": ["paciente", "consulta", "procedimento", "tratamento"],
+      "tom_recomendado": "consultivo e empático",
+      "objecoes_tipicas": ["preço alto", "medo do procedimento", "falta de tempo"]
+    },
+    "odontologia": {
+      "analogias": ["sorriso", "saúde bucal", "prevenção", "estética"],
+      "dores_comuns": ["agenda vazia", "pacientes que não fecham orçamento", "concorrência"],
+      "metricas_setor": ["taxa de conversão de orçamentos", "ticket médio", "indicações"],
+      "linguagem": ["paciente", "avaliação", "tratamento", "procedimento estético"],
+      "tom_recomendado": "acolhedor e educativo",
+      "objecoes_tipicas": ["orçamento alto", "medo de dor", "tempo de tratamento"]
+    },
+    "juridico": {
+      "analogias": ["processo", "defesa", "estratégia", "jurisprudência", "parecer"],
+      "dores_comuns": ["clientes que não pagam", "processos longos", "captação de clientes"],
+      "metricas_setor": ["casos ganhos", "tempo médio de resolução", "honorários médios"],
+      "linguagem": ["cliente", "caso", "processo", "audiência"],
+      "tom_recomendado": "formal e confiável",
+      "objecoes_tipicas": ["honorários altos", "demora do processo", "incerteza do resultado"]
+    },
+    "imobiliario": {
+      "analogias": ["investimento", "patrimônio", "valorização", "localização"],
+      "dores_comuns": ["leads frios", "visitas que não convertem", "negociação difícil"],
+      "metricas_setor": ["taxa de conversão", "tempo médio de venda", "ticket médio"],
+      "linguagem": ["cliente", "imóvel", "visita", "proposta", "fechamento"],
+      "tom_recomendado": "consultivo e aspiracional",
+      "objecoes_tipicas": ["preço alto", "localização", "momento de comprar"]
+    },
+    "tech": {
+      "analogias": ["deploy", "sprint", "escalar", "otimizar", "automatizar"],
+      "dores_comuns": ["churn alto", "onboarding complexo", "suporte sobrecarregado"],
+      "metricas_setor": ["MRR", "churn", "LTV", "CAC"],
+      "linguagem": ["usuário", "plataforma", "feature", "integração"],
+      "tom_recomendado": "técnico mas acessível",
+      "objecoes_tipicas": ["preço da assinatura", "curva de aprendizado", "integração com sistemas"]
+    },
+    "educacao": {
+      "analogias": ["aprendizado", "evolução", "capacitação", "certificação"],
+      "dores_comuns": ["evasão", "inadimplência", "captação de alunos"],
+      "metricas_setor": ["taxa de matrícula", "evasão", "NPS dos alunos"],
+      "linguagem": ["aluno", "curso", "matrícula", "certificado"],
+      "tom_recomendado": "motivacional e educativo",
+      "objecoes_tipicas": ["valor do curso", "tempo disponível", "reconhecimento do certificado"]
+    },
+    "fitness": {
+      "analogias": ["treino", "evolução", "resultado", "disciplina", "transformação"],
+      "dores_comuns": ["cancelamentos", "baixa frequência", "sazonalidade"],
+      "metricas_setor": ["taxa de retenção", "frequência média", "indicações"],
+      "linguagem": ["aluno", "treino", "resultado", "plano"],
+      "tom_recomendado": "motivacional e energético",
+      "objecoes_tipicas": ["preço mensal", "falta de tempo", "distância"]
+    },
+    "estetica": {
+      "analogias": ["transformação", "autoestima", "cuidado", "resultado"],
+      "dores_comuns": ["sazonalidade", "concorrência de preço", "fidelização"],
+      "metricas_setor": ["ticket médio", "frequência de retorno", "pacotes vendidos"],
+      "linguagem": ["cliente", "procedimento", "sessão", "resultado"],
+      "tom_recomendado": "acolhedor e aspiracional",
+      "objecoes_tipicas": ["preço dos pacotes", "medo de resultado", "tempo das sessões"]
+    },
+    "contabilidade": {
+      "analogias": ["balanço", "compliance", "economia tributária", "planejamento"],
+      "dores_comuns": ["clientes que não enviam documentos", "sazonalidade IR", "preço baixo do mercado"],
+      "metricas_setor": ["clientes ativos", "ticket médio", "churn"],
+      "linguagem": ["cliente", "empresa", "declaração", "planejamento"],
+      "tom_recomendado": "técnico e confiável",
+      "objecoes_tipicas": ["honorários mensais", "já tenho contador", "faço sozinho"]
+    },
+    "varejo": {
+      "analogias": ["vendas", "estoque", "giro", "margem", "conversão"],
+      "dores_comuns": ["estoque parado", "sazonalidade", "concorrência online"],
+      "metricas_setor": ["ticket médio", "conversão", "giro de estoque"],
+      "linguagem": ["cliente", "produto", "compra", "promoção"],
+      "tom_recomendado": "amigável e promocional",
+      "objecoes_tipicas": ["preço", "forma de pagamento", "prazo de entrega"]
+    },
+    "default": {
+      "analogias": ["resultado", "solução", "parceria", "crescimento"],
+      "dores_comuns": ["captação de clientes", "retenção", "diferenciação"],
+      "metricas_setor": ["faturamento", "clientes ativos", "satisfação"],
+      "linguagem": ["cliente", "serviço", "solução", "resultado"],
+      "tom_recomendado": "consultivo e profissional",
+      "objecoes_tipicas": ["preço", "momento", "concorrência"]
+    }
+  },
+
+  "EMPRESAS_CONHECIDAS": {
+    "esporte": ["Flamengo", "Corinthians", "Palmeiras", "São Paulo FC", "Grêmio", "Internacional", "Cruzeiro", "Atlético-MG", "Vasco", "Botafogo", "Santos", "Bahia", "Sport", "Fortaleza", "Ceará"],
+    "saude": ["Einstein", "Sírio-Libanês", "Fleury", "DASA", "Hapvida", "NotreDame Intermédica", "Amil", "Bradesco Saúde", "SulAmérica", "Unimed"],
+    "tech": ["Nubank", "iFood", "99", "Stone", "PagSeguro", "XP", "BTG", "Movile", "QuintoAndar", "Loft", "Creditas", "Ebanx", "Wildlife", "Vtex", "RD Station", "TOTVS", "Locaweb"],
+    "varejo": ["Magazine Luiza", "Americanas", "Casas Bahia", "Renner", "Riachuelo", "C&A", "Petz", "Centauro", "Drogasil", "Pague Menos"],
+    "educacao": ["Kroton", "Estácio", "Anhanguera", "FIAP", "Insper", "FGV", "PUC", "USP", "Unicamp"],
+    "financeiro": ["Itaú", "Bradesco", "Santander", "Banco do Brasil", "Caixa", "BTG", "XP", "Inter", "C6 Bank", "Original"],
+    "industria": ["Ambev", "JBS", "BRF", "Natura", "Gerdau", "Suzano", "Klabin", "Votorantim", "WEG", "Embraer"]
+  },
+
+  "PORTE_DATABASE": {
+    "micro": {
+      "funcionarios": "1-9",
+      "faturamento": "até R$ 360 mil/ano",
+      "caracteristicas": ["dono faz tudo", "decisão rápida", "orçamento limitado"],
+      "abordagem": "direta ao ponto, foco em ROI imediato",
+      "objecoes_comuns": ["não tenho dinheiro", "faço eu mesmo", "não tenho tempo"],
+      "gatilhos": ["economia de tempo", "simplicidade", "resultado rápido"]
+    },
+    "pequena": {
+      "funcionarios": "10-49",
+      "faturamento": "R$ 360 mil - R$ 4.8 milhões/ano",
+      "caracteristicas": ["estrutura básica", "alguns processos", "crescimento"],
+      "abordagem": "consultiva, mostrar como escalar",
+      "objecoes_comuns": ["preciso consultar sócio", "não é prioridade agora", "já tentei algo parecido"],
+      "gatilhos": ["crescimento", "profissionalização", "competitividade"]
+    },
+    "media": {
+      "funcionarios": "50-249",
+      "faturamento": "R$ 4.8 milhões - R$ 300 milhões/ano",
+      "caracteristicas": ["processos definidos", "hierarquia", "compliance"],
+      "abordagem": "formal, apresentar business case",
+      "objecoes_comuns": ["precisa passar por aprovação", "já temos fornecedor", "timing não é bom"],
+      "gatilhos": ["eficiência", "compliance", "integração com sistemas"]
+    },
+    "grande": {
+      "funcionarios": "250+",
+      "faturamento": "acima de R$ 300 milhões/ano",
+      "caracteristicas": ["burocracia", "múltiplos decisores", "processos longos"],
+      "abordagem": "institucional, foco em caso de uso e referências",
+      "objecoes_comuns": ["processo de compras", "já estamos em contrato", "precisa de licitação"],
+      "gatilhos": ["inovação", "diferencial competitivo", "cases de sucesso"]
+    },
+    "default": {
+      "funcionarios": "indefinido",
+      "faturamento": "indefinido",
+      "caracteristicas": ["descobrir durante conversa"],
+      "abordagem": "descoberta consultiva",
+      "objecoes_comuns": [],
+      "gatilhos": ["resultado", "solução", "parceria"]
+    }
+  },
+
+  "CARGO_DATABASE": {
+    "ceo": {
+      "nivel": "C-Level",
+      "interesses": ["visão estratégica", "ROI", "crescimento", "competitividade"],
+      "linguagem": ["estratégia", "resultado", "mercado", "inovação"],
+      "abordagem": "objetiva, big picture, números de impacto",
+      "disponibilidade": "baixa",
+      "decisor": true
+    },
+    "diretor": {
+      "nivel": "Diretoria",
+      "interesses": ["eficiência", "metas", "equipe", "processos"],
+      "linguagem": ["KPIs", "metas", "equipe", "otimização"],
+      "abordagem": "dados e métricas, impacto na área",
+      "disponibilidade": "média",
+      "decisor": true
+    },
+    "gerente": {
+      "nivel": "Gerência",
+      "interesses": ["operação", "equipe", "resultados do time", "ferramentas"],
+      "linguagem": ["equipe", "processos", "produtividade", "ferramentas"],
+      "abordagem": "prática, como facilita o dia a dia",
+      "disponibilidade": "média-alta",
+      "decisor": "influenciador"
+    },
+    "coordenador": {
+      "nivel": "Coordenação",
+      "interesses": ["execução", "ferramentas", "produtividade"],
+      "linguagem": ["tarefas", "prazos", "ferramentas", "equipe"],
+      "abordagem": "operacional, demonstração prática",
+      "disponibilidade": "alta",
+      "decisor": "influenciador"
+    },
+    "analista": {
+      "nivel": "Operacional",
+      "interesses": ["facilidade de uso", "automação", "menos trabalho manual"],
+      "linguagem": ["sistema", "processo", "automação", "relatório"],
+      "abordagem": "técnica, hands-on",
+      "disponibilidade": "alta",
+      "decisor": false
+    },
+    "socio": {
+      "nivel": "Proprietário",
+      "interesses": ["lucro", "crescimento", "tempo livre", "legado"],
+      "linguagem": ["resultado", "investimento", "retorno", "negócio"],
+      "abordagem": "consultiva, parceria de longo prazo",
+      "disponibilidade": "variável",
+      "decisor": true
+    },
+    "autonomo": {
+      "nivel": "Individual",
+      "interesses": ["mais clientes", "menos trabalho operacional", "renda"],
+      "linguagem": ["clientes", "agenda", "faturamento", "tempo"],
+      "abordagem": "direta, foco em ganho pessoal",
+      "disponibilidade": "variável",
+      "decisor": true
+    },
+    "default": {
+      "nivel": "indefinido",
+      "interesses": ["descobrir durante conversa"],
+      "linguagem": ["resultado", "solução"],
+      "abordagem": "descoberta consultiva",
+      "disponibilidade": "média",
+      "decisor": "descobrir"
+    }
+  },
+
+  "FERIADOS_REGIONAIS": {
+    "SP": ["25/01 - Aniversário de São Paulo", "09/07 - Revolução Constitucionalista"],
+    "RJ": ["20/01 - São Sebastião", "23/04 - São Jorge"],
+    "MG": ["21/04 - Tiradentes (ênfase)"],
+    "BA": ["02/07 - Independência da Bahia"],
+    "RS": ["20/09 - Revolução Farroupilha"],
+    "PE": ["06/03 - Revolução Pernambucana"]
+  },
+
+  "SAZONALIDADE": {
+    "janeiro": {
+      "contexto": "início de ano, planejamento",
+      "gancho": "metas do ano novo, planejamento anual"
+    },
+    "fevereiro": {
+      "contexto": "carnaval, retomada",
+      "gancho": "retomar depois do carnaval, ajustar metas"
+    },
+    "marco": {
+      "contexto": "fim do Q1",
+      "gancho": "revisar trimestre, ajustar rota"
+    },
+    "abril": {
+      "contexto": "páscoa, IR",
+      "gancho": "declaração IR, planejamento tributário"
+    },
+    "maio": {
+      "contexto": "dia das mães",
+      "gancho": "campanhas sazonais"
+    },
+    "junho": {
+      "contexto": "meio do ano, festas juninas",
+      "gancho": "revisão semestral, ajuste de metas"
+    },
+    "julho": {
+      "contexto": "férias escolares",
+      "gancho": "planejar segundo semestre"
+    },
+    "agosto": {
+      "contexto": "dia dos pais",
+      "gancho": "campanhas sazonais, preparar Q4"
+    },
+    "setembro": {
+      "contexto": "primavera, retomada",
+      "gancho": "sprint final do ano"
+    },
+    "outubro": {
+      "contexto": "dia das crianças, eleições (anos pares)",
+      "gancho": "campanhas de fim de ano, Black Friday prep"
+    },
+    "novembro": {
+      "contexto": "Black Friday",
+      "gancho": "maior período de vendas, última chance do ano"
+    },
+    "dezembro": {
+      "contexto": "natal, fim de ano",
+      "gancho": "fechamento anual, planejar próximo ano"
+    }
+  }
+}

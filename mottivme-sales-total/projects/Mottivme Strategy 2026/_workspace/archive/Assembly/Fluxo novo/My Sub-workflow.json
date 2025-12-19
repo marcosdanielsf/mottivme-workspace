@@ -1,0 +1,318 @@
+{
+  "name": "My Sub-workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        2624,
+        912
+      ],
+      "id": "0b133433-80af-4499-b432-7a780e889960",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ae5d962d-1935-46e9-a46a-ec4c7f3f2b07",
+      "name": "Upload Img to ImgBB for URL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2832,
+        912
+      ],
+      "notesInFlow": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "P9MmmnLnaQhG4ZQ7",
+          "name": "apify"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=http://api.resmush.it/ws.php?img={{ $json.data.url }}",
+        "options": {}
+      },
+      "id": "37505361-033b-4523-9e63-4f1ec4adbd63",
+      "name": "ReSmush.it Image Optimisation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3008,
+        912
+      ],
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image",
+              "value": "={{ $json.dest }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bb290384-e30a-4f58-8dc2-be63ae3a3287",
+      "name": "Store Optimised Image ImgBB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3184,
+        912
+      ],
+      "notesInFlow": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "P9MmmnLnaQhG4ZQ7",
+          "name": "apify"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.toJsonString() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2272,
+        912
+      ],
+      "id": "1a68c556-a42d-49a3-8d05-482587193d5a",
+      "name": "NanoBanana",
+      "credentials": {
+        "openRouterApi": {
+          "id": "sfkNv3IS1mwYy1mQ",
+          "name": "OpenRouter Alan"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "124f3a7c-735d-4121-a407-b559dbccdbfe",
+              "name": "data",
+              "value": "={{ $json.choices[0].message.images[0].image_url.url.split(',')[1] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2464,
+        912
+      ],
+      "id": "78ed40d7-1f82-4422-b828-d15f9505ec78",
+      "name": "ExtractBase64Str"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get input JSON\nconst item = $input.first().json;\nconst prompt = item.image_prompt || \"\";\nconst additionalUrls = item.additional_image_urls || [];\nconst aspectRatioUrl = item.aspect_ratio_image_url;\n\n// Build the content array: always begin with the prompt text\nconst content = [\n  {\n    type: \"text\",\n    text: prompt,\n  }\n];\n\n// Assemble image URLs: aspect ratio image first if present, then the rest\nconst allImageUrls = [];\nif (aspectRatioUrl) {\n  allImageUrls.push(aspectRatioUrl);\n}\nfor (const url of additionalUrls) {\n  // Prevent duplicates in case aspect_ratio_image_url is also in additional_image_urls\n  if (url !== aspectRatioUrl) {\n    allImageUrls.push(url);\n  }\n}\nfor (const url of allImageUrls) {\n  content.push({\n    type: \"image_url\",\n    image_url: { url }\n  });\n}\n\n// Build final request body\nconst body = {\n  model: \"google/gemini-2.5-flash-image-preview\",\n  messages: [\n    {\n      role: \"user\",\n      content: content\n    }\n  ]\n};\n\nreturn [{ json: body }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        912
+      ],
+      "id": "ffc4a671-0fd0-4849-af78-b91c8e91f0b8",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "## Upload & Optimize \nUpload image to ImgBB, Optimise using ReSmush .it\n",
+        "height": 241,
+        "width": 570,
+        "color": 7
+      },
+      "id": "a81d7eaa-9512-4323-82b9-fbdce948d74f",
+      "name": "Sticky Note35",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2768,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Image Gen\nNano Banana (Gemini-2.5-Flash-Image-Preview)",
+        "height": 240,
+        "width": 512,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        816
+      ],
+      "id": "b3643095-596c-4eb0-b08d-8ee05d25e51a",
+      "name": "Sticky Note42"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "2d526b9f-26eb-4340-8c42-7c20651ac827",
+      "typeVersion": 1.1,
+      "name": "Start",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        1872,
+        912
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload Img to ImgBB for URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Img to ImgBB for URL": {
+      "main": [
+        [
+          {
+            "node": "ReSmush.it Image Optimisation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReSmush.it Image Optimisation": {
+      "main": [
+        [
+          {
+            "node": "Store Optimised Image ImgBB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NanoBanana": {
+      "main": [
+        [
+          {
+            "node": "ExtractBase64Str",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExtractBase64Str": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "NanoBanana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c75f9020-e46f-4502-9c05-eb32c431c5b1",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "NX8VeXT809UqXbDt",
+  "tags": []
+}

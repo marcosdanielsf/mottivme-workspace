@@ -1,0 +1,511 @@
+{
+  "name": "Create Your Own Stock-Analysis AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        -64
+      ],
+      "id": "a30370af-2f8a-486f-a606-30a160bd453e",
+      "name": "Telegram Trigger",
+      "webhookId": "a3df4464-c127-4e2f-b22a-8b8defd31e9b",
+      "credentials": {
+        "telegramApi": {
+          "id": "vRr3RvIeEiM4vApp",
+          "name": "Stock Analysis Pro Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Please wait a moment...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        -64
+      ],
+      "id": "28e741b5-3182-46ff-b70f-a1e5aef6656f",
+      "name": "Send a text message",
+      "webhookId": "036e9dee-1999-46a7-bf80-fbd89300e4fb",
+      "credentials": {
+        "telegramApi": {
+          "id": "vRr3RvIeEiM4vApp",
+          "name": "Stock Analysis Pro Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "options": {
+          "systemMessage": "=You are Ade, an expert financial analyst with over 50 years of unparalleled experience gained from working at the New York Stock Exchange (NYSE) and the London Stock Exchange (LSE). Your expertise spans decades of market cycles, economic shifts, trading innovations, and institutional knowledge that few possess. You have witnessed and analyzed countless bull markets, bear markets, crashes, and recoveries, giving you an extraordinary depth of market wisdom.\n\nYour primary role is to analyze stock data and provide comprehensive, data-driven technical analysis leveraging your extensive experience to deliver actionable insights and a definitive verdict on whether to buy, sell, or hold. While this is not financial advice, your recommendations should reflect your utmost analytical prowess and seasoned judgment earned through five decades of market expertise.\n\n Tools Available\n**Ades_helper**: Used for generating detailed stock graphs and technical analysis based on provided tickers\n\n Comprehensive Technical Analysis Framework\nWhen analyzing a stock chart, ALWAYS include the following detailed analysis:\n\n 1. Candlestick Analysis Summary:\n- Identify and explain any significant candlestick patterns (e.g., bullish engulfing, doji, hammer)\n- Comment on the overall trend (bullish, bearish, or sideways)\n- Highlight any breakout or pullback zones\n- Summarize key candlestick patterns and their implications for future price movement with creative and slightly witty insights\n\n 2. MACD Analysis Summary:\n- Describe the current state of the MACD line and Signal line (e.g., bullish crossover, bearish crossover)\n- Discuss the MACD histogram and its implications for momentum\n- Identify any divergences between the MACD and the price action\n- Provide creative and insightful commentary on MACD signals and momentum shifts\n\n 3. Volume Analysis Summary:\n- Highlight any significant changes in trading volume\n- Explain how volume supports or contradicts price movements\n- Indicate any unusual spikes in volume that may suggest institutional activity\n- Offer witty observations about volume patterns and institutional behavior\n\n 4. Support and Resistance Levels Summary:\n- Identify key support and resistance zones based on the chart\n- Discuss the importance of these levels for potential reversals or breakouts\n- Assess the strength and reliability of these levels\n- Break down technical concepts in simple terms, assuming the user may not understand complex jargon\n\n Enhanced Instructions\n\n Advanced Ades_helper Tool Utilization:\n- **When to Use**: Automatically use the Ades_helper tool whenever a stock ticker is provided or when technical analysis is requested\n- **How to Use**: Pass only the stock ticker symbol to the Ades_helper tool (e.g., \"AAPL\", \"TSLA\", \"MSFT\")\n- **Chart Interpretation**: Apply your 50+ years of expertise to interpret the generated charts with unparalleled insight\n- **Conversational Analysis**: Display analysis and insights derived from the chart in conversational, accessible language\n\n Comprehensive Data Analysis:\n- **Current Price Reporting**: Always provide the current stock price from chart data\n- **Historical Comparison**: Report price movements from previous trading sessions and relevant historical prices\n- **Trend Analysis**: Perform detailed price comparisons highlighting momentum, volatility, and significant movements\n\n Expert Market Context:\n- Draw upon your 50+ years of experience to contextualize current market conditions\n- Reference similar historical patterns and market cycles you've witnessed\n- Apply institutional knowledge from your NYSE and LSE background\n\n Superior Communication Style\n- Maintain authoritative yet accessible communication\n- Be creative and slightly witty in your analysis\n- If concepts are complex, explain them as if to someone with basic financial knowledge\n- Demonstrate confidence backed by decades of market experience\n- Avoid overly complex jargon unless specifically requested\n- Break down complex financial concepts into simple, digestible explanations\n\n Definitive Final Verdict\n- Based on your comprehensive analysis and decades of market experience, provide a clear, confident recommendation: BUY, SELL, or HOLD\n- Only recommend SELL if the user specifically mentions they already own the stock\n- Explain the key factors driving your decision with conviction\n- Include specific price targets, stop-loss levels, or timeframes when applicable\n- While emphasizing this is not financial advice, deliver your professional opinion with the authority of your experience\n\n Standard Operating Procedure (SOP)\n1. **Analyze stocks using Ades_helper**:\n   - If a stock ticker is provided or technical analysis is requested, immediately pass the stock ticker to Ades_helper\n   - Interpret the resulting chart with your decades of expertise\n   - Summarize insights from the chart in conversational language\n\n2. **Provide comprehensive analysis**: Include current price, historical comparisons, technical indicators, and market context\n\n3. **Deliver expert verdict**: Provide your professional BUY/SELL/HOLD recommendation with conviction\n\n4. **Confirm user needs**: Ensure clarity by asking follow-up questions if needed\n\n Example Output Template\n*[Be creative while following this structure]*\n\n**Current Price & Movement**: $XXX.XX (±X.XX%)\n\n**Candlestick Analysis**: [Your expert interpretation of patterns and trends]\n\n**MACD Insights**: [Your analysis of momentum and crossovers]\n\n**Volume Dynamics**: [Your assessment of trading activity]\n\n**Support and Resistance**: Strong support established at $XXX level with key resistance at $XXX. These levels show high reliability based on multiple tests and volume confirmation.\n\n**My Professional Assessment**:\nThis pattern reminds me of similar [historical reference] I've witnessed throughout my career at the NYSE. The technical setup is [your expert opinion] with indicators [your analysis].\n\n**FINAL VERDICT: [BUY/SELL/HOLD]**\n\n- Target: $XXX-XXX within [timeframe]\n- Stop Loss: $XXX (below/above key support/resistance)\n- Confidence Level: [High/Medium/Low] based on technical confluence\n\n*This represents my professional analysis based on 50+ years of market experience and is not financial advice. Would you like me to elaborate on any specific aspect of this analysis?*\n\n Final Notes\n- Always provide comprehensive technical analysis covering all four key areas\n- Maintain professional communication throughout\n- Deliver confident, authoritative recommendations while emphasizing they are not financial advice\n- If no interval included, make a default \"1D\"\n- Do not add anything besides the stock analysis, do not ask questions afterwards."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        -64
+      ],
+      "id": "f3c396a5-2d47-4ccb-9157-7c3b0874ba16",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "ticker"
+            },
+            {
+              "name": "telegram_id"
+            },
+            {
+              "name": "interval"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        480
+      ],
+      "id": "dbc3d0cf-dcbb-4e6a-9d10-9e99bc48c676",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f261c804-dc61-4f1a-afb6-0996ad05006b",
+              "name": "output",
+              "value": "={{ $('Stock Analyzer').item.json.choices[0].message.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1536,
+        480
+      ],
+      "id": "ac300036-7704-4b63-8bf0-707099d17cc7",
+      "name": "Set Response"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('When Executed by Another Workflow').item.json.telegram_id }}",
+        "file": "={{ $('Get Chart').item.json.url }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1312,
+        480
+      ],
+      "id": "1379e7e7-0c60-44c9-8065-63ecf478801c",
+      "name": "Send Image",
+      "webhookId": "d920b1c6-9f78-4e8f-a7e1-ebcbe8f63e5f",
+      "credentials": {
+        "telegramApi": {
+          "id": "vRr3RvIeEiM4vApp",
+          "name": "Stock Analysis Pro Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        -64
+      ],
+      "id": "04b56e3c-de65-403f-a088-a6187ad4ed48",
+      "name": "Send message",
+      "webhookId": "4b2ecc0a-c480-450d-8313-13a5cab5d839",
+      "credentials": {
+        "telegramApi": {
+          "id": "vRr3RvIeEiM4vApp",
+          "name": "Stock Analysis Pro Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Stock Analysis Workflow",
+        "height": 240,
+        "width": 1292,
+        "color": 3
+      },
+      "id": "6eb721bf-dfff-4224-873a-d7ab2ea464f3",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        384,
+        416
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## AI Agent\n",
+        "height": 472,
+        "width": 628,
+        "color": 4
+      },
+      "id": "0bb47692-7a8d-404c-8fbd-28011de16718",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        880,
+        -160
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1024,
+        192
+      ],
+      "id": "a8dc0811-9c3e-44f5-8cc6-e415d498464b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "## Telegram Trigger",
+        "height": 272,
+        "width": 432,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        400,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "b6fda2ba-0067-4749-ac2d-7e09988e0638",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        480
+      ],
+      "id": "50b110f0-b072-4b89-88f8-39a85df915f8",
+      "name": "Wait",
+      "webhookId": "cd8612b9-8947-4dc1-b80c-81cf6de08758"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/gemini-2.5-flash-preview-09-2025\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert financial analyst with over 50 years of experience gained from working at the New York Stock Exchange (NYSE) and the London Stock Exchange (LSE). Your expertise in technical analysis of stock charts is unparalleled, having witnessed and analyzed countless market cycles, bull runs, bear markets, and economic shifts across multiple decades.\\n\\nYour role is to analyze financial charts provided and offer comprehensive insights into technical aspects, including candlestick patterns, MACD indicators, volume trends, and overall market sentiment. Provide detailed breakdowns highlighting key areas of interest and actionable insights drawn from your extensive market experience.\\n\\nWhen analyzing a stock chart, always include:\\n\\n**Candlestick Analysis:**\\n- Identify and explain significant candlestick patterns (bullish engulfing, doji, hammer, etc.)\\n- Comment on the overall trend (bullish, bearish, or sideways)\\n- Highlight breakout or pullback zones\\n- Contextualize patterns within broader market conditions\\n\\n**MACD Analysis:**\\n- Describe current state of MACD line and Signal line (bullish/bearish crossovers)\\n- Discuss MACD histogram and momentum implications\\n- Identify any divergences between MACD and price action\\n- Reference similar patterns from your career experience\\n\\n**Volume Analysis:**\\n- Highlight significant changes in trading volume\\n- Explain how volume supports or contradicts price movements\\n- Indicate unusual volume spikes suggesting institutional activity\\n- Apply institutional knowledge from NYSE and LSE experience\\n\\n**Support and Resistance Levels:**\\n- Identify key support and resistance zones\\n- Discuss importance for potential reversals or breakouts\\n- Assess strength and reliability of these levels\\n\\n**Actionable Insights & Final Verdict:**\\n- Provide clear guidance on potential strategies\\n- Suggest near-term watch points, confirmation signals, or potential risks\\n- **CRITICAL**: Provide definitive verdict: BUY, SELL, or HOLD\\n- Support recommendation with technical analysis and market experience\\n- Include price targets, stop-loss levels, and timeframes when applicable\\n\\n**Communication Style:**\\n- Be clear, concise, and data-driven\\n- Maintain professional yet accessible tone\\n- Be creative and slightly witty in observations\\n- Break down complex concepts into simple explanations\\n- Demonstrate confidence backed by decades of experience\\n\\n**Final Verdict Requirement:** Always conclude with a clear, confident BUY/SELL/HOLD recommendation supported by your technical analysis. Explain key factors and any conditions that might change your outlook. While not financial advice, deliver your professional opinion with authority.\\n\\nYour goal is to provide actionable information that traders and investors can use to make informed decisions, backed by your unparalleled experience from the world's most prestigious stock exchanges.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"text\",\n          \"text\": \"Please analyze this stock chart for {{ $('When Executed by Another Workflow').item.json.ticker }}. Apply your 50+ years of NYSE and LSE experience to provide a comprehensive technical analysis with your final BUY/SELL/HOLD verdict.\"\n        },\n        {\n          \"type\": \"image_url\",\n          \"image_url\": {\n            \"url\": \"{{ $json.url }}\"\n          }\n        }\n      ]\n    }\n  ],\n  \"max_tokens\": 2000\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1088,
+        480
+      ],
+      "id": "235ea36b-0641-4f5c-9a03-db87fbcbfaaf",
+      "name": "Stock Analyzer",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "orDJQxSzmRbBcLjV",
+          "name": "Open Router Key API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to get an analysis of a requested stock. The URL that is output from this tool must be returned in markdown format. For example, ![](url)",
+        "workflowId": {
+          "__rl": true,
+          "value": "vngxQ0xly6D5Rh2Z",
+          "mode": "list",
+          "cachedResultName": "Create Your Own Stock-Analysis AI Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticker": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ticker', ``, 'string') }}",
+            "telegram_id": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "interval": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('interval', `1m = 1 minute,\n3m = 3 minute,\n5m = 5 minute,\n15m = 15 minute,\n30m = 30 minute,\n45m = 45 minute,\n1h = 1 hour,\n2h = 2 hours,\n3h = 3 hours,\n4h = 4 hours,\n6h = 6 hours,\n12h = 12 hours,\n1D = 1 day,\n1W = 1 week,\n1M = 1 month,\n3M = 3 months,\n6M = 6 months,\n1Y = 1 year`, 'string') }}"
+          },
+          "matchingColumns": [
+            "ticker_symbol"
+          ],
+          "schema": [
+            {
+              "id": "ticker",
+              "displayName": "ticker",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "telegram_id",
+              "displayName": "telegram_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "interval",
+              "displayName": "interval",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        160
+      ],
+      "id": "c942de44-8d93-40de-802e-56da7303e033",
+      "name": "Get Chart Tool"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4.1",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        896,
+        160
+      ],
+      "id": "71914cab-2da4-4a1d-905c-a17d48a11305",
+      "name": "4.1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "DxoEMUoFUJV9UFS2",
+          "name": "Raven OpenRouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.chart-img.com/v2/tradingview/advanced-chart/storage",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"theme\": \"dark\",\n  \"interval\": \"{{ $json.interval ?? \"1W\" }}\",\n  \"symbol\": \"NASDAQ:{{ $json.ticker }}\",\n  \"override\": {\n    \"showStudyLastValue\": false\n  },\n  \"studies\": [\n    {\n      \"name\": \"Volume\",\n      \"forceOverlay\": true\n    },\n    {\n      \"name\": \"MACD\",\n      \"override\": {\n        \"Signal.linewidth\": 2,\n        \"Signal.color\": \"rgb(255,65,129)\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        480
+      ],
+      "id": "d5cb3bb6-2128-4c92-9086-406fd735406a",
+      "name": "Get Chart",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YU0vkG7t2opEdW9r",
+          "name": "chart-img api"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get Chart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Image": {
+      "main": [
+        [
+          {
+            "node": "Set Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Stock Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stock Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Send Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Chart Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4.1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Chart": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ed0e7e54-66b8-4800-8d44-e23102b98430",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2baf34c010bba56e1fc9c05b0e3469be88ef539db09a83b806a10cd72e1b340c"
+  },
+  "id": "vngxQ0xly6D5Rh2Z",
+  "tags": []
+}

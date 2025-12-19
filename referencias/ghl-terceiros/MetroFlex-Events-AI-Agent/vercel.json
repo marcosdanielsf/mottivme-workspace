@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/chat.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/webhook/chat",
+      "dest": "/api/chat"
+    },
+    {
+      "src": "/webhook",
+      "dest": "/api/chat"
+    },
+    {
+      "src": "/health",
+      "dest": "/api/chat"
+    },
+    {
+      "src": "/api/chat",
+      "dest": "/api/chat"
+    }
+  ],
+  "env": {
+    "OPENAI_API_KEY": "@openai_api_key"
+  }
+}

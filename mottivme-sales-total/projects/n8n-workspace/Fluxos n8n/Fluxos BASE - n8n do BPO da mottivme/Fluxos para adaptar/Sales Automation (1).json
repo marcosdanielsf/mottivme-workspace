@@ -1,0 +1,3799 @@
+{
+  "name": "Sales Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Quote Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "First Name"
+            },
+            {
+              "fieldLabel": "Last Name"
+            },
+            {
+              "fieldLabel": "Email"
+            },
+            {
+              "fieldLabel": "Phone"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        144
+      ],
+      "id": "315d6ec8-47da-423d-869c-0811143638e0",
+      "name": "On form submission",
+      "webhookId": "a0026e7d-d123-42c2-8b8b-c5cdbea3011b"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8",
+          "mode": "list",
+          "cachedResultName": "n8n Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $json.Email }}",
+            "Phone": "={{ $json.Phone }}",
+            "First Name": "={{ $json['First Name'] }}",
+            "Last Name": "={{ $json['Last Name'] }}",
+            "Date": "={{ $now }}",
+            "Status": "New Lead",
+            "Execution ID": "={{ $execution.id }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Discount",
+              "displayName": "Discount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deadline",
+              "displayName": "Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Problem",
+              "displayName": "Problem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Upsells",
+              "displayName": "Upsells",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contract Link",
+              "displayName": "Contract Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        784,
+        144
+      ],
+      "id": "d2ba96a9-e4ef-4bb9-af39-5fdf273b3be9",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=7557078776",
+        "text": "=New Lead:\nName: JOno\nEmail: jonocatliff@gmail.com\nPhone: 647-000-0000",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1168,
+        144
+      ],
+      "id": "c9bf791f-15b4-40fd-85cb-8884484f9e0d",
+      "name": "Send a text message",
+      "webhookId": "c19e0d52-cc68-467a-9898-70a9aa2a66d2",
+      "credentials": {
+        "telegramApi": {
+          "id": "Rf6oPsfPtILTim44",
+          "name": "telegram marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/hooks/sahsdlkfjsdlkd/webhook-trigger/8c1a5dc7-4d18-473a-bc6c-84a882452e48",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "={{ $json.Email }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.Phone }}"
+            },
+            {
+              "name": "first_name",
+              "value": "={{ $json['First Name'] }}"
+            },
+            {
+              "name": "last_name",
+              "value": "={{ $json['Last Name'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        976,
+        144
+      ],
+      "id": "b58f1a0e-af23-4e43-ba53-6d187be3141b",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "content": "## New Lead Workflow",
+        "height": 368,
+        "width": 1872
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        0
+      ],
+      "id": "095ee0db-a3fa-4ba7-bfc2-2889924d6649",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Sales Call Workflow",
+        "height": 368,
+        "width": 1504
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        720
+      ],
+      "id": "ed22e8c2-28ba-4d10-9934-85c761b6800d",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Appointment Workflow",
+        "height": 704,
+        "width": 1504
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        1456
+      ],
+      "id": "570f4c23-b200-416a-9cc5-e5e1a3ee988a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "events": [
+          "BOOKING_CREATED"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.calTrigger",
+      "typeVersion": 2,
+      "position": [
+        560,
+        1600
+      ],
+      "id": "2e45cd3b-ebc9-4cea-adfa-c9e01a6aabc5",
+      "name": "Cal.com Trigger",
+      "webhookId": "ce5a7424-b7f6-454d-a828-bd88a3e83dfe"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8",
+          "mode": "list",
+          "cachedResultName": "n8n Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $json.attendees[0].email }}",
+            "Status": "Follow Up"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Discount",
+              "displayName": "Discount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Deadline",
+              "displayName": "Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Problem",
+              "displayName": "Problem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Upsells",
+              "displayName": "Upsells",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Link",
+              "displayName": "Contract Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        784,
+        1600
+      ],
+      "id": "49102b84-c807-4ad1-aa0a-fe34e8528eae",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Contract Signed Workflow",
+        "height": 368,
+        "width": 1504
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        2496
+      ],
+      "id": "76ae6169-1104-488c-afdf-ab69373fc83b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Deposit Paid Workflow\nProject management workflow, onboarding, notifications, bookkeeping",
+        "height": 368,
+        "width": 1504
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        2976
+      ],
+      "id": "e5184920-2220-4ee3-8907-da12f71efe67",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "resume": "specificTime",
+        "dateTime": "={{ $('Cal.com Trigger').item.json.startTime.toDateTime().plus(-1, 'days') }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1616,
+        1600
+      ],
+      "id": "27d91978-73f1-405c-a957-8bb63447a5c3",
+      "name": "Wait",
+      "webhookId": "2f1e61a5-8b43-48a9-a1d9-8a0b6016ff26"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Cal.com Trigger').item.json.destinationCalendar[0].primaryEmail }}",
+        "subject": "Appointment Confirmation",
+        "emailType": "text",
+        "message": "=Hey {{ $('Cal.com Trigger').item.json.responses.name.value.split(\" \")[0] }},\n\nThanks for booking an appointment - I look forward to chatting with you on {{ $('Cal.com Trigger').item.json.startTime }}!\n\nIf you need to reschedule or cancel, you can do so here:\nhttps://cal.com/booking/{{ $('Cal.com Trigger').item.json.uid }}\n\n\nBest,\nJono",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1408,
+        1600
+      ],
+      "id": "a00e23bd-e09d-4cdc-b7a0-f6ab076bbbb2",
+      "name": "Send a message",
+      "webhookId": "ab24d39b-7c7b-4265-b527-96cbfcab0859",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Xr2iq9scV3njUeQl",
+          "name": "Gmail account - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Cal.com Trigger').item.json.destinationCalendar[0].primaryEmail }}",
+        "subject": "Appointment Confirmation",
+        "emailType": "text",
+        "message": "=Hey {{ $('Cal.com Trigger').item.json.responses.name.value.split(\" \")[0] }},\n\nJust wanted to follow up to confirm that I'll be calling you tomorrow at {{ $('Cal.com Trigger').item.json.startTime }}.\n\nIf you need to reschedule or cancel, you can do so here:\nhttps://cal.com/booking/{{ $('Cal.com Trigger').item.json.uid }}\n\nTalk soon!\n\nBest,\nJono",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1808,
+        1600
+      ],
+      "id": "b73f92bd-2d8b-4e8f-a907-06e085c84f12",
+      "name": "Send a message1",
+      "webhookId": "ab24d39b-7c7b-4265-b527-96cbfcab0859",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Xr2iq9scV3njUeQl",
+          "name": "Gmail account - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "events": [
+          "BOOKING_RESCHEDULED"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.calTrigger",
+      "typeVersion": 2,
+      "position": [
+        560,
+        1776
+      ],
+      "id": "537a7200-36df-4ec5-9ef1-363f0738c32a",
+      "name": "Cal.com Trigger1",
+      "webhookId": "a9eac5d9-98b6-4ff9-8ffc-9a896a551204"
+    },
+    {
+      "parameters": {
+        "events": [
+          "BOOKING_CANCELLED"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.calTrigger",
+      "typeVersion": 2,
+      "position": [
+        560,
+        1968
+      ],
+      "id": "d7cc54c6-d550-434b-a5ad-956675dbc548",
+      "name": "Cal.com Trigger2",
+      "webhookId": "5cb3b113-7f16-494f-9d24-0f6388792933"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1qYAl0JNiMlbgxPzeGomCmsVfkbo-wHsWMWzeSoLlQTg",
+          "mode": "list",
+          "cachedResultName": "n8n Recruitment",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qYAl0JNiMlbgxPzeGomCmsVfkbo-wHsWMWzeSoLlQTg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qYAl0JNiMlbgxPzeGomCmsVfkbo-wHsWMWzeSoLlQTg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Code": "={{ $json.userFieldsResponses.code.value }}",
+            "Interview Scheduled": "TRUE"
+          },
+          "matchingColumns": [
+            "Code"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job",
+              "displayName": "Job",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Rejected",
+              "displayName": "Rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Questions",
+              "displayName": "Questions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Screening",
+              "displayName": "Screening",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Test Complete",
+              "displayName": "Test Complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Test Approved",
+              "displayName": "Test Approved",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Interview Scheduled",
+              "displayName": "Interview Scheduled",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Hire",
+              "displayName": "Hire",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Indeed Email",
+              "displayName": "Indeed Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resume",
+              "displayName": "Resume",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Portfolio Link",
+              "displayName": "Portfolio Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Years Of Experience",
+              "displayName": "Years Of Experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Expected Salary",
+              "displayName": "Expected Salary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Added",
+              "displayName": "Date Added",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Code",
+              "displayName": "Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Test Link",
+              "displayName": "Test Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        784,
+        1968
+      ],
+      "id": "cfef7ef1-e07e-4251-a477-4486cf518fcb",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Cal.com Trigger2').item.json.destinationCalendar[0].primaryEmail }}",
+        "subject": "Appointment Confirmation",
+        "emailType": "text",
+        "message": "=Hey {{ $('Cal.com Trigger2').item.json.responses.name.value.split(\" \")[0] }},\n\nVi que você cancelou nossa reunião — obrigado por avisar com antecedência.\n\nEspero que esteja tudo bem por aí.\nQuer reagendar para um horário mais conveniente? Aqui está meu link:\n\nhttps://client.socialfy.me/widget/bookings/sessao-estrategica-mottivmesales\n\nBest,\nEquipe Mottivme",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        992,
+        1968
+      ],
+      "id": "a570a858-820e-481d-a56b-cbe87edd2ec4",
+      "name": "Send a message3",
+      "webhookId": "ab24d39b-7c7b-4265-b527-96cbfcab0859",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Xr2iq9scV3njUeQl",
+          "name": "Gmail account - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "days"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        1968
+      ],
+      "id": "f8a683bc-acb6-4871-8956-7c5aa47e4046",
+      "name": "Wait1",
+      "webhookId": "b15beedb-0333-4993-9d17-43dc7d13ec16"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Cal.com Trigger2').item.json.destinationCalendar[0].primaryEmail }}",
+        "subject": "Appointment Confirmation",
+        "emailType": "text",
+        "message": "=Hey {{ $('Cal.com Trigger2').item.json.responses.name.value.split(\" \")[0] }},\n\nI just wanted to follow up again - not sure if you saw my last message or not, but I wanted to see if you're free sometime this week to chat about ABC services?\n\nHere's my calendar\nhttps://cal.com/jono-catliff-vegjw5/15min\n\n\nBest,\nJono",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1408,
+        1968
+      ],
+      "id": "3ecd07cc-7549-4358-a17a-43c997323948",
+      "name": "Send a message4",
+      "webhookId": "ab24d39b-7c7b-4265-b527-96cbfcab0859",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Xr2iq9scV3njUeQl",
+          "name": "Gmail account - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Você é um bot inteligente capaz de pegar dados de uma call e transformá-los em um documento 3 em 1: proposta, invoice e contrato via PandaDoc. Você deve detalhar profundamente o problema do lead e a solução apresentada.\n\nRegras:\n\n1. Cada resposta deve ter no máximo 250 caracteres.\n2. Tudo deve sair polido e pronto para envio imediato.",
+              "role": "system"
+            },
+            {
+              "content": "=First Name: {{ $json[\"First Name\"] }}\nLast Name: {{ $json['Last Name'] }}\nCompany: {{ $json['Company Name'] }}\nWebsite: {{ $json.Website }}\nProblem: {{ $json.Problem }}\nSolution: {{ $json.Solution }}\nDeadline: {{ $json.Deadline }}"
+            },
+            {
+              "content": "Please output the data in the following JSON format:\n{\n\"problem\": \"\",\n\"solution\": \"\"\n}",
+              "role": "assistant"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 4000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        768,
+        848
+      ],
+      "id": "0fdc0852-697f-4488-88fa-b440d71575ce",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pandadoc.com/public/v1/documents/",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "API-Key 8f0a228ac1c1b8c3764348329048903482"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "=\n{\n    \"template_uuid\": \"DQZHNzwWz3cpFWRZprh44V\",\n    \"send\": true,\n    \"name\": \"{{ $('On form submission2').item.json['First Name'] }} {{ $('On form submission2').item.json['Last Name'] }} Project Management Proposal - {{ DateTime.fromISO($('On form submission2').item.json.submittedAt).toFormat('MM/dd/yyyy') }}\", \n    \"recipients\": [\n      {\n        \"email\": \"{{ $('On form submission2').item.json.Email }}\",\n        \"first_name\": \"{{ $('On form submission2').item.json['First Name'] }}\",\n        \"last_name\": \"{{ $('On form submission2').item.json['Last Name'] }}\",\n        \"role\": \"Client\"\n      },\n      {\n        \"email\": \"jonocatliff@gmail.com\",\n        \"first_name\": \"Jono\",\n        \"last_name\": \"Catliff\",\n        \"role\": \"Sender\"\n      }\n    ],\n    \"tokens\": [\n      {\n        \"name\": \"Client.Company\",\n        \"value\": \"{{ $('On form submission2').item.json['Company Name'] }}\"\n      },\n      {\n        \"name\": \"Client.FirstName\",\n        \"value\": \"{{ $('On form submission2').item.json['First Name'] }}\"\n      },\n      {\n        \"name\": \"Client.LastName\",\n        \"value\": \"{{ $('On form submission2').item.json['Last Name'] }}\"\n      },\n      {\n        \"name\": \"Client.Problem\",\n        \"value\": {{ JSON.stringify($json.message.content.problem) }}\n      },\n      {\n        \"name\": \"Client.Solution\",\n        \"value\": {{ JSON.stringify($json.message.content.solution) }}\n      },\n      {\n        \"name\": \"Client.Deadline\",\n        \"value\": \"{{ DateTime.fromISO($('On form submission2').item.json.submittedAt).toFormat('MM/dd/yyyy') }}\"\n      },\n      {\n        \"name\": \"Client.Invoice\",\n        \"value\": \"{{`INV-${Math.floor(Math.random()*1e4).toString().padStart(6,'0')}` }}\"\n      },\n      {\n        \"name\": \"Client.Terms\",\n        \"value\": {{ JSON.stringify($('On form submission2').item.json.Service == \"Automation\" ? `\n\n3. These are test terms for clients that ask for automation services` : \"\") }}\n      },\n      {\n        \"name\": \"Sender.Company\",\n        \"value\": \"Automatable\"\n      },\n      {\n        \"name\": \"Sender.FirstName\",\n        \"value\": \"Jono\"\n      },\n      {\n        \"name\": \"Sender.LastName\",\n        \"value\": \"Catliff\"\n      }\n    ],\n    \"fields\": {},\n    \"pricing_tables\": [\n        {\n            \"name\": \"Pricing Table 1\",\n            \"data_merge\": true,\n            \"sections\": [\n                {\n                    \"title\": \"Sample Section\",\n                    \"default\": true,\n                    \"rows\": [\n                        {\n                            \"options\": {\n                                \"optional\": false,\n                                \"optional_selected\": true,\n                                \"qty_editable\": false\n                            },\n                            \"data\": {\n                                \"Name\": \"Agency Services\",\n                                \"Description\": \"Standard Package\",\n                                \"Price\": {{ $('On form submission2').item.json.Price }},\n                                \"QTY\": 1,\n                                \"SKU\":\"services\",\n                                \"Tax\": {\n                                    \"value\": 5,\n                                    \"type\": \"percent\"\n                                },\n                                \"Discount\": {\n                                    \"value\": {{ $('On form submission2').item.json.Discount }},\n                                    \"type\": \"percent\"\n                                }\n                            }\n                        },\n                        {\n                            \"options\": {\n                                \"optional\": false,\n                                \"optional_selected\": true,\n                                \"qty_editable\": false\n                            },\n                            \"data\": {\n                                \"Name\": \"Social Media\",\n                                \"Description\": \"Media package\",\n                                \"Price\": 500,\n                                \"QTY\": 1,\n                                \"SKU\":\"services\",\n                                \"Tax\": {\n                                    \"value\": 5,\n                                    \"type\": \"percent\"\n                                },\n                                \"Discount\": {\n                                    \"value\": {{ $('On form submission2').item.json.Discount }},\n                                    \"type\": \"percent\"\n                                }\n                            }\n                        }\n                    ]\n                }\n            ]\n        }\n    ]\n  }",
+        "options": {}
+      },
+      "id": "bbc3f52a-cf37-4762-8397-2aa82b2f316d",
+      "name": "HTTP Request2",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1120,
+        848
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5bfcdc94-5243-4207-81ac-737a02a5ca9c",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        2624
+      ],
+      "id": "446b7b29-5c77-4af6-8f3d-398b5631bd37",
+      "name": "Webhook",
+      "webhookId": "5bfcdc94-5243-4207-81ac-737a02a5ca9c"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        2624
+      ],
+      "id": "d2dac1a5-0385-4499-b9f5-84817606046a",
+      "name": "Wait2",
+      "webhookId": "acb09a27-10cb-4715-8d1f-12a1d025b259"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "22617b5b-e5a2-49b6-9da1-101ec1325458",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "document.waiting_pay",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        2624
+      ],
+      "id": "42babd10-3690-4af7-abe8-5903864ec2b8",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5bfcdc94-5243-4207-81ac-737a02a5ca9c",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        3120
+      ],
+      "id": "653ff926-5548-4af9-b678-d2c8a0ddbc0b",
+      "name": "Webhook1",
+      "webhookId": "5bfcdc94-5243-4207-81ac-737a02a5ca9c"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        3120
+      ],
+      "id": "eb0db977-6916-4e66-9eb4-8b9b3c2afc80",
+      "name": "Wait3",
+      "webhookId": "acb09a27-10cb-4715-8d1f-12a1d025b259"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.recipients[1].email }}",
+        "subject": "Appointment Confirmation",
+        "emailType": "text",
+        "message": "=Hey {{ $json.recipients[1].first_name }},\n\nThanks for paying the invoice! Really appreciate you choosing our team and we can't wait to work with you. I'll get my account manager to email you shortly to introduce themselves!\n\nLet me know if you have any questions!\n\nBest,\nJono",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1152,
+        3120
+      ],
+      "id": "8fac29f7-2729-4de6-a746-118b26bf5595",
+      "name": "Send a message6",
+      "webhookId": "ab24d39b-7c7b-4265-b527-96cbfcab0859",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Xr2iq9scV3njUeQl",
+          "name": "Gmail account - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "22617b5b-e5a2-49b6-9da1-101ec1325458",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "document.paid",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        3120
+      ],
+      "id": "85c1dfbc-9b8e-4d0c-be1e-2c8ed0ef3bc3",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "Thanks for inquiring with Automatable!",
+        "emailType": "text",
+        "message": "=Hey {{ $('On form submission').item.json['First Name'] }},\n\nObrigado por entrar em contato com a Mottivme Sales — prazer te receber aqui.\nPodemos fazer uma call rápida para entender onde você está hoje e como podemos acelerar seus resultados.\nVocê consegue falar agora?\n\nSe não puder no momento, pode agendar por aqui:\nhttps://client.socialfy.me/widget/bookings/sessao-estrategica-mottivmesales\n\nBest,\nEquipe Mottivme",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1376,
+        144
+      ],
+      "id": "a7c59e8c-0d68-4004-9bf9-7fc9bb439d41",
+      "name": "Send a message2",
+      "webhookId": "ab24d39b-7c7b-4265-b527-96cbfcab0859",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Xr2iq9scV3njUeQl",
+          "name": "Gmail account - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "days"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1584,
+        144
+      ],
+      "id": "9876bbba-da9c-4905-9574-7a0b9731ca9f",
+      "name": "Wait4",
+      "webhookId": "265a5c4b-d167-4a19-9c7c-848752f5263a"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "RE:Thanks for inquiring with Automatable!",
+        "emailType": "text",
+        "message": "=Hey {{ $('On form submission').item.json['First Name'] }},\n\nIt's Jono again - I just wanted to follow up here - not sure if you got my last email or not. I saw you were looking for AI automation services. It would be great to chat, here's a link to my calendar to book a call:\nhttps://cal.com/jono-catliff-vegjw5/15min\n\nBest,\nJono",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2208,
+        144
+      ],
+      "id": "9503e334-da68-45c0-9c29-ac2391449f66",
+      "name": "Send a message7",
+      "webhookId": "ab24d39b-7c7b-4265-b527-96cbfcab0859",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Xr2iq9scV3njUeQl",
+          "name": "Gmail account - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8",
+          "mode": "list",
+          "cachedResultName": "n8n Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('On form submission2').item.json.Email }}",
+            "First Name": "={{ $('On form submission2').item.json['First Name'] }}",
+            "Last Name": "={{ $('On form submission2').item.json['Last Name'] }}",
+            "Status": "Sales Call",
+            "Upsells": "={{ $('On form submission2').item.json.Upsells }}",
+            "Solution": "={{ $('On form submission2').item.json.Solution }}",
+            "Deadline": "={{ $('On form submission2').item.json.Deadline }}",
+            "Discount": "={{ $('On form submission2').item.json.Discount }}",
+            "Price": "={{ $('On form submission2').item.json.Price }}",
+            "Problem": "={{ $('On form submission2').item.json.Problem }}",
+            "Service": "={{ $('On form submission2').item.json.Service }}",
+            "Company": "={{ $('On form submission2').item.json['Company Name'] }}",
+            "Website": "={{ $('On form submission2').item.json.Website }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Discount",
+              "displayName": "Discount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deadline",
+              "displayName": "Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Problem",
+              "displayName": "Problem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Upsells",
+              "displayName": "Upsells",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contract Link",
+              "displayName": "Contract Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1328,
+        848
+      ],
+      "id": "0067128d-991e-4ac4-906e-0bc0db7062ee",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8",
+          "mode": "list",
+          "cachedResultName": "n8n Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Append or update row in sheet').item.json.Email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1776,
+        144
+      ],
+      "id": "6f3f0869-8f42-49d1-9189-8ad7e4541396",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f8d440fe-b6b7-44c7-adfa-cded7db09e7a",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "New Lead",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1984,
+        144
+      ],
+      "id": "a1da4510-7c38-4ade-8b15-44d04ba07775",
+      "name": "Filter2"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Appointment Confirmation",
+        "emailType": "text",
+        "message": "=Hey {{ $json['First Name'] }},\n\nObrigado pela conversa agora há pouco, foi ótimo alinharmos os próximos passos.\n\nAcabei de enviar o contrato — qualquer dúvida estou por aqui.\n\nEquipe Mottivme\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1536,
+        848
+      ],
+      "id": "03e89bed-2f3d-45d3-9a4a-df3d33deed84",
+      "name": "Send a message8",
+      "webhookId": "ab24d39b-7c7b-4265-b527-96cbfcab0859",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Xr2iq9scV3njUeQl",
+          "name": "Gmail account - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "=7557078776",
+        "text": "=You have a new appointment booked with {{ $json['First Name'] }}:\n{{ $('Cal.com Trigger').item.json.startTime }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1200,
+        1600
+      ],
+      "id": "adf82b88-a050-4a3d-b42b-51a3d3014c94",
+      "name": "Send a text message1",
+      "webhookId": "c19e0d52-cc68-467a-9898-70a9aa2a66d2",
+      "credentials": {
+        "telegramApi": {
+          "id": "Rf6oPsfPtILTim44",
+          "name": "telegram marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8",
+          "mode": "list",
+          "cachedResultName": "n8n Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.Email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1008,
+        1600
+      ],
+      "id": "104d6ae8-f4f0-4baa-9f35-ae69adbfd9bd",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8",
+          "mode": "list",
+          "cachedResultName": "n8n Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Webhook1').item.json.recipients[1].email }}",
+            "Status": "Paid"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Discount",
+              "displayName": "Discount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Deadline",
+              "displayName": "Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Problem",
+              "displayName": "Problem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Upsells",
+              "displayName": "Upsells",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Link",
+              "displayName": "Contract Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1344,
+        3120
+      ],
+      "id": "d2a2ad93-a940-45f0-8693-90319a9ad1d9",
+      "name": "Google Sheets5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.recipients[1].email }}",
+        "subject": "Appointment Confirmation",
+        "emailType": "text",
+        "message": "=Hey {{ $json.recipients[1].first_name }},\n\nThanks for signing the contract - the next step is just to pay on the same agreement and we're all set!\n\n\nLet me know if you have any questions!\n\nBest,\nJono",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1152,
+        2624
+      ],
+      "id": "c33707a4-5aab-42f0-b7ce-f52d99869e46",
+      "name": "Send a message9",
+      "webhookId": "ab24d39b-7c7b-4265-b527-96cbfcab0859",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Xr2iq9scV3njUeQl",
+          "name": "Gmail account - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8",
+          "mode": "list",
+          "cachedResultName": "n8n Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRWQUv2P1O8A20IKGQapg2FdkNuUVeoYNU45qbZcFv8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Webhook1').item.json.recipients[1].email }}",
+            "Status": "Paid"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Discount",
+              "displayName": "Discount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Deadline",
+              "displayName": "Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Problem",
+              "displayName": "Problem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Solution",
+              "displayName": "Solution",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Upsells",
+              "displayName": "Upsells",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contract Link",
+              "displayName": "Contract Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Execution ID",
+              "displayName": "Execution ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1344,
+        2624
+      ],
+      "id": "8f88cee8-5f63-48e3-a29c-e07b608c05a7",
+      "name": "Google Sheets6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Email/SMS software\nI'd replace gmail with CRM automation here",
+        "height": 368,
+        "width": 448,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        0
+      ],
+      "id": "e380d657-4636-4e03-a45f-a11eea4b2217",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        2496,
+        144
+      ],
+      "id": "8ef405c5-5de6-411a-aa76-84e5d419ba2b",
+      "name": "Create or update a contact",
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "cW9cUt899RrPLb5J",
+          "name": "HighLevel account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "contactList",
+        "listId": 0,
+        "contactId": 0
+      },
+      "type": "n8n-nodes-base.activeCampaign",
+      "typeVersion": 1,
+      "position": [
+        2720,
+        144
+      ],
+      "id": "5d81e183-a0a1-4977-9f4d-f89e7ac44cc2",
+      "name": "Add a contact to a list",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Email/SMS software\nI'd replace gmail with CRM automation here",
+        "height": 368,
+        "width": 448,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        720
+      ],
+      "id": "1ca3f143-373e-4bf4-8f9a-98f0eb6c21fd",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        864
+      ],
+      "id": "5fbc9148-c6f0-46a8-82f4-7bba6fe77204",
+      "name": "Create or update a contact1",
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "cW9cUt899RrPLb5J",
+          "name": "HighLevel account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "contactList",
+        "listId": 0,
+        "contactId": 0
+      },
+      "type": "n8n-nodes-base.activeCampaign",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        864
+      ],
+      "id": "227949cc-26e7-446f-828c-5d26bc086d64",
+      "name": "Add a contact to a list1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Email/SMS software\nI'd replace gmail with CRM automation here",
+        "height": 368,
+        "width": 448,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        1472
+      ],
+      "id": "20996ee2-7a4d-46b1-aff9-498ee32e1a0e",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        1616
+      ],
+      "id": "80f3a663-f48d-48a6-bd6e-097c16316876",
+      "name": "Create or update a contact2",
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "cW9cUt899RrPLb5J",
+          "name": "HighLevel account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "contactList",
+        "listId": 0,
+        "contactId": 0
+      },
+      "type": "n8n-nodes-base.activeCampaign",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        1616
+      ],
+      "id": "cf8aa0d2-0976-4003-81d2-6bf843807595",
+      "name": "Add a contact to a list2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Email/SMS software\nI'd replace gmail with CRM automation here",
+        "height": 368,
+        "width": 448,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        2496
+      ],
+      "id": "52472d11-742b-42f1-817e-0ae7b436dd45",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        2640
+      ],
+      "id": "a87cdabc-147b-4315-a8aa-d610bb7db2d3",
+      "name": "Create or update a contact3",
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "cW9cUt899RrPLb5J",
+          "name": "HighLevel account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "contactList",
+        "listId": 0,
+        "contactId": 0
+      },
+      "type": "n8n-nodes-base.activeCampaign",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        2640
+      ],
+      "id": "c06332bc-e57f-4201-831a-24e7c505d4e5",
+      "name": "Add a contact to a list3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Email/SMS software\nI'd replace gmail with CRM automation here",
+        "height": 368,
+        "width": 448,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        2976
+      ],
+      "id": "36ce25c1-5b41-408e-8b57-51eb7f094311",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        3120
+      ],
+      "id": "4174134e-32bf-4593-9f90-0d6e5ee06fb6",
+      "name": "Create or update a contact4",
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "cW9cUt899RrPLb5J",
+          "name": "HighLevel account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "contactList",
+        "listId": 0,
+        "contactId": 0
+      },
+      "type": "n8n-nodes-base.activeCampaign",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        3120
+      ],
+      "id": "56d86a7f-ac42-4278-9a6e-586a3e3e2a21",
+      "name": "Add a contact to a list4",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## **Benefícios**\n\n1. **Aumento de 391% nas vendas**\n2. **Economia média de 30 minutos por lead**\n3. **Agendamentos automáticos de reuniões**\n\n---\n\n## **Funcionalidades**\n\n1. **Ligação automática em 15 segundos**\n2. **Sequência de 5 e-mails automáticos**\n3. **4 mensagens de texto enviadas automaticamente**\n4. **Lead incluído automaticamente no CRM central**",
+        "height": 368,
+        "width": 448,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1b11e545-fb76-43b4-9a9d-998a32cc8a4d",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "## **Benefícios**\n\n1. **Economia de ~15 a 30 minutos por pessoa**\n2. **Taxa de comparecimento significativamente maior**\n3. **Reengajamento de leads quase perdidos**\n\n---\n\n## **Funcionalidades**\n\n1. **Lembretes para você e para os leads**\n2. **3 a 10 e-mails automáticos**\n3. **1 a 5 mensagens de texto automáticas**\n4. **Cancelamento e reagendamento automáticos**",
+        "height": 400,
+        "width": 448,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        704
+      ],
+      "id": "01c26c8c-6496-4040-ac76-f1e51630718e",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "## Benefits\n1. ~15-30 minutes saved per person\n2. Significantly high show rate\n3. Re-engage nearly lost leads\n\n## Features\n1. Reminders to you and leads\n2. 3-10 automated emails\n3. 1-5 automated text messages\n4. Automatic cancelling + rescheduling",
+        "height": 368,
+        "width": 448,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        1456
+      ],
+      "id": "1cc25ed9-10d6-4028-b276-1ffffd308679",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "## Benefícios\n\n1. ~15–30 minutos economizados por pessoa\n2. Taxa de comparecimento significativamente alta\n3. Reengaja leads quase perdidos\n\n## Funcionalidades\n\n1. Lembretes para você e para os leads\n2. 3–10 e-mails automáticos\n3. 1–5 mensagens de texto automáticas\n4. Cancelamento e reagendamento automáticos",
+        "height": 368,
+        "width": 448,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        2496
+      ],
+      "id": "d89939bd-6bbf-47ef-815d-b7c855922100",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "## Benefícios\n\n1. Integra com onboarding, gestão de projetos etc.\n2. Integra com contabilidade\n\n## Funcionalidades\n\n1. 1–4 e-mails automáticos\n2. 1–2 mensagens de texto automáticas\n3. Atualiza o CRM",
+        "height": 368,
+        "width": 448,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        2976
+      ],
+      "id": "e0ba157f-75d9-465b-ae15-6a25dd276527",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "resource": "payment",
+        "operation": "create",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.quickbooks",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        3120
+      ],
+      "id": "1b7a9076-006d-40fb-8b5e-9e9816e2e6a0",
+      "name": "Create a payment",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        3120
+      ],
+      "id": "5639e3d2-c411-4caf-83e2-d84066191ac4",
+      "name": "Create a task",
+      "credentials": {
+        "clickUpOAuth2Api": {
+          "id": "4eEw629B1f9f5YVk",
+          "name": "ClickUp account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "formTitle": "Formulário de Registro de Ligações de Vendas",
+        "formDescription": "Este formulário registra uma call de vendas e gera automaticamente uma proposta.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nome",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Sobrenome",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Nome da Empresa"
+            },
+            {
+              "fieldLabel": "Website",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Serviço",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "SEO"
+                  },
+                  {
+                    "option": "Ads"
+                  },
+                  {
+                    "option": "Automação"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Preço",
+              "fieldType": "number"
+            },
+            {
+              "fieldLabel": "Desconto",
+              "fieldType": "number"
+            },
+            {
+              "fieldLabel": "Prazo Final",
+              "fieldType": "date"
+            },
+            {
+              "fieldLabel": "Problema",
+              "fieldType": "textarea"
+            },
+            {
+              "fieldLabel": "Solução",
+              "fieldType": "textarea"
+            },
+            {
+              "fieldLabel": "Upsells",
+              "fieldType": "checkbox",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "SEO"
+                  },
+                  {
+                    "option": "Ads"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "9386bdb1-b2f6-414b-b4e7-714c2c001a2f",
+      "name": "On form submission2",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        544,
+        848
+      ],
+      "webhookId": "11e35190-32ca-4974-801b-bdae68a61c82",
+      "typeVersion": 2.2
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "First Name": "Jono",
+          "Last Name": "Catliff",
+          "Email": "jccatliff@gmail.com",
+          "Phone": "6041231234",
+          "submittedAt": "2025-09-12T09:58:52.544-04:00",
+          "formMode": "test"
+        }
+      }
+    ],
+    "Cal.com Trigger": [
+      {
+        "json": {
+          "triggerEvent": "BOOKING_CREATED",
+          "createdAt": "2025-10-14T21:35:31.308Z",
+          "bookerUrl": "https://cal.com",
+          "title": "15 Min Meeting between Jono Catliff and Jono Catliff",
+          "startTime": "2025-10-16T13:00:00Z",
+          "endTime": "2025-10-16T13:15:00Z",
+          "additionalNotes": "",
+          "type": "15min",
+          "description": "",
+          "eventTypeId": 2189717,
+          "hideCalendarNotes": false,
+          "hideCalendarEventDetails": false,
+          "hideOrganizerEmail": false,
+          "schedulingType": null,
+          "seatsPerTimeSlot": null,
+          "seatsShowAttendees": true,
+          "seatsShowAvailabilityCount": true,
+          "customReplyToEmail": null,
+          "disableRescheduling": false,
+          "disableCancelling": false,
+          "organizer": {
+            "id": 1460312,
+            "name": "Jono Catliff",
+            "email": "jccatliff@gmail.com",
+            "username": "jono-catliff-vegjw5",
+            "timeZone": "America/Toronto",
+            "language": {
+              "locale": "en"
+            },
+            "timeFormat": "h:mma",
+            "utcOffset": -240
+          },
+          "attendees": [
+            {
+              "email": "jccatliff@gmail.com",
+              "name": "Jono Catliff",
+              "firstName": "",
+              "lastName": "",
+              "timeZone": "America/Toronto",
+              "language": {
+                "locale": "en"
+              },
+              "utcOffset": -240
+            }
+          ],
+          "customInputs": {},
+          "responses": {
+            "attendeePhoneNumber": {
+              "label": "phone_number",
+              "isHidden": true
+            },
+            "name": {
+              "label": "your_name",
+              "value": "Jono Catliff",
+              "isHidden": false
+            },
+            "email": {
+              "label": "email_address",
+              "value": "jccatliff@gmail.com",
+              "isHidden": false
+            },
+            "location": {
+              "label": "location",
+              "value": {
+                "optionValue": "",
+                "value": "integrations:daily"
+              },
+              "isHidden": false
+            },
+            "title": {
+              "label": "what_is_this_meeting_about",
+              "isHidden": true
+            },
+            "notes": {
+              "label": "additional_notes",
+              "isHidden": false
+            },
+            "guests": {
+              "label": "additional_guests",
+              "value": [],
+              "isHidden": false
+            },
+            "rescheduleReason": {
+              "label": "reason_for_reschedule",
+              "isHidden": false
+            },
+            "code": {
+              "label": "Code",
+              "value": "123",
+              "isHidden": false
+            }
+          },
+          "userFieldsResponses": {
+            "code": {
+              "label": "Code",
+              "value": "123",
+              "isHidden": false
+            }
+          },
+          "location": "integrations:daily",
+          "destinationCalendar": [
+            {
+              "id": 543569,
+              "integration": "google_calendar",
+              "externalId": "jccatliff@gmail.com",
+              "primaryEmail": "jccatliff@gmail.com",
+              "userId": 1460312,
+              "eventTypeId": null,
+              "credentialId": 895090,
+              "createdAt": "2025-07-07T10:50:48.811Z",
+              "updatedAt": null,
+              "delegationCredentialId": null,
+              "domainWideDelegationCredentialId": null
+            }
+          ],
+          "iCalUID": "bRS2uUTVJAKua6ktjbJmts@Cal.com",
+          "iCalSequence": 0,
+          "requiresConfirmation": false,
+          "oneTimePassword": null,
+          "uid": "bRS2uUTVJAKua6ktjbJmts",
+          "conferenceData": {
+            "createRequest": {
+              "requestId": "2db644eb-37a5-581a-99fa-ebe6ce513834"
+            }
+          },
+          "videoCallData": {
+            "type": "daily_video",
+            "id": "Z3mm611ydcyjbMoyN9uh",
+            "password": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyIjoiWjNtbTYxMXlkY3lqYk1veU45dWgiLCJleHAiOjE3NjE4MzAxMDAsIm8iOnRydWUsImVydWkiOmZhbHNlLCJkIjoiYmJkOThhNzEtMTljOS00YmIxLWE1YzUtY2FmMWVjNWJkMTA1IiwiaWF0IjoxNzYwNDc3NzMwfQ.2V1H_uYGPL-aNDn2tCOoDUylYsckkats0cUr6G83RaE",
+            "url": "https://meetco.daily.co/Z3mm611ydcyjbMoyN9uh"
+          },
+          "appsStatus": [
+            {
+              "appName": "daily-video",
+              "type": "daily_video",
+              "success": 1,
+              "failures": 0,
+              "errors": []
+            },
+            {
+              "appName": "google-calendar",
+              "type": "google_calendar",
+              "success": 1,
+              "failures": 0,
+              "errors": [],
+              "warnings": []
+            }
+          ],
+          "eventTitle": "15 Min Meeting",
+          "eventDescription": "",
+          "price": 0,
+          "currency": "usd",
+          "length": 15,
+          "bookingId": 11773759,
+          "metadata": {
+            "videoCallUrl": "https://app.cal.com/video/bRS2uUTVJAKua6ktjbJmts"
+          },
+          "status": "ACCEPTED"
+        }
+      }
+    ],
+    "Cal.com Trigger2": [
+      {
+        "json": {
+          "triggerEvent": "BOOKING_CANCELLED",
+          "createdAt": "2025-10-14T21:39:24.670Z",
+          "bookerUrl": "https://cal.com",
+          "title": "15 Min Meeting between Jono Catliff and Jono Catliff",
+          "length": 15,
+          "type": "15min",
+          "additionalNotes": "",
+          "description": "",
+          "customInputs": {},
+          "eventTypeId": 2189717,
+          "userFieldsResponses": {
+            "code": {
+              "label": "Code",
+              "value": "123",
+              "isHidden": false
+            }
+          },
+          "responses": {
+            "name": {
+              "label": "your_name",
+              "value": "Jono Catliff",
+              "isHidden": false
+            },
+            "email": {
+              "label": "email_address",
+              "value": "jccatliff@gmail.com",
+              "isHidden": false
+            },
+            "location": {
+              "label": "location",
+              "value": {
+                "value": "integrations:daily",
+                "optionValue": ""
+              },
+              "isHidden": false
+            },
+            "title": {
+              "label": "what_is_this_meeting_about",
+              "isHidden": true
+            },
+            "notes": {
+              "label": "additional_notes",
+              "isHidden": false
+            },
+            "guests": {
+              "label": "additional_guests",
+              "value": [],
+              "isHidden": false
+            },
+            "rescheduleReason": {
+              "label": "reason_for_reschedule",
+              "isHidden": false
+            },
+            "code": {
+              "label": "Code",
+              "value": "123",
+              "isHidden": false
+            }
+          },
+          "startTime": "2025-10-16T13:00:00+00:00",
+          "endTime": "2025-10-16T13:15:00+00:00",
+          "organizer": {
+            "id": 1460312,
+            "username": "jono-catliff-vegjw5",
+            "email": "jccatliff@gmail.com",
+            "name": "Jono Catliff",
+            "timeZone": "America/Toronto",
+            "timeFormat": "h:mma",
+            "language": {
+              "locale": "en"
+            },
+            "utcOffset": -240
+          },
+          "attendees": [
+            {
+              "name": "Jono Catliff",
+              "email": "jccatliff@gmail.com",
+              "timeZone": "America/Toronto",
+              "phoneNumber": null,
+              "language": {
+                "locale": "en"
+              },
+              "utcOffset": -240
+            }
+          ],
+          "uid": "bRS2uUTVJAKua6ktjbJmts",
+          "bookingId": 11773759,
+          "location": "integrations:daily",
+          "destinationCalendar": [
+            {
+              "id": 543569,
+              "integration": "google_calendar",
+              "externalId": "jccatliff@gmail.com",
+              "primaryEmail": "jccatliff@gmail.com",
+              "userId": 1460312,
+              "eventTypeId": null,
+              "credentialId": 895090,
+              "createdAt": "2025-07-07T10:50:48.811Z",
+              "updatedAt": null,
+              "delegationCredentialId": null,
+              "domainWideDelegationCredentialId": null
+            }
+          ],
+          "cancellationReason": "test",
+          "seatsPerTimeSlot": null,
+          "seatsShowAttendees": false,
+          "iCalUID": "bRS2uUTVJAKua6ktjbJmts@Cal.com",
+          "iCalSequence": 1,
+          "hideOrganizerEmail": false,
+          "customReplyToEmail": null,
+          "eventTitle": "15 Min Meeting",
+          "eventDescription": null,
+          "requiresConfirmation": null,
+          "price": null,
+          "currency": "usd",
+          "status": "CANCELLED",
+          "cancelledBy": "jccatliff@gmail.com"
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "id": "mULPf4zhFugGE5iYdyyn37",
+          "name": "John Smith Agreement | ABC Company",
+          "date_created": "2025-10-17T20:42:47.119Z",
+          "date_modified": "2025-10-19T18:42:45.131Z",
+          "expiration_date": "2025-10-24T20:44:36.361Z",
+          "autonumbering_sequence_name": null,
+          "created_by": {
+            "id": "Kbj84DK8xkYLn2wsadENeS",
+            "email": "jono@gmail.com",
+            "first_name": "Jono",
+            "last_name": "Catliff",
+            "avatar": null,
+            "membership_id": "hNmV4STTJY73zJ25b6DfiD"
+          },
+          "tokens": [
+            {
+              "name": "Client.Company",
+              "value": "Automatable"
+            },
+            {
+              "name": "Client.FirstName",
+              "value": "Jono"
+            },
+            {
+              "name": "Client.LastName",
+              "value": "Catliff"
+            },
+            {
+              "name": "Client.Problem",
+              "value": "Need help with SEO"
+            },
+            {
+              "name": "Client.Solution",
+              "value": "Build out an SEO blog system"
+            },
+            {
+              "name": "Client.Deadline",
+              "value": "10/15/2025"
+            },
+            {
+              "name": "Client.Invoice",
+              "value": "INV-002269"
+            },
+            {
+              "name": "Sender.Company",
+              "value": "Automatable"
+            },
+            {
+              "name": "Sender.FirstName",
+              "value": "Jono"
+            },
+            {
+              "name": "Sender.LastName",
+              "value": "Catliff"
+            }
+          ],
+          "products": [],
+          "pricing": {
+            "tables": [
+              {
+                "name": "Pricing Table 1",
+                "id": "5fd91bc1-5a95-438b-afba-1c9fa47c031f",
+                "total": "1729.99",
+                "is_included_in_total": true,
+                "summary": {
+                  "subtotal": "2438.01",
+                  "total": "1729.99",
+                  "discount": "790.40",
+                  "tax": "82.38",
+                  "fee": "0.00"
+                },
+                "columns": [
+                  {
+                    "header": "NAME",
+                    "name": "Name",
+                    "merge_name": "Name",
+                    "hidden": false
+                  },
+                  {
+                    "header": "NAME",
+                    "name": "Description",
+                    "merge_name": "Description",
+                    "hidden": false
+                  },
+                  {
+                    "header": "NAME",
+                    "name": "Images",
+                    "merge_name": null,
+                    "hidden": false
+                  },
+                  {
+                    "header": "QTY",
+                    "name": "QTY",
+                    "merge_name": "QTY",
+                    "hidden": false
+                  },
+                  {
+                    "header": "PRICE",
+                    "name": "Price",
+                    "merge_name": "Price",
+                    "hidden": false
+                  },
+                  {
+                    "header": "SUBTOTAL",
+                    "name": "Subtotal",
+                    "merge_name": "Subtotal",
+                    "hidden": false
+                  },
+                  {
+                    "header": null,
+                    "name": "Text",
+                    "merge_name": "Text",
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "Tax",
+                    "merge_name": "Tax",
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "SKU",
+                    "merge_name": "SKU",
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "Cost",
+                    "merge_name": null,
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "Tax1",
+                    "merge_name": "Tax1",
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "Discount",
+                    "merge_name": "Discount",
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "Fee",
+                    "merge_name": "Fee",
+                    "hidden": true
+                  }
+                ],
+                "currency": "CAD"
+              }
+            ],
+            "quotes": [],
+            "total": "1729.99"
+          },
+          "tags": [],
+          "status": "document.paid",
+          "recipients": [
+            {
+              "type": "recipient",
+              "id": "cNFBdG6M5d79EGL4GxJQxn",
+              "first_name": "Jono",
+              "last_name": "Catliff",
+              "email": "jono@gmail.com",
+              "phone": "",
+              "recipient_type": "signer",
+              "has_completed": true,
+              "role": "",
+              "roles": [
+                "Company",
+                "Sender"
+              ],
+              "signing_order": 1,
+              "contact_id": "XrBU44fZaobNEoBp2R6fNi",
+              "shared_link": ""
+            },
+            {
+              "type": "recipient",
+              "id": "zTcYB3z5TH2EDUAVmuPSf3",
+              "first_name": "Jono",
+              "last_name": "Catliff",
+              "email": "jono@gmail.com",
+              "recipient_type": "signer",
+              "has_completed": true,
+              "role": "",
+              "roles": [
+                "Client"
+              ],
+              "signing_order": 2,
+              "contact_id": "yafqT9AcEadWgNbzsgPW3V",
+              "shared_link": ""
+            }
+          ],
+          "grand_total": {
+            "amount": "0.00",
+            "currency": "USD"
+          },
+          "template": {
+            "id": "uBUxzakbHvCmfdXEBzLviT",
+            "name": "Celebrations Canada Agreement"
+          },
+          "version": "2",
+          "linked_objects": [],
+          "event_type": "document_state_changed",
+          "token_values": {
+            "Client.Company": "",
+            "Client.FirstName": "Jono",
+            "Client.LastName": "Catliff",
+            "Invoice.DueDate": "October 24 2025",
+            "Invoice.No": "INV-002269",
+            "Invoice.Terms": "Net 15"
+          }
+        }
+      }
+    ],
+    "Webhook1": [
+      {
+        "json": {
+          "id": "mULPf4zhFugGE5iYdyyn37",
+          "name": "John Smith Agreement | ABC Company",
+          "date_created": "2025-10-17T20:42:47.119Z",
+          "date_modified": "2025-10-19T18:42:45.131Z",
+          "expiration_date": "2025-10-24T20:44:36.361Z",
+          "autonumbering_sequence_name": null,
+          "created_by": {
+            "id": "Kbj84DK8xkYLn2wsadENeS",
+            "email": "jono@gmail.com",
+            "first_name": "Jono",
+            "last_name": "Catliff",
+            "avatar": null,
+            "membership_id": "hNmV4STTJY73zJ25b6DfiD"
+          },
+          "tokens": [
+            {
+              "name": "Client.Company",
+              "value": "Automatable"
+            },
+            {
+              "name": "Client.FirstName",
+              "value": "Jono"
+            },
+            {
+              "name": "Client.LastName",
+              "value": "Catliff"
+            },
+            {
+              "name": "Client.Problem",
+              "value": "Need help with SEO"
+            },
+            {
+              "name": "Client.Solution",
+              "value": "Build out an SEO blog system"
+            },
+            {
+              "name": "Client.Deadline",
+              "value": "10/15/2025"
+            },
+            {
+              "name": "Client.Invoice",
+              "value": "INV-002269"
+            },
+            {
+              "name": "Sender.Company",
+              "value": "Automatable"
+            },
+            {
+              "name": "Sender.FirstName",
+              "value": "Jono"
+            },
+            {
+              "name": "Sender.LastName",
+              "value": "Catliff"
+            }
+          ],
+          "products": [],
+          "pricing": {
+            "tables": [
+              {
+                "name": "Pricing Table 1",
+                "id": "5fd91bc1-5a95-438b-afba-1c9fa47c031f",
+                "total": "1729.99",
+                "is_included_in_total": true,
+                "summary": {
+                  "subtotal": "2438.01",
+                  "total": "1729.99",
+                  "discount": "790.40",
+                  "tax": "82.38",
+                  "fee": "0.00"
+                },
+                "columns": [
+                  {
+                    "header": "NAME",
+                    "name": "Name",
+                    "merge_name": "Name",
+                    "hidden": false
+                  },
+                  {
+                    "header": "NAME",
+                    "name": "Description",
+                    "merge_name": "Description",
+                    "hidden": false
+                  },
+                  {
+                    "header": "NAME",
+                    "name": "Images",
+                    "merge_name": null,
+                    "hidden": false
+                  },
+                  {
+                    "header": "QTY",
+                    "name": "QTY",
+                    "merge_name": "QTY",
+                    "hidden": false
+                  },
+                  {
+                    "header": "PRICE",
+                    "name": "Price",
+                    "merge_name": "Price",
+                    "hidden": false
+                  },
+                  {
+                    "header": "SUBTOTAL",
+                    "name": "Subtotal",
+                    "merge_name": "Subtotal",
+                    "hidden": false
+                  },
+                  {
+                    "header": null,
+                    "name": "Text",
+                    "merge_name": "Text",
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "Tax",
+                    "merge_name": "Tax",
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "SKU",
+                    "merge_name": "SKU",
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "Cost",
+                    "merge_name": null,
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "Tax1",
+                    "merge_name": "Tax1",
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "Discount",
+                    "merge_name": "Discount",
+                    "hidden": true
+                  },
+                  {
+                    "header": null,
+                    "name": "Fee",
+                    "merge_name": "Fee",
+                    "hidden": true
+                  }
+                ],
+                "currency": "CAD"
+              }
+            ],
+            "quotes": [],
+            "total": "1729.99"
+          },
+          "tags": [],
+          "status": "document.paid",
+          "recipients": [
+            {
+              "type": "recipient",
+              "id": "cNFBdG6M5d79EGL4GxJQxn",
+              "first_name": "Jono",
+              "last_name": "Catliff",
+              "email": "jono@gmail.com",
+              "phone": "",
+              "recipient_type": "signer",
+              "has_completed": true,
+              "role": "",
+              "roles": [
+                "Company",
+                "Sender"
+              ],
+              "signing_order": 1,
+              "contact_id": "XrBU44fZaobNEoBp2R6fNi",
+              "shared_link": ""
+            },
+            {
+              "type": "recipient",
+              "id": "zTcYB3z5TH2EDUAVmuPSf3",
+              "first_name": "Jono",
+              "last_name": "Catliff",
+              "email": "jono@gmail.com",
+              "recipient_type": "signer",
+              "has_completed": true,
+              "role": "",
+              "roles": [
+                "Client"
+              ],
+              "signing_order": 2,
+              "contact_id": "yafqT9AcEadWgNbzsgPW3V",
+              "shared_link": ""
+            }
+          ],
+          "grand_total": {
+            "amount": "0.00",
+            "currency": "USD"
+          },
+          "template": {
+            "id": "uBUxzakbHvCmfdXEBzLviT",
+            "name": "Celebrations Canada Agreement"
+          },
+          "version": "2",
+          "linked_objects": [],
+          "event_type": "document_state_changed",
+          "token_values": {
+            "Client.Company": "",
+            "Client.FirstName": "Jono",
+            "Client.LastName": "Catliff",
+            "Invoice.DueDate": "October 24 2025",
+            "Invoice.No": "INV-002269",
+            "Invoice.Terms": "Net 15"
+          }
+        }
+      }
+    ],
+    "Message a model": [
+      {
+        "json": {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": {
+              "problem": "ABC lacks SEO: low organic traffic, poor keyword coverage, sparse content.",
+              "solution": "Create an SEO blog system: keyword research, pillar content, optimized posts, tech fixes, calendar, analytics to grow organic leads by 10/25/2025."
+            },
+            "refusal": null,
+            "annotations": []
+          },
+          "finish_reason": "stop"
+        }
+      }
+    ],
+    "On form submission2": [
+      {
+        "json": {
+          "First Name": "Jono",
+          "Last Name": "Catliff",
+          "Email": "jccatliff@gmail.com",
+          "Company Name": "ABC",
+          "Website": "abc.com",
+          "Service": "Automation",
+          "Price": 1000,
+          "Discount": 10,
+          "Deadline": "2025-10-25",
+          "Problem": "Preciso de ajuda com SEO",
+          "Solution": "Construir um sistema de blog focado em SEO",
+          "Upsells": [
+            "Ads"
+          ],
+          "submittedAt": "2025-10-15T18:37:53.962-04:00",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cal.com Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets3": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cal.com Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cal.com Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message3": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Send a message4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Send a message9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "Send a message6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [
+          {
+            "node": "Wait4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait4": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Send a message8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter2": {
+      "main": [
+        [
+          {
+            "node": "Send a message7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message6": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message9": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a payment": {
+      "main": [
+        [
+          {
+            "node": "Create a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission2": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b60904cb-3913-4409-a614-742476dc76dc",
+  "meta": {
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "gGWXux8s616cHYL2",
+  "tags": []
+}

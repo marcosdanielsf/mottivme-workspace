@@ -1,0 +1,168 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                    WORKFLOW CORRETO COM ACUMULADORES                     ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ INÍCIO: Airtable "Get Expert Record"                                    │
+│ Output: { expert_id, nome, nicho, ... }                                 │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ AGENT 5: Identity Mapper                                                │
+│ Output: { text: "## 1. CONTEXTO..." }                                   │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ CODE5: code-accumulator-after-agent5.js                                 │
+│ Output: {                                                                │
+│   agent5: { text: "..." },                                              │
+│   _accumulated: ["agent5"]                                              │
+│ }                                                                        │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ AGENT 6A: Concorrentes Internacionais                                   │
+│ Input: dados acumulados de Code5                                        │
+│ Output: { text: "...", agent5: {...}, _accumulated: [...] }             │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ CODE6A: code-accumulator-after-agent6.js                                │
+│ Output: {                                                                │
+│   agent5: { ... },                                                       │
+│   agent6a: { text: "..." },                                             │
+│   _accumulated: ["agent5", "agent6a"]                                   │
+│ }                                                                        │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ AGENT 6B: Concorrentes Brasileiros                                      │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ CODE6B: code-accumulator-after-agent6b-fixed.js                         │
+│ Output: {                                                                │
+│   agent5: { ... },                                                       │
+│   agent6a: { ... },                                                      │
+│   agent6b: { text: "..." },                                             │
+│   _accumulated: ["agent5", "agent6a", "agent6b"]                        │
+│ }                                                                        │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ AGENT 6C: Síntese de Mercado                                            │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ CODE6C: code-accumulator-after-agent6c-fixed.js                         │
+│ Output: {                                                                │
+│   agent5: { ... }, agent6a: { ... }, agent6b: { ... },                  │
+│   agent6c: { text: "..." },                                             │
+│   _accumulated: ["agent5", "agent6a", "agent6b", "agent6c"]             │
+│ }                                                                        │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ AGENT 7: Avatares                                                        │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ CODE7: code-accumulator-after-agent7-fixed.js                           │
+│ Output: { ..., agent7: { ... }, _accumulated: [..., "agent7"] }         │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ AGENT 8: Promessa                                                        │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ CODE8: code-accumulator-after-agent8-fixed.js                           │
+│ Output: { ..., agent8: { ... }, _accumulated: [..., "agent8"] }         │
+│ ✅ COMPROVADO FUNCIONANDO (usuário testou)                              │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+╔═════════════════════════════════════════════════════════════════════════╗
+║                       ⚠️  PROBLEMA ESTÁ AQUI ⚠️                         ║
+║                                                                          ║
+║  AGENT 9 PRECISA RECEBER OS DADOS DO CODE8                              ║
+║  Atualmente está recebendo apenas { expert_id: "..." }                  ║
+╚═════════════════════════════════════════════════════════════════════════╝
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ AGENT 9: Big Idea                                                        │
+│ ⚠️ VERIFICAR: Este agent está recebendo dados do CODE8?                 │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ CODE9: code-accumulator-after-agent9-fixed.js                           │
+│ Se receber _accumulated:                                                 │
+│   ✅ Extrai 15 seções e retorna success: true                           │
+│ Se NÃO receber _accumulated:                                            │
+│   ❌ Retorna erro explicativo                                           │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ CODE AIRTABLE: code-prepare-for-airtable.js                             │
+│ Formata os 15 campos extraídos para Airtable                            │
+└────────────────────────────┬────────────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ FIM: Update Airtable Record                                             │
+│ Salva os 15 campos no registro do expert                                │
+└─────────────────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+CONEXÕES IMPORTANTES:
+
+✅ CORRETO:
+  Code8 → Agent 9 → Code9
+  (Agent 9 recebe dados acumulados)
+
+❌ ERRADO (situação atual):
+  Code8 → X
+  Outra fonte → Agent 9 → Code9
+  (Agent 9 recebe apenas expert_id)
+
+═══════════════════════════════════════════════════════════════════════════
+
+COMO VERIFICAR NO N8N:
+
+1. Clique no Agent 9
+2. Veja qual nó está conectado à sua ENTRADA
+3. Deve ser: Code8
+4. Se for outro nó ou nenhum, RECONECTE ao Code8
+
+═══════════════════════════════════════════════════════════════════════════
+
+ARQUIVOS NECESSÁRIOS:
+
+1. code-accumulator-after-agent5.js       → CODE5
+2. code-accumulator-after-agent6.js       → CODE6A
+3. code-accumulator-after-agent6b-fixed.js → CODE6B
+4. code-accumulator-after-agent6c-fixed.js → CODE6C
+5. code-accumulator-after-agent7-fixed.js → CODE7
+6. code-accumulator-after-agent8-fixed.js → CODE8
+7. code-accumulator-after-agent9-fixed.js → CODE9
+8. code-prepare-for-airtable.js           → CODE AIRTABLE
+9. code-debug-accumulation.js             → DEBUG (opcional)
+
+═══════════════════════════════════════════════════════════════════════════

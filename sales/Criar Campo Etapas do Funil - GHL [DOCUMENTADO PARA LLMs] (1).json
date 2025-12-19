@@ -1,0 +1,1526 @@
+{
+  "name": "Criar Campo Etapas do Funil - GHL [DOCUMENTADO PARA LLMs]",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE IF NOT EXISTS n8n_historico_mensagens (\n  id           BIGSERIAL PRIMARY KEY,\n  session_id   VARCHAR(40) NOT NULL,\n  message      JSONB NOT NULL,\n  created_at   TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE INDEX IF NOT EXISTS idx_n8n_historico_mensagens_session_id ON n8n_historico_mensagens (session_id);\n\nCREATE TABLE IF NOT EXISTS n8n_fila_mensagens (\n  id           BIGSERIAL PRIMARY KEY,\n  id_mensagem  VARCHAR(40) NOT NULL,\n  telefone     VARCHAR(40) NOT NULL,\n  mensagem     TEXT NOT NULL,\n  \"timestamp\"  TIMESTAMP WITHOUT TIME ZONE NOT NULL\n);\n\nCREATE INDEX IF NOT EXISTS idx_n8n_fila_mensagens_telefone ON n8n_fila_mensagens (telefone);\n\nCREATE TABLE IF NOT EXISTS n8n_status_atendimento (\n  id                   BIGSERIAL PRIMARY KEY,\n  session_id           VARCHAR(40) NOT NULL UNIQUE,\n  lock_conversa        BOOLEAN NOT NULL DEFAULT FALSE,\n  aguardando_followup  BOOLEAN NOT NULL DEFAULT FALSE,\n  numero_followup      INTEGER NOT NULL DEFAULT 0,\n  updated_at           TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE INDEX IF NOT EXISTS idx_n8n_status_atendimento_session_id ON n8n_status_atendimento (session_id);\nCREATE INDEX IF NOT EXISTS idx_n8n_status_atendimento_aguardando_followup ON n8n_status_atendimento (aguardando_followup);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        80,
+        2736
+      ],
+      "id": "5705f7a9-22f4-4b67-8cab-68788983c49d",
+      "name": "Criar tabelas",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        3120
+      ],
+      "id": "a05db42c-5e11-4556-bb78-112b750de12c",
+      "name": "Rodar configuração"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://content.twilio.com/v1/Content",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "twilioApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"friendly_name\": \"voice_call_request\",\n    \"language\": \"pt_BR\",     \n    \"types\": {\n      \"twilio/call-to-action\": {\n        \"body\":\"Permitir receber ligações.\",         \n        \"actions\": [\n          {             \n            \"type\": \"VOICE_CALL_REQUEST\",\n            \"title\": \"Aceitar ligações\" \n          }         \n        ]       \n    }     \n  } \n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        3024
+      ],
+      "id": "304fdbc9-d1f3-4a19-a957-948536347b68",
+      "name": "Criar template de ligações",
+      "credentials": {
+        "twilioApi": {
+          "id": "pauvhliYHlGqkTOY",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://content.twilio.com/v1/Content",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "twilioApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        2928
+      ],
+      "id": "3017f1e3-6e2f-474b-885c-28a653760933",
+      "name": "Buscar template de ligações",
+      "credentials": {
+        "twilioApi": {
+          "id": "pauvhliYHlGqkTOY",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7b97ffe9-0b20-4321-9693-8f6543f5e009",
+              "leftValue": "={{ $('Buscar template de ligações').item.json.contents.find(c => c.friendly_name === 'voice_call_request') }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        3024
+      ],
+      "id": "6e664007-d481-4c75-8147-bbab0e35ab3d",
+      "name": "Template já criado?"
+    },
+    {
+      "parameters": {
+        "requestMethod": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $('Edit Fields').item.json.contactId }}",
+        "options": {},
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "tags",
+              "value": "=testando-agente"
+            }
+          ]
+        },
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Info').item.json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "name": "Criar etiqueta testando-agente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        304,
+        2112
+      ],
+      "id": "beefc2a7-09a1-42d8-87ec-6fd459ef7042",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "requestMethod": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $('Edit Fields').item.json.contactId }}",
+        "options": {},
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "tags",
+              "value": "=testando-agente"
+            }
+          ]
+        },
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Info').item.json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "name": "Criar etiqueta agente-off",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        528,
+        2112
+      ],
+      "id": "edd9080f-6b44-4c8a-9c8a-53333b72e5fd",
+      "retryOnFail": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "requestMethod": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $('Edit Fields').item.json.contactId }}",
+        "options": {},
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "tags",
+              "value": "=testando-agente"
+            }
+          ]
+        },
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Info').item.json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "name": "Criar etiqueta gestor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        752,
+        2112
+      ],
+      "id": "dfa37401-8dd6-42f3-8c9d-df303ea214b6",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.body.location.id }}/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"Preferência Áudio/Texto\",\n  \"fieldKey\": \"preferencia_audio_texto\",\n  \"dataType\": \"SINGLE_OPTIONS\",\n  \"position\": 1,\n  \"options\": [\"audio\", \"texto\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        2304
+      ],
+      "id": "94c494ab-c804-4639-aced-0ef4d641fc36",
+      "name": "GHL - Criar campo preferência áudio/texto3",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/locations/cd1uyzpJox6XPt4Vct8Y/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"ID cliente - Asaas\",\n  \"fieldKey\": \"asaas_id_cliente\",\n  \"dataType\": \"TEXT\",\n  \"position\": 1,\n  \"placeholder\": \"cus_...\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        2304
+      ],
+      "id": "592fd83b-cbfa-4912-8d35-156dfa1347e3",
+      "name": "GHL - Criar campo Asaas ID cliente",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/locations/cd1uyzpJox6XPt4Vct8Y/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"ID cobrança - Asaas\",\n  \"fieldKey\": \"asaas_id_cobranca\",\n  \"dataType\": \"TEXT\",\n  \"position\": 2,\n  \"placeholder\": \"pay_...\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        752,
+        2304
+      ],
+      "id": "836b00b8-3892-4d27-b119-47953f952c2a",
+      "name": "GHL - Criar campo Asaas ID cobrança",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/locations/cd1uyzpJox6XPt4Vct8Y/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"Status cobrança - Asaas\",\n  \"fieldKey\": \"asaas_status_cobranca\",\n  \"dataType\": \"SINGLE_OPTIONS\",\n  \"position\": 3,\n  \"options\": [\n    \"Pendente\",\n    \"Cobrança recebida\",\n    \"Cobrança confirmada\",\n    \"Cobrança vencida\",\n    \"Cobrança estornada\",\n    \"Cobrança recebida em dinheiro\",\n    \"Solicitação de estorno\",\n    \"Estorno em andamento\",\n    \"Recebido chargeback\",\n    \"Em disputa de chargeback\",\n    \"Disputa vencida\",\n    \"Requisição de negativação\",\n    \"Recebimento de negativação\",\n    \"Aguardando análise de risco\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        976,
+        2304
+      ],
+      "id": "2da1f27f-ab3c-4c11-ac38-405ab69c8347",
+      "name": "GHL - Criar campo Asaas status cobrança",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/locations/cd1uyzpJox6XPt4Vct8Y/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"Permitir chamadas WhatsApp\",\n  \"fieldKey\": \"permitir_chamadas_whatsapp\",\n  \"dataType\": \"SINGLE_OPTIONS\",\n  \"position\": 4,\n  \"options\": [\"Sim\", \"Não\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        2304
+      ],
+      "id": "7ee7934e-c7df-43bd-b9e2-f101e484dca0",
+      "name": "GHL - Criar campo permitir chamadas2",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/locations/cd1uyzpJox6XPt4Vct8Y/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        2496
+      ],
+      "id": "fe5cb871-12b9-44a5-b8f1-2b60a1d46b4a",
+      "name": "1️⃣ Listar todos os campos"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "customFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        528,
+        2496
+      ],
+      "id": "119d5973-4a61-497b-b2f6-c8c48e3463fd",
+      "name": "2️⃣ Separar cada campo"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.fieldKey }}",
+              "rightValue": "contact.preferencia_audio_texto",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "2",
+              "leftValue": "={{ $json.fieldKey }}",
+              "rightValue": "contact.asaas_id_cliente",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "3",
+              "leftValue": "={{ $json.fieldKey }}",
+              "rightValue": "contact.asaas_id_cobranca",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "4",
+              "leftValue": "={{ $json.fieldKey }}",
+              "rightValue": "contact.asaas_status_cobranca",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "5",
+              "leftValue": "={{ $json.fieldKey }}",
+              "rightValue": "contact.permitir_chamadas_whatsapp",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        752,
+        2496
+      ],
+      "id": "a4689f23-45fe-470f-8da8-23c766a66ef3",
+      "name": "3️⃣ Filtrar apenas nossos 5 campos"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://services.leadconnectorhq.com/locations/cd1uyzpJox6XPt4Vct8Y/customFields/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-fe627027-b9cb-4ea3-aaa4-149459e66a03"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        976,
+        2496
+      ],
+      "id": "64506ad2-b4df-4217-8a89-7672d5dad96e",
+      "name": "4️⃣ Deletar campo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ghl-location",
+              "name": "location.id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        2400
+      ],
+      "id": "2c04812b-fd28-4649-9448-cf10375a2298",
+      "name": "⚙️ Config GHL2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.location.id }}/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"Nacionalidade\",\n  \"fieldKey\": \"contact.nacionalidade\",\n  \"dataType\": \"TEXT\",\n  \"placeholder\": \"Ex: Brasileiro, Americano...\",\n  \"position\": 600\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        2832
+      ],
+      "id": "e92b6bdb-47bd-44c4-a706-370ddb50cc1c",
+      "name": "GHL - Criar campo Nacionalidade",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Atualizar se o lead possui work permit. Valores: 'Sim', 'Não', 'Em processo'. Campo ID: 814630",
+        "method": "PUT",
+        "url": "https://services.leadconnectorhq.com/contacts/{contact_Id}",
+        "sendHeaders": true,
+        "parametersHeaders": {
+          "values": [
+            {
+              "name": "Authorization",
+              "valueProvider": "fieldValue",
+              "value": "=Bearer {{ $('Info').item.json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "valueProvider": "fieldValue",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"customFields\": [\n    {\n      \"id\": \"YFFXi3ByB0DuISqrq6MW\",\n      \"value\": \"{work_permit}\"\n    }\n  ]\n}",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "contact_Id",
+              "description": "ID do contato",
+              "type": "string"
+            },
+            {
+              "name": "work_permit",
+              "description": "Status do work permit: Sim ou Não",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        -144,
+        3824
+      ],
+      "id": "bfaa5da3-fb92-4a19-814c-8e28f31d5307",
+      "name": "Atualizar_work_permit"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM n8n_historico_mensagens \nWHERE session_id = 'vODCC7YelRXb2tHcuG3H';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        80,
+        3408
+      ],
+      "id": "3b34d35f-2659-47a8-baea-ec8cd1207b44",
+      "name": "Remover histórico de conversa com lead especifico",
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  id,\n  created_at,\n  message->>'content' as conteudo\nFROM n8n_historico_mensagens\nWHERE session_id = 'vODCC7YelRXb2tHcuG3H'\n  AND message->>'content' = 'teria depois do dia 24?'\nORDER BY created_at;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        80,
+        3600
+      ],
+      "id": "181cd328-59f6-4b10-907a-f511bcd2231f",
+      "name": "Remover histórico de conversa com lead especifico1",
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.location.id }}/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"Etapa do Funil\",\n  \"fieldKey\": \"contact.etapa_funil\",\n  \"dataType\": \"SINGLE_OPTIONS\",\n  \"placeholder\": \"Selecione a etapa\",\n  \"position\": 100,\n  \"options\": [\n    \"Novo Lead\",\n    \"Primeiro Contato\",\n    \"Em Follow-Up\",\n    \"Qualificado\",\n    \"Agendamento Marcado\",\n    \"Reagendado\",\n    \"No-Show\",\n    \"Reunião Realizada\",\n    \"Proposta Enviada\",\n    \"Follow-Up Proposta\",\n    \"Contrato Enviado\",\n    \"Aguardando Pagamento\",\n    \"Cliente Ativo\",\n    \"Perdido\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        3216
+      ],
+      "id": "cb544a5e-5e11-4215-8215-b574219cb74b",
+      "name": "GHL - Criar Campo Etapa do Funil",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ghl-location",
+              "name": "location.id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        3216
+      ],
+      "id": "53f5c6d6-b686-4a38-84a5-8069571fbdcb",
+      "name": "⚙️ Config GHL"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/locations/{{ $json.location.id }}/customFields",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ghl_api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"Especialista Motive\",\n  \"fieldKey\": \"contact.motive_responsavel\",\n  \"dataType\": \"SINGLE_OPTIONS\",\n  \"placeholder\": \"Selecione o agente\",\n  \"position\": 101,\n  \"options\": [\n    \"followuper\",\n    \"customersuccess\",\n    \"closer\",\n    \"engagementkeeper\",\n    \"rescheduler\",\n    \"socialsellerconsultoria\",\n    \"socialsellercarreira\",\n    \"sdrcarreira\",\n    \"sdrconsultoria\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        3408
+      ],
+      "id": "acfcfbc1-1d2f-49c9-8caf-ecbfc699af25",
+      "name": "GHL - Criar Campo Agente Responsável",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "=https://services.leadconnectorhq.com/contacts/search",
+        "options": {},
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "locationId",
+              "value": "={{ $json.location_id }}"
+            },
+            {
+              "name": "pageLimit",
+              "value": "={{ 20 }}"
+            },
+            {
+              "name": "query",
+              "value": "={{ $json.email }}"
+            }
+          ]
+        },
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.API_KEY }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        }
+      },
+      "name": "Search Contact por Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        496,
+        1840
+      ],
+      "id": "dd72d2f6-9841-4ed9-ae5b-1afe9bebb285",
+      "notes": "Busca contato por EMAIL"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ghl-location",
+              "name": "location.id",
+              "value": "cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "ghl-api",
+              "name": "ghl_api_key",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "d5828cb6-6c8d-4cf5-ab1d-aa973ff7b7c0",
+              "name": "message",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        1840
+      ],
+      "id": "34f1a0d9-cae1-4ff2-b1c3-57f93ab716a6",
+      "name": "⚙️ Config GHL3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -208,
+        1632
+      ],
+      "id": "a09e032e-3548-4419-8348-6047e8bedc8c",
+      "name": "When chat message received",
+      "webhookId": "1f50f5b7-decb-4118-9286-875554f963aa"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Info').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"IG\",\n  \"contactId\": \"{{ $('Info').first().json.lead_id }}\",\n  \"message\": \"{{ $json.output }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1264,
+        1936
+      ],
+      "id": "74ea8235-bf0d-486a-a7db-27623ca045f7",
+      "name": "Instagram",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "whatsapp ",
+                    "rightValue": "={{ $('Search Contact por Email').first().json.source }} ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f5034094-22ae-449d-a556-1fc1bc216e49"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Whatsapp"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "21897a45-e463-4f12-aa85-a06b148d7ecb",
+                    "leftValue": "instagram",
+                    "rightValue": "={{ $('Search Contact por Email').first().json.source }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Instagram"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1040,
+        1840
+      ],
+      "id": "8bb78a58-e679-4828-b67c-1e7e8a22b233",
+      "name": "Canal"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Info').first().json.api_key }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $('Info').first().json.lead_id }}\",\n  \"message\": \"{{ $json.output }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1264,
+        1744
+      ],
+      "id": "73e0b64f-2ddc-4677-ab85-8ff7403d47da",
+      "name": "Whatsapp1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "content": "## 🔧 SEÇÃO 1: TRIGGER MANUAL DE CONFIGURAÇÃO\n\n**Tipo de Nó:** `n8n-nodes-base.manualTrigger`\n**Versão:** 1\n\n### PROPÓSITO:\nInicia o workflow de configuração manualmente. Use este trigger quando precisar executar tarefas de setup/configuração que não devem rodar automaticamente.\n\n### QUANDO USAR:\n- Setup inicial de integração\n- Criação de campos customizados em CRMs\n- Inicialização de tabelas no banco de dados\n- Configurações que rodam uma única vez\n\n### PADRÃO RECOMENDADO:\nConecte múltiplas branches a partir deste trigger para executar diferentes configurações em paralelo:\n```\nTrigger Manual → [Branch 1: Criar Tabelas]\n              → [Branch 2: Criar Campos GHL]\n              → [Branch 3: Criar Templates]\n```\n\n### ATENÇÃO LLMs:\n- Este nó NÃO possui parâmetros configuráveis\n- Sempre use `typeVersion: 1` para compatibilidade\n- Nunca conecte triggers automáticos (webhook, schedule) para tarefas de configuração única",
+        "height": 580,
+        "width": 440,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        2912
+      ],
+      "typeVersion": 1,
+      "id": "fb602004-5d42-4662-9168-18dd52621d92",
+      "name": "📌 Documentação: Trigger Manual"
+    },
+    {
+      "parameters": {
+        "content": "## 🗄️ SEÇÃO 2: CRIAÇÃO DE TABELAS POSTGRESQL\n\n**Tipo de Nó:** `n8n-nodes-base.postgres`\n**Versão:** 2.6\n**Operação:** `executeQuery`\n\n### ESTRUTURA DAS TABELAS:\n\n**1. n8n_historico_mensagens**\n- Armazena histórico de conversas\n- `session_id`: Identificador único da sessão (VARCHAR 40)\n- `message`: Conteúdo em JSONB para flexibilidade\n- Índice em session_id para buscas rápidas\n\n**2. n8n_fila_mensagens**\n- Fila de mensagens pendentes\n- Útil para debounce e agrupamento\n- Índice em telefone\n\n**3. n8n_status_atendimento**\n- Controle de lock de conversa\n- `lock_conversa`: Impede processamento paralelo\n- `aguardando_followup`: Flag para follow-ups\n- `numero_followup`: Contador de follow-ups\n\n### PADRÃO SQL RECOMENDADO:\n```sql\nCREATE TABLE IF NOT EXISTS nome_tabela (\n  id BIGSERIAL PRIMARY KEY,\n  ...\n);\nCREATE INDEX IF NOT EXISTS idx_... ON tabela (campo);\n```\n\n### ATENÇÃO LLMs:\n- Use `IF NOT EXISTS` para idempotência\n- Sempre crie índices para campos de busca frequente\n- JSONB é preferível para dados flexíveis\n- Use TIMESTAMP WITHOUT TIME ZONE para consistência",
+        "height": 740,
+        "width": 480,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        2544
+      ],
+      "typeVersion": 1,
+      "id": "7e9a4255-5e01-444c-9f3e-c5cb6c579973",
+      "name": "📌 Documentação: Tabelas PostgreSQL"
+    },
+    {
+      "parameters": {
+        "content": "## 📞 SEÇÃO 3: TEMPLATE TWILIO PARA CHAMADAS\n\n**Tipo de Nó:** `n8n-nodes-base.httpRequest`\n**Versão:** 4.2\n**Autenticação:** `twilioApi` (predefinedCredentialType)\n\n### FLUXO:\n1. **GET** - Buscar templates existentes\n2. **IF** - Verificar se template já existe\n3. **POST** - Criar template se não existir\n\n### ENDPOINT TWILIO:\n`https://content.twilio.com/v1/Content`\n\n### BODY PARA CRIAR TEMPLATE:\n```json\n{\n  \"friendly_name\": \"voice_call_request\",\n  \"language\": \"pt_BR\",\n  \"types\": {\n    \"twilio/call-to-action\": {\n      \"body\": \"Mensagem do botão\",\n      \"actions\": [{\n        \"type\": \"VOICE_CALL_REQUEST\",\n        \"title\": \"Texto do botão\"\n      }]\n    }\n  }\n}\n```\n\n### VERIFICAÇÃO COM IF:\n```javascript\n$('Buscar template').item.json.contents.find(\n  c => c.friendly_name === 'voice_call_request'\n)\n```\n\n### ATENÇÃO LLMs:\n- Use `authentication: predefinedCredentialType` para Twilio\n- Sempre verifique existência antes de criar\n- `specifyBody: json` para enviar JSON diretamente",
+        "height": 680,
+        "width": 460,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        2800
+      ],
+      "typeVersion": 1,
+      "id": "1effb316-01a0-42af-9488-8cf845fa3ec2",
+      "name": "📌 Documentação: Template Twilio"
+    },
+    {
+      "parameters": {
+        "content": "## 🏷️ SEÇÃO 4: CRIAR CUSTOM FIELDS NO GHL\n\n**Tipo de Nó:** `n8n-nodes-base.httpRequest`\n**Versão:** 4.2\n**Método:** POST\n\n### ENDPOINT:\n`https://services.leadconnectorhq.com/locations/{location_id}/customFields`\n\n### HEADERS OBRIGATÓRIOS:\n```json\n{\n  \"Authorization\": \"Bearer {api_key}\",\n  \"Version\": \"2021-07-28\",\n  \"Content-Type\": \"application/json\"\n}\n```\n\n### TIPOS DE CAMPO (dataType):\n- `TEXT` - Campo de texto simples\n- `SINGLE_OPTIONS` - Dropdown com opções\n- `MULTI_OPTIONS` - Múltipla seleção\n- `NUMBER` - Campo numérico\n- `DATE` - Campo de data\n\n### EXEMPLO CAMPO TEXTO:\n```json\n{\n  \"name\": \"Nome Visível\",\n  \"fieldKey\": \"contact.nome_interno\",\n  \"dataType\": \"TEXT\",\n  \"placeholder\": \"Texto de exemplo\",\n  \"position\": 100\n}\n```\n\n### EXEMPLO CAMPO DROPDOWN:\n```json\n{\n  \"name\": \"Status\",\n  \"fieldKey\": \"contact.status\",\n  \"dataType\": \"SINGLE_OPTIONS\",\n  \"position\": 101,\n  \"options\": [\"Opção 1\", \"Opção 2\", \"Opção 3\"]\n}\n```\n\n### ATENÇÃO LLMs:\n- `fieldKey` deve começar com `contact.`\n- Use `onError: continueRegularOutput` para não quebrar o fluxo\n- `alwaysOutputData: true` garante saída mesmo com erro\n- Version header é OBRIGATÓRIO",
+        "height": 840,
+        "width": 500,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        256,
+        2112
+      ],
+      "typeVersion": 1,
+      "id": "07d5ea80-79dd-4b9b-a26d-9ce654fc0cc5",
+      "name": "📌 Documentação: Custom Fields GHL"
+    },
+    {
+      "parameters": {
+        "content": "## 🔄 SEÇÃO 5: DELETAR CUSTOM FIELDS (CLEANUP)\n\n**Fluxo de 4 Passos:**\n\n### 1️⃣ LISTAR CAMPOS (GET)\n```\nGET /locations/{location_id}/customFields\nRetorna: { customFields: [...] }\n```\n\n### 2️⃣ SEPARAR CADA CAMPO (splitOut)\n**Tipo:** `n8n-nodes-base.splitOut`\n**Versão:** 1\n```json\n{\n  \"fieldToSplitOut\": \"customFields\"\n}\n```\nTransforma array em itens individuais.\n\n### 3️⃣ FILTRAR CAMPOS ESPECÍFICOS (IF)\n**Tipo:** `n8n-nodes-base.if`\n**Versão:** 2\nUse `combinator: or` para múltiplas condições:\n```javascript\n$json.fieldKey === 'contact.campo1'\nOR\n$json.fieldKey === 'contact.campo2'\n```\n\n### 4️⃣ DELETAR CAMPO (DELETE)\n```\nDELETE /locations/{location_id}/customFields/{field_id}\n```\n\n### PADRÃO ITERAÇÃO:\n```\nListar → SplitOut → IF (filtrar) → Ação\n```\n\n### ATENÇÃO LLMs:\n- SplitOut é essencial para iterar sobre arrays\n- IF com `combinator: or` para múltiplos matches\n- Cada item passa pelo DELETE individualmente",
+        "height": 700,
+        "width": 460,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        256,
+        2368
+      ],
+      "typeVersion": 1,
+      "id": "39b8b494-e639-46ac-86db-6a753cb51d19",
+      "name": "📌 Documentação: Deletar Custom Fields"
+    },
+    {
+      "parameters": {
+        "content": "## ⚙️ SEÇÃO 6: NÓ SET PARA CONFIGURAÇÃO\n\n**Tipo de Nó:** `n8n-nodes-base.set`\n**Versão:** 3.4\n\n### PROPÓSITO:\nCentraliza variáveis de configuração para reutilização em todo o workflow.\n\n### PADRÃO RECOMENDADO:\n```json\n{\n  \"assignments\": {\n    \"assignments\": [\n      {\n        \"name\": \"location.id\",\n        \"value\": \"ID_DA_LOCATION\",\n        \"type\": \"string\"\n      },\n      {\n        \"name\": \"ghl_api_key\",\n        \"value\": \"pit-xxxxx\",\n        \"type\": \"string\"\n      }\n    ]\n  }\n}\n```\n\n### COMO ACESSAR EM OUTROS NÓS:\n```javascript\n// Acesso direto\n{{ $json.location.id }}\n{{ $json.ghl_api_key }}\n\n// De outro nó específico\n{{ $('⚙️ Config GHL').item.json.location.id }}\n```\n\n### CONVENÇÃO DE NOMENCLATURA:\n- Use emojis: `⚙️ Config`, `📊 Info`\n- Nomes descritivos: `Config GHL`, `Config Asaas`\n\n### ATENÇÃO LLMs:\n- Coloque Set ANTES dos nós que usam as variáveis\n- Um Set pode alimentar múltiplas branches\n- Use `type: string` para textos, `type: number` para números",
+        "height": 680,
+        "width": 480,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        2192
+      ],
+      "typeVersion": 1,
+      "id": "6f01881a-49b9-40bf-9666-0b62dadae90f",
+      "name": "📌 Documentação: Set de Configuração"
+    },
+    {
+      "parameters": {
+        "content": "## 🔍 SEÇÃO 7: BUSCAR CONTATO E ENVIAR MENSAGEM\n\n### FLUXO COMPLETO:\n```\nTrigger → Config → Search → Switch(Canal) → Enviar\n```\n\n### 1. SEARCH CONTACT (POST)\n**Endpoint:** `POST /contacts/search`\n```json\n{\n  \"locationId\": \"location_id\",\n  \"pageLimit\": 20,\n  \"query\": \"email@exemplo.com\"\n}\n```\n\n### 2. SWITCH PARA CANAL\n**Tipo:** `n8n-nodes-base.switch`\n**Versão:** 3.2\n\nVerifica `source` do contato:\n- `whatsapp` → Output 1\n- `instagram` → Output 2\n\n### 3. ENVIAR MENSAGEM (POST)\n**Endpoint:** `POST /conversations/messages`\n\n**Para WhatsApp:**\n```json\n{\n  \"type\": \"SMS\",\n  \"contactId\": \"ID_DO_CONTATO\",\n  \"message\": \"Texto da mensagem\"\n}\n```\n\n**Para Instagram:**\n```json\n{\n  \"type\": \"IG\",\n  \"contactId\": \"ID_DO_CONTATO\",\n  \"message\": \"Texto da mensagem\"\n}\n```\n\n### ATENÇÃO LLMs:\n- `type: SMS` é para WhatsApp no GHL\n- `type: IG` é para Instagram\n- Use `retryOnFail: true` para resiliência\n- Version header: `2021-04-15` para mensagens",
+        "height": 780,
+        "width": 500
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        240,
+        1632
+      ],
+      "typeVersion": 1,
+      "id": "7c27fdc6-acab-4964-8e1f-137a73388afd",
+      "name": "📌 Documentação: Buscar e Enviar Mensagem GHL"
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 SEÇÃO 8: TOOL HTTP REQUEST PARA AGENTES IA\n\n**Tipo de Nó:** `@n8n/n8n-nodes-langchain.toolHttpRequest`\n**Versão:** 1.1\n\n### PROPÓSITO:\nPermite que agentes de IA chamem APIs externas como ferramentas.\n\n### ESTRUTURA:\n```json\n{\n  \"toolDescription\": \"Descrição clara da ferramenta para a IA\",\n  \"method\": \"PUT/POST/GET\",\n  \"url\": \"URL com placeholders {param}\",\n  \"sendHeaders\": true,\n  \"parametersHeaders\": {\n    \"values\": [\n      {\"name\": \"Authorization\", \"value\": \"Bearer ...\"}\n    ]\n  },\n  \"sendBody\": true,\n  \"specifyBody\": \"json\",\n  \"jsonBody\": \"JSON com {placeholders}\",\n  \"placeholderDefinitions\": {\n    \"values\": [\n      {\n        \"name\": \"param_name\",\n        \"description\": \"Descrição para IA\",\n        \"type\": \"string\"\n      }\n    ]\n  }\n}\n```\n\n### EXEMPLO REAL:\n```json\n{\n  \"toolDescription\": \"Atualizar work permit do lead\",\n  \"url\": \"https://api.../contacts/{contact_Id}\",\n  \"jsonBody\": \"{ \\\"customFields\\\": [{ \\\"id\\\": \\\"XXX\\\", \\\"value\\\": \\\"{work_permit}\\\" }] }\",\n  \"placeholderDefinitions\": {\n    \"values\": [\n      {\"name\": \"contact_Id\", \"description\": \"ID do contato\"},\n      {\"name\": \"work_permit\", \"description\": \"Sim ou Não\"}\n    ]\n  }\n}\n```\n\n### ATENÇÃO LLMs:\n- `toolDescription` é CRUCIAL - a IA usa isso para decidir quando chamar\n- Placeholders usam `{nome}` (chaves simples)\n- Headers usam `valueProvider: fieldValue`\n- Defina TODOS os placeholders em `placeholderDefinitions`",
+        "height": 920,
+        "width": 560,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        3600
+      ],
+      "typeVersion": 1,
+      "id": "395d22bb-318c-4677-8515-c07f5bdb5832",
+      "name": "📌 Documentação: Tool HTTP para IA"
+    },
+    {
+      "parameters": {
+        "content": "## 📝 SEÇÃO 9: PADRÃO SET + AGENTE (PROMPT DINÂMICO)\n\n### CONCEITO:\nUsar nó SET antes do Agente IA para injetar prompts dinamicamente.\n\n### VANTAGENS:\n- Um único agente pode ter múltiplos comportamentos\n- Prompts versionados e rastreáveis\n- Fácil A/B testing de prompts\n- Reutilização de ferramentas\n\n### ESTRUTURA:\n```\n[Trigger] → [Set: Define Prompt] → [Agente IA]\n           ↓\n           prompt: \"Você é um SDR...\"\n           nome_agente: \"Isabella\"\n           origem: \"Funil X\"\n```\n\n### EXEMPLO SET:\n```json\n{\n  \"assignments\": [\n    {\n      \"name\": \"system_prompt\",\n      \"value\": \"Você é Isabella, SDR especializada...\",\n      \"type\": \"string\"\n    },\n    {\n      \"name\": \"nome_agente\",\n      \"value\": \"Isabella\",\n      \"type\": \"string\"\n    },\n    {\n      \"name\": \"origem\",\n      \"value\": \"Funil Tráfego Direto\",\n      \"type\": \"string\"\n    }\n  ]\n}\n```\n\n### NO AGENTE:\n```javascript\nSystem Message: {{ $json.system_prompt }}\n```\n\n### ATENÇÃO LLMs:\n- Set SEMPRE antes do Agente\n- Prompts em texto puro, sem escape complexo\n- Use campos separados para metadados\n- Ideal para múltiplos funis/personas",
+        "height": 780,
+        "width": 500,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        208,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "465473ad-03f8-4749-a6ab-d4dbf323cb0f",
+      "name": "📌 Documentação: Padrão Set + Agente"
+    },
+    {
+      "parameters": {
+        "content": "## 🗑️ SEÇÃO 10: OPERAÇÕES POSTGRES ÚTEIS\n\n### DELETE COM SESSION_ID:\n```sql\nDELETE FROM n8n_historico_mensagens \nWHERE session_id = 'ID_DA_SESSAO';\n```\n\n### SELECT COM JSONB:\n```sql\nSELECT \n  id,\n  created_at,\n  message->>'content' as conteudo\nFROM n8n_historico_mensagens\nWHERE session_id = 'XXX'\nORDER BY created_at;\n```\n\n### INSERT COM UPSERT:\n```sql\nINSERT INTO tabela (campo1, campo2)\nVALUES ('valor1', 'valor2')\nON CONFLICT (campo_unico)\nDO NOTHING\nRETURNING *;\n```\n\n### ACESSAR CAMPOS JSONB:\n- `->` retorna JSON\n- `->>` retorna texto\n- `@>` contém JSON\n\n### ATENÇÃO LLMs:\n- Use parameterização quando possível\n- `ON CONFLICT DO NOTHING` para idempotência\n- Índices em campos de WHERE frequente\n- RETURNING * para confirmar operação",
+        "height": 600,
+        "width": 440,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        3360
+      ],
+      "typeVersion": 1,
+      "id": "d39ba09a-6f7d-4bda-a2d0-6f9b21bc76c2",
+      "name": "📌 Documentação: Operações PostgreSQL"
+    },
+    {
+      "parameters": {
+        "content": "## 📋 REFERÊNCIA RÁPIDA: VERSÕES DE NÓS\n\n| Tipo de Nó | Versão | Uso |\n|------------|--------|-----|\n| httpRequest | 4.2 | Chamadas API modernas |\n| httpRequest | 2 | Legado (bodyParametersUi) |\n| postgres | 2.6 | Banco de dados |\n| set | 3.4 | Definir variáveis |\n| if | 2.2 | Condicionais modernas |\n| switch | 3.2 | Múltiplas rotas |\n| splitOut | 1 | Separar arrays |\n| manualTrigger | 1 | Trigger manual |\n| chatTrigger | 1.4 | Chat/Webhook |\n| toolHttpRequest | 1.1 | Tool para agentes |\n\n### PROPRIEDADES IMPORTANTES:\n- `alwaysOutputData: true` → Garante output\n- `onError: continueRegularOutput` → Não para em erro\n- `retryOnFail: true` → Retry automático\n\n### EXPRESSÕES ÚTEIS:\n```javascript\n// Acessar outro nó\n$('Nome do Nó').item.json.campo\n$('Nome do Nó').first().json.campo\n\n// Item atual\n$json.campo\n\n// Funções\n$now.toISO()\n$uuid\n```",
+        "height": 620,
+        "width": 480,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -704,
+        2912
+      ],
+      "typeVersion": 1,
+      "id": "89271cf5-e498-4161-a9ff-3523385729b4",
+      "name": "📌 Referência Rápida: Nós e Versões"
+    },
+    {
+      "parameters": {
+        "content": "## ⚠️ AVISOS CRÍTICOS PARA LLMs\n\n### ❌ ERROS COMUNS A EVITAR:\n\n1. **Não misture versões de httpRequest**\n   - v4.2 usa `headerParameters.parameters[]`\n   - v2 usa `headerParametersUi.parameter[]`\n\n2. **Não esqueça o Version header no GHL**\n   - Sempre inclua `Version: 2021-07-28` ou `2021-04-15`\n\n3. **Não use IDs hardcoded em produção**\n   - Use variáveis de ambiente ou nó Set\n\n4. **Não ignore tratamento de erros**\n   - Use `onError: continueRegularOutput`\n   - Use `alwaysOutputData: true`\n\n5. **Não crie nós sem position válido**\n   - Sempre defina `position: [x, y]`\n\n### ✅ BOAS PRÁTICAS:\n\n1. **Nomenclatura clara**\n   - Emojis para identificação visual\n   - Verbos de ação: Criar, Buscar, Deletar\n\n2. **Fluxo idempotente**\n   - CREATE IF NOT EXISTS\n   - ON CONFLICT DO NOTHING\n\n3. **Documentação inline**\n   - Use Sticky Notes\n   - Use campo `notes` nos nós\n\n4. **Modularidade**\n   - Um Set de config por integração\n   - Branches paralelas quando possível",
+        "height": 720,
+        "width": 440,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -704,
+        2192
+      ],
+      "typeVersion": 1,
+      "id": "feae14e8-6b8e-4615-be55-710453135f36",
+      "name": "⚠️ Avisos Críticos para LLMs"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- =====================================================\n-- 🧪 TABELA: ai_agent_test_evaluations\n-- Sistema de Avaliação de Qualidade de Agentes IA\n-- Mottivme Sales - BPO Financeiro\n-- =====================================================\n\n-- Criar tabela principal de avaliações\nCREATE TABLE IF NOT EXISTS ai_agent_test_evaluations (\n    -- Identificação\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n    test_id VARCHAR(50) NOT NULL,\n    session_id VARCHAR(100),\n    \n    -- Contexto do Teste\n    agent_name VARCHAR(100) NOT NULL,\n    agent_version VARCHAR(20) DEFAULT '1.0',\n    test_type VARCHAR(50) DEFAULT 'manual', -- 'manual', 'automated', 'regression'\n    test_category VARCHAR(100), -- 'movimentacao', 'consulta', 'relatorio', 'cadastro'\n    \n    -- Input/Output\n    user_input TEXT NOT NULL,\n    agent_output TEXT NOT NULL,\n    tools_called JSONB DEFAULT '[]'::jsonb, -- [\"dashboard_kpis\", \"buscar_cliente\"]\n    system_prompt_hash VARCHAR(64), -- Para rastrear versão do prompt\n    \n    -- =====================================================\n    -- 🎯 MÉTRICAS DE QUALIDADE (0-100)\n    -- =====================================================\n    \n    -- 1. Seleção de Ferramenta\n    -- A IA escolheu a ferramenta correta para a intenção do usuário?\n    score_tool_selection INTEGER CHECK (score_tool_selection >= 0 AND score_tool_selection <= 100),\n    \n    -- 2. Protocolo de Confirmação\n    -- Pediu confirmação antes de ações que modificam dados?\n    score_confirmation_protocol INTEGER CHECK (score_confirmation_protocol >= 0 AND score_confirmation_protocol <= 100),\n    \n    -- 3. Brevidade e Objetividade\n    -- Resposta dentro do limite (~300 chars) e direta ao ponto?\n    score_brevity INTEGER CHECK (score_brevity >= 0 AND score_brevity <= 100),\n    \n    -- 4. Tom Profissional\n    -- Manteve tom profissional, confiável e objetivo?\n    score_professionalism INTEGER CHECK (score_professionalism >= 0 AND score_professionalism <= 100),\n    \n    -- 5. Precisão de Dados\n    -- Não inventou dados, usou apenas informações do contexto/ferramentas?\n    score_data_accuracy INTEGER CHECK (score_data_accuracy >= 0 AND score_data_accuracy <= 100),\n    \n    -- 6. Aderência às Regras\n    -- Seguiu regras específicas do prompt (ex: perguntar centro de custo)?\n    score_rule_adherence INTEGER CHECK (score_rule_adherence >= 0 AND score_rule_adherence <= 100),\n    \n    -- 7. Uso de Contexto\n    -- Usou corretamente o contexto do usuário (nome, telefone, histórico)?\n    score_context_usage INTEGER CHECK (score_context_usage >= 0 AND score_context_usage <= 100),\n    \n    -- 8. Formatação Correta\n    -- Usou emojis padrão (✅❌⚠️) e formatação adequada?\n    score_format_compliance INTEGER CHECK (score_format_compliance >= 0 AND score_format_compliance <= 100),\n    \n    -- =====================================================\n    -- 📈 SCORES AGREGADOS\n    -- =====================================================\n    \n    -- Score Final (média ponderada)\n    score_final DECIMAL(5,2),\n    \n    -- Classificação baseada no score\n    -- A: 90-100 | B: 75-89 | C: 60-74 | D: 40-59 | F: 0-39\n    grade CHAR(1) CHECK (grade IN ('A', 'B', 'C', 'D', 'F')),\n    \n    -- Status do teste\n    evaluation_status VARCHAR(20) DEFAULT 'passed' CHECK (evaluation_status IN ('passed', 'failed', 'warning', 'error')),\n    \n    -- =====================================================\n    -- 📝 FEEDBACK DETALHADO\n    -- =====================================================\n    \n    -- Feedback do avaliador GPT-4o\n    feedback_gpt4o JSONB DEFAULT '{}'::jsonb,\n    \n    -- Feedback do avaliador Gemini 2.5 Pro\n    feedback_gemini JSONB DEFAULT '{}'::jsonb,\n    \n    -- Problemas identificados\n    issues_found JSONB DEFAULT '[]'::jsonb,\n    \n    -- Sugestões de melhoria\n    improvement_suggestions TEXT[],\n    \n    -- Regras violadas (referência ao prompt)\n    rules_violated TEXT[],\n    \n    -- =====================================================\n    -- 🔧 METADADOS\n    -- =====================================================\n    \n    -- Tempo de resposta do agente (ms)\n    response_time_ms INTEGER,\n    \n    -- Tokens usados\n    tokens_input INTEGER,\n    tokens_output INTEGER,\n    tokens_total INTEGER,\n    \n    -- Custo estimado (USD)\n    estimated_cost_usd DECIMAL(10,6),\n    \n    -- Modelo usado no agente\n    agent_model VARCHAR(50),\n    \n    -- Modelos usados na avaliação\n    evaluator_models JSONB DEFAULT '{\"gpt4o\": true, \"gemini\": true}'::jsonb,\n    \n    -- Timestamps\n    created_at TIMESTAMPTZ DEFAULT NOW(),\n    evaluated_at TIMESTAMPTZ DEFAULT NOW(),\n    \n    -- Quem executou o teste\n    tested_by VARCHAR(100) DEFAULT 'system',\n    \n    -- Notas adicionais\n    notes TEXT\n);\n\n-- =====================================================\n-- 📊 ÍNDICES PARA PERFORMANCE\n-- =====================================================\n\nCREATE INDEX idx_test_evaluations_test_id ON ai_agent_test_evaluations(test_id);\nCREATE INDEX idx_test_evaluations_agent_name ON ai_agent_test_evaluations(agent_name);\nCREATE INDEX idx_test_evaluations_grade ON ai_agent_test_evaluations(grade);\nCREATE INDEX idx_test_evaluations_status ON ai_agent_test_evaluations(evaluation_status);\nCREATE INDEX idx_test_evaluations_created ON ai_agent_test_evaluations(created_at DESC);\nCREATE INDEX idx_test_evaluations_category ON ai_agent_test_evaluations(test_category);\nCREATE INDEX idx_test_evaluations_score ON ai_agent_test_evaluations(score_final DESC);\n\n-- =====================================================\n-- 📈 VIEW: Dashboard de Métricas\n-- =====================================================\n\nCREATE OR REPLACE VIEW vw_agent_quality_dashboard AS\nSELECT \n    agent_name,\n    agent_version,\n    COUNT(*) as total_tests,\n    \n    -- Distribuição de grades\n    COUNT(*) FILTER (WHERE grade = 'A') as grade_a_count,\n    COUNT(*) FILTER (WHERE grade = 'B') as grade_b_count,\n    COUNT(*) FILTER (WHERE grade = 'C') as grade_c_count,\n    COUNT(*) FILTER (WHERE grade = 'D') as grade_d_count,\n    COUNT(*) FILTER (WHERE grade = 'F') as grade_f_count,\n    \n    -- Médias por métrica\n    ROUND(AVG(score_tool_selection), 2) as avg_tool_selection,\n    ROUND(AVG(score_confirmation_protocol), 2) as avg_confirmation,\n    ROUND(AVG(score_brevity), 2) as avg_brevity,\n    ROUND(AVG(score_professionalism), 2) as avg_professionalism,\n    ROUND(AVG(score_data_accuracy), 2) as avg_data_accuracy,\n    ROUND(AVG(score_rule_adherence), 2) as avg_rule_adherence,\n    ROUND(AVG(score_context_usage), 2) as avg_context_usage,\n    ROUND(AVG(score_format_compliance), 2) as avg_format_compliance,\n    \n    -- Score final médio\n    ROUND(AVG(score_final), 2) as avg_final_score,\n    \n    -- Taxa de sucesso\n    ROUND(\n        100.0 * COUNT(*) FILTER (WHERE evaluation_status = 'passed') / NULLIF(COUNT(*), 0), \n        2\n    ) as success_rate,\n    \n    -- Performance\n    ROUND(AVG(response_time_ms), 0) as avg_response_time_ms,\n    ROUND(AVG(estimated_cost_usd)::numeric, 6) as avg_cost_usd,\n    \n    -- Período\n    MIN(created_at) as first_test,\n    MAX(created_at) as last_test\n    \nFROM ai_agent_test_evaluations\nGROUP BY agent_name, agent_version\nORDER BY avg_final_score DESC;\n\n-- =====================================================\n-- 📊 VIEW: Problemas Mais Comuns\n-- =====================================================\n\nCREATE OR REPLACE VIEW vw_common_issues AS\nSELECT \n    agent_name,\n    issue->>'type' as issue_type,\n    issue->>'description' as issue_description,\n    COUNT(*) as occurrence_count,\n    ROUND(AVG((issue->>'severity')::int), 2) as avg_severity\nFROM ai_agent_test_evaluations,\n     jsonb_array_elements(issues_found) as issue\nWHERE issues_found != '[]'::jsonb\nGROUP BY agent_name, issue->>'type', issue->>'description'\nORDER BY occurrence_count DESC;\n\n-- =====================================================\n-- 🔄 FUNÇÃO: Calcular Score Final e Grade\n-- =====================================================\n\nCREATE OR REPLACE FUNCTION calculate_final_score()\nRETURNS TRIGGER AS $$\nDECLARE\n    weighted_score DECIMAL(5,2);\nBEGIN\n    -- Pesos das métricas (total = 100%)\n    -- Tool Selection: 20%\n    -- Confirmation Protocol: 15%\n    -- Brevity: 10%\n    -- Professionalism: 10%\n    -- Data Accuracy: 20%\n    -- Rule Adherence: 10%\n    -- Context Usage: 10%\n    -- Format Compliance: 5%\n    \n    weighted_score := (\n        COALESCE(NEW.score_tool_selection, 0) * 0.20 +\n        COALESCE(NEW.score_confirmation_protocol, 0) * 0.15 +\n        COALESCE(NEW.score_brevity, 0) * 0.10 +\n        COALESCE(NEW.score_professionalism, 0) * 0.10 +\n        COALESCE(NEW.score_data_accuracy, 0) * 0.20 +\n        COALESCE(NEW.score_rule_adherence, 0) * 0.10 +\n        COALESCE(NEW.score_context_usage, 0) * 0.10 +\n        COALESCE(NEW.score_format_compliance, 0) * 0.05\n    );\n    \n    NEW.score_final := weighted_score;\n    \n    -- Calcular grade\n    NEW.grade := CASE\n        WHEN weighted_score >= 90 THEN 'A'\n        WHEN weighted_score >= 75 THEN 'B'\n        WHEN weighted_score >= 60 THEN 'C'\n        WHEN weighted_score >= 40 THEN 'D'\n        ELSE 'F'\n    END;\n    \n    -- Definir status\n    NEW.evaluation_status := CASE\n        WHEN weighted_score >= 75 THEN 'passed'\n        WHEN weighted_score >= 60 THEN 'warning'\n        ELSE 'failed'\n    END;\n    \n    RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\n-- Trigger para calcular automaticamente\nDROP TRIGGER IF EXISTS trg_calculate_score ON ai_agent_test_evaluations;\nCREATE TRIGGER trg_calculate_score\n    BEFORE INSERT OR UPDATE ON ai_agent_test_evaluations\n    FOR EACH ROW\n    EXECUTE FUNCTION calculate_final_score();\n\n-- =====================================================\n-- 🧪 DADOS DE EXEMPLO PARA TESTE\n-- =====================================================\n\n-- INSERT INTO ai_agent_test_evaluations (\n--     test_id, agent_name, test_category, user_input, agent_output,\n--     score_tool_selection, score_confirmation_protocol, score_brevity,\n--     score_professionalism, score_data_accuracy, score_rule_adherence,\n--     score_context_usage, score_format_compliance\n-- ) VALUES (\n--     'TEST-001', 'Agente Financeiro IA', 'consulta',\n--     'Como estão as finanças?',\n--     '📊 Resumo financeiro do mês: Receitas R$45.000 | Despesas R$32.000 | Saldo R$13.000',\n--     95, 100, 90, 95, 85, 90, 80, 95\n-- );\n\n-- =====================================================\n-- ✅ VERIFICAÇÃO\n-- =====================================================\n\n-- SELECT * FROM ai_agent_test_evaluations ORDER BY created_at DESC LIMIT 5;\n-- SELECT * FROM vw_agent_quality_dashboard;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        176,
+        1152
+      ],
+      "id": "eeb82125-980d-4553-877c-ed7fbc6dd055",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "WsU3bciJm7aMyAoC",
+          "name": "postgress - financeiro - mottivme sales"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Rodar configuração": {
+      "main": [
+        [
+          {
+            "node": "Criar tabelas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Buscar template de ligações",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "⚙️ Config GHL2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Remover histórico de conversa com lead especifico",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Remover histórico de conversa com lead especifico1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "⚙️ Config GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar template de ligações": {
+      "main": [
+        [
+          {
+            "node": "Template já criado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Template já criado?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Criar template de ligações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar etiqueta testando-agente": {
+      "main": [
+        [
+          {
+            "node": "Criar etiqueta agente-off",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar etiqueta agente-off": {
+      "main": [
+        [
+          {
+            "node": "Criar etiqueta gestor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Criar campo Asaas ID cliente": {
+      "main": [
+        [
+          {
+            "node": "GHL - Criar campo Asaas ID cobrança",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Criar campo Asaas ID cobrança": {
+      "main": [
+        [
+          {
+            "node": "GHL - Criar campo Asaas status cobrança",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Criar campo Asaas status cobrança": {
+      "main": [
+        [
+          {
+            "node": "GHL - Criar campo permitir chamadas2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GHL - Criar campo preferência áudio/texto3": {
+      "main": [
+        [
+          {
+            "node": "GHL - Criar campo Asaas ID cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1️⃣ Listar todos os campos": {
+      "main": [
+        [
+          {
+            "node": "2️⃣ Separar cada campo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2️⃣ Separar cada campo": {
+      "main": [
+        [
+          {
+            "node": "3️⃣ Filtrar apenas nossos 5 campos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3️⃣ Filtrar apenas nossos 5 campos": {
+      "main": [
+        [
+          {
+            "node": "4️⃣ Deletar campo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Config GHL2": {
+      "main": [
+        [
+          {
+            "node": "Criar etiqueta testando-agente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GHL - Criar campo preferência áudio/texto3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "1️⃣ Listar todos os campos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GHL - Criar campo Nacionalidade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Config GHL": {
+      "main": [
+        [
+          {
+            "node": "GHL - Criar Campo Agente Responsável",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GHL - Criar campo Nacionalidade",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GHL - Criar Campo Etapa do Funil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Config GHL3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Config GHL3": {
+      "main": [
+        [
+          {
+            "node": "Search Contact por Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Contact por Email": {
+      "main": [
+        [
+          {
+            "node": "Canal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Canal": {
+      "main": [
+        [
+          {
+            "node": "Whatsapp1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f22ed97f-04e6-4809-9262-883655e1a883",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "umBbDCmHkfPe3qjD",
+  "tags": []
+}

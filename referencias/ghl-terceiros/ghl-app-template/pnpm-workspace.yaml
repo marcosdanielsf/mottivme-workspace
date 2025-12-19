@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+  - libs/*
+
+ignoredBuiltDependencies:
+  - '@nestjs/core'
+  - '@scarf/scarf'
+  - unrs-resolver

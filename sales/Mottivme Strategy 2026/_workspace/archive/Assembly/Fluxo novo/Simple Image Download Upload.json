@@ -1,0 +1,2486 @@
+{
+  "name": "Simple Image Download Upload",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "id": "c6230023-a941-44f4-8696-68730e8cf77b",
+      "name": "Upload Img to ImgBB for URL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        -16
+      ],
+      "notesInFlow": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "P9MmmnLnaQhG4ZQ7",
+          "name": "apify"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=http://api.resmush.it/ws.php?img={{ $json.data.url }}",
+        "options": {}
+      },
+      "id": "67bfed67-cf4f-4337-8dcd-e8791a8b7793",
+      "name": "ReSmush.it Image Optimisation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        -16
+      ],
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image",
+              "value": "={{ $json.dest }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b730ac28-ec67-4c2d-b63f-694014084438",
+      "name": "Store Optimised Image ImgBB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        -16
+      ],
+      "notesInFlow": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "P9MmmnLnaQhG4ZQ7",
+          "name": "apify"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Upload & Optimize \nUpload image to ImgBB, Optimise using ReSmush .it\n",
+        "height": 241,
+        "width": 570,
+        "color": 7
+      },
+      "id": "0e8ae8af-2ed3-4c1c-bbc6-1b071ac33dc1",
+      "name": "Sticky Note35",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        208,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Image Gen\nNano Banana (Gemini-2.5-Flash-Image-Preview)",
+        "height": 240,
+        "width": 512,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "d210390b-2ac6-44bb-b6d0-d2387b3c147d",
+      "name": "Sticky Note42"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"black-forest-labs/flux-1.1-pro\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": {{ $json.image_prompt | jsonStringify }}\n    }\n  ],\n  \"max_tokens\": 1024\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        -240
+      ],
+      "id": "2d123c27-43be-44e1-baeb-a59bb1a2680f",
+      "name": "NanoBanana",
+      "credentials": {
+        "openRouterApi": {
+          "id": "sfkNv3IS1mwYy1mQ",
+          "name": "OpenRouter Alan"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item.json;\n\n// Verifica se há dados binários sendo enviados\nconst hasBinaryData = item.binary !== undefined;\n\n// Tamanho estimado do input\nconst inputSize = JSON.stringify(item).length;\n\n// Detecta se há base64 no input\nconst hasBase64 = JSON.stringify(item).includes('data:image') || \n                  JSON.stringify(item).includes('base64');\n\nconsole.log('=== INPUT DIAGNOSTICS ===');\nconsole.log('Has binary data:', hasBinaryData);\nconsole.log('Input size (chars):', inputSize);\nconsole.log('Has base64:', hasBase64);\nconsole.log('Image URLs:', item.prepared_image_urls);\n\nif (hasBase64) {\n  console.error('❌ ERRO: Base64 detectado! Isso vai estourar o context limit!');\n}\n\nif (inputSize > 10000) {\n  console.warn('⚠️ AVISO: Input muito grande:', inputSize, 'chars');\n}\n\nreturn { json: item };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        -16
+      ],
+      "id": "effa5942-d1e9-4821-9e95-cd80e284725e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "image_prompt"
+            },
+            {
+              "name": "additional_image_urls",
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -464,
+        -16
+      ],
+      "id": "92361099-16ad-4268-880d-d30cbce0b18e",
+      "name": "image_generation"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        928
+      ],
+      "id": "87657bcd-d56e-44b1-af29-731a3ae03ecc",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA",
+          "mode": "list",
+          "cachedResultName": "UGC Ads Veo & Sora",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Ready"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        928
+      ],
+      "id": "7bf4d7c3-432c-4daf-bf86-0bfc7f454a7d",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cf92e6e7-99a9-4d50-a750-d4311bf32ea8",
+                    "leftValue": "={{ $json.Model }}",
+                    "rightValue": "Veo 3.1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Veo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Model }}",
+                    "rightValue": "Nano + Veo 3.1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "24879280-7ab4-4dc7-8482-f427b001a20b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Nano + Veo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fcb76afb-810f-48ca-b8d1-ba8e1fa52634",
+                    "leftValue": "={{ $json.Model }}",
+                    "rightValue": "Sora 2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Sora"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        32,
+        912
+      ],
+      "id": "67762a5c-a9ae-4ca4-a572-a045a2128a6a",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Product: {{ $json.Product }}\n\nImage Setting: {{ $json['Video Setting'] }}",
+        "options": {
+          "systemMessage": "=## System Prompt: Hyper-Realistic UGC Photography Prompt Generator\n\nYou are an **expert in hyper-realistic user-generated content (UGC) photography** and your role is to **generate detailed image prompts**, not the images themselves.  \n\nYour task is to **write a descriptive image prompt** that an image generation model can use to create a **highly authentic selfie-style photo** featuring a **human influencer holding a product**.\n\nYou will be provided with:\n- A **product photo** (⚠️ must not be changed or altered in any way)\n- A **specific setting or scene description**\n\nYour job is to **generate a written prompt** that instructs the model to create an image where a real human is naturally holding the exact provided product while taking a selfie.  \nThe **iPhone must not appear** in the image itself.\n\n---\n\n### 🧠 Prompt Guidelines\n\nWhen writing the image prompt, make sure it includes the following details and stylistic elements:\n\n#### 1. Human Realism\n- Describe a **realistic, diverse human** with:\n  - Lifelike skin texture and tone  \n  - Slight asymmetries and natural facial features  \n  - Visible hand details (fingernails, subtle lines, and a genuine grip)\n\n#### 2. Product Accuracy\n- Emphasize that the **product must be identical** to the provided photo  \n- Clearly state that the **product cannot be modified or enhanced**  \n- The prompt should reinforce that the product is **untouched and true to the original source image**\n\n#### 3. Composition & Perspective\n- Specify a **selfie-style composition**:\n  - The human holds the product **prominently in the foreground**, slightly angled toward the camera  \n  - The **person’s face is visible**, smiling or candid  \n  - The subject makes **natural eye contact** with the viewer  \n\n#### 4. Lighting & Environment\n- Use **natural, high-quality lighting** (e.g., daylight or golden hour)\n- Include **authentic indoor or outdoor settings** based on the given scene  \n\n#### 5. Authentic Details\n- Add **subtle imperfections** that make it look like real user-generated content:\n  - Stray hairs, casual attire, and natural posture  \n  - Everyday realism and spontaneity, not a posed studio shot  \n\n#### 6. Technical Style\n- Explicitly state to **avoid**:\n  - Visible phones, selfie sticks, or camera reflections  \n  - Anything that looks artificial or overly edited  \n- Maintain **sharp focus** on both the human and the product  \n- Mention a **shallow depth of field** for a cinematic, relatable look  \n\n---\n\n### ⚠️ Critical Instruction\n> Your output must be a **written image prompt only** — not an actual image.  \n>  \n> The generated prompt should fully describe the scene for a text-to-image model while **keeping the provided product completely unchanged** and **accurately represented**.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        1168
+      ],
+      "id": "f87dc46a-3f28-4f49-9f48-1380709e076c",
+      "name": "Veo Image Prompt"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        1168
+      ],
+      "id": "4ecee2b4-a137-4b0b-a8ea-9bee71ccd0d4",
+      "name": "Wait",
+      "webhookId": "47b6b21f-7d2c-42fd-aa19-c20ad7dc1765"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b4ea379e-3541-4d2b-9421-f0c962c8d5e8",
+              "leftValue": "={{ $json.data.state }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1008,
+        1168
+      ],
+      "id": "59eb84a6-58a2-46f5-a41c-2425a2124cdb",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "text": "Describe what is in the image. Describe the environment and the human who is the focus of the image, as well as what the human is holding.",
+        "imageUrls": "={{ JSON.parse($json.data.resultJson).resultUrls[0] }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1184,
+        1168
+      ],
+      "id": "857242d5-43e7-4bab-a7ff-5d477c490ca6",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "T8fdozITjWZLw425",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Product: {{ $('Get row(s) in sheet').item.json.Product }}\n\nProduct ICP: {{ $('Get row(s) in sheet').item.json.ICP }}\n\nProduct Features: {{ $('Get row(s) in sheet').item.json['Product Features'] }}\n\nVideo Setting: {{ $('Get row(s) in sheet').item.json['Video Setting'] }}\n\nReference Image Description: {{ $json.content }}",
+        "options": {
+          "systemMessage": "=# System Prompt Template: UGC Selfie Video Creation (8 Seconds)\n\n## Role\nYou are an **expert UGC video creator**.  \nYour task is to **generate a prompt for an AI video model** (such as *Veo 3.1*) based on:\n- The provided **product**\n- The **ideal customer profile (ICP)**\n- **Product features**\n- **Video setting**\n- A **reference image**\n\nYour goal is to create a **realistic, selfie-style video** that appears to be **filmed by an influencer** using one hand to hold the phone and the other to hold or interact with the product. The video should feel **authentic, spontaneous, and natural**, while maintaining **visual and style consistency with the provided reference image**.  \nThe phone itself must **never appear** in the shot.\n\n---\n\n## Requirements\n\n### Subject & Framing\n- The subject is the **ideal user** (from the ICP), **holding or using the product**.\n- The video is recorded **selfie-style** with the **camera held at arm’s length** in one hand and the product in the other.\n- The subject looks directly into the lens while speaking.\n- The video is in **vertical (9:16)** orientation, suitable for TikTok or Instagram Reels.\n\n### Visual Style\n- Use **natural lighting** and **casual, realistic backgrounds** (e.g., bedroom, gym, kitchen, car, office).\n- Include **slight camera shake**, **soft grain**, and **subtle imperfections** for realism.\n- The **product**, **user’s face**, and **interaction** must remain clearly visible.\n- Ensure **no phone, camera, overlays, subtitles, or logos** appear in the frame.\n- The **appearance, colors, and style** should closely **match the provided reference image** (do not include or link the image in the output).\n\n### Tone & Dialogue\n- The subject speaks **1–2 casual, unscripted sentences** about what they personally love about the product.\n- The dialogue should sound **personal, conversational, and genuine** (e.g., “I love how [feature] makes my mornings easier.”).\n- The delivery feels **spontaneous** and **relatable**, not like a polished ad.\n\n### Technical Specs\n- **Duration:** 8 seconds  \n- **Shot Type:** Handheld, selfie-style  \n- **Lighting:** Natural and realistic  \n- **Reference Image:** Used only for **style and consistency matching** (not shown or mentioned)\n\n---\n\n## Embedded Elements in the Prompt\nWhen generating the AI video prompt, include:\n\n- **ICP Persona** → Age, gender, attire, personality, and context  \n- **Product Feature** → One standout feature being praised  \n- **Setting & Lighting** → Realistic environment and lighting cues  \n- **Camera Style** → Handheld selfie, mild shake, natural imperfections  \n- **Reference Image Consistency** → Match appearance and tone  \n- **Tone** → Real, personal, unpolished, influencer-style delivery  \n\n---\n\n## Example Output Prompt\n> “A natural selfie-style 9:16 video filmed by a young woman in a bright kitchen, holding **[Product]** in one hand and her iPhone in the other to record. She smiles at the camera and says, ‘I seriously love how [Product] fits perfectly into my morning routine—it makes breakfast so much faster.’ The product and her face are clearly visible, with natural l\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        1360
+      ],
+      "id": "70c158c7-42d8-4298-b032-dba5e0fefd99",
+      "name": "Veo Video Prompt"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        304,
+        1040
+      ],
+      "id": "bd0d5152-4ce9-479e-8bb1-da4def5e4235",
+      "name": "GPT-5-mini",
+      "credentials": {
+        "openRouterApi": {
+          "id": "sfkNv3IS1mwYy1mQ",
+          "name": "OpenRouter Alan"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/veo/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"{{ $json.output\n  .replace(/\\r?\\n|\\r/g, ' ')\n  .replace(/\"/g, '')\n  .replace(/[“”]/g, '') // removes curly double quotes\n}}\",\n  \"imageUrls\": [\"{{ JSON.parse($('Get Nano Image').item.json.data.resultJson).resultUrls[0] }}\"],\n  \"model\": \"veo3_fast\",\n  \"aspectRatio\": \"9:16\",\n  \"enableTranslation\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        576,
+        1360
+      ],
+      "id": "4f87db6f-98fc-42c2-b09d-3b60b63bfb2a",
+      "name": "Veo Video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SIPkkYKrLpAFisGf",
+          "name": "kie.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        1360
+      ],
+      "id": "248b5623-101d-4dd5-bc36-9aa50d7e4e4c",
+      "name": "Wait1",
+      "webhookId": "b049e4b3-7d34-4fec-afc9-185d3a9764fa"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/veo/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        864,
+        1360
+      ],
+      "id": "6e2d37d2-93d7-46f7-9fe6-6900e3c04b34",
+      "name": "Get Veo Video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SIPkkYKrLpAFisGf",
+          "name": "kie.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8a2caa94-db0d-4141-ab47-c803e69db7c9",
+              "leftValue": "={{ $json.data.response }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "object",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1008,
+        1360
+      ],
+      "id": "1cb65bce-e56d-4074-971c-90bba1e6e60f",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA",
+          "mode": "list",
+          "cachedResultName": "UGC Ads Veo & Sora",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "No": "={{ $('Get row(s) in sheet').item.json.No }}",
+            "Status": "Finished",
+            "Finished Video": "={{ $('Get Veo Video').item.json.data.response.resultUrls[0] }}"
+          },
+          "matchingColumns": [
+            "No"
+          ],
+          "schema": [
+            {
+              "id": "No",
+              "displayName": "No",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Product Photo",
+              "displayName": "Product Photo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ICP",
+              "displayName": "ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Product Features",
+              "displayName": "Product Features",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Video Setting",
+              "displayName": "Video Setting",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Model",
+              "displayName": "Model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Finished Video",
+              "displayName": "Finished Video",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1184,
+        1360
+      ],
+      "id": "26cf7c5a-4253-42ca-841c-53e239061045",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Product: {{ $('Get row(s) in sheet').item.json.Product }}\n\nProduct ICP: {{ $('Get row(s) in sheet').item.json.ICP }}\n\nProduct Features: {{ $('Get row(s) in sheet').item.json['Product Features'] }}\n\nVideo Setting: {{ $('Get row(s) in sheet').item.json['Video Setting'] }}",
+        "options": {
+          "systemMessage": "=# System Prompt Template: Sora 2 UGC Selfie Video Generation (10 Seconds)\n\n## Role\nYou are an **advanced UGC video creator** optimizing for **Sora 2**.  \nYour task is to **generate a prompt for a Sora 2 AI video model** based on:\n- The **product**\n- The **ideal customer profile (ICP)**\n- **Product features**\n- The **video setting**\n- A **reference image**\n\nYour goal is to create a **realistic, spontaneous selfie-style video** filmed by an influencer using **one hand to hold the phone** and **one hand to hold or use the product**. The result should feel **natural, unfiltered, and human**, while ensuring **visual and style consistency with the provided reference image**.  \nThe phone or camera must **never appear** in the shot.\n\n---\n\n## Video Requirements\n\n### Subject & Framing\n- The subject should clearly represent the **ICP persona** — including their age, attire, and overall vibe.\n- The video is recorded **selfie-style**, handheld at **arm’s length**, in **vertical (9:16)** format.\n- The subject **faces the camera directly** while naturally interacting with the product.\n- The video should capture subtle **camera shake** and **micro-movements** that make it feel handheld and authentic.\n\n### Visual Style\n- The **product**, **subject**, and **setting** must all appear **natural, consistent, and true to the reference image**.\n- The **reference image** determines the **product’s exact logo, color, and appearance** — match it precisely without altering or linking to it.\n- Use **natural lighting** and **realistic environments** (e.g., bedroom, gym, kitchen, car, or outdoor space) that align with the ICP’s lifestyle.\n- Avoid perfection — include **minor imperfections**, **realistic grain**, and **slight exposure variations**.\n- No overlays, subtitles, watermarks, reflections, or visible phones.\n\n### Tone & Dialogue\n- The subject delivers **1–2 scripted, conversational sentences** about what they personally love about the product.\n- Dialogue must feel **authentic, personal, and spontaneous**, referencing at least one **real product feature**.\n- Example phrasing: “I love how [feature] helps me [benefit]” or “This [product] actually makes my day easier.”\n- Maintain a natural rhythm and tone that sounds human, not rehearsed or ad-like.\n\n### Technical Specs\n- **Duration:** 10 seconds  \n- **Shot Type:** Handheld, selfie-style  \n- **Orientation:** Vertical (9:16)  \n- **Lighting:** Natural and realistic  \n- **Audio:** Ambient, organic background sound (no music or voice-over)  \n- **Reference Image:** Used only for appearance and color matching  \n\n---\n\n## Prompt Construction Instructions\nWhen generating the Sora 2 video prompt, make sure to:\n\n- Explicitly request **selfie-style framing** (one hand recording, one hand holding product).  \n- Describe the **human’s appearance**, **attire**, and **personality** consistent with the ICP.  \n- Include realistic **environmental details** (e.g., time of day, background objects, ambient sounds).  \n- Reference the **product’s exact look** from the provided image to maintain consistency.  \n- Keep dialogue short, natural, and fitted within the **10-second duration**.  \n- Ensure the overall tone feels **authentic, relatable, and human-made**, not promotional.\n\n---\n\n## Example Output Prompt (for Sora 2 AI Video Model)\n\n> “A natural, handheld selfie-style vertical video filmed by a young woman in her kitchen, holding **[Product]** in one hand and her iPhone in the other. She looks directly into the camera, smiling casually in soft morning light. The kitchen background is cozy and well-lit, with gentle movement from her arm. The video matches the provided reference image exactly in product appearance, logo, and color. She speaks casually and naturally:  \n>   \n> **Script Example:**  \n> *‘Okay, I’ve been using this for a week now, and I swear my hair has never been this shiny. Like, it actually looks like I just left the salon.’*  \n>   \n> Her tone is light, genuine, and conversational — she smiles mid-sentence and glances briefly at the product before looking back at the camera. The product and her face are clearly visible, with no phone or reflections in the shot. The video lasts 10 seconds, using only natural lighting and soft ambient background sound.”\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        1600
+      ],
+      "id": "011fac0d-1a26-46d4-ae73-988d8d773ab9",
+      "name": "Sora Video Prompt"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"sora-2-image-to-video\",\n  \"input\": {\n    \"prompt\": \"{{ $json.output.replace(/\\r?\\n|\\r/g, ' ')\n  .replace(/\"/g, '')\n  .replace(/[“”]/g, '') // removes curly double quotes\n}} }}\",\n    \"image_urls\": [\n      \"{{ $('Get row(s) in sheet').item.json['Product Photo'] }}\"\n    ],\n    \"aspect_ratio\": \"portrait\",\n    \"n_frames\": \"10\",\n    \"remove_watermark\": true\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        576,
+        1600
+      ],
+      "id": "5bafece7-b306-4168-898f-f58c59d30233",
+      "name": "Sora Video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SIPkkYKrLpAFisGf",
+          "name": "kie.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        1600
+      ],
+      "id": "20cbdf36-5432-4b20-aa61-2346078d37c7",
+      "name": "Wait2",
+      "webhookId": "47b6b21f-7d2c-42fd-aa19-c20ad7dc1765"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b4ea379e-3541-4d2b-9421-f0c962c8d5e8",
+              "leftValue": "={{ $json.data.state }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1008,
+        1600
+      ],
+      "id": "532a4ed3-757b-4cb1-8c8c-bc94f6b4402e",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        864,
+        1600
+      ],
+      "id": "155b8f7d-5598-400d-9a4e-b171a4cd5766",
+      "name": "Get Sora Video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SIPkkYKrLpAFisGf",
+          "name": "kie.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA",
+          "mode": "list",
+          "cachedResultName": "UGC Ads Veo & Sora",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "No": "={{ $('Get row(s) in sheet').item.json.No }}",
+            "Status": "Finished",
+            "Finished Video": "={{ JSON.parse($('Get Sora Video').item.json.data.resultJson).resultUrls[0] }}"
+          },
+          "matchingColumns": [
+            "No"
+          ],
+          "schema": [
+            {
+              "id": "No",
+              "displayName": "No",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Product Photo",
+              "displayName": "Product Photo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ICP",
+              "displayName": "ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Product Features",
+              "displayName": "Product Features",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Video Setting",
+              "displayName": "Video Setting",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Model",
+              "displayName": "Model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Finished Video",
+              "displayName": "Finished Video",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1184,
+        1600
+      ],
+      "id": "9fe6aada-9510-443c-9f0c-77710d98f850",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/nano-banana-edit\",\n  \"input\": {\n    \"prompt\": \"{{ $json.output.replace(/\\r?\\n|\\r/g, ' ') }}\",\n    \"image_urls\": [\"{{ $('Get row(s) in sheet').item.json['Product Photo'] }}\"],\n    \"output_format\": \"png\",\n    \"image_size\": \"9:16\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        576,
+        1168
+      ],
+      "id": "ce160287-f397-49cd-8e0f-004709f3a76d",
+      "name": "Nano Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SIPkkYKrLpAFisGf",
+          "name": "kie.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        864,
+        1168
+      ],
+      "id": "dad8c919-36b6-48f8-b89c-2cea561bbd33",
+      "name": "Get Nano Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SIPkkYKrLpAFisGf",
+          "name": "kie.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Product: {{ $('Get row(s) in sheet').item.json.Product }}\n\nProduct ICP: {{ $('Get row(s) in sheet').item.json.ICP }}\n\nProduct Features: {{ $('Get row(s) in sheet').item.json['Product Features'] }}\n\nVideo Setting: {{ $('Get row(s) in sheet').item.json['Video Setting'] }}",
+        "options": {
+          "systemMessage": "=# System Prompt Template: Veo 3 UGC Selfie Video Generation (8 Seconds)\n\n## Role\nYou are an **advanced UGC video creator** optimizing for **Veo 3**.  \nYour task is to **generate a prompt for a Veo 3 AI video model** based on:\n- The **product**\n- The **ideal customer profile (ICP)**\n- **Product features**\n- The **video setting**\n- A **reference image**\n\nYour goal is to create a **realistic, spontaneous selfie-style video** filmed by an influencer using **one hand to hold the phone** and **one hand to hold or use the product**. The result should feel **natural, unfiltered, and human**, while ensuring **visual and style consistency with the provided reference image**.  \nThe phone or camera must **never appear** in the shot.\n\n---\n\n## Video Requirements\n\n### Subject & Framing\n- The subject should clearly represent the **ICP persona** — including their age, attire, and overall vibe.\n- The video is recorded **selfie-style**, handheld at **arm’s length**, in **vertical (9:16)** format.\n- The subject **faces the camera directly** while naturally interacting with the product.\n- The video should capture subtle **camera shake** and **micro-movements** that make it feel handheld and authentic.\n\n### Visual Style\n- The **product**, **subject**, and **setting** must all appear **natural, consistent, and true to the reference image**.\n- The **reference image** determines the **product’s exact logo, color, and appearance** — match it precisely without altering or linking to it.\n- Use **natural lighting** and **realistic environments** (e.g., bedroom, gym, kitchen, car, or outdoor space) that align with the ICP’s lifestyle.\n- Avoid perfection — include **minor imperfections**, **realistic grain**, and **slight exposure variations**.\n- No overlays, subtitles, watermarks, reflections, or visible phones.\n\n### Tone & Dialogue\n- The subject delivers **1–2 scripted, conversational sentences** about what they personally love about the product.\n- Dialogue must feel **authentic, personal, and spontaneous**, referencing at least one **real product feature**.\n- Example phrasing: “I love how [feature] helps me [benefit]” or “This [product] actually makes my day easier.”\n- Maintain a natural rhythm and tone that sounds human, not rehearsed or ad-like.\n\n### Technical Specs\n- **Duration:** 8 seconds  \n- **Shot Type:** Handheld, selfie-style  \n- **Orientation:** Vertical (9:16)  \n- **Lighting:** Natural and realistic  \n- **Audio:** Ambient, organic background sound (no music or voice-over)  \n- **Reference Image:** Used only for appearance and color matching  \n\n---\n\n## Prompt Construction Instructions\nWhen generating the Veo 3 video prompt, make sure to:\n\n- Explicitly request **selfie-style framing** (one hand recording, one hand holding product).  \n- Describe the **human’s appearance**, **attire**, and **personality** consistent with the ICP.  \n- Include realistic **environmental details** (e.g., time of day, background objects, ambient sounds).  \n- Reference the **product’s exact look** from the provided image to maintain consistency.  \n- Keep dialogue short, natural, and fitted within the **8-second duration**.  \n- Ensure the overall tone feels **authentic, relatable, and human-made**, not promotional.\n\n---\n\n## Example Output Prompt (for Veo 3 AI Video Model)\n\n> “A natural, handheld selfie-style vertical video filmed by a young woman in her kitchen, holding **[Product]** in one hand and her iPhone in the other. She looks directly into the camera, smiling casually in soft morning light. The kitchen background is cozy and well-lit, with gentle movement from her arm. The video matches the provided reference image exactly in product appearance, logo, and color. She speaks casually and naturally:  \n>   \n> **Script Example:**  \n> *‘Okay, I’ve been using this for a week now, and I swear my hair has never been this shiny. Like, it actually looks like I just left the salon.’*  \n>   \n> Her tone is light, genuine, and conversational — she smiles mid-sentence and glances briefly at the product before looking back at the camera. The product and her face are clearly visible, with no phone or reflections in the shot. The video lasts 8 seconds, using only natural lighting and soft ambient background sound.”\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        928
+      ],
+      "id": "a137ec60-8d0b-44bf-bb64-d03fd2624331",
+      "name": "Veo Video Prompt1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/veo/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"{{ $json.output\n  .replace(/\\r?\\n|\\r/g, ' ')\n  .replace(/\"/g, '')\n  .replace(/[“”]/g, '') // removes curly double quotes\n}}\",\n  \"imageUrls\": [\"{{ $('Get row(s) in sheet').item.json['Product Photo'] }}\"],\n  \"model\": \"veo3_fast\",\n  \"aspectRatio\": \"9:16\",\n  \"enableTranslation\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        576,
+        928
+      ],
+      "id": "63d333a6-737b-4f80-ba7a-92a685c6f681",
+      "name": "Veo Video1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SIPkkYKrLpAFisGf",
+          "name": "kie.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        928
+      ],
+      "id": "a46b911f-0ce4-48cb-b50f-830ba3ad7783",
+      "name": "Wait3",
+      "webhookId": "b049e4b3-7d34-4fec-afc9-185d3a9764fa"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/veo/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        864,
+        928
+      ],
+      "id": "2e803515-7216-4fb0-9245-9c6a7efb3259",
+      "name": "Get Veo Video1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SIPkkYKrLpAFisGf",
+          "name": "kie.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8a2caa94-db0d-4141-ab47-c803e69db7c9",
+              "leftValue": "={{ $json.data.response }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "object",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1008,
+        928
+      ],
+      "id": "9a9d9db8-84c3-4e30-833f-ddb215fb299f",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA",
+          "mode": "list",
+          "cachedResultName": "UGC Ads Veo & Sora",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "No": "={{ $('Get row(s) in sheet').item.json.No }}",
+            "Status": "Finished",
+            "Finished Video": "={{ $('Get Veo Video1').item.json.data.response.resultUrls[0] }}"
+          },
+          "matchingColumns": [
+            "No"
+          ],
+          "schema": [
+            {
+              "id": "No",
+              "displayName": "No",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Product Photo",
+              "displayName": "Product Photo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ICP",
+              "displayName": "ICP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Product Features",
+              "displayName": "Product Features",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Video Setting",
+              "displayName": "Video Setting",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Model",
+              "displayName": "Model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Finished Video",
+              "displayName": "Finished Video",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1440,
+        912
+      ],
+      "id": "d653ab2f-919c-484d-92b6-58344af36efe",
+      "name": "Update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5QhviLaOuXKNGx5h",
+          "name": "Mentorfy Google"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Capture Product Information",
+        "height": 224,
+        "width": 528,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        864
+      ],
+      "id": "92e84fad-5dcd-4c89-af40-df0488ace409",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Veo 3.1",
+        "height": 224,
+        "width": 1168,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        208,
+        864
+      ],
+      "id": "ec565177-99ab-4736-ba57-2cee16040231",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## NanoBanana + Veo 3.1",
+        "height": 416,
+        "width": 1168,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        208,
+        1104
+      ],
+      "id": "d28e6612-a78d-4c0f-86af-6051b07a86b0",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Sora 2",
+        "height": 224,
+        "width": 1168,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        208,
+        1536
+      ],
+      "id": "e8136022-d2c2-4b3a-b9a8-7b5274bc08f0",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# 🛠️ Setup Guide  \n**Author:** [Nate Herk](https://www.youtube.com/@nateherk)\n\nFollow the steps below to get your AI-powered workflow running smoothly:\n\n### ✅ Step 1: Copy the [Google Sheet Template](https://docs.google.com/spreadsheets/d/15WIJkzbXbs-bj8BLaUBDNE8HwUCF1-Z_0MZmKE18byA/copy)  \nMake your own copy and connect it to all the **Google Sheet** nodes inside the workflow. \n\n### ✅ Step 2: Connect Your OpenRouter Model (or AI of Choice)  \nPlug in your [OpenRouter](https://openrouter.ai/) API key—or any compatible model you prefer—to power your agents.\n\n### ✅ Step 3: Add Your [Kie.AI](https://www.kie.ai/) API Key  \nInsert your **Kie.AI** key into all the relevant **HTTP Request** nodes so your agents can retrieve knowledge from Kie.\n\n### ✅ Step 4: Connect Your OpenAI API Key  \nThe **Analyze Image** node uses OpenAI Vision—make sure your **OpenAI API key** is properly configured.\n\n### 💡 Step 5: Start Populating & Testing  \nBegin filling in the **Google Sheet** with test data and run the workflow to see the agents in action.\n",
+        "height": 656,
+        "width": 528
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        1104
+      ],
+      "id": "e088f33a-56d8-4f54-91eb-6324a698576d",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * PRE-PROCESSING: Verifica e prepara URLs de imagens\n * Evita download desnecessário e context overflow\n */\n\nconst item = $input.item.json;\nconst imagePrompt = item.image_prompt;\nconst additionalImageUrls = item.additional_image_urls || '';\n\n// Parse URLs\nconst urls = additionalImageUrls\n  .split(',')\n  .map(url => url.trim())\n  .filter(url => url.length > 0 && url.startsWith('http'));\n\nconsole.log('=== IMAGE PROCESSING ===');\nconsole.log('Image URLs found:', urls.length);\nconsole.log('URLs:', urls);\n\n// IMPORTANTE: Não fazer download aqui!\n// Vamos enviar as URLs diretamente para a API\n\nreturn {\n  json: {\n    image_prompt: imagePrompt,\n    image_urls: urls,  // Array de URLs\n    image_urls_string: urls.join(','),  // String para backup\n    image_count: urls.length,\n    processing_mode: 'url_only'  // Flag para o próximo node\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -432,
+        -672
+      ],
+      "id": "fb07b302-b944-4105-a38a-df9a9008c8bb",
+      "name": "Pre-Process Images"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ideogram.ai/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Api-Key",
+              "value": "={{ $credentials.ideogramApiKey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image_request.prompt",
+              "value": "={{ $json.image_prompt }}"
+            },
+            {
+              "name": "image_request.aspect_ratio",
+              "value": "ASPECT_16_9"
+            },
+            {
+              "name": "image_request.model",
+              "value": "V_2"
+            },
+            {
+              "name": "image_request.magic_prompt_option",
+              "value": "AUTO"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -224,
+        -672
+      ],
+      "id": "c3dd2c04-9c58-4217-a8ac-09a7594d6f47",
+      "name": "Ideogram API (URL Only)",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HWXR7bwkc8xeWnqx",
+          "name": "Rapidly - marcos"
+        }
+      },
+      "notes": "Versão que envia apenas o prompt, sem imagens de referência"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-reference-images",
+              "leftValue": "={{ $json.image_count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -432,
+        -464
+      ],
+      "id": "b76fb450-dd53-4f7a-9e72-05c520426d2c",
+      "name": "Has Reference Images?"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * COMPRESSÃO DE IMAGENS\n * Download e compressão para evitar context overflow\n * Usa apenas quando ABSOLUTAMENTE necessário\n */\n\nconst item = $input.item.json;\nconst urls = item.image_urls || [];\n\n// Limite de tamanho: 500KB por imagem após compressão\nconst MAX_SIZE_KB = 500;\nconst MAX_DIMENSION = 1024;  // pixels\nconst JPEG_QUALITY = 70;\n\nconst processedImages = [];\n\nfor (const url of urls) {\n  try {\n    console.log(`Downloading: ${url}`);\n    \n    // Download da imagem\n    const response = await $http.request({\n      method: 'GET',\n      url: url,\n      encoding: 'arraybuffer'\n    });\n    \n    // Usa sharp para comprimir (se disponível)\n    let imageData;\n    try {\n      const sharp = require('sharp');\n      \n      imageData = await sharp(response.data)\n        .resize(MAX_DIMENSION, MAX_DIMENSION, {\n          fit: 'inside',\n          withoutEnlargement: true\n        })\n        .jpeg({ quality: JPEG_QUALITY })\n        .toBuffer();\n      \n      console.log(`Compressed: ${url} -> ${(imageData.length / 1024).toFixed(2)} KB`);\n    } catch (sharpError) {\n      // Fallback: usar imagem original (menor confiável)\n      console.warn('Sharp not available, using original:', sharpError.message);\n      imageData = response.data;\n    }\n    \n    // Converter para base64\n    const base64 = Buffer.from(imageData).toString('base64');\n    const sizeKB = base64.length / 1024;\n    \n    if (sizeKB > MAX_SIZE_KB) {\n      console.warn(`Image too large after compression: ${sizeKB.toFixed(2)} KB`);\n      // Pular esta imagem se ainda muito grande\n      continue;\n    }\n    \n    processedImages.push({\n      url: url,\n      data: `data:image/jpeg;base64,${base64}`,\n      size_kb: sizeKB.toFixed(2)\n    });\n    \n  } catch (error) {\n    console.error(`Failed to process image ${url}:`, error.message);\n    // Continuar com as outras imagens\n  }\n}\n\nconsole.log(`Processed ${processedImages.length}/${urls.length} images`);\n\nreturn {\n  json: {\n    ...item,\n    processed_images: processedImages,\n    total_size_kb: processedImages.reduce((sum, img) => sum + parseFloat(img.size_kb), 0).toFixed(2)\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        -352
+      ],
+      "id": "2f9c959e-b015-4f7f-a779-1e4d436986ac",
+      "name": "Compress Reference Images",
+      "notes": "Comprime imagens quando necessário usar como referência"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ideogram.ai/remix",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Api-Key",
+              "value": "={{ $credentials.ideogramApiKey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image_request.prompt",
+              "value": "={{ $json.image_prompt }}"
+            },
+            {
+              "name": "image_request.model",
+              "value": "V_2"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "image_file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -32,
+        -352
+      ],
+      "id": "e7c4255c-0ce1-4ec9-a575-1def5f79a119",
+      "name": "Ideogram Remix (With Images)",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HWXR7bwkc8xeWnqx",
+          "name": "Rapidly - marcos"
+        }
+      },
+      "notes": "Usa imagens comprimidas como referência"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-image-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-image-preview (Nano Banana)"
+        },
+        "prompt": "={{ $('Code in JavaScript').item.json.image_prompt }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -16
+      ],
+      "id": "992b7e0c-da61-4447-8ff3-a11d9991dad6",
+      "name": "Generate an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item;\n\n// A imagem está em binary\nif (!item.binary || Object.keys(item.binary).length === 0) {\n  throw new Error('No binary data found');\n}\n\n// Pega o primeiro binary (a imagem)\nconst binaryKey = Object.keys(item.binary)[0];\nconst binaryData = item.binary[binaryKey];\n\nconsole.log('=== Binary Data Found ===');\nconsole.log('File:', binaryData.fileName);\nconsole.log('Size:', binaryData.fileSize);\nconsole.log('Type:', binaryData.mimeType);\n\n// Acessa o buffer diretamente\nconst buffer = Buffer.from(binaryData.data, binaryData.data instanceof Buffer ? undefined : 'base64');\nconst base64 = buffer.toString('base64');\n\n// Cria data URL para o Airtable\nconst dataUrl = `data:${binaryData.mimeType};base64,${base64}`;\n\nconsole.log('✅ Image converted to base64');\nconsole.log('Base64 length:', base64.length);\n\nreturn {\n  json: {\n    url: dataUrl,\n    file_name: binaryData.fileName,\n    file_size: binaryData.fileSize,\n    mime_type: binaryData.mimeType,\n    prompt_used: item.json.image_prompt || 'unknown',\n    success: true\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        -16
+      ],
+      "id": "391def5e-9580-4d66-9d2a-0804efb23f72",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item;\n\nconsole.log('=== RAW DATA ===');\nconsole.log('Type of data:', typeof item.json.data);\nconsole.log('Data is null?', item.json.data === null);\nconsole.log('Data is array?', Array.isArray(item.json.data));\nconsole.log('Data value:', item.json.data);\n\n// Mostra TUDO\nconsole.log('\\n=== FULL ITEM ===');\nconsole.log(JSON.stringify(item.json, null, 2));\n\nreturn {\n  json: {\n    debug: 'Check console logs above',\n    full_json: item.json\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -16
+      ],
+      "id": "a5a378e6-4d05-48de-b4d6-cb08ff677c01",
+      "name": "Code Convert to Fil"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Diagnóstico básico mantido\nconst item = $input.item.json;\n\nconsole.log('Image prompt:', item.image_prompt);\nconsole.log('Additional URLs:', item.additional_image_urls);\n\nreturn { json: item };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        288
+      ],
+      "id": "7fa961c4-d967-4b3f-99d7-fff31c4f9b8f",
+      "name": "Input Validation"
+    },
+    {
+      "parameters": {
+        "jsCode": "// PRESERVA o binary e adiciona metadata\nconst item = $input.item;\n\nif (!item.binary || Object.keys(item.binary).length === 0) {\n  throw new Error('No binary data generated by Gemini');\n}\n\nconst binaryKey = Object.keys(item.binary)[0];\nconst binaryData = item.binary[binaryKey];\n\nconsole.log('✅ Binary preserved');\nconsole.log('File:', binaryData.fileName);\nconsole.log('Size:', binaryData.fileSize);\n\n// Renomeia para 'data' se necessário\nconst renamedBinary = {\n  data: binaryData\n};\n\nreturn {\n  json: {\n    prompt_used: item.json.image_prompt || 'unknown',\n    file_name: binaryData.fileName,\n    file_size: binaryData.fileSize,\n    mime_type: binaryData.mimeType\n  },\n  binary: renamedBinary  // ← Binary mantido!\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        288
+      ],
+      "id": "fc736726-97f7-4619-9cf0-95317c909db1",
+      "name": "Preserve Binary"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "46e33dab-ee30-49d8-aea0-9eda322f25c9",
+      "name": "Upload to ImgBB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        544,
+        288
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "P9MmmnLnaQhG4ZQ7",
+          "name": "apify"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=http://api.resmush.it/ws.php?img={{ $json.data.url }}",
+        "options": {}
+      },
+      "id": "a4550833-55c3-468c-8986-8be5cd5e2185",
+      "name": "Optimize with ReSmush",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        768,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "image",
+              "value": "={{ $json.dest }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "adea3554-487e-4f46-b1fc-eb8bfa6e385a",
+      "name": "Upload Optimized to ImgBB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        992,
+        288
+      ],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "P9MmmnLnaQhG4ZQ7",
+          "name": "apify"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-image-preview",
+          "mode": "list"
+        },
+        "prompt": "={{ $json.image_prompt }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        96,
+        288
+      ],
+      "id": "78b32a51-1e42-4fac-8526-d2f8892734d1",
+      "name": "Generate an image1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $binary }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        480
+      ],
+      "id": "30eb10ca-b3ce-4683-ade2-d2cbdde2bf9a",
+      "name": "Download Image"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.item;\n\n// Verifica se tem binary\nif (!item.binary || Object.keys(item.binary).length === 0) {\n  throw new Error('Nenhum dado binário foi baixado');\n}\n\n// Pega o primeiro binary\nconst binaryKey = Object.keys(item.binary)[0];\nconst binaryData = item.binary[binaryKey];\n\nconsole.log('✅ Imagem baixada');\nconsole.log('Arquivo:', binaryData.fileName);\nconsole.log('Tamanho:', binaryData.fileSize, 'bytes');\nconsole.log('Tipo:', binaryData.mimeType);\n\n// Retorna com binary renomeado para 'data'\nreturn {\n  json: {\n    original_url: item.json.image_url,\n    file_name: binaryData.fileName,\n    file_size: binaryData.fileSize,\n    mime_type: binaryData.mimeType\n  },\n  binary: {\n    data: binaryData\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        480
+      ],
+      "id": "44749d08-176a-412f-ac28-386f30111972",
+      "name": "Rename Binary to 'data'"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "COLOQUE_SUA_CHAVE_IMGBB_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        480
+      ],
+      "id": "528b5c04-2157-4c3a-a80d-0a9b01e0673b",
+      "name": "Upload to ImgBB1"
+    },
+    {
+      "parameters": {},
+      "name": "When clicking 'Test workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        352,
+        656
+      ],
+      "id": "b8ef1e5a-9c72-47db-a997-c7f056e5527c"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "Set Image URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        576,
+        656
+      ],
+      "id": "87d612e4-3feb-4686-807e-9aaf36b33c60"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: $input.item.json,\n  binary: { data: Object.values($input.item.binary)[0] }\n};"
+      },
+      "name": "Fix Binary Name",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        656
+      ],
+      "id": "762ffcae-0022-49af-b41e-b45f5162df0c"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.image_url }}",
+        "options": {}
+      },
+      "name": "Download Image1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        656
+      ],
+      "id": "fc794e33-e190-4d1b-8407-ef7be149d033"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "SUA_CHAVE_AQUI"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Upload to ImgBB2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1232,
+        656
+      ],
+      "id": "36bf5945-c372-4607-9e77-8c40df84c5fc"
+    }
+  ],
+  "pinData": {
+    "image_generation": [
+      {
+        "json": {
+          "image_prompt": "High-end professional advertisement featuring a confident male consultant in a sharp dark suit, looking directly at the viewer with a serious, authoritative expression, chin resting on his hand (replicating a thoughtful, strategic pose). The background is a dark, moody, out-of-focus modern office environment with subtle cinematic lighting in the brand color #0f44ca (Deep Blue). \n\nTypography and Layout:\n- Prominent headline text on the left side using 'Cinzel' font: \"A MÁQUINA DE FATURAMENTO\"\n- Subheadline text below using 'Jost' font: \"Nós gerimos seu time. Você foca na medicina.\"\n- Include a \"SAIBA MAIS\" button graphic near the bottom.\n- Place the provided 'Mottivme Sales' logo clearly in the top right corner.\n\nThe overall aesthetic should be premium, trustworthy, and business-focused, matching the serious tone of the reference but adapted for a medical sales management service. Contrast between the dark background and the text should be high for readability.",
+          "additional_image_urls": "https://v5.airtableusercontent.com/v3/u/47/47/1763640000000/aWfgBVkj0TxC6oT3nTC-1A/nTUBFLTrIh0YgVRgLN6CFkiuvpVSq_eBlp53Dvp0LOJGgBMR8n0rIRUYe9NJi60QgV8xbw9n3rJyNu7JdWD5lKfxLKy9ekjfjAnkx93AA905g2K2MGZ8AlOjbiphb9hOhuUk3fHsiwoPCOPdZWDyHvdiKSruIvTpPKjo6YIxzDL5zH-7EuHlDpjHXeiQnTDQ3-1knXfuyUQcCqcyxUahTw6xyG_rgxEs5f2Xs1NGmW8/7Va1pLak1vVcFm4gHHLn14BGgEm-HetWVAT9bvbvT7c"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Upload Img to ImgBB for URL": {
+      "main": [
+        [
+          {
+            "node": "ReSmush.it Image Optimisation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReSmush.it Image Optimisation": {
+      "main": [
+        [
+          {
+            "node": "Store Optimised Image ImgBB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NanoBanana": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image_generation": {
+      "main": [
+        [
+          {
+            "node": "Input Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Veo Video Prompt1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Veo Image Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sora Video Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Veo Image Prompt": {
+      "main": [
+        [
+          {
+            "node": "Nano Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get Nano Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "Veo Video Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-5-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Veo Image Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Veo Video Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Sora Video Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Veo Video Prompt1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Veo Video Prompt": {
+      "main": [
+        [
+          {
+            "node": "Veo Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Veo Video": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Get Veo Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Veo Video": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sora Video Prompt": {
+      "main": [
+        [
+          {
+            "node": "Sora Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Get Sora Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sora Video": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Sora Video": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nano Image": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Nano Image": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Veo Video Prompt1": {
+      "main": [
+        [
+          {
+            "node": "Veo Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Veo Video1": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait3": {
+      "main": [
+        [
+          {
+            "node": "Get Veo Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Veo Video1": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Wait3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compress Reference Images": {
+      "main": [
+        [
+          {
+            "node": "Ideogram Remix (With Images)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Code Convert to Fil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Convert to Fil": {
+      "main": [
+        [
+          {
+            "node": "Upload Img to ImgBB for URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input Validation": {
+      "main": [
+        [
+          {
+            "node": "Generate an image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preserve Binary": {
+      "main": [
+        [
+          {
+            "node": "Upload Img to ImgBB for URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to ImgBB": {
+      "main": [
+        [
+          {
+            "node": "Optimize with ReSmush",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Optimize with ReSmush": {
+      "main": [
+        [
+          {
+            "node": "Upload Optimized to ImgBB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image1": {
+      "main": [
+        [
+          {
+            "node": "Preserve Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Rename Binary to 'data'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename Binary to 'data'": {
+      "main": [
+        [
+          {
+            "node": "Upload to ImgBB1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking 'Test workflow'": {
+      "main": [
+        [
+          {
+            "node": "Set Image URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Image URL": {
+      "main": [
+        [
+          {
+            "node": "Download Image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fix Binary Name": {
+      "main": [
+        [
+          {
+            "node": "Upload to ImgBB2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image1": {
+      "main": [
+        [
+          {
+            "node": "Fix Binary Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "55f128b7-6973-4617-9668-1ef84d91a786",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "u5Jk276kwk32Kq44",
+  "tags": []
+}

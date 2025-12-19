@@ -1,0 +1,1171 @@
+{
+  "name": "🧪 AI Agent Quality Evaluator v2 - Mottivme",
+  "nodes": [
+    {
+      "parameters": {
+        "name": "buscar_cliente_fornecedor",
+        "description": "Use esta ferramenta para consultar dados de clientes ou fornecedores no banco de dados. Você pode buscar por nome, documento (CPF/CNPJ) ou telefone.",
+        "workflowId": {
+          "__rl": true,
+          "value": "Uq3cdvnPIDwT2F8T",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Uq3cdvnPIDwT2F8T",
+          "cachedResultName": "[TOOL] Buscar Cliente/Fornecedor"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-1552, -624],
+      "id": "725a3669-9870-4cc2-ace1-bde57e3493a7",
+      "name": "Buscar Cliente/Fornecedor"
+    },
+    {
+      "parameters": {
+        "name": "fluxo_caixa_projetado",
+        "description": "Consulta fluxo de caixa projetado dos próximos 30 dias. Mostra entradas, saídas e saldo acumulado.",
+        "workflowId": {
+          "__rl": true,
+          "value": "C4kPTHRzifQ0CIMy",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/C4kPTHRzifQ0CIMy",
+          "cachedResultName": "[TOOL] Fluxo de Caixa Projetado"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-1424, -624],
+      "id": "2f611443-5c44-4462-9515-25fd357c5b23",
+      "name": "Fluxo de Caixa Projetado"
+    },
+    {
+      "parameters": {
+        "name": "criar_parcelamento",
+        "description": "Cria parcelamento (compra/venda parcelada). Gera todas as parcelas automaticamente.",
+        "workflowId": {
+          "__rl": true,
+          "value": "lbOH0pP3mOyEAkXQ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/lbOH0pP3mOyEAkXQ",
+          "cachedResultName": "[TOOL] Criar Parcelamento"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-1296, -624],
+      "id": "464e8bf5-93f2-4c7e-8f2f-6854e11d5b84",
+      "name": "Criar Parcelamento"
+    },
+    {
+      "parameters": {
+        "name": "criar_recorrencia",
+        "description": "Cria recorrência mensal (aluguel, salário, assinatura). Gera movimentações automaticamente todo mês.",
+        "workflowId": {
+          "__rl": true,
+          "value": "h2JGa8pTPjTtA5vn",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/h2JGa8pTPjTtA5vn",
+          "cachedResultName": "[TOOL] Criar Recorrência"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-1168, -624],
+      "id": "f68be1e1-086a-4ae1-8d52-6901f989c400",
+      "name": "Criar Recorrência"
+    },
+    {
+      "parameters": {
+        "name": "relatorio_inadimplencia",
+        "description": "Relatório detalhado de inadimplência. Mostra clientes em atraso, valores e nível de risco.",
+        "workflowId": {
+          "__rl": true,
+          "value": "zmj9M6HKSrdxJuZb",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/zmj9M6HKSrdxJuZb",
+          "cachedResultName": "[TOOL] Relatório de Inadimplência"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-1040, -624],
+      "id": "a588e98e-c70a-40f1-9a70-0afff7e2d853",
+      "name": "Relatório de Inadimplência"
+    },
+    {
+      "parameters": {
+        "name": "dashboard_kpis",
+        "description": "Dashboard com indicadores financeiros: resultado do mês, contas a pagar/receber, inadimplência, projeções. Use quando pedirem resumo financeiro ou visão geral.",
+        "workflowId": {
+          "__rl": true,
+          "value": "s6HIkSZxkKL90B18",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/s6HIkSZxkKL90B18",
+          "cachedResultName": "[TOOL] Dashboard KPIs"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-912, -624],
+      "id": "f570685d-0dd0-48f8-934f-3a0fa4af4c3d",
+      "name": "Dashboard KPIs"
+    },
+    {
+      "parameters": {
+        "name": "fin_centros_custo",
+        "description": "Consulta centros de custo. Use acao='relatorio' para ver despesas por centro ou acao='listar' para ver centros disponíveis.",
+        "workflowId": {
+          "__rl": true,
+          "value": "Vu6Uk9NqVD5KTNqM",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Vu6Uk9NqVD5KTNqM",
+          "cachedResultName": "[TOOL] Centros de Custo"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-784, -624],
+      "id": "2a734a26-64fc-4ab6-9dda-5fcf28f55bb0",
+      "name": "Centros de Custo"
+    },
+    {
+      "parameters": {
+        "name": "orcamento_realizado",
+        "description": "Relatório de orçamento vs realizado. Compara o planejado com o executado por categoria.",
+        "workflowId": {
+          "__rl": true,
+          "value": "vStkWfdwFAg0vqZw",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/vStkWfdwFAg0vqZw",
+          "cachedResultName": "[TOOL] Orçamento vs Realizado"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-656, -624],
+      "id": "fa2b2beb-ae7d-4331-82c2-464158efbd51",
+      "name": "Orçamento vs Realizado"
+    },
+    {
+      "parameters": {
+        "name": "dre_simplificado",
+        "description": "DRE - Demonstrativo de Resultado do Exercício. Mostra receitas, despesas e resultado dos últimos meses.",
+        "workflowId": {
+          "__rl": true,
+          "value": "9N4DwvjLk6WsJm64",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9N4DwvjLk6WsJm64",
+          "cachedResultName": "[TOOL] DRE Simplificado"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-528, -624],
+      "id": "6b51ffba-7553-4f6e-ae8f-ae60ea6f8705",
+      "name": "DRE Simplificado"
+    },
+    {
+      "parameters": {
+        "name": "conciliacao_bancaria",
+        "description": "Conciliação bancária. Use acao='pendentes' para ver itens não conciliados ou acao='conciliar' para conciliar um item específico.",
+        "workflowId": {
+          "__rl": true,
+          "value": "Z1IFeHsHZYnooRMs",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Z1IFeHsHZYnooRMs",
+          "cachedResultName": "[TOOL] Conciliação Bancária"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-400, -624],
+      "id": "def0dcd4-1376-4a7f-86a2-6dd4b283b59e",
+      "name": "Conciliação Bancária"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list"
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [-1808, -624],
+      "id": "2a88bf04-ba02-485e-8418-785487668424",
+      "name": "OpenAI GPT-4o2",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "buscar_movimentacoes",
+        "description": "Busca movimentações financeiras existentes. Filtre por data, tipo, status de pagamento.",
+        "workflowId": {
+          "__rl": true,
+          "value": "2b7qY6FV4SksBgXV",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/2b7qY6FV4SksBgXV",
+          "cachedResultName": "[TOOL] Buscar Movimentações"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-272, -624],
+      "id": "5ec03030-3dd5-4bb7-afe4-22cfdebac38f",
+      "name": "Buscar Movimentações2"
+    },
+    {
+      "parameters": {
+        "name": "salvar_movimentacao",
+        "description": "Salva nova movimentação financeira. IMPORTANTE: Use APENAS após confirmação do usuário.",
+        "workflowId": {
+          "__rl": true,
+          "value": "UZSQ0ovulSKyfbfL",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/UZSQ0ovulSKyfbfL",
+          "cachedResultName": "[TOOL] Salvar Movimentação Financeira"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-144, -624],
+      "id": "5c59309b-77f4-4cca-8916-516c13d09043",
+      "name": "Salvar Movimentação2"
+    },
+    {
+      "parameters": {
+        "name": "criar_cliente_fornecedor",
+        "description": "Cria novo cliente ou fornecedor no banco de dados.",
+        "workflowId": {
+          "__rl": true,
+          "value": "dEPGbp6hUQbW1g5a",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/dEPGbp6hUQbW1g5a",
+          "cachedResultName": "[TOOL] Criar Cliente/Fornecedor"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [-16, -624],
+      "id": "be6c43f8-1df8-47f1-b1f9-81a295d29efa",
+      "name": "Criar Cliente/Fornecedor2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.mensagem }}",
+        "options": {
+          "systemMessage": "=**CONTEXTO**\nDATA: {{ $now.format('FFFF') }}  \nTEL/WHATSAPP: {{ $('📋 Preparar Contexto Teste').first().json.telefone }}\nID_CONVERSA: {{ $json.lead_id_firstItem }}\nRESPONSÁVEL: {{ $('📋 Preparar Contexto Teste').first().json.responsavel_firstItem }}\nNOME DO CLIENTE: {{ $('📋 Preparar Contexto Teste').first().json.nome_extraido }}\nFUSO: America/New_York\nCONTACT_ID: {{ $('📋 Preparar Contexto Teste').first().json.lead_id_firstItem }}\nAPI_KEY: {{ $('📋 Preparar Contexto Teste').first().json.API_KEY  }}\nLOCATION_ID: {{ $('📋 Preparar Contexto Teste').first().json.location_id }}\n\n{{ $('📋 Preparar Contexto Teste').first().json.output_preview && '**MSG_PENDENTE**: '+$('📋 Preparar Contexto Teste').first().json.output_preview || \"\" }}\n# PAPEL\n\nVocê é a assistente financeira IA da Mottivme Sales, especializada em BPO Financeiro completo. Sua missão é auxiliar no processamento, registro e análise de movimentações financeiras via WhatsApp.\n\n# PERSONALIDADE\n\n* Profissional e confiável\n* Precisa e meticulosa com valores e datas\n* Eficiente e organizada\n* Clara e objetiva\n* Respostas curtas (máximo 300 caracteres quando possível)\n\n# CONTEXTO\n\n* Empresa: Mottivme Sales - Consultoria e Gestão Comercial\n* Sistema: Supabase PostgreSQL\n* Moeda: Real Brasileiro (BRL)\n* Tipos de Entidade: PF (Pessoa Física) ou PJ (Pessoa Jurídica)\n\n# FERRAMENTAS DISPONÍVEIS (14 tools)\n\n## Cadastros e Consultas\n1. **buscar_cliente_fornecedor** - Busca clientes/fornecedores\n2. **criar_cliente_fornecedor** - Cria novo cliente/fornecedor\n3. **listar_categorias** - Lista categorias financeiras\n\n## Movimentações\n4. **buscar_movimentacoes** - Consulta movimentações com filtros\n5. **salvar_movimentacao** - Salva nova movimentação (após confirmação)\n\n## Parcelamentos e Recorrências\n6. **criar_parcelamento** - Cria compra/venda parcelada\n7. **criar_recorrencia** - Cria despesa/receita mensal recorrente\n\n## Relatórios e Análises\n8. **fluxo_caixa_projetado** - Projeção de caixa 30 dias\n9. **relatorio_inadimplencia** - Clientes inadimplentes\n10. **dashboard_kpis** - Visão geral/resumo financeiro\n11. **dre_simplificado** - DRE dos últimos meses\n12. **orcamento_realizado** - Planejado vs executado\n13. **fin_centros_custo** - Despesas por centro de custo\n14. **conciliacao_bancaria** - Conciliação bancária\n\n# QUANDO USAR CADA FERRAMENTA\n\n**\"Como estão as finanças?\" / \"Resumo financeiro\" / \"Visão geral\"**\n→ Use **dashboard_kpis**\n\n**\"Quanto gastamos este mês?\" / \"Despesas por área\"**\n→ Use **fin_centros_custo** com acao='relatorio'\n\n**\"Estamos dentro do orçamento?\" / \"Meta vs realizado\"**\n→ Use **orcamento_realizado**\n\n**\"Como foi o resultado dos últimos meses?\" / \"Lucro/prejuízo\"**\n→ Use **dre_simplificado**\n\n**\"Tem algo para conciliar?\" / \"Extrato bancário\"**\n→ Use **conciliacao_bancaria** com acao='pendentes'\n\n**\"Quem está devendo?\" / \"Inadimplentes\"**\n→ Use **relatorio_inadimplencia**\n\n**\"Como vai ficar o caixa?\" / \"Projeção\"**\n→ Use **fluxo_caixa_projetado**\n\n# FLUXO DE PROCESSAMENTO\n\n## Para Entrada de Movimentação:\n1. Extraia: tipo, valor, descrição, data\n2. Use **listar_categorias** para identificar a categoria\n3. Use **buscar_cliente_fornecedor** se mencionado algum nome\n4. Pergunte o centro de custo para despesas\n5. Apresente resumo e peça confirmação\n6. APENAS após \"Sim\", use **salvar_movimentacao**\n\n## Para Parcelamento:\n1. Identifique: tipo, valor total, parcelas, data primeira\n2. Calcule e mostre valor de cada parcela\n3. Peça confirmação\n4. Use **criar_parcelamento** após \"Sim\"\n\n## Para Recorrência:\n1. Identifique: tipo, descrição, valor, dia do mês\n2. Apresente resumo\n3. Peça confirmação\n4. Use **criar_recorrencia** após \"Sim\"\n\n# VALIDAÇÕES\n\n* Valores: numéricos positivos, máximo 2 decimais\n* Datas: converter para YYYY-MM-DD\n* Parcelas: entre 2 e 120\n* Dia vencimento: entre 1 e 31\n* Tipo entidade: PJ é padrão se não informado\n\n# REGRAS IMPORTANTES\n\n1. SEMPRE confirme antes de salvar\n2. SEMPRE verifique duplicatas\n3. NUNCA assuma informações não fornecidas\n4. Em dúvida, PERGUNTE\n5. Para despesas, pergunte o centro de custo\n6. Use dashboard_kpis para visões gerais\n\n# MENSAGENS PADRÃO\n\n**Sucesso:** ✅ [Ação] realizada!\n**Erro:** ❌ Erro: [motivo]\n**Falta info:** ⚠️ Preciso de: [campos]\n\n# DATA ATUAL\n{{ $now.format('DD/MM/YYYY HH:mm') }}\n\n\n---\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [-928, -848],
+      "id": "cd9334bd-e91b-42d1-9b0e-3d9c1345a1bb",
+      "name": "Agente Financeiro IA"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('📋 Preparar Contexto Teste').item.json.mensagem }}",
+        "contextWindowLength": 1000
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [-1680, -624],
+      "id": "49b477b9-8f62-4cdc-a69b-a4643ce6d724",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 🧪 AI AGENT QUALITY EVALUATOR v2\n\n### Melhorias v2:\n1. **Captura de Tools Chamadas** - Extrai automaticamente quais tools foram usadas\n2. **Classificação de Teste** - Identifica tipo (consulta, ação, saudação) e expected_tool\n3. **Prompts Enriquecidos** - Avaliadores recebem contexto completo\n\n### Fluxo:\n1. **Chat Trigger** → Recebe mensagem de teste\n2. **Classificar Teste** → Identifica tipo e expected_tool\n3. **Preparar Contexto** → Monta dados do teste\n4. **Agente Financeiro** → Executa o agente\n5. **Capturar Output + Tools** → Extrai resposta E tools chamadas\n6. **Avaliador GPT-4o** → Avalia com contexto completo\n7. **Avaliador Gemini** → Segunda avaliação\n8. **Consolidar Scores** → Combina avaliações\n9. **Salvar Supabase** → Persiste histórico",
+        "height": 520,
+        "width": 380,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-2576, -1216],
+      "id": "275c5a93-7407-4871-bc1a-a80905dd031d",
+      "name": "📋 Documentação"
+    },
+    {
+      "parameters": {
+        "content": "## 📊 MÉTRICAS DE QUALIDADE\n\n### Pesos:\n| Métrica | Peso |\n|---------|------|\n| Tool Selection | 20% |\n| Confirmation | 15% |\n| Brevity | 10% |\n| Professionalism | 10% |\n| Data Accuracy | 20% |\n| Rule Adherence | 10% |\n| Context Usage | 10% |\n| Format | 5% |\n\n### Grades:\n- **A**: 90-100 ✅\n- **B**: 75-89 ✅\n- **C**: 60-74 ⚠️\n- **D**: 40-59 ❌\n- **F**: 0-39 ❌",
+        "height": 380,
+        "width": 260,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [192, -1520],
+      "id": "bca36a5d-f6bc-4029-928e-5c1aa50227f0",
+      "name": "📊 Métricas"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =====================================================\n// 📤 CAPTURAR OUTPUT + TOOLS CHAMADAS (v2)\n// =====================================================\n// Extrai o output do agente E as tools que foram chamadas\n\nconst input = $input.first().json;\nconst contexto = $('📋 Preparar Contexto Teste').first().json;\nconst classificacao = $('🏷️ Classificar Teste').first().json;\n\n// Tentar extrair tools chamadas do output intermediário do agente\n// O agente n8n armazena as chamadas de tool em steps/intermediateSteps\nlet toolsCalled = [];\n\ntry {\n  // Tenta acessar os steps intermediários do agente\n  const agentNode = $('Agente Financeiro IA');\n  const agentData = agentNode.first().json;\n  \n  // O n8n Agent armazena as tools chamadas em diferentes lugares dependendo da versão\n  if (agentData.steps) {\n    toolsCalled = agentData.steps\n      .filter(step => step.action && step.action.tool)\n      .map(step => ({\n        tool_name: step.action.tool,\n        tool_input: step.action.toolInput || {},\n        tool_output: step.observation || null\n      }));\n  } else if (agentData.intermediateSteps) {\n    toolsCalled = agentData.intermediateSteps\n      .filter(step => step.action && step.action.tool)\n      .map(step => ({\n        tool_name: step.action.tool,\n        tool_input: step.action.toolInput || {},\n        tool_output: step.observation || null\n      }));\n  }\n  \n  // Se não encontrou em steps, tentar parsear do output\n  if (toolsCalled.length === 0 && input.output) {\n    // Buscar menções de tools no output (fallback)\n    const toolNames = [\n      'buscar_cliente_fornecedor', 'criar_cliente_fornecedor', 'listar_categorias',\n      'buscar_movimentacoes', 'salvar_movimentacao', 'criar_parcelamento',\n      'criar_recorrencia', 'fluxo_caixa_projetado', 'relatorio_inadimplencia',\n      'dashboard_kpis', 'dre_simplificado', 'orcamento_realizado',\n      'fin_centros_custo', 'conciliacao_bancaria'\n    ];\n    // Não conseguimos inferir do output, mas pelo menos registramos que não temos a info\n  }\n} catch (e) {\n  // Se falhar, continua sem as tools\n  console.log('Não foi possível extrair tools chamadas:', e.message);\n}\n\n// Extrair apenas os nomes das tools para comparação fácil\nconst toolsCalledNames = toolsCalled.map(t => t.tool_name);\n\nreturn {\n  json: {\n    // Dados do teste\n    test_id: contexto.test_id,\n    session_id: contexto.sessionID,\n    user_input: contexto.mensagem,\n    agent_output: input.output,\n    response_time_ms: Date.now() - new Date(contexto.test_start).getTime(),\n    \n    // NOVO: Tools chamadas\n    tools_called: toolsCalled,\n    tools_called_names: toolsCalledNames,\n    tools_count: toolsCalled.length,\n    \n    // NOVO: Classificação do teste\n    test_type: classificacao.test_type,\n    test_category: classificacao.test_category,\n    expected_tool: classificacao.expected_tool,\n    requires_confirmation: classificacao.requires_confirmation,\n    \n    // Contexto\n    context_nome: contexto.nome_extraido\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [384, -464],
+      "id": "3ed9a453-c781-472f-8e15-f2301036cb54",
+      "name": "📤 Capturar Output + Tools"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list"
+        },
+        "options": {
+          "responseFormat": "json_object",
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [680, -40],
+      "id": "69ac09f6-5133-4cdd-ac11-66f35784ccb8",
+      "name": "OpenAI GPT-4o (Evaluator)",
+      "credentials": {
+        "openAiApi": {
+          "id": "WEENPovt22LUaeRp",
+          "name": "OpenAi - Marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# AVALIAÇÃO DE QUALIDADE DO AGENTE\n\n## CONTEXTO DO TESTE\n**Input do Usuário:** {{ $json.user_input }}\n**Nome do Usuário no Contexto:** {{ $('📋 Preparar Contexto Teste').item.json.nome_extraido }}\n\n## CLASSIFICAÇÃO DO TESTE\n**Tipo de Teste:** {{ $json.test_type }}\n**Categoria:** {{ $json.test_category }}\n**Tool Esperada:** {{ $json.expected_tool || 'nenhuma' }}\n**Requer Confirmação:** {{ $json.requires_confirmation ? 'SIM' : 'NÃO' }}\n\n## TOOLS REALMENTE CHAMADAS\n{{ $json.tools_called_names.length > 0 ? $json.tools_called_names.join(', ') : 'Nenhuma tool foi chamada' }}\n\n**Detalhes das chamadas:**\n{{ $json.tools_called.length > 0 ? JSON.stringify($json.tools_called, null, 2) : 'N/A' }}\n\n## RESPOSTA DO AGENTE\n{{ $json.agent_output }}\n\n---\n\n## SUA TAREFA\nAvalie a resposta do agente em cada métrica abaixo (0-100).\n\n**IMPORTANTE para TOOL_SELECTION:**\n- Tool esperada: {{ $json.expected_tool || 'nenhuma' }}\n- Tools chamadas: {{ $json.tools_called_names.join(', ') || 'nenhuma' }}\n- Se a tool esperada foi chamada, score alto (90-100)\n- Se chamou tool errada ou não chamou quando deveria, score baixo (0-50)\n\nRetorne APENAS um JSON válido com esta estrutura:\n\n```json\n{\n  \"scores\": {\n    \"tool_selection\": <0-100>,\n    \"confirmation_protocol\": <0-100>,\n    \"brevity\": <0-100>,\n    \"professionalism\": <0-100>,\n    \"data_accuracy\": <0-100>,\n    \"rule_adherence\": <0-100>,\n    \"context_usage\": <0-100>,\n    \"format_compliance\": <0-100>\n  },\n  \"issues\": [\n    {\n      \"type\": \"<categoria>\",\n      \"description\": \"<descrição>\",\n      \"severity\": <1-5>\n    }\n  ],\n  \"suggestions\": [\"<sugestão 1>\", \"<sugestão 2>\"],\n  \"rules_violated\": [\"<regra violada se houver>\"],\n  \"overall_assessment\": \"<breve avaliação geral>\",\n  \"tool_analysis\": {\n    \"expected\": \"{{ $json.expected_tool || 'nenhuma' }}\",\n    \"called\": {{ JSON.stringify($json.tools_called_names) }},\n    \"correct\": <true/false>,\n    \"reason\": \"<explicação>\"\n  }\n}\n```",
+        "options": {
+          "systemMessage": "=# VOCÊ É UM ENGENHEIRO DE PROMPT ESPECIALISTA\n\nSua função é avaliar a qualidade das respostas de um Agente Financeiro IA.\n\n## CONTEXTO DO AGENTE AVALIADO\n\n- **Empresa:** Mottivme Sales - BPO Financeiro\n- **Função:** Assistente financeira via WhatsApp\n- **Personalidade esperada:** Profissional, precisa, eficiente, objetiva\n- **Limite de resposta:** ~300 caracteres quando possível\n\n## IMPORTANTE: VOCÊ TEM ACESSO ÀS TOOLS CHAMADAS\n\nAgora você recebe informação de QUAIS TOOLS foram realmente chamadas pelo agente.\nUse isso para avaliar TOOL_SELECTION com precisão:\n- Compare a tool esperada com as tools realmente chamadas\n- Se a tool correta foi chamada → score alto\n- Se tool errada ou nenhuma → score baixo\n\n## MÉTRICAS DE AVALIAÇÃO\n\n### 1. TOOL_SELECTION (Peso: 20%)\n**AGORA COM DADOS REAIS:**\n- Você sabe a tool esperada (expected_tool)\n- Você sabe as tools chamadas (tools_called_names)\n- Compare e avalie objetivamente\n\n**Score:**\n- 100: Tool correta chamada\n- 75: Tool adequada mas não a ideal\n- 50: Tool parcialmente correta\n- 25: Tool errada\n- 0: Não usou tool quando deveria\n\n### 2. CONFIRMATION_PROTOCOL (Peso: 15%)\n**O que avaliar:**\n- Para AÇÕES (test_type = 'acao'): DEVE pedir confirmação\n- Para CONSULTAS (test_type = 'consulta'): não precisa confirmar\n- Para SAUDAÇÕES (test_type = 'saudacao'): não precisa confirmar\n\n**Score:**\n- 100: Seguiu protocolo perfeitamente\n- 75: Pediu confirmação mas faltou resumo\n- 50: Não pediu confirmação mas era necessário\n- 0: Executou ação destrutiva sem confirmar\n\n### 3. BREVITY (Peso: 10%)\n**O que avaliar:**\n- Resposta direta ao ponto?\n- Dentro do limite (~300 chars para mensagens simples)?\n- Sem repetições ou informações desnecessárias?\n\n### 4. PROFESSIONALISM (Peso: 10%)\n**O que avaliar:**\n- Tom profissional e confiável?\n- Linguagem clara e objetiva?\n\n### 5. DATA_ACCURACY (Peso: 20%)\n**O que avaliar:**\n- NUNCA inventa dados ou estatísticas?\n- Usa apenas informações do contexto/ferramentas?\n\n### 6. RULE_ADHERENCE (Peso: 10%)\n**Regras do Prompt:**\n1. Confirmar antes de salvar\n2. Verificar duplicatas\n3. Nunca assumir informações\n4. Em dúvida, perguntar\n5. Para despesas, perguntar centro de custo\n6. Usar dashboard_kpis para visões gerais\n\n### 7. CONTEXT_USAGE (Peso: 10%)\n**O que avaliar:**\n- Usou o nome do usuário quando apropriado?\n- Considerou o contexto da conversa?\n\n### 8. FORMAT_COMPLIANCE (Peso: 5%)\n**O que avaliar:**\n- Usou emojis padrão? (✅ ❌ ⚠️)\n- Formatação clara?\n\n## CLASSIFICAÇÃO DE ISSUES\n\nTipos: tool_error, protocol_violation, verbosity, tone_issue, hallucination, rule_violation, context_miss, format_error\n\nSeveridade: 1=menor, 2=pequeno, 3=moderado, 4=grave, 5=crítico\n\n## IMPORTANTE\n\n- Seja JUSTO mas RIGOROSO\n- Use os dados de tools_called para avaliar tool_selection\n- Um agente \"A\" deve ser EXTRAORDINÁRIO"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [608, -264],
+      "id": "a1961a44-3713-4a1f-83c2-7a3a9e4aae24",
+      "name": "🔍 Avaliador GPT-4o"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =====================================================\n// 🔄 PARSER: Extrai scores do avaliador GPT-4o (v2)\n// =====================================================\n\nconst input = $input.first().json;\n\ntry {\n  let evaluation;\n  \n  if (typeof input.output === 'string') {\n    const cleanOutput = input.output\n      .replace(/```json\\n?/g, '')\n      .replace(/```\\n?/g, '')\n      .trim();\n    evaluation = JSON.parse(cleanOutput);\n  } else {\n    evaluation = input.output;\n  }\n  \n  const capturedData = $('📤 Capturar Output + Tools').first().json;\n  \n  return {\n    // Dados do teste\n    test_id: capturedData.test_id,\n    session_id: capturedData.session_id,\n    user_input: capturedData.user_input,\n    agent_output: capturedData.agent_output,\n    response_time_ms: capturedData.response_time_ms,\n    \n    // Tools (v2)\n    tools_called: capturedData.tools_called,\n    tools_called_names: capturedData.tools_called_names,\n    expected_tool: capturedData.expected_tool,\n    test_type: capturedData.test_type,\n    test_category: capturedData.test_category,\n    \n    // Scores GPT-4o\n    gpt4o_scores: evaluation.scores || {},\n    gpt4o_issues: evaluation.issues || [],\n    gpt4o_suggestions: evaluation.suggestions || [],\n    gpt4o_rules_violated: evaluation.rules_violated || [],\n    gpt4o_assessment: evaluation.overall_assessment || '',\n    gpt4o_tool_analysis: evaluation.tool_analysis || null,\n    \n    gpt4o_parsed: true\n  };\n  \n} catch (error) {\n  const capturedData = $('📤 Capturar Output + Tools').first().json;\n  \n  return {\n    test_id: capturedData.test_id,\n    session_id: capturedData.session_id,\n    user_input: capturedData.user_input,\n    agent_output: capturedData.agent_output,\n    response_time_ms: capturedData.response_time_ms,\n    tools_called: capturedData.tools_called,\n    tools_called_names: capturedData.tools_called_names,\n    expected_tool: capturedData.expected_tool,\n    test_type: capturedData.test_type,\n    \n    gpt4o_scores: {},\n    gpt4o_issues: [{\n      type: 'parse_error',\n      description: `Erro ao parsear avaliação: ${error.message}`,\n      severity: 3\n    }],\n    gpt4o_suggestions: [],\n    gpt4o_rules_violated: [],\n    gpt4o_assessment: 'Erro ao processar avaliação',\n    gpt4o_raw: input.output,\n    gpt4o_parsed: false\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, -264],
+      "id": "7adb86f3-24d1-42ef-89d0-542a19569671",
+      "name": "📊 Parser GPT-4o"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# AVALIAÇÃO DE QUALIDADE DO AGENTE\n\n## CONTEXTO DO TESTE\n**Input do Usuário:** {{ $json.user_input }}\n**Nome do Usuário:** {{ $('📋 Preparar Contexto Teste').item.json.nome_extraido }}\n\n## CLASSIFICAÇÃO DO TESTE\n**Tipo de Teste:** {{ $json.test_type }}\n**Categoria:** {{ $json.test_category }}\n**Tool Esperada:** {{ $json.expected_tool || 'nenhuma' }}\n**Requer Confirmação:** {{ $json.requires_confirmation ? 'SIM' : 'NÃO' }}\n\n## TOOLS REALMENTE CHAMADAS\n{{ $json.tools_called_names.length > 0 ? $json.tools_called_names.join(', ') : 'Nenhuma tool foi chamada' }}\n\n## RESPOSTA DO AGENTE\n{{ $json.agent_output }}\n\n---\n\n## SUA TAREFA\nAvalie a resposta do agente financeiro da Mottivme Sales.\n\n**IMPORTANTE para TOOL_SELECTION:**\n- Tool esperada: {{ $json.expected_tool || 'nenhuma' }}\n- Tools chamadas: {{ $json.tools_called_names.join(', ') || 'nenhuma' }}\n\nRetorne APENAS um JSON válido:\n\n```json\n{\n  \"scores\": {\n    \"tool_selection\": <0-100>,\n    \"confirmation_protocol\": <0-100>,\n    \"brevity\": <0-100>,\n    \"professionalism\": <0-100>,\n    \"data_accuracy\": <0-100>,\n    \"rule_adherence\": <0-100>,\n    \"context_usage\": <0-100>,\n    \"format_compliance\": <0-100>\n  },\n  \"issues\": [\n    {\n      \"type\": \"<categoria>\",\n      \"description\": \"<descrição>\",\n      \"severity\": <1-5>\n    }\n  ],\n  \"suggestions\": [\"<sugestão 1>\"],\n  \"rules_violated\": [\"<regra violada>\"],\n  \"overall_assessment\": \"<breve avaliação>\",\n  \"tool_analysis\": {\n    \"expected\": \"{{ $json.expected_tool || 'nenhuma' }}\",\n    \"called\": {{ JSON.stringify($json.tools_called_names) }},\n    \"correct\": <true/false>\n  }\n}\n```",
+        "options": {
+          "systemMessage": "=# AVALIADOR DE AGENTES IA - GEMINI (v2)\n\nVocê é um avaliador especialista em qualidade de agentes de IA.\n\n## CONTEXTO\n- Agente: Assistente Financeira da Mottivme Sales\n- Função: BPO Financeiro via WhatsApp\n- Expectativa: Profissional, precisa, objetiva, ~300 chars\n\n## IMPORTANTE: VOCÊ TEM ACESSO ÀS TOOLS CHAMADAS\n\nAgora você recebe:\n- expected_tool: qual tool deveria ser chamada\n- tools_called_names: quais tools foram realmente chamadas\n\nUse isso para avaliar TOOL_SELECTION com precisão!\n\n## MÉTRICAS (0-100)\n\n1. **tool_selection** - Tool correta foi chamada? (compare expected vs called)\n2. **confirmation_protocol** - Pediu confirmação antes de ações?\n3. **brevity** - Resposta concisa?\n4. **professionalism** - Tom profissional?\n5. **data_accuracy** - Dados precisos?\n6. **rule_adherence** - Seguiu regras do prompt?\n7. **context_usage** - Usou contexto do usuário?\n8. **format_compliance** - Emojis e formato corretos?\n\n## TIPOS DE ISSUES\n- tool_error, protocol_violation, verbosity, tone_issue\n- hallucination, rule_violation, context_miss, format_error\n\n## SEVERIDADE\n1=menor, 2=pequeno, 3=moderado, 4=grave, 5=crítico\n\nSeja rigoroso mas justo."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [608, -768],
+      "id": "ea89d57a-dddd-4992-b535-2979496986c6",
+      "name": "🔍 Avaliador Gemini"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =====================================================\n// 🔢 CONSOLIDADOR v2: Combina avaliações + análise de tools\n// =====================================================\n\nconst allItems = $input.all();\n\nconst gpt4oItem = allItems.find(i => i.json.gpt4o_scores !== undefined);\nconst gpt4oData = gpt4oItem ? gpt4oItem.json : {};\n\nconst geminiItem = allItems.find(i => i.json.gemini_scores !== undefined);\nconst geminiData = geminiItem ? geminiItem.json : {};\n\nconst gptScores = gpt4oData.gpt4o_scores || {};\nconst gemScores = geminiData.gemini_scores || {};\n\nconst avgScore = (gpt, gem) => {\n  const hasGpt = typeof gpt === 'number';\n  const hasGem = typeof gem === 'number';\n  if (hasGpt && hasGem) return Math.round((gpt + gem) / 2);\n  if (hasGpt) return gpt;\n  if (hasGem) return gem;\n  return 0;\n};\n\nconst finalScores = {\n  tool_selection: avgScore(gptScores.tool_selection, gemScores.tool_selection),\n  confirmation_protocol: avgScore(gptScores.confirmation_protocol, gemScores.confirmation_protocol),\n  brevity: avgScore(gptScores.brevity, gemScores.brevity),\n  professionalism: avgScore(gptScores.professionalism, gemScores.professionalism),\n  data_accuracy: avgScore(gptScores.data_accuracy, gemScores.data_accuracy),\n  rule_adherence: avgScore(gptScores.rule_adherence, gemScores.rule_adherence),\n  context_usage: avgScore(gptScores.context_usage, gemScores.context_usage),\n  format_compliance: avgScore(gptScores.format_compliance, gemScores.format_compliance)\n};\n\nconst weights = {\n  tool_selection: 0.20,\n  confirmation_protocol: 0.15,\n  brevity: 0.10,\n  professionalism: 0.10,\n  data_accuracy: 0.20,\n  rule_adherence: 0.10,\n  context_usage: 0.10,\n  format_compliance: 0.05\n};\n\nlet weightedSum = 0;\nfor (const [key, weight] of Object.entries(weights)) {\n  weightedSum += (finalScores[key] || 0) * weight;\n}\nconst finalScore = Math.round(weightedSum * 100) / 100;\n\nlet grade;\nif (finalScore >= 90) grade = 'A';\nelse if (finalScore >= 75) grade = 'B';\nelse if (finalScore >= 60) grade = 'C';\nelse if (finalScore >= 40) grade = 'D';\nelse grade = 'F';\n\nlet status;\nif (finalScore >= 75) status = 'passed';\nelse if (finalScore >= 60) status = 'warning';\nelse status = 'failed';\n\nconst allIssues = [\n  ...(gpt4oData.gpt4o_issues || []), \n  ...(geminiData.gemini_issues || [])\n];\nconst uniqueIssues = allIssues.filter((issue, index, self) =>\n  index === self.findIndex(i => i.description === issue.description)\n);\n\nconst allSuggestions = [\n  ...(gpt4oData.gpt4o_suggestions || []),\n  ...(geminiData.gemini_suggestions || [])\n].filter((v, i, a) => a.indexOf(v) === i);\n\nconst allRulesViolated = [\n  ...(gpt4oData.gpt4o_rules_violated || []),\n  ...(geminiData.gemini_rules_violated || [])\n].filter((v, i, a) => a.indexOf(v) === i);\n\nconst testData = gpt4oData.test_id ? gpt4oData : geminiData;\n\n// Análise de tool (v2)\nconst toolAnalysis = {\n  expected: testData.expected_tool || null,\n  called: testData.tools_called_names || [],\n  match: testData.expected_tool ? \n    (testData.tools_called_names || []).includes(testData.expected_tool) : \n    true,\n  gpt4o_analysis: gpt4oData.gpt4o_tool_analysis || null,\n  gemini_analysis: geminiData.gemini_tool_analysis || null\n};\n\nreturn {\n  // Identificação\n  test_id: testData.test_id,\n  session_id: testData.session_id,\n  agent_name: 'Agente Financeiro IA',\n  agent_version: '2.0',\n  \n  // Input/Output\n  user_input: testData.user_input,\n  agent_output: testData.agent_output,\n  \n  // NOVO v2: Classificação e Tools\n  test_type: testData.test_type,\n  test_category: testData.test_category,\n  expected_tool: testData.expected_tool,\n  tools_called: testData.tools_called || [],\n  tools_called_names: testData.tools_called_names || [],\n  tool_analysis: toolAnalysis,\n  \n  // Scores individuais\n  score_tool_selection: finalScores.tool_selection,\n  score_confirmation_protocol: finalScores.confirmation_protocol,\n  score_brevity: finalScores.brevity,\n  score_professionalism: finalScores.professionalism,\n  score_data_accuracy: finalScores.data_accuracy,\n  score_rule_adherence: finalScores.rule_adherence,\n  score_context_usage: finalScores.context_usage,\n  score_format_compliance: finalScores.format_compliance,\n  \n  // Score final\n  score_final: finalScore,\n  grade: grade,\n  evaluation_status: status,\n  \n  // Feedback detalhado\n  feedback_gpt4o: {\n    scores: gptScores,\n    issues: gpt4oData.gpt4o_issues || [],\n    suggestions: gpt4oData.gpt4o_suggestions || [],\n    rules_violated: gpt4oData.gpt4o_rules_violated || [],\n    assessment: gpt4oData.gpt4o_assessment || '',\n    tool_analysis: gpt4oData.gpt4o_tool_analysis || null\n  },\n  feedback_gemini: {\n    scores: gemScores,\n    issues: geminiData.gemini_issues || [],\n    suggestions: geminiData.gemini_suggestions || [],\n    rules_violated: geminiData.gemini_rules_violated || [],\n    assessment: geminiData.gemini_assessment || '',\n    tool_analysis: geminiData.gemini_tool_analysis || null\n  },\n  \n  issues_found: uniqueIssues,\n  improvement_suggestions: allSuggestions,\n  rules_violated: allRulesViolated,\n  \n  response_time_ms: testData.response_time_ms,\n  evaluator_models: { \n    gpt4o: gpt4oData.gpt4o_parsed !== false, \n    gemini: geminiData.gemini_parsed !== false \n  },\n  tested_by: 'system',\n  \n  // Debug\n  _debug: {\n    gpt4o_scores_received: gptScores,\n    gemini_scores_received: gemScores,\n    tool_match: toolAnalysis.match\n  },\n  \n  // Resposta ao usuário\n  summary: `📊 **Avaliação: ${grade}** (${finalScore}/100)\\n` +\n           `Status: ${status === 'passed' ? '✅ Aprovado' : status === 'warning' ? '⚠️ Atenção' : '❌ Reprovado'}\\n` +\n           `Tools: ${toolAnalysis.match ? '✅ Corretas' : '❌ Incorretas'}\\n` +\n           `Issues: ${uniqueIssues.length}`\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1408, -464],
+      "id": "46f7366d-72a7-4611-a3d5-6b51eea2fa6b",
+      "name": "🔢 Consolidar Scores"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "response",
+              "name": "output",
+              "value": "={{ $('🔢 Consolidar Scores').first().json.summary }}\n\n📋 **Detalhes:**\n- 🎯 Tool Selection: {{ $('🔢 Consolidar Scores').first().json.score_tool_selection }}/100\n- ✅ Confirmation: {{ $('🔢 Consolidar Scores').first().json.score_confirmation_protocol }}/100\n- 📝 Brevity: {{ $('🔢 Consolidar Scores').first().json.score_brevity }}/100\n- 👔 Professionalism: {{ $('🔢 Consolidar Scores').first().json.score_professionalism }}/100\n- 📊 Data Accuracy: {{ $('🔢 Consolidar Scores').first().json.score_data_accuracy }}/100\n- 📏 Rule Adherence: {{ $('🔢 Consolidar Scores').first().json.score_rule_adherence }}/100\n- 🎭 Context: {{ $('🔢 Consolidar Scores').first().json.score_context_usage }}/100\n- 🎨 Format: {{ $('🔢 Consolidar Scores').first().json.score_format_compliance }}/100\n\n🔧 **Análise de Tools:**\n- Esperada: {{ $('🔢 Consolidar Scores').first().json.expected_tool || 'nenhuma' }}\n- Chamadas: {{ $('🔢 Consolidar Scores').first().json.tools_called_names.join(', ') || 'nenhuma' }}\n- Match: {{ $('🔢 Consolidar Scores').first().json.tool_analysis.match ? '✅' : '❌' }}\n\n---\n\n**Resposta do Agente:**\n{{ $('🔢 Consolidar Scores').first().json.agent_output }}\n\n---\n\n**Sugestões:**\n{{ $('🔢 Consolidar Scores').first().json.improvement_suggestions.join('\\n- ') || 'Nenhuma' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1856, -464],
+      "id": "a1e4c8e2-130c-470e-9885-7bfd6c2ad3dd",
+      "name": "📤 Formatar Resposta"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [680, -544],
+      "id": "ff9217a8-1ad9-48cd-a558-acca87caae0c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Id8CEvNKDTHbg6vv",
+          "name": "gemini marcos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [-2256, -848],
+      "id": "d6228255-59f8-4566-9022-0a2abe0878e0",
+      "name": "When chat message received",
+      "webhookId": "665e6b22-012e-443b-83d3-804e0666ba50"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =====================================================\n// 🏷️ CLASSIFICADOR DE TESTE (NOVO v2)\n// =====================================================\n// Classifica automaticamente o tipo de teste e a tool esperada\n\nconst input = $input.first().json;\nconst mensagem = (input.chatInput || '').toLowerCase().trim();\n\n// Mapeamento de padrões para tools\nconst toolPatterns = {\n  // Consultas financeiras\n  dashboard_kpis: [\n    /resumo financeiro/i,\n    /vis[aã]o geral/i,\n    /como est[aã]o as finan[cç]as/i,\n    /situa[cç][aã]o financeira/i,\n    /kpis/i,\n    /indicadores/i\n  ],\n  relatorio_inadimplencia: [\n    /inadimpl[eê]n/i,\n    /quem est[aá] devendo/i,\n    /clientes? em atraso/i,\n    /d[ií]vidas?/i,\n    /devedores?/i\n  ],\n  fluxo_caixa_projetado: [\n    /fluxo de caixa/i,\n    /proje[cç][aã]o/i,\n    /como vai ficar o caixa/i,\n    /previs[aã]o/i\n  ],\n  dre_simplificado: [\n    /dre/i,\n    /resultado/i,\n    /lucro/i,\n    /preju[ií]zo/i,\n    /demonstrativo/i\n  ],\n  orcamento_realizado: [\n    /or[cç]amento/i,\n    /meta/i,\n    /planejado/i,\n    /realizado/i\n  ],\n  fin_centros_custo: [\n    /centro.? de custo/i,\n    /despesas? por [aá]rea/i,\n    /gastos? por setor/i\n  ],\n  conciliacao_bancaria: [\n    /concilia[cç][aã]o/i,\n    /extrato/i,\n    /banco/i\n  ],\n  buscar_cliente_fornecedor: [\n    /buscar? cliente/i,\n    /consultar? fornecedor/i,\n    /dados? d[oe]/i,\n    /quem [eé]/i,\n    /cliente.? ativo/i\n  ],\n  buscar_movimentacoes: [\n    /movimenta[cç][oõ]es/i,\n    /transa[cç][oõ]es/i,\n    /lan[cç]amentos/i,\n    /hist[oó]rico/i\n  ],\n  listar_categorias: [\n    /categorias/i,\n    /listar categorias/i\n  ],\n  \n  // Ações (requerem confirmação)\n  salvar_movimentacao: [\n    /registrar?/i,\n    /lan[cç]ar/i,\n    /salvar/i,\n    /paguei/i,\n    /recebi/i,\n    /entrada de/i,\n    /sa[ií]da de/i\n  ],\n  criar_cliente_fornecedor: [\n    /criar cliente/i,\n    /novo fornecedor/i,\n    /cadastrar/i\n  ],\n  criar_parcelamento: [\n    /parcel/i,\n    /dividir em/i,\n    /\\d+x/i\n  ],\n  criar_recorrencia: [\n    /recorr[eê]n/i,\n    /mensal/i,\n    /todo m[eê]s/i,\n    /assinatura/i,\n    /aluguel/i\n  ]\n};\n\n// Padrões de saudação\nconst saudacaoPatterns = [\n  /^(oi|ol[aá]|opa|e a[ií]|bom dia|boa tarde|boa noite|hey|hi|hello)/i,\n  /^tudo bem/i,\n  /^como vai/i\n];\n\n// Determinar tipo de teste e tool esperada\nlet test_type = 'consulta';\nlet test_category = 'geral';\nlet expected_tool = null;\nlet requires_confirmation = false;\n\n// Verificar saudação primeiro\nconst isSaudacao = saudacaoPatterns.some(p => p.test(mensagem));\nif (isSaudacao) {\n  test_type = 'saudacao';\n  test_category = 'interacao';\n  expected_tool = null;\n  requires_confirmation = false;\n} else {\n  // Buscar tool correspondente\n  for (const [tool, patterns] of Object.entries(toolPatterns)) {\n    if (patterns.some(p => p.test(mensagem))) {\n      expected_tool = tool;\n      break;\n    }\n  }\n  \n  // Determinar categoria e se requer confirmação\n  const acaoTools = ['salvar_movimentacao', 'criar_cliente_fornecedor', 'criar_parcelamento', 'criar_recorrencia'];\n  const relatorioTools = ['dashboard_kpis', 'relatorio_inadimplencia', 'fluxo_caixa_projetado', 'dre_simplificado', 'orcamento_realizado', 'fin_centros_custo', 'conciliacao_bancaria'];\n  const consultaTools = ['buscar_cliente_fornecedor', 'buscar_movimentacoes', 'listar_categorias'];\n  \n  if (acaoTools.includes(expected_tool)) {\n    test_type = 'acao';\n    test_category = 'escrita';\n    requires_confirmation = true;\n  } else if (relatorioTools.includes(expected_tool)) {\n    test_type = 'consulta';\n    test_category = 'relatorio';\n  } else if (consultaTools.includes(expected_tool)) {\n    test_type = 'consulta';\n    test_category = 'busca';\n  }\n}\n\nreturn {\n  json: {\n    // Dados originais\n    ...input,\n    \n    // Classificação (NOVO v2)\n    test_type,\n    test_category,\n    expected_tool,\n    requires_confirmation,\n    \n    // Debug\n    _classification_debug: {\n      mensagem_original: mensagem,\n      is_saudacao: isSaudacao\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-2032, -656],
+      "id": "classificar-teste-v2",
+      "name": "🏷️ Classificar Teste"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0f11d21d-51b4-4a4b-9cd9-1a7147b3660c",
+              "name": "mensagem",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "02",
+              "name": "telefone",
+              "value": "=+5511936180422",
+              "type": "string"
+            },
+            {
+              "id": "85154002-32e4-4376-8d42-13f02fe7ec8e",
+              "name": "motive",
+              "value": "=assistente_admin",
+              "type": "string"
+            },
+            {
+              "id": "9bb5aeb2-3f0a-4f71-aca6-e98773225335",
+              "name": "lead_id_firstItem",
+              "value": "=EeQAehVFadRPpe8vOYXI",
+              "type": "string"
+            },
+            {
+              "id": "034663c7-e08d-4188-9d3b-cb6d594f4c33",
+              "name": "location_id",
+              "value": "=cd1uyzpJox6XPt4Vct8Y",
+              "type": "string"
+            },
+            {
+              "id": "3a324dd9-24ed-4162-89bc-fd4efaa27bc8",
+              "name": "API_KEY",
+              "value": "=pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string"
+            },
+            {
+              "id": "8c98f58b-934a-4df5-8799-0681af9116d1",
+              "name": "telefone_extraido",
+              "value": "=+5511936180422",
+              "type": "string"
+            },
+            {
+              "id": "e9b0c68d-33ef-4fb6-a1fb-82bc6e6300ce",
+              "name": "nome_extraido",
+              "value": "=Marcos Daniel",
+              "type": "string"
+            },
+            {
+              "id": "cefebd60-eb66-47fc-aac2-8b24f0d775cc",
+              "name": "sessionID",
+              "value": "={{ $json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "b2c4b704-4947-4c04-8d51-85453a4a2665",
+              "name": "responsavel_firstItem",
+              "value": "=Marcos Daniel\n",
+              "type": "string"
+            },
+            {
+              "id": "d73d0ca7-3af9-4ec9-a6b8-feb26ce5e994",
+              "name": "test_id",
+              "value": "=TEST-{{ $now.format('yyyyMMddHHmmss') }}-{{ Math.random().toString(36).substring(7) }}",
+              "type": "string"
+            },
+            {
+              "id": "af6decf4-f5ac-4c7a-aa41-0d3b851d38f9",
+              "name": "test_start",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "test_type",
+              "name": "test_type",
+              "value": "={{ $json.test_type }}",
+              "type": "string"
+            },
+            {
+              "id": "test_category",
+              "name": "test_category",
+              "value": "={{ $json.test_category }}",
+              "type": "string"
+            },
+            {
+              "id": "expected_tool",
+              "name": "expected_tool",
+              "value": "={{ $json.expected_tool }}",
+              "type": "string"
+            },
+            {
+              "id": "requires_confirmation",
+              "name": "requires_confirmation",
+              "value": "={{ $json.requires_confirmation }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-1808, -848],
+      "id": "a501522d-075d-4ac9-bffb-b31c02c17de4",
+      "name": "📋 Preparar Contexto Teste"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "ai_agent_test_evaluations",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "test_id": "={{ $json.test_id }}",
+            "session_id": "={{ $json.session_id }}",
+            "agent_name": "={{ $json.agent_name }}",
+            "agent_version": "={{ $json.agent_version }}",
+            "test_type": "={{ $json.test_type }}",
+            "test_category": "={{ $json.test_category }}",
+            "user_input": "={{ $json.user_input }}",
+            "agent_output": "={{ $json.agent_output }}",
+            "tools_called": "={{ { items: $json.tools_called } }}",
+            "score_tool_selection": "={{ $json.score_tool_selection }}",
+            "score_confirmation_protocol": "={{ $json.score_confirmation_protocol }}",
+            "score_brevity": "={{ $json.score_brevity }}",
+            "score_professionalism": "={{ $json.score_professionalism }}",
+            "score_data_accuracy": "={{ $json.score_data_accuracy }}",
+            "score_rule_adherence": "={{ $json.score_rule_adherence }}",
+            "score_context_usage": "={{ $json.score_context_usage }}",
+            "score_format_compliance": "={{ $json.score_format_compliance }}",
+            "score_final": "={{ $json.score_final }}",
+            "grade": "={{ $json.grade }}",
+            "evaluation_status": "={{ $json.evaluation_status }}",
+            "feedback_gpt4o": "={{ { data: $json.feedback_gpt4o } }}",
+            "feedback_gemini": "={{ { data: $json.feedback_gemini } }}",
+            "issues_found": "={{ { items: $json.issues_found } }}",
+            "improvement_suggestions": "={{ $json.improvement_suggestions }}",
+            "rules_violated": "={{ $json.rules_violated }}",
+            "response_time_ms": "={{ $json.response_time_ms }}",
+            "evaluator_models": "={{ { data: $json.evaluator_models } }}",
+            "tested_by": "={{ $json.tested_by }}",
+            "tokens_input": 0,
+            "tokens_output": 0,
+            "tokens_total": 0,
+            "estimated_cost_usd": 0
+          },
+          "matchingColumns": ["id"],
+          "schema": [
+            {"id": "id", "displayName": "id", "required": false, "defaultMatch": true, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false},
+            {"id": "test_id", "displayName": "test_id", "required": true, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "session_id", "displayName": "session_id", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "agent_name", "displayName": "agent_name", "required": true, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "agent_version", "displayName": "agent_version", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "test_type", "displayName": "test_type", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "test_category", "displayName": "test_category", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "user_input", "displayName": "user_input", "required": true, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "agent_output", "displayName": "agent_output", "required": true, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "tools_called", "displayName": "tools_called", "required": false, "defaultMatch": false, "display": true, "type": "object", "canBeUsedToMatch": true},
+            {"id": "score_tool_selection", "displayName": "score_tool_selection", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "score_confirmation_protocol", "displayName": "score_confirmation_protocol", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "score_brevity", "displayName": "score_brevity", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "score_professionalism", "displayName": "score_professionalism", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "score_data_accuracy", "displayName": "score_data_accuracy", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "score_rule_adherence", "displayName": "score_rule_adherence", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "score_context_usage", "displayName": "score_context_usage", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "score_format_compliance", "displayName": "score_format_compliance", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "score_final", "displayName": "score_final", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "grade", "displayName": "grade", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "evaluation_status", "displayName": "evaluation_status", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "feedback_gpt4o", "displayName": "feedback_gpt4o", "required": false, "defaultMatch": false, "display": true, "type": "object", "canBeUsedToMatch": true},
+            {"id": "feedback_gemini", "displayName": "feedback_gemini", "required": false, "defaultMatch": false, "display": true, "type": "object", "canBeUsedToMatch": true},
+            {"id": "issues_found", "displayName": "issues_found", "required": false, "defaultMatch": false, "display": true, "type": "object", "canBeUsedToMatch": true},
+            {"id": "improvement_suggestions", "displayName": "improvement_suggestions", "required": false, "defaultMatch": false, "display": true, "type": "array", "canBeUsedToMatch": true},
+            {"id": "rules_violated", "displayName": "rules_violated", "required": false, "defaultMatch": false, "display": true, "type": "array", "canBeUsedToMatch": true},
+            {"id": "response_time_ms", "displayName": "response_time_ms", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "tokens_input", "displayName": "tokens_input", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "tokens_output", "displayName": "tokens_output", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "tokens_total", "displayName": "tokens_total", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "estimated_cost_usd", "displayName": "estimated_cost_usd", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true},
+            {"id": "evaluator_models", "displayName": "evaluator_models", "required": false, "defaultMatch": false, "display": true, "type": "object", "canBeUsedToMatch": true},
+            {"id": "tested_by", "displayName": "tested_by", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1632, -464],
+      "id": "c94d5289-cdc5-46c5-99c4-075654be13bb",
+      "name": "💾 Salvar Supabase",
+      "credentials": {
+        "postgres": {
+          "id": "WsU3bciJm7aMyAoC",
+          "name": "postgress - financeiro - mottivme sales"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [1184, -464],
+      "id": "f4f3fc43-d507-413d-a886-2b4d8bf0fefd",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =====================================================\n// 🔄 PARSER: Extrai scores do avaliador Gemini (v2)\n// =====================================================\n\nconst input = $input.first().json;\n\ntry {\n  let evaluation;\n  \n  if (typeof input.output === 'string') {\n    const cleanOutput = input.output\n      .replace(/```json\\n?/g, '')\n      .replace(/```\\n?/g, '')\n      .trim();\n    evaluation = JSON.parse(cleanOutput);\n  } else {\n    evaluation = input.output;\n  }\n  \n  const capturedData = $('📤 Capturar Output + Tools').first().json;\n  \n  return {\n    test_id: capturedData.test_id,\n    session_id: capturedData.session_id,\n    user_input: capturedData.user_input,\n    agent_output: capturedData.agent_output,\n    response_time_ms: capturedData.response_time_ms,\n    \n    // Tools (v2)\n    tools_called: capturedData.tools_called,\n    tools_called_names: capturedData.tools_called_names,\n    expected_tool: capturedData.expected_tool,\n    test_type: capturedData.test_type,\n    test_category: capturedData.test_category,\n    \n    // Gemini scores\n    gemini_scores: evaluation.scores || {},\n    gemini_issues: evaluation.issues || [],\n    gemini_suggestions: evaluation.suggestions || [],\n    gemini_rules_violated: evaluation.rules_violated || [],\n    gemini_assessment: evaluation.overall_assessment || '',\n    gemini_tool_analysis: evaluation.tool_analysis || null,\n    \n    gemini_parsed: true\n  };\n  \n} catch (error) {\n  const capturedData = $('📤 Capturar Output + Tools').first().json;\n  \n  return {\n    test_id: capturedData.test_id,\n    session_id: capturedData.session_id,\n    user_input: capturedData.user_input,\n    agent_output: capturedData.agent_output,\n    response_time_ms: capturedData.response_time_ms,\n    tools_called: capturedData.tools_called,\n    tools_called_names: capturedData.tools_called_names,\n    expected_tool: capturedData.expected_tool,\n    test_type: capturedData.test_type,\n    \n    gemini_scores: {},\n    gemini_issues: [{\n      type: 'parse_error',\n      description: `Erro ao parsear avaliação Gemini: ${error.message}`,\n      severity: 3\n    }],\n    gemini_suggestions: [],\n    gemini_rules_violated: [],\n    gemini_assessment: 'Erro ao processar avaliação',\n    gemini_raw: input.output,\n    gemini_parsed: false\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, -664],
+      "id": "0a7e8c43-47d1-49e8-b4b1-6a63f0b000ed",
+      "name": "📊 Parser Gemini"
+    },
+    {
+      "parameters": {
+        "name": "listar_categorias",
+        "description": "Lista todas as categorias financeiras disponíveis (receitas e despesas).",
+        "workflowId": {
+          "__rl": true,
+          "value": "Acllbvk5jMEMDzd7",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Acllbvk5jMEMDzd7",
+          "cachedResultName": "[TOOL] Listar Categorias"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [112, -624],
+      "id": "caba194c-a88d-442a-9c64-2d948a1d0d60",
+      "name": "Listar Categorias"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Buscar Cliente/Fornecedor": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fluxo de Caixa Projetado": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Parcelamento": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Recorrência": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relatório de Inadimplência": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dashboard KPIs": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Centros de Custo": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orçamento vs Realizado": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DRE Simplificado": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conciliação Bancária": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI GPT-4o2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Movimentações2": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Movimentação2": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Cliente/Fornecedor2": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Categorias": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "🏷️ Classificar Teste",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🏷️ Classificar Teste": {
+      "main": [
+        [
+          {
+            "node": "📋 Preparar Contexto Teste",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Preparar Contexto Teste": {
+      "main": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente Financeiro IA",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Financeiro IA": {
+      "main": [
+        [
+          {
+            "node": "📤 Capturar Output + Tools",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📤 Capturar Output + Tools": {
+      "main": [
+        [
+          {
+            "node": "🔍 Avaliador GPT-4o",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "🔍 Avaliador Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI GPT-4o (Evaluator)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "🔍 Avaliador GPT-4o",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Avaliador GPT-4o": {
+      "main": [
+        [
+          {
+            "node": "📊 Parser GPT-4o",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Parser GPT-4o": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Avaliador Gemini": {
+      "main": [
+        [
+          {
+            "node": "📊 Parser Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Parser Gemini": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "🔍 Avaliador Gemini",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "🔢 Consolidar Scores",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔢 Consolidar Scores": {
+      "main": [
+        [
+          {
+            "node": "💾 Salvar Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "💾 Salvar Supabase": {
+      "main": [
+        [
+          {
+            "node": "📤 Formatar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": true
+  },
+  "versionId": "v2.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "ai-evaluator-v2",
+  "tags": []
+}

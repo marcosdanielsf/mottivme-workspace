@@ -1,0 +1,337 @@
+{
+  "name": "Chatbot com Memoria (Postgres)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chat",
+        "options": {}
+      },
+      "id": "webhook-entrada",
+      "name": "Webhook Entrada",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "chat-webhook"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, session_id, user_name, channel, created_at FROM chat_sessions WHERE session_id = $1 LIMIT 1",
+        "options": {
+          "queryReplacement": "={{ $json.session_id }}"
+        }
+      },
+      "id": "buscar-sessao",
+      "name": "Buscar Sessao",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [450, 300],
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.id }}",
+              "value2": ""
+            }
+          ]
+        }
+      },
+      "id": "sessao-existe",
+      "name": "Sessao Existe?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO chat_sessions (session_id, user_name, user_phone, channel, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *",
+        "options": {
+          "queryReplacement": "={{ $('Webhook Entrada').item.json.session_id }},${{ $('Webhook Entrada').item.json.user_name || 'Usuario' }},${{ $('Webhook Entrada').item.json.user_phone || '' }},${{ $('Webhook Entrada').item.json.channel || 'web' }}"
+        }
+      },
+      "id": "criar-sessao",
+      "name": "Criar Nova Sessao",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [850, 400],
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, session_id, role, content, created_at FROM chat_messages WHERE session_id = $1 ORDER BY created_at DESC LIMIT 10",
+        "options": {
+          "queryReplacement": "={{ $('Webhook Entrada').item.json.session_id }}"
+        }
+      },
+      "id": "buscar-historico",
+      "name": "Buscar Historico",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1050, 300],
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Formatar historico para o prompt\nconst historico = $input.all().reverse();\nconst mensagemAtual = $('Webhook Entrada').item.json.message;\nconst userName = $('Webhook Entrada').item.json.user_name || 'Usuario';\n\n// Construir contexto de conversa\nlet contexto = '';\nfor (const msg of historico) {\n  if (msg.json.role === 'user') {\n    contexto += `Usuario: ${msg.json.content}\\n`;\n  } else if (msg.json.role === 'assistant') {\n    contexto += `Assistente: ${msg.json.content}\\n`;\n  }\n}\n\n// Prompt do sistema\nconst systemPrompt = `Voce e um assistente de vendas da Mottivme, especializado em BPO e consultoria comercial.\n\nInformacoes do usuario:\n- Nome: ${userName}\n\nDiretrizes:\n1. Seja prestativo, profissional e amigavel\n2. Foque em entender as necessidades do cliente\n3. Quando apropriado, sugira agendar uma reuniao\n4. Use o historico da conversa para manter contexto\n5. Responda de forma concisa e objetiva`;\n\n// Montar mensagens para a API\nconst messages = [];\n\n// System message\nmessages.push({\n  role: 'system',\n  content: systemPrompt\n});\n\n// Historico\nfor (const msg of historico) {\n  messages.push({\n    role: msg.json.role,\n    content: msg.json.content\n  });\n}\n\n// Mensagem atual\nmessages.push({\n  role: 'user',\n  content: mensagemAtual\n});\n\nreturn {\n  messages,\n  session_id: $('Webhook Entrada').item.json.session_id,\n  user_message: mensagemAtual,\n  historico_count: historico.length\n};"
+      },
+      "id": "montar-prompt",
+      "name": "Montar Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{ $credentials.httpHeaderAuth.value }}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-3-haiku-20240307\",\n  \"max_tokens\": 1024,\n  \"system\": {{ $json.messages[0].content | JSON.stringify }},\n  \"messages\": {{ $json.messages.slice(1) | JSON.stringify }}\n}",
+        "options": {}
+      },
+      "id": "chamar-claude",
+      "name": "Chamar Claude",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1450, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "SEU_CREDENTIAL_ANTHROPIC",
+          "name": "Anthropic API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.item.json;\nconst assistantMessage = response.content[0].text;\nconst sessionId = $('Montar Prompt').item.json.session_id;\nconst userMessage = $('Montar Prompt').item.json.user_message;\nconst tokensUsed = response.usage?.output_tokens || 0;\n\nreturn {\n  session_id: sessionId,\n  user_message: userMessage,\n  assistant_message: assistantMessage,\n  tokens_used: tokensUsed,\n  model: response.model\n};"
+      },
+      "id": "extrair-resposta",
+      "name": "Extrair Resposta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO chat_messages (session_id, role, content, created_at) VALUES ($1, 'user', $2, NOW())",
+        "options": {
+          "queryReplacement": "={{ $json.session_id }},${{ $json.user_message }}"
+        }
+      },
+      "id": "salvar-msg-usuario",
+      "name": "Salvar Msg Usuario",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1850, 200],
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO chat_messages (session_id, role, content, tokens_used, model, created_at) VALUES ($1, 'assistant', $2, $3, $4, NOW())",
+        "options": {
+          "queryReplacement": "={{ $('Extrair Resposta').item.json.session_id }},${{ $('Extrair Resposta').item.json.assistant_message }},${{ $('Extrair Resposta').item.json.tokens_used }},${{ $('Extrair Resposta').item.json.model }}"
+        }
+      },
+      "id": "salvar-msg-assistente",
+      "name": "Salvar Msg Assistente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1850, 400],
+      "credentials": {
+        "postgres": {
+          "id": "B0fAAM3acruSSuiz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": {{ $('Extrair Resposta').item.json.assistant_message | JSON.stringify }},\n  \"session_id\": {{ $('Extrair Resposta').item.json.session_id | JSON.stringify }},\n  \"tokens_used\": {{ $('Extrair Resposta').item.json.tokens_used }}\n}",
+        "options": {}
+      },
+      "id": "responder-webhook",
+      "name": "Responder Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2100, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Entrada": {
+      "main": [
+        [
+          {
+            "node": "Buscar Sessao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Sessao": {
+      "main": [
+        [
+          {
+            "node": "Sessao Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sessao Existe?": {
+      "main": [
+        [
+          {
+            "node": "Buscar Historico",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Criar Nova Sessao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Nova Sessao": {
+      "main": [
+        [
+          {
+            "node": "Buscar Historico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Historico": {
+      "main": [
+        [
+          {
+            "node": "Montar Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Prompt": {
+      "main": [
+        [
+          {
+            "node": "Chamar Claude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chamar Claude": {
+      "main": [
+        [
+          {
+            "node": "Extrair Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Resposta": {
+      "main": [
+        [
+          {
+            "node": "Salvar Msg Usuario",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Salvar Msg Assistente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Msg Usuario": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Msg Assistente": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["chatbot", "memoria", "postgres", "claude"],
+  "triggerCount": 0,
+  "pinData": {}
+}

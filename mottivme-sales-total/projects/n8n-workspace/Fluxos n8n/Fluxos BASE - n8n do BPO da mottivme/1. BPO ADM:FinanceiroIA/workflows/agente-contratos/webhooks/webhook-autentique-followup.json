@@ -1,0 +1,452 @@
+{
+  "name": "Webhook - Follow-up Contrato Visualizado",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "autentique-viewed",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "id": "webhook-viewed",
+      "name": "Webhook Visualização",
+      "webhookId": "autentique-viewed-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Processar evento de visualização do Autentique\nconst payload = $json;\n\nconst evento = payload.event || payload.type || 'unknown';\nconst documento = payload.document || payload.data?.document || {};\nconst assinatura = payload.signature || payload.data?.signature || {};\n\n// Extrair informações\nconst docId = documento.id || documento.uuid || null;\nconst docNome = documento.name || documento.nome || 'Documento';\nconst signerNome = assinatura.name || assinatura.signer?.name || 'Cliente';\nconst signerEmail = assinatura.email || assinatura.signer?.email || null;\nconst viewedAt = assinatura.viewed_at || assinatura.created_at || new Date().toISOString();\n\n// Verificar se é evento de visualização\nconst isViewed = evento.toLowerCase().includes('viewed') || evento.toLowerCase().includes('view');\n\nreturn {\n  json: {\n    evento_tipo: evento,\n    is_viewed: isViewed,\n    documento: {\n      id: docId,\n      nome: docNome\n    },\n    assinatura: {\n      nome: signerNome,\n      email: signerEmail,\n      visualizado_em: viewedAt\n    },\n    payload_original: payload\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "id": "processar-evento",
+      "name": "Processar Evento"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-viewed",
+              "leftValue": "={{ $json.is_viewed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [680, 300],
+      "id": "check-viewed",
+      "name": "É Visualização?"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Buscar contrato e dados do cliente pelo autentique_doc_id\nSELECT \n  cp.id,\n  cp.nome,\n  cp.email,\n  cp.telefone,\n  cp.ghl_contact_id,\n  cp.produto,\n  cp.valor_mensal,\n  cp.status,\n  cp.autentique_doc_id,\n  cp.visualizado_em,\n  cp.followup_enviado\nFROM fin_contratos_pendentes cp\nWHERE cp.autentique_doc_id = '{{ $json.documento.id }}'\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [900, 200],
+      "id": "buscar-contrato",
+      "name": "Buscar Contrato",
+      "credentials": {
+        "postgres": {
+          "id": "WsU3bciJm7aMyAoC",
+          "name": "postgress - financeiro - mottivme sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Marcar que foi visualizado (se ainda não tinha sido)\nUPDATE fin_contratos_pendentes\nSET \n  visualizado_em = COALESCE(visualizado_em, NOW()),\n  updated_at = NOW()\nWHERE autentique_doc_id = '{{ $('Processar Evento').first().json.documento.id }}'\n  AND visualizado_em IS NULL\nRETURNING id, nome, visualizado_em;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1120, 200],
+      "id": "marcar-visualizado",
+      "name": "Marcar Visualizado",
+      "credentials": {
+        "postgres": {
+          "id": "WsU3bciJm7aMyAoC",
+          "name": "postgress - financeiro - mottivme sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-ghl",
+              "leftValue": "={{ $('Buscar Contrato').first().json.ghl_contact_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "check-followup",
+              "leftValue": "={{ $('Buscar Contrato').first().json.followup_enviado }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1340, 200],
+      "id": "check-pode-followup",
+      "name": "Pode Fazer Follow-up?"
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "hours"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1560, 100],
+      "id": "aguardar-2h",
+      "name": "Aguardar 2 Horas",
+      "webhookId": "followup-wait-webhook"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Verificar se ainda não assinou após 2 horas\nSELECT \n  cp.id,\n  cp.nome,\n  cp.email,\n  cp.telefone,\n  cp.ghl_contact_id,\n  cp.status,\n  cp.followup_enviado\nFROM fin_contratos_pendentes cp\nWHERE cp.autentique_doc_id = '{{ $('Processar Evento').first().json.documento.id }}'\n  AND cp.status = 'contrato_gerado'\n  AND cp.followup_enviado IS NOT TRUE\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [1780, 100],
+      "id": "verificar-nao-assinou",
+      "name": "Verificar Não Assinou",
+      "credentials": {
+        "postgres": {
+          "id": "WsU3bciJm7aMyAoC",
+          "name": "postgress - financeiro - mottivme sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-ainda-pendente",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [2000, 100],
+      "id": "check-ainda-pendente",
+      "name": "Ainda Não Assinou?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preparar mensagem de follow-up\nconst contrato = $json;\n\n// Pegar apenas o primeiro nome\nconst primeiroNome = contrato.nome ? contrato.nome.split(' ')[0] : 'Cliente';\n\nconst mensagem = `Olá ${primeiroNome}! 👋\n\nVi que você já visualizou o contrato que enviamos. Ficou alguma dúvida sobre os termos ou condições?\n\nEstou à disposição para esclarecer qualquer ponto! 😊`;\n\nreturn {\n  json: {\n    contrato_id: contrato.id,\n    ghl_contact_id: contrato.ghl_contact_id,\n    nome: contrato.nome,\n    primeiro_nome: primeiroNome,\n    telefone: contrato.telefone,\n    mensagem: mensagem\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2220, 0],
+      "id": "preparar-mensagem",
+      "name": "Preparar Mensagem"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.GHL_API_KEY }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-07-28"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"type\": \"SMS\",\n  \"contactId\": \"{{ $json.ghl_contact_id }}\",\n  \"message\": {{ JSON.stringify($json.mensagem) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2440, 0],
+      "id": "enviar-ghl",
+      "name": "Enviar Mensagem GHL",
+      "notes": "Envia SMS/WhatsApp via GHL API"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Marcar que follow-up foi enviado\nUPDATE fin_contratos_pendentes\nSET \n  followup_enviado = TRUE,\n  followup_enviado_em = NOW(),\n  updated_at = NOW()\nWHERE id = '{{ $('Preparar Mensagem').first().json.contrato_id }}'\nRETURNING id, nome, followup_enviado_em;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [2660, 0],
+      "id": "marcar-followup-enviado",
+      "name": "Marcar Follow-up Enviado",
+      "credentials": {
+        "postgres": {
+          "id": "WsU3bciJm7aMyAoC",
+          "name": "postgress - financeiro - mottivme sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Visualização registrada, follow-up agendado para 2h' }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1560, 300],
+      "id": "responder-agendado",
+      "name": "Responder Agendado"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Evento ignorado - não é visualização ou já teve follow-up' }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [900, 400],
+      "id": "responder-ignorado",
+      "name": "Responder Ignorado"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Sem GHL contact_id ou follow-up já enviado' }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1560, 400],
+      "id": "responder-sem-ghl",
+      "name": "Responder Sem GHL"
+    }
+  ],
+  "connections": {
+    "Webhook Visualização": {
+      "main": [
+        [
+          {
+            "node": "Processar Evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Evento": {
+      "main": [
+        [
+          {
+            "node": "É Visualização?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É Visualização?": {
+      "main": [
+        [
+          {
+            "node": "Buscar Contrato",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Ignorado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Contrato": {
+      "main": [
+        [
+          {
+            "node": "Marcar Visualizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marcar Visualizado": {
+      "main": [
+        [
+          {
+            "node": "Pode Fazer Follow-up?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pode Fazer Follow-up?": {
+      "main": [
+        [
+          {
+            "node": "Aguardar 2 Horas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Responder Agendado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Sem GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aguardar 2 Horas": {
+      "main": [
+        [
+          {
+            "node": "Verificar Não Assinou",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Não Assinou": {
+      "main": [
+        [
+          {
+            "node": "Ainda Não Assinou?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ainda Não Assinou?": {
+      "main": [
+        [
+          {
+            "node": "Preparar Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Preparar Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Enviar Mensagem GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Mensagem GHL": {
+      "main": [
+        [
+          {
+            "node": "Marcar Follow-up Enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "v1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "n8n-bpo-financeiro"
+  },
+  "id": "webhook-autentique-followup",
+  "tags": [
+    {
+      "name": "BPO Financeiro"
+    },
+    {
+      "name": "Webhooks"
+    },
+    {
+      "name": "Follow-up"
+    }
+  ],
+  "pinData": {}
+}

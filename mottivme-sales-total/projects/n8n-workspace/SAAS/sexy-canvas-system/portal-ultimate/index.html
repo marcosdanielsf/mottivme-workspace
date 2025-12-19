@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Extraordinário Aguarda</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-void: #000000;
+            --bg-deep: #030305;
+            --bg-surface: #08080c;
+            --gold-dark: #8B7355;
+            --gold: #C9A962;
+            --gold-light: #E8D5A3;
+            --gold-glow: #FFD700;
+            --blue-electric: #4A9EFF;
+            --purple-mystic: #8B5CF6;
+            --red-danger: #DC2626;
+            --green-success: #16A34A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A1A1AA;
+            --text-muted: #52525B;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-void);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* ============================================
+           CUSTOM CURSOR PREMIUM
+        ============================================ */
+        .cursor-outer {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(201, 169, 98, 0.5);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+            transition: all 0.15s ease-out;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-inner {
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+            transition: all 0.05s ease-out;
+        }
+
+        .cursor-outer.hover {
+            width: 60px;
+            height: 60px;
+            border-color: var(--gold);
+            background: rgba(201, 169, 98, 0.1);
+        }
+
+        .cursor-outer.click {
+            transform: scale(0.8);
+        }
+
+        /* ============================================
+           NOISE + GRAIN OVERLAY
+        ============================================ */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* ============================================
+           FLOATING PARTICLES
+        ============================================ */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 20s infinite ease-in-out;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { 
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% { opacity: 0.6; }
+            50% { 
+                transform: translateY(-50vh) translateX(100px) scale(1);
+                opacity: 0.3;
+            }
+            90% { opacity: 0.6; }
+        }
+
+        /* ============================================
+           PHASE 0: VOID ENTRY
+        ============================================ */
+        #phase-void {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-void);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            flex-direction: column;
+        }
+
+        .void-content {
+            text-align: center;
+            max-width: 800px;
+            padding: 40px;
+        }
+
+        .typing-container {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            color: var(--gold);
+            letter-spacing: 3px;
+            min-height: 120px;
+        }
+
+        .typing-line {
+            opacity: 0;
+            transform: translateY(10px);
+            margin: 12px 0;
+        }
+
+        .typing-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.5s ease;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: var(--gold);
+            margin-left: 4px;
+            animation: cursorBlink 1s infinite;
+        }
+
+        @keyframes cursorBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .system-warning {
+            margin-top: 60px;
+            padding: 20px 40px;
+            border: 1px solid var(--red-danger);
+            background: rgba(220, 38, 38, 0.05);
+            border-radius: 4px;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.5s ease;
+        }
+
+        .system-warning.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .warning-icon {
+            color: var(--red-danger);
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .warning-text {
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--red-danger);
+        }
+
+        .enter-portal-btn {
+            margin-top: 60px;
+            padding: 20px 80px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .enter-portal-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .enter-portal-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(201, 169, 98, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .enter-portal-btn:hover::before {
+            left: 100%;
+        }
+
+        .enter-portal-btn:hover {
+            background: var(--gold);
+            color: var(--bg-void);
+            box-shadow: 0 0 60px rgba(201, 169, 98, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* ============================================
+           PHASE 1: COMMITMENT GATE
+        ============================================ */
+        #phase-commitment {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-void);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        #phase-commitment.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .commitment-card {
+            max-width: 700px;
+            padding: 60px;
+            background: linear-gradient(135deg, rgba(201, 169, 98, 0.02) 0%, rgba(0, 0, 0, 0.5) 100%);
+            border: 1px solid rgba(201, 169, 98, 0.15);
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+        }
+
+        .commitment-card::before,
+        .commitment-card::after {
+            content: '✦';
+            position: absolute;
+            font-size: 20px;
+            color: var(--gold);
+            opacity: 0.3;
+        }
+
+        .commitment-card::before { top: 20px; left: 20px; }
+        .commitment-card::after { bottom: 20px; right: 20px; }
+
+        .commitment-icon {
+            font-size: 64px;
+            margin-bottom: 30px;
+            animation: iconPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(201, 169, 98, 0.3)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 20px rgba(201, 169, 98, 0.5)); }
+        }
+
+        .commitment-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 42px;
+            font-weight: 400;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .commitment-text {
+            font-size: 17px;
+            color: var(--text-secondary);
+            line-height: 2;
+            margin-bottom: 40px;
+        }
+
+        .commitment-text strong {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .requirements-list {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .requirement-icon {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(201, 169, 98, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .commitment-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin: 40px 0;
+            cursor: pointer;
+            padding: 20px;
+            border: 1px solid rgba(201, 169, 98, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .commitment-checkbox:hover {
+            border-color: rgba(201, 169, 98, 0.3);
+            background: rgba(201, 169, 98, 0.02);
+        }
+
+        .checkbox-box {
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--gold);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .checkbox-box.checked {
+            background: var(--gold);
+        }
+
+        .checkbox-box.checked::after {
+            content: '✓';
+            color: var(--bg-void);
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .checkbox-label {
+            font-size: 15px;
+            color: var(--text-secondary);
+            text-align: left;
+        }
+
+        .proceed-btn {
+            padding: 22px 100px;
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+            border: none;
+            color: var(--bg-void);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            opacity: 0.3;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+
+        .proceed-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .proceed-btn.active:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(201, 169, 98, 0.5);
+        }
+
+        /* ============================================
+           PHASE 2: EVOLUTION CINEMA
+        ============================================ */
+        #phase-evolution {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-void);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            overflow: hidden;
+        }
+
+        #phase-evolution.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .evolution-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(201, 169, 98, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(74, 158, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.03) 0%, transparent 60%);
+            animation: bgPulse 10s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .evolution-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 1400px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .evolution-header {
+            margin-bottom: 80px;
+        }
+
+        .evolution-subtitle {
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: slideDown 1s ease forwards;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .evolution-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 64px;
+            font-weight: 300;
+            line-height: 1.2;
+            opacity: 0;
+            animation: slideDown 1s 0.3s ease forwards;
+        }
+
+        .evolution-title em {
+            font-style: italic;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Timeline */
+        .timeline-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            position: relative;
+            margin: 100px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 50%;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: rgba(201, 169, 98, 0.2);
+            transform: translateY(-50%);
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-light));
+            box-shadow: 0 0 20px rgba(201, 169, 98, 0.5);
+            transition: width 0.8s ease-out;
+        }
+
+        .timeline-stage {
+            flex: 1;
+            max-width: 300px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(40px) scale(0.9);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .timeline-stage.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .timeline-stage.active .stage-circle {
+            border-color: var(--gold);
+            box-shadow: 0 0 40px rgba(201, 169, 98, 0.5);
+            transform: scale(1.1);
+        }
+
+        .timeline-stage.active .stage-icon {
+            filter: grayscale(0);
+            transform: scale(1.2);
+        }
+
+        .stage-circle {
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(201, 169, 98, 0.3);
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-void);
+            transition: all 0.5s ease;
+        }
+
+        .stage-icon {
+            font-size: 48px;
+            filter: grayscale(1);
+            transition: all 0.5s ease;
+        }
+
+        .stage-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            transition: color 0.3s ease;
+        }
+
+        .timeline-stage.active .stage-label {
+            color: var(--gold);
+        }
+
+        .stage-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .timeline-stage.active .stage-title {
+            color: var(--text-primary);
+        }
+
+        .stage-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-stage.active .stage-value {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .evolution-cta {
+            margin-top: 80px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .evolution-cta.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .evolution-btn {
+            padding: 24px 100px;
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .evolution-btn:hover {
+            background: var(--gold);
+            color: var(--bg-void);
+            box-shadow: 0 0 80px rgba(201, 169, 98, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* ============================================
+           PHASE 3: ROYAL INVITATION
+        ============================================ */
+        #phase-invitation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--bg-void);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9997;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        #phase-invitation.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .invitation-card {
+            max-width: 800px;
+            padding: 80px;
+            background: linear-gradient(135deg, rgba(201, 169, 98, 0.03) 0%, rgba(0, 0, 0, 0.3) 100%);
+            border: 1px solid rgba(201, 169, 98, 0.2);
+            border-radius: 4px;
+            text-align: center;
+            position: relative;
+            animation: cardReveal 1s ease-out;
+        }
+
+        @keyframes cardReveal {
+            from { opacity: 0; transform: scale(0.9) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .invitation-ornament-top,
+        .invitation-ornament-bottom {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            color: var(--gold);
+            opacity: 0.5;
+        }
+
+        .invitation-ornament-top { top: 20px; }
+        .invitation-ornament-bottom { bottom: 20px; }
+
+        .invitation-seal {
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            margin: 0 auto 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            background: linear-gradient(135deg, rgba(201, 169, 98, 0.1) 0%, transparent 100%);
+        }
+
+        .invitation-badge {
+            display: inline-block;
+            padding: 10px 30px;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 11px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .invitation-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 30px;
+            line-height: 1.3;
+        }
+
+        .invitation-names {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-style: italic;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+        }
+
+        .invitation-message {
+            font-size: 18px;
+            color: var(--text-secondary);
+            line-height: 2;
+            max-width: 600px;
+            margin: 0 auto 50px;
+        }
+
+        .invitation-message strong {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        /* Login Section */
+        .login-container {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 50px;
+            border-radius: 8px;
+            margin-top: 40px;
+            border: 1px solid rgba(201, 169, 98, 0.1);
+        }
+
+        .login-title {
+            font-size: 11px;
+            color: var(--gold);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(201, 169, 98, 0.15);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(201, 169, 98, 0.05);
+            box-shadow: 0 0 30px rgba(201, 169, 98, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .unlock-btn {
+            width: 100%;
+            padding: 22px;
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 100%);
+            border: none;
+            color: var(--bg-void);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.5s ease;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .unlock-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(201, 169, 98, 0.5);
+        }
+
+        .error-msg {
+            color: var(--red-danger);
+            font-size: 13px;
+            margin-top: 20px;
+            padding: 16px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 4px;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+
+        .expiry-notice {
+            margin-top: 30px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .expiry-notice span {
+            color: var(--red-danger);
+            font-weight: 500;
+        }
+
+        /* ============================================
+           AUDIO CONTROL
+        ============================================ */
+        .audio-control {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            background: rgba(201, 169, 98, 0.1);
+            border: 1px solid rgba(201, 169, 98, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10001;
+            transition: all 0.3s ease;
+        }
+
+        .audio-control:hover {
+            background: rgba(201, 169, 98, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(201, 169, 98, 0.3);
+        }
+
+        .audio-icon {
+            font-size: 20px;
+        }
+
+        /* ============================================
+           PROGRESS INDICATOR
+        ============================================ */
+        .progress-indicator {
+            position: fixed;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border: 1px solid rgba(201, 169, 98, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .progress-dot.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(201, 169, 98, 0.5);
+        }
+
+        .progress-dot.completed {
+            background: var(--gold);
+            border-color: var(--gold);
+            opacity: 0.5;
+        }
+
+        /* ============================================
+           TRANSITION OVERLAY
+        ============================================ */
+        .transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-void);
+            z-index: 99997;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .transition-overlay.active {
+            opacity: 1;
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 1024px) {
+            .timeline-container {
+                flex-direction: column;
+                gap: 60px;
+            }
+
+            .timeline-line {
+                display: none;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .evolution-title {
+                font-size: 40px;
+            }
+
+            .invitation-title {
+                font-size: 32px;
+            }
+
+            .invitation-names {
+                font-size: 24px;
+            }
+
+            .invitation-card {
+                padding: 40px 24px;
+                margin: 20px;
+            }
+
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            .cursor-outer,
+            .cursor-inner {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+
+            .progress-indicator {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor-outer" id="cursor-outer"></div>
+    <div class="cursor-inner" id="cursor-inner"></div>
+
+    <!-- Noise Overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Floating Particles -->
+    <div class="particles-container" id="particles-container"></div>
+
+    <!-- Transition Overlay -->
+    <div class="transition-overlay" id="transition-overlay"></div>
+
+    <!-- Progress Indicator -->
+    <div class="progress-indicator">
+        <div class="progress-dot active" data-phase="void"></div>
+        <div class="progress-dot" data-phase="commitment"></div>
+        <div class="progress-dot" data-phase="evolution"></div>
+        <div class="progress-dot" data-phase="invitation"></div>
+    </div>
+
+    <!-- ========== PHASE 0: VOID ENTRY ========== -->
+    <div id="phase-void">
+        <div class="void-content">
+            <div class="typing-container" id="typing-container">
+                <div class="typing-line" id="line1">INICIANDO PROTOCOLO DE ACESSO<span class="typing-cursor"></span></div>
+                <div class="typing-line" id="line2">VERIFICANDO CREDENCIAIS...</div>
+                <div class="typing-line" id="line3">USUÁRIO IDENTIFICADO</div>
+                <div class="typing-line" id="line4" style="color: var(--gold-light);">ACESSO AUTORIZADO</div>
+            </div>
+
+            <div class="system-warning" id="system-warning">
+                <div class="warning-icon">⚠️</div>
+                <div class="warning-text">Este conteúdo é confidencial e exclusivo</div>
+            </div>
+
+            <button class="enter-portal-btn" id="enter-portal-btn" onclick="goToCommitment()">
+                Acessar Portal
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== PHASE 1: COMMITMENT GATE ========== -->
+    <div id="phase-commitment">
+        <div class="commitment-card">
+            <div class="commitment-icon">⚡</div>
+            <h1 class="commitment-title">Antes de Prosseguir</h1>
+            <p class="commitment-text">
+                O que você está prestes a acessar <strong>não é uma proposta comercial comum</strong>.<br><br>
+                É uma <strong>experiência imersiva</strong> projetada exclusivamente para você.<br><br>
+                Para aproveitá-la ao máximo:
+            </p>
+
+            <div class="requirements-list">
+                <div class="requirement-item">
+                    <div class="requirement-icon">🎧</div>
+                    <span>Fones de ouvido</span>
+                </div>
+                <div class="requirement-item">
+                    <div class="requirement-icon">⏱️</div>
+                    <span>10-15 minutos</span>
+                </div>
+                <div class="requirement-item">
+                    <div class="requirement-icon">🧠</div>
+                    <span>Mente aberta</span>
+                </div>
+            </div>
+
+            <div class="commitment-checkbox" id="commitment-checkbox" onclick="toggleCommitment()">
+                <div class="checkbox-box" id="checkbox-box"></div>
+                <span class="checkbox-label">Estou preparado(a) e comprometido(a) a viver esta experiência</span>
+            </div>
+
+            <button class="proceed-btn" id="proceed-btn" onclick="goToEvolution()">
+                Prosseguir
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== PHASE 2: EVOLUTION CINEMA ========== -->
+    <div id="phase-evolution">
+        <div class="evolution-bg"></div>
+        <div class="evolution-content">
+            <div class="evolution-header">
+                <div class="evolution-subtitle">Sua Jornada de Transformação</div>
+                <h1 class="evolution-title">
+                    De onde você está<br>para onde <em>você merece estar</em>
+                </h1>
+            </div>
+
+            <div class="timeline-container">
+                <div class="timeline-line">
+                    <div class="timeline-progress" id="timeline-progress"></div>
+                </div>
+
+                <div class="timeline-stage" id="stage-1">
+                    <div class="stage-circle">
+                        <span class="stage-icon">🏥</span>
+                    </div>
+                    <div class="stage-label">Hoje</div>
+                    <div class="stage-title">Clínica de Sucesso</div>
+                    <div class="stage-value">Estável</div>
+                </div>
+
+                <div class="timeline-stage" id="stage-2">
+                    <div class="stage-circle">
+                        <span class="stage-icon">🔥</span>
+                    </div>
+                    <div class="stage-label">Transformação</div>
+                    <div class="stage-title">30-210 dias</div>
+                    <div class="stage-value">Estruturação</div>
+                </div>
+
+                <div class="timeline-stage" id="stage-3">
+                    <div class="stage-circle">
+                        <span class="stage-icon">👑</span>
+                    </div>
+                    <div class="stage-label">Destino</div>
+                    <div class="stage-title">Mentoria Médica</div>
+                    <div class="stage-value">R$ 150k/mês</div>
+                </div>
+            </div>
+
+            <div class="evolution-cta" id="evolution-cta">
+                <button class="evolution-btn" onclick="goToInvitation()">
+                    Revelar Meu Caminho →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== PHASE 3: ROYAL INVITATION ========== -->
+    <div id="phase-invitation">
+        <div class="invitation-card">
+            <div class="invitation-ornament-top">✦ ✦ ✦</div>
+
+            <div class="invitation-seal">👑</div>
+
+            <div class="invitation-badge">Convite Exclusivo</div>
+
+            <h1 class="invitation-title">
+                Bem-vindos ao<br>Extraordinário
+            </h1>
+
+            <div class="invitation-names" id="invitation-names">
+                Dr. Luiz Henrique & Dra. Carol Moreira
+            </div>
+
+            <p class="invitation-message">
+                A partir do momento em que inserirem suas credenciais,<br>
+                <strong>suas vidas nunca mais serão as mesmas</strong>.<br><br>
+                Vocês estão prestes a acessar uma proposta que não é<br>
+                apenas um documento — é uma <strong>experiência</strong><br>
+                projetada exclusivamente para vocês.
+            </p>
+
+            <div class="login-container">
+                <div class="login-title">Credenciais de Acesso</div>
+
+                <form onsubmit="attemptLogin(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Código de Acesso</label>
+                            <input 
+                                type="text" 
+                                class="form-input" 
+                                id="login-input"
+                                placeholder="seu-codigo-aqui"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Chave Secreta</label>
+                            <input 
+                                type="password" 
+                                class="form-input" 
+                                id="password-input"
+                                placeholder="••••••••••"
+                                autocomplete="off"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="error-msg" id="error-msg">
+                        ✗ Credenciais inválidas. Verifique o email que enviamos.
+                    </div>
+
+                    <button type="submit" class="unlock-btn">
+                        <span>🔓</span>
+                        <span>Desbloquear Acesso</span>
+                    </button>
+                </form>
+
+                <div class="expiry-notice">
+                    ⏰ Este acesso expira em: <span id="expiry-date">12/12/2025 às 23:59</span>
+                </div>
+            </div>
+
+            <div class="invitation-ornament-bottom">✦ ✦ ✦</div>
+        </div>
+    </div>
+
+    <!-- Audio Control -->
+    <div class="audio-control" id="audio-control" onclick="toggleAudio()">
+        <span class="audio-icon" id="audio-icon">🔊</span>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURAÇÃO
+        // ============================================
+        const CONFIG = {
+            clientNames: 'Dr. Luiz Henrique & Dra. Carol Moreira',
+            login: 'carol-luiz',
+            password: 'UltraVertex',
+            proposalUrl: 'proposta-ultimate.html',
+            expiryDate: '2025-12-12T23:59:59',
+            analytics: true
+        };
+
+        // ============================================
+        // ANALYTICS & TRACKING
+        // ============================================
+        const Analytics = {
+            startTime: Date.now(),
+            events: [],
+
+            track(event, data = {}) {
+                const eventData = {
+                    event,
+                    timestamp: Date.now(),
+                    timeOnPage: Math.round((Date.now() - this.startTime) / 1000),
+                    ...data
+                };
+                this.events.push(eventData);
+                console.log('📊 Analytics:', eventData);
+            },
+
+            getReport() {
+                return {
+                    totalTime: Math.round((Date.now() - this.startTime) / 1000),
+                    events: this.events
+                };
+            }
+        };
+
+        // ============================================
+        // CUSTOM CURSOR
+        // ============================================
+        const cursorOuter = document.getElementById('cursor-outer');
+        const cursorInner = document.getElementById('cursor-inner');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            const speed = 0.15;
+            cursorX += (mouseX - cursorX) * speed;
+            cursorY += (mouseY - cursorY) * speed;
+
+            cursorOuter.style.left = cursorX - 20 + 'px';
+            cursorOuter.style.top = cursorY - 20 + 'px';
+            cursorInner.style.left = mouseX - 4 + 'px';
+            cursorInner.style.top = mouseY - 4 + 'px';
+
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Hover effect
+        document.querySelectorAll('button, a, .commitment-checkbox, .audio-control, .progress-dot').forEach(el => {
+            el.addEventListener('mouseenter', () => cursorOuter.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursorOuter.classList.remove('hover'));
+        });
+
+        // Click effect
+        document.addEventListener('mousedown', () => cursorOuter.classList.add('click'));
+        document.addEventListener('mouseup', () => cursorOuter.classList.remove('click'));
+
+        // ============================================
+        // PARTICLES
+        // ============================================
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            const particleCount = 80;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // ============================================
+        // AUDIO SYSTEM
+        // ============================================
+        let audioEnabled = true;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            document.getElementById('audio-icon').textContent = audioEnabled ? '🔊' : '🔇';
+            Analytics.track('audio_toggle', { enabled: audioEnabled });
+        }
+
+        function playTone(freq, duration, type = 'sine', volume = 0.1) {
+            if (!audioEnabled) return;
+            initAudio();
+
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.frequency.value = freq;
+                osc.type = type;
+
+                gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        function speak(text, rate = 0.85, pitch = 0.7) {
+            if (!audioEnabled || !('speechSynthesis' in window)) return;
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'pt-BR';
+            utterance.rate = rate;
+            utterance.pitch = pitch;
+            utterance.volume = 0.8;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function playSuccessChime() {
+            if (!audioEnabled) return;
+            playTone(523, 0.15); // C
+            setTimeout(() => playTone(659, 0.15), 100); // E
+            setTimeout(() => playTone(784, 0.3), 200); // G
+        }
+
+        function playErrorBuzz() {
+            if (!audioEnabled) return;
+            playTone(150, 0.3, 'sawtooth', 0.15);
+        }
+
+        // ============================================
+        // PHASE TRANSITIONS
+        // ============================================
+        function transition(callback) {
+            const overlay = document.getElementById('transition-overlay');
+            overlay.classList.add('active');
+
+            setTimeout(() => {
+                callback();
+                setTimeout(() => overlay.classList.remove('active'), 100);
+            }, 1000);
+        }
+
+        function updateProgressDots(currentPhase) {
+            const phases = ['void', 'commitment', 'evolution', 'invitation'];
+            const currentIndex = phases.indexOf(currentPhase);
+
+            document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+                dot.classList.remove('active', 'completed');
+                if (i < currentIndex) dot.classList.add('completed');
+                if (i === currentIndex) dot.classList.add('active');
+            });
+        }
+
+        // ============================================
+        // PHASE 0: VOID ENTRY
+        // ============================================
+        window.addEventListener('load', () => {
+            Analytics.track('portal_loaded');
+
+            // Check expiry
+            if (new Date() > new Date(CONFIG.expiryDate)) {
+                showExpired();
+                return;
+            }
+
+            // Typing animation
+            setTimeout(() => {
+                document.getElementById('line1').classList.add('visible');
+                playTone(300, 0.2);
+            }, 500);
+
+            setTimeout(() => {
+                document.getElementById('line2').classList.add('visible');
+                playTone(350, 0.2);
+            }, 1500);
+
+            setTimeout(() => {
+                document.getElementById('line3').classList.add('visible');
+                playTone(400, 0.2);
+            }, 2500);
+
+            setTimeout(() => {
+                document.getElementById('line4').classList.add('visible');
+                playSuccessChime();
+            }, 3500);
+
+            setTimeout(() => {
+                document.getElementById('system-warning').classList.add('visible');
+            }, 4500);
+
+            setTimeout(() => {
+                document.getElementById('enter-portal-btn').classList.add('visible');
+            }, 5500);
+
+            // Voice
+            setTimeout(() => {
+                speak('Bem-vindos... ao extraordinário...', 0.7, 0.5);
+            }, 1000);
+
+            // Evil laugh
+            setTimeout(() => {
+                speak('há há há há...', 0.5, 0.3);
+            }, 5000);
+        });
+
+        function showExpired() {
+            document.body.innerHTML = `
+                <div style="height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px;background:#000;">
+                    <div>
+                        <div style="font-size:80px;margin-bottom:30px;">⏰</div>
+                        <h1 style="color:#DC2626;font-size:48px;margin-bottom:20px;font-family:'Cormorant Garamond',serif;">Acesso Expirado</h1>
+                        <p style="color:#A1A1AA;font-size:18px;line-height:1.8;">Este convite exclusivo não é mais válido.<br>Entre em contato para solicitar novo acesso.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // PHASE 1: COMMITMENT
+        // ============================================
+        function goToCommitment() {
+            playTone(440, 0.3);
+            Analytics.track('phase_entered', { phase: 'commitment' });
+            updateProgressDots('commitment');
+
+            transition(() => {
+                document.getElementById('phase-void').style.display = 'none';
+                document.getElementById('phase-commitment').classList.add('active');
+            });
+        }
+
+        let commitmentChecked = false;
+
+        function toggleCommitment() {
+            commitmentChecked = !commitmentChecked;
+            const checkbox = document.getElementById('checkbox-box');
+            const btn = document.getElementById('proceed-btn');
+
+            checkbox.classList.toggle('checked', commitmentChecked);
+            btn.classList.toggle('active', commitmentChecked);
+
+            playTone(commitmentChecked ? 600 : 400, 0.15);
+            Analytics.track('commitment_toggle', { checked: commitmentChecked });
+        }
+
+        // ============================================
+        // PHASE 2: EVOLUTION
+        // ============================================
+        function goToEvolution() {
+            if (!commitmentChecked) return;
+
+            playTone(523, 0.3);
+            speak('Preparando sua jornada de transformação...', 0.9, 0.8);
+            Analytics.track('phase_entered', { phase: 'evolution' });
+            updateProgressDots('evolution');
+
+            transition(() => {
+                document.getElementById('phase-commitment').style.display = 'none';
+                document.getElementById('phase-commitment').classList.remove('active');
+                document.getElementById('phase-evolution').classList.add('active');
+
+                // Animate timeline
+                setTimeout(() => animateTimeline(), 500);
+            });
+        }
+
+        function animateTimeline() {
+            const stages = [
+                document.getElementById('stage-1'),
+                document.getElementById('stage-2'),
+                document.getElementById('stage-3')
+            ];
+            const progress = document.getElementById('timeline-progress');
+            const cta = document.getElementById('evolution-cta');
+
+            stages.forEach((stage, i) => {
+                setTimeout(() => {
+                    stage.classList.add('visible');
+                    playTone(350 + (i * 100), 0.2);
+
+                    setTimeout(() => {
+                        stage.classList.add('active');
+                        progress.style.width = ((i + 1) / stages.length * 100) + '%';
+                    }, 300);
+                }, i * 1200);
+            });
+
+            // Show CTA
+            setTimeout(() => {
+                cta.classList.add('visible');
+            }, stages.length * 1200 + 500);
+        }
+
+        // ============================================
+        // PHASE 3: INVITATION
+        // ============================================
+        function goToInvitation() {
+            playTone(659, 0.3);
+            speak('Você foi selecionado para o extraordinário...', 0.8, 0.7);
+            Analytics.track('phase_entered', { phase: 'invitation' });
+            updateProgressDots('invitation');
+
+            transition(() => {
+                document.getElementById('phase-evolution').style.display = 'none';
+                document.getElementById('phase-evolution').classList.remove('active');
+                document.getElementById('phase-invitation').classList.add('active');
+
+                // Set names
+                document.getElementById('invitation-names').textContent = CONFIG.clientNames;
+            });
+        }
+
+        // ============================================
+        // LOGIN
+        // ============================================
+        function attemptLogin(e) {
+            e.preventDefault();
+
+            const login = document.getElementById('login-input').value.trim();
+            const password = document.getElementById('password-input').value.trim();
+            const errorMsg = document.getElementById('error-msg');
+
+            Analytics.track('login_attempt', { login });
+
+            if (login === CONFIG.login && password === CONFIG.password) {
+                // Success!
+                errorMsg.classList.remove('show');
+                playSuccessChime();
+                speak('Acesso concedido. Bem-vindos ao extraordinário.', 0.9, 0.9);
+
+                Analytics.track('login_success');
+
+                // Visual feedback
+                document.querySelector('.invitation-card').style.transform = 'scale(0.98)';
+                document.querySelector('.invitation-card').style.opacity = '0.7';
+
+                setTimeout(() => {
+                    // Save analytics before redirect
+                    console.log('📊 Final Analytics:', Analytics.getReport());
+                    window.location.href = CONFIG.proposalUrl;
+                }, 2000);
+            } else {
+                // Error
+                errorMsg.classList.add('show');
+                playErrorBuzz();
+                Analytics.track('login_failed');
+
+                // Shake
+                document.querySelector('.login-container').style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    document.querySelector('.login-container').style.animation = '';
+                }, 500);
+            }
+        }
+
+        // ============================================
+        // EASTER EGGS
+        // ============================================
+
+        // Konami Code
+        let konamiBuffer = [];
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+        document.addEventListener('keydown', (e) => {
+            konamiBuffer.push(e.key);
+            konamiBuffer.splice(-konamiCode.length - 1, konamiBuffer.length - konamiCode.length);
+
+            if (konamiBuffer.join('').includes(konamiCode.join(''))) {
+                playSuccessChime();
+                Analytics.track('easter_egg_found', { type: 'konami' });
+
+                alert('🎉 EASTER EGG DESBLOQUEADO!\n\n✨ Código de desconto secreto revelado!\n\nCódigo: EXTRAORDINARIO2025\nDesconto: 5% extra\n\nMencione este código na call de fechamento.');
+
+                // Visual celebration
+                document.body.style.animation = 'rainbow 2s';
+            }
+        });
+
+        // Console Easter Egg
+        console.log('%c✦ BEM-VINDO AOS BASTIDORES DO EXTRAORDINÁRIO ✦', 
+            'color: #C9A962; font-size: 24px; font-weight: bold; text-shadow: 0 0 20px #C9A962;');
+        console.log('%cEsta experiência foi projetada com obsessão pelos detalhes.', 
+            'color: #A1A1AA; font-size: 14px;');
+        console.log('%cDica: Há segredos escondidos para quem explora... 👀', 
+            'color: #C9A962; font-size: 14px;');
+        console.log('%cMencione "DevTools Explorer" na call para ganhar uma surpresa.', 
+            'color: #16A34A; font-size: 12px;');
+    </script>
+</body>
+</html>

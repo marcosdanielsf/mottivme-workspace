@@ -1,0 +1,3704 @@
+{
+  "name": "IG_Linkedin_LeadGen_And_Enrichment",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Leads Search",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Job Title",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Location",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Number of Leads",
+              "fieldType": "number",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "eca593f0-6896-433b-9acd-db2b0fd00f96",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        2020,
+        60
+      ],
+      "webhookId": "28ff6927-5d05-4182-910b-be2381e3b2c4",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "people",
+        "options": {}
+      },
+      "id": "f116177e-f0ed-417c-bfd5-b2e934c93402",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        2460,
+        60
+      ],
+      "typeVersion": 1,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-3.5-turbo",
+          "cachedResultName": "GPT-3.5-TURBO"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=remove the http or https://www.linkedin.com/in/ from this  {{ $json.linkedin_url }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9d22cd73-62c7-46cc-aef7-f370687ea4ff",
+      "name": "OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        2540,
+        300
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "e2290ec3-e68d-4eab-a11c-913da45e24f3",
+      "name": "Google Sheets Trigger2",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "position": [
+        1820,
+        500
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Automated Lead Generation and Enrichment Workflow\n\nDescription: This workflow automates lead generation by collecting job title, location, and lead count via a form, using Apollo.io to fetch leads, and OpenAI to extract LinkedIn usernames. It stores and updates lead data in Google Sheets, validating email addresses and tracking scrape statuses for efficient lead management.\n",
+        "height": 1020,
+        "width": 1820
+      },
+      "id": "c4dcc331-ac75-40e2-bf61-6d77ffa1bde4",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1600,
+        -140
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e3bfe30e-9136-4ac9-b3da-c26eb678153b",
+              "name": "id",
+              "type": "string",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "id": "d45c81fb-1461-45fd-be95-d5d9901d72d7",
+              "name": "name",
+              "type": "string",
+              "value": "={{ $json.name }}"
+            },
+            {
+              "id": "b4b8f660-7758-4a5f-a8f6-dc8ab6355132",
+              "name": "linkedin_url",
+              "type": "string",
+              "value": "={{ $json.linkedin_url }}"
+            },
+            {
+              "id": "399f533a-6e6b-4f40-8ed8-aa5dd39017cd",
+              "name": "title",
+              "type": "string",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "id": "227d34c5-17db-4436-b0c2-f74e5ae453f2",
+              "name": "organization",
+              "type": "string",
+              "value": "={{ $json.employment_history[0].organization_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ed5d76ae-3a5b-4720-856e-c631d06c9da1",
+      "name": "Clean Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2680,
+        60
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "apollo_id": "={{ $('Get Pending Username Row').item.json.apollo_id }}",
+            "linkedin_username": "={{ $json.message.content }}",
+            "extract_username_status": "finished"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "apollo_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "672f6ef2-86b8-463c-8eaa-de3a13310652",
+      "name": "Add Linkedin Username",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2880,
+        300
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "extract_username_status",
+              "lookupValue": "pending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "80ed247d-bead-4c23-8062-4871bd6aa68f",
+      "name": "Get Pending Username Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2300,
+        300
+      ],
+      "executeOnce": true,
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1d99PlHkp9RPeSAtmATgQ4OC4Selcp8JSFLNuKx-n1EQ/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "apollo_id": "={{ $('Get Pending Email Statuses').item.json.apollo_id }}",
+            "email_address": "={{ $json.data.email }}",
+            "contacts_scrape_status": "finished"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "apollo_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "a9f6ed14-836f-4c27-9df2-6bb5de6fba5f",
+      "name": "Add Email Address",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3140,
+        420
+      ],
+      "executeOnce": true,
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "dd16c397-c6f6-4a91-b92c-24a1f24b707f",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              },
+              "leftValue": "={{ $json.data.mx_record }}",
+              "rightValue": "null"
+            },
+            {
+              "id": "bc3200af-7ae4-4944-b410-ebb459e2d927",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "leftValue": "={{ $json.data.result }}",
+              "rightValue": "deliverable"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "ba13da91-a48c-41b4-9141-b3e3d4851096",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2800,
+        500
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1d99PlHkp9RPeSAtmATgQ4OC4Selcp8JSFLNuKx-n1EQ/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "apollo_id": "={{ $('Get Pending Email Statuses').item.json.apollo_id }}",
+            "contacts_scrape_status": "invalid_email"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "apollo_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d22492be-baeb-4107-900e-84b2d6784571",
+      "name": "Mark Invalid Email",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3140,
+        620
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mails.so/v1/validate?email={{ $json.person.email }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-mails-api-key",
+              "value": "83bd75d6-5fd4-4ea9-8554-5e2b1ba90893"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bca04862-5aa5-4b80-8043-cd1d8e7a00ee",
+      "name": "Confirm Email Validity",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2540,
+        500
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "contacts_scrape_status",
+              "lookupValue": "pending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fd17d8a0-8281-4dca-9f5e-ec19283c76b0",
+      "name": "Get Pending Email Statuses",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2060,
+        500
+      ],
+      "executeOnce": true,
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "1e43d5dc-f965-4b9c-8515-85943eb9a8da",
+      "name": "Google Sheets Trigger3",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "position": [
+        1760,
+        980
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## LinkedIn Profile Summary Enrichment Workflow\nThis workflow automates the enrichment of lead data by fetching LinkedIn profile details for records marked as \"pending\" in a Google Sheets document, using the LinkedIn Data API. It cleans and summarizes the profile data with OpenAI, then updates the Google Sheet with the summarized profile and status, marking failed attempts if errors occur.",
+        "height": 700,
+        "width": 1320,
+        "color": 6
+      },
+      "id": "de2b3c01-2111-441c-85d4-6f97fc9d65f9",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1620,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "https://linkedin-data-api.p.rapidapi.com/get-profile-posts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "username",
+              "value": "={{ $json.linkedin_username }}"
+            },
+            {
+              "name": "start",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "linkedin-data-api.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "faf88fbfc9msh9af1ccc8b3e2f05p11283cjsnc5302b552c5e"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f56c6821-cc8d-4ed6-b1ea-828add3cc0a0",
+      "name": "Get Profile Posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "maxTries": 2,
+      "position": [
+        2440,
+        1820
+      ],
+      "retryOnFail": true,
+      "typeVersion": 4.2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://linkedin-data-api.p.rapidapi.com",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "username",
+              "value": "={{ $json.linkedin_username }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "linkedin-data-api.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "faf88fbfc9msh9af1ccc8b3e2f05p11283cjsnc5302b552c5e"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "81c072a8-e712-4158-88a7-00c7e4dcf535",
+      "name": "Get About Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "maxTries": 2,
+      "position": [
+        2560,
+        980
+      ],
+      "retryOnFail": true,
+      "typeVersion": 4.2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "profile_summary_scrape",
+              "lookupValue": "pending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "812d99ff-74bd-467c-a548-a9c890022bab",
+      "name": "Get Pending About and Posts Rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2020,
+        980
+      ],
+      "executeOnce": true,
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  summary: $json.summary || null,\n  headline: $json.headline || null,\n  nationality: $json.geo?.country || null,\n  language: $json.languages?.[0]?.name || null,\n  education: $json.educations?.[0]?.schoolName || null,\n  fieldOfStudy: $json.educations?.[0]?.fieldOfStudy || null,\n  employment_company: $json.position?.[0]?.companyName || null,\n  company_industry: $json.position?.[0]?.companyIndustry || null,\n  position: $json.position?.[0]?.title || null,\n  company_location: $json.position?.[0]?.location || null,\n  employment_description_1: $json.position?.[0]?.description || null,\n};\n"
+      },
+      "id": "6ca483aa-725e-4c10-832b-3feb9929ec0f",
+      "name": "Clean Profile Data",
+      "type": "n8n-nodes-base.code",
+      "maxTries": 2,
+      "position": [
+        1740,
+        1280
+      ],
+      "retryOnFail": true,
+      "typeVersion": 2,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "fc2eeb33-6891-492d-9d3f-e6b78ec39313",
+      "name": "Google Sheets Trigger4",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "position": [
+        1720,
+        1820
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "posts_scrape_status",
+              "lookupValue": "unscraped"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "15b1db63-daf0-482c-831c-40df907f77f5",
+      "name": "Get Pending About and Posts Rows1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1960,
+        1820
+      ],
+      "executeOnce": true,
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const data = $json.data || [];\n\nfunction getText(post, reshared = false) {\n  if (!post) return \"\";\n  return reshared ? (post.resharedPost?.text || \"\") : (post.text || \"\");\n}\n\nfunction getDate(post) {\n  if (!post) return \"\";\n  return post.postedDate || post.postedDateTimestamp || \"\";\n}\n\nreturn {\n  json: {\n    post_1: getText(data[0]),\n    post_1_date: getDate(data[0]),\n\n    post_2: getText(data[1]),\n    post_2_date: getDate(data[1]),\n\n    post_3: getText(data[2]),\n    post_3_date: getDate(data[2]),\n\n    \n  }\n};\n"
+      },
+      "id": "949f83c7-8b90-48ec-af4f-a6d041479e5c",
+      "name": "Clean Posts Data",
+      "type": "n8n-nodes-base.code",
+      "maxTries": 2,
+      "position": [
+        2720,
+        1820
+      ],
+      "retryOnFail": true,
+      "typeVersion": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "## LinkedIn Posts Scraping and Lead Enrichment Workflow\nThis workflow retrieves recent LinkedIn posts for leads marked \"unscraped\" in a Google Sheet, using the LinkedIn Data API, and summarizes them with OpenAI to enhance lead profiles for personalized outreach. It updates the Google Sheet with post summaries, tracks failed attempts, and transfers fully enriched profiles (with validated emails, profile summaries, and post summaries) to a separate Enriched Leads Database.",
+        "height": 560,
+        "width": 2420,
+        "color": 4
+      },
+      "id": "bb97e8c4-c166-4334-8cb4-c1ffc2ba0c00",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1580,
+        1600
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "bd1ec937-284a-48a3-a2f6-ca21571c710e",
+      "name": "Google Sheets Trigger5",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "position": [
+        3000,
+        2340
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 4,
+              "triggerAtDay": [
+                2
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "4354cd37-56ae-440d-b1b2-99880d193f70",
+      "name": "Schedule Trigger2",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        3920,
+        260
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "contacts_scrape_status",
+              "lookupValue": "invalid_email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5986580d-d658-462b-bcf0-3ed88067ece1",
+      "name": "get invalid email rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        4160,
+        1100
+      ],
+      "executeOnce": true,
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1d99PlHkp9RPeSAtmATgQ4OC4Selcp8JSFLNuKx-n1EQ/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "apollo_id": "={{ $json.apollo_id }}",
+            "contacts_scrape_status": "pending"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "apollo_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "690e0b55-b8b4-47ea-9854-78b7f9e85abf",
+      "name": "update_to_pending",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        4380,
+        1100
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "profile_summary_scrape",
+              "lookupValue": "failed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5e741ccf-296d-4c45-ad65-6464bb918da1",
+      "name": "get_failed_profile_summary_rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        4140,
+        260
+      ],
+      "executeOnce": true,
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1d99PlHkp9RPeSAtmATgQ4OC4Selcp8JSFLNuKx-n1EQ/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "apollo_id": "={{ $json.apollo_id }}",
+            "profile_summary_scrape": "pending"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "apollo_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "819f89d2-d1ea-4aef-bdcd-a403c603be65",
+      "name": "update_to_pending1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        4360,
+        260
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 4,
+              "triggerAtDay": [
+                2
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "c54959a1-3e2c-47f1-ab68-97c0f311cd77",
+      "name": "Schedule Trigger3",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        3980,
+        720
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "posts_scrape_status",
+              "lookupValue": "failed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0757dbe0-92b5-4a4b-a99b-d7b1fed1090b",
+      "name": "get_failed_posts_summary_rows1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        4200,
+        720
+      ],
+      "executeOnce": true,
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-3.5-turbo",
+          "cachedResultName": "GPT-3.5-TURBO"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Below are the most recent posts and reposts from a LinkedIn user. Summarize them collectively in no more than two short paragraphs. Focus on capturing the main themes, tone, and any recurring interests or professional concerns.\n\nAvoid listing each post separately — instead, synthesize the information into a narrative that gives a clear idea of what this person is currently focused on or passionate about.\n\nPosts: {{ $json.postsString }}\n\nKeep it insightful but brief — no more than 2 concise paragraphs."
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {}
+      },
+      "id": "d295f3c0-d406-4a6f-a808-29febf9bef30",
+      "name": "Posts AI Summarizer",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        3360,
+        1740
+      ],
+      "executeOnce": false,
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-3.5-turbo",
+          "cachedResultName": "GPT-3.5-TURBO"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Please summarize the following linkedin profile data {{ $json.profileString }} for a lead I want to cold email. I want to combine this summary with another information about them to send personalied emails, so please make sure you include relevant bits in the summary"
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {}
+      },
+      "id": "ea375658-8076-4f1a-989d-821c442222ef",
+      "name": "AI Profile Summarizer",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        2220,
+        1200
+      ],
+      "executeOnce": false,
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "apollo_id": "={{ $('Get Pending About and Posts Rows').item.json.apollo_id }}",
+            "about_linkedin_profile": "={{ $json.choices[0].message.content }}",
+            "profile_summary_scrape": "completed"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "apollo_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f63d1b38-7e59-4105-9534-63d1aa902a6b",
+      "name": "Update Profile Summary",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2700,
+        1200
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "apollo_id": "={{ $('Get Pending About and Posts Rows1').item.json.apollo_id }}",
+            "posts_scrape_status": "scraped",
+            "recent_posts_summary": "={{ $json.choices[0].message.content }}"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "apollo_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "5b1c4d8c-e5d1-4539-a71e-ffbbbdc36e79",
+      "name": "Update Posts Summary",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3820,
+        1740
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "contacts_scrape_status",
+              "lookupValue": "finished"
+            },
+            {
+              "lookupColumn": "profile_summary_scrape",
+              "lookupValue": "completed"
+            },
+            {
+              "lookupColumn": "posts_scrape_status",
+              "lookupValue": "scraped"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "51c4a6cb-9977-41c7-9fb2-f8596e943a30",
+      "name": "Get Completely Enriched Profiles",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3220,
+        2340
+      ],
+      "executeOnce": true,
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1d99PlHkp9RPeSAtmATgQ4OC4Selcp8JSFLNuKx-n1EQ/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "apollo_id": "={{ $json.apollo_id }}",
+            "posts_scrape_status": "unscraped"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "apollo_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "a31c0d79-5e02-416a-80ad-34c931238517",
+      "name": "update_to_unscraped",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        4400,
+        720
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1npW6ZR6a7hDhxXcKUPPSRfE9em9ZZ2-qiOxmbscYnjc",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1npW6ZR6a7hDhxXcKUPPSRfE9em9ZZ2-qiOxmbscYnjc/edit?usp=drivesdk",
+          "cachedResultName": "Enriched Leads Database"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1npW6ZR6a7hDhxXcKUPPSRfE9em9ZZ2-qiOxmbscYnjc/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "Position": "={{ $json.title }}",
+            "Lead Name": "={{ $json.name }}",
+            "Email Address": "={{ $json.email_address }}",
+            "Company/Organization": "={{ $json.organization }}",
+            "Recent Posts Summary": "={{ $json.recent_posts_summary }}",
+            "Linkedin Profile Summary": "={{ $json.about_linkedin_profile }}"
+          },
+          "schema": [
+            {
+              "id": "Lead Name",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Lead Name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email Address",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Email Address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company/Organization",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Company/Organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Position",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Position",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin Profile Summary",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Linkedin Profile Summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Recent Posts Summary",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Recent Posts Summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Email Address"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "8604aa88-ecd7-4d20-9719-523a42903da1",
+      "name": "Append to Enriched Leads Database",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3420,
+        2340
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "apollo_id": "={{ $('Get Pending About and Posts Rows').item.json.apollo_id }}",
+            "profile_summary_scrape": "failed"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "apollo_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "8ecfe93b-33eb-4054-bbf9-49eb3da6691b",
+      "name": "update status to failed",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2000,
+        1360
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Xv9-U2Em_C-M5qTGCZGpSM9HJcchBQGKU6PQusLJEcM/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1d99PlHkp9RPeSAtmATgQ4OC4Selcp8JSFLNuKx-n1EQ/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "apollo_id": "={{ $('Get Pending About and Posts Rows1').item.json.apollo_id }}",
+            "posts_scrape_status": "failed"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "apollo_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b03602ee-5539-4add-8a08-b5fd4847d323",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3120,
+        1900
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const profile = item.json;\n\nreturn {\n  json: {\n    profileString: JSON.stringify(profile, null, 2) // Pretty print with 2-space indentation\n  }\n};"
+      },
+      "id": "a02961c1-b98d-4ef2-9dc4-a879e814430c",
+      "name": "Stringify Profile Data1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2000,
+        1200
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const profile = item.json;\n\nreturn {\n  json: {\n    postsString: JSON.stringify(profile, null, 2) // Pretty print with 2-space indentation\n  }\n};"
+      },
+      "id": "3820cb0c-bd27-46bd-be2d-d47f5652e68a",
+      "name": "Stringify Posts Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        3120,
+        1740
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 4,
+              "triggerAtDay": [
+                2
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "c907ff7b-59be-4123-a0a0-b4b28e6067c4",
+      "name": "Schedule Trigger1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        3940,
+        1100
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.apollo.io/api/v1/mixed_people/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "\"your-api_key_here\""
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"person_locations\": [\"{{ $json.Location }}\"],\n  \"person_titles\": [\"{{ $json['Job Title'] }}\"],\n  \"page\": 1,\n  \"per_page\": {{$json['Number of Leads']}},\n  \"projection\": [\"id\", \"name\", \"linkedin_url\", \"title\"]\n}",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "id": "38212c9a-85c1-401e-9d43-5cd8f832701a",
+      "name": "Generate Leads with Apollo.io1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2260,
+        60
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "value": {
+            "name": "={{ $json.name }}",
+            "title": "={{ $json.title }}",
+            "apollo_id": "={{ $json.id }}",
+            "linkedin_url": "={{ $json.linkedin_url }}",
+            "organization": "={{ $json.organization }}",
+            "posts_scrape_status": "pending",
+            "contacts_scrape_status": "pending",
+            "profile_summary_scrape": "pending",
+            "extract_username_status": "pending"
+          },
+          "schema": [
+            {
+              "id": "apollo_id",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "apollo_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "organization",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_url",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "linkedin_url",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "linkedin_username",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "linkedin_username",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extract_username_status",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "extract_username_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_address",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "email_address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contacts_scrape_status",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "contacts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "about_linkedin_profile",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "about_linkedin_profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "profile_summary_scrape",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "profile_summary_scrape",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recent_posts_summary",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "recent_posts_summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "posts_scrape_status",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "posts_scrape_status",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "7a114a7f-7dba-42eb-a8c1-abe43dc6465f",
+      "name": "Add Leads to Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2880,
+        60
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "url": "=https://blessed-gently-stag.ngrok-free.app/contacts",
+        "options": {}
+      },
+      "id": "64b9a127-f590-46ae-9243-729afcb50f7f",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2320,
+        4960
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apollo.io/api/v1/people/match",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "reveal_personal_emails",
+              "value": "true"
+            },
+            {
+              "name": "reveal_phone_number",
+              "value": "false"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "x-api-key",
+              "value": "\"your_api_key\""
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $json.apollo_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1d455b70-09b4-4218-bde0-85ed84b66db4",
+      "name": "Get Email from Apollo11",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2280,
+        500
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "maxItems": 2
+      },
+      "id": "320d6fc6-9606-412b-a480-38c394e16463",
+      "name": "Limit",
+      "type": "n8n-nodes-base.limit",
+      "position": [
+        2240,
+        980
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "maxItems": 8
+      },
+      "id": "344853ad-ed80-42e2-9520-77ad776d2b3e",
+      "name": "Limit1",
+      "type": "n8n-nodes-base.limit",
+      "position": [
+        2180,
+        1820
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Update Completely Enriched Profile to Final Database",
+        "height": 360,
+        "width": 960,
+        "color": 4
+      },
+      "id": "3ca13a98-67a1-4d04-b88d-97cfb71141ec",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2860,
+        2220
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Update posts summary status from failed back to pending",
+        "height": 360,
+        "width": 800,
+        "color": 7
+      },
+      "id": "5b0ac4fb-d127-481b-9f9d-f89206bf0bd8",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3840,
+        580
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Update Contact Scrape Status from Invalid back to Pending",
+        "height": 360,
+        "width": 800,
+        "color": 5
+      },
+      "id": "f7817c03-dc35-48c8-ab81-3852ebac424b",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3840,
+        1020
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit?usp=drivesdk",
+          "cachedResultName": "Apollo.ai leads and enrichment"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iGBmgNtQ1FOfEKQ2WvQIjzd0YMa800Ir43Rp0Tm7bBE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "deff0dfa-38d4-49c7-848c-baf3ad8d7ba4",
+      "name": "Google Sheets Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "position": [
+        2060,
+        300
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Update profile summary status from failed back to pending",
+        "height": 360,
+        "width": 820,
+        "color": 6
+      },
+      "id": "81e79bbb-85bb-41c2-85cb-4c687b2d6044",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3800,
+        140
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Scheduled Lead Status Reset Workflow\nThis workflow runs on a schedule every four weeks to identify Google Sheets rows with invalid email addresses or failed post summary scrapes. It updates the status of these rows to \"pending\" for email revalidation and \"unscraped\" for post rescraping, enabling automated retry attempts for lead enrichment.",
+        "height": 1540,
+        "width": 1280,
+        "color": 4
+      },
+      "id": "51b4f4fb-bb0a-4398-baac-dd05bbfc077e",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3520,
+        -40
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Add Email Address",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Invalid Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Get About Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Get Profile Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "main": [
+        [
+          {
+            "node": "Add Linkedin Username",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Clean Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Data": {
+      "main": [
+        [
+          {
+            "node": "Add Leads to Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Posts Data": {
+      "main": [
+        [
+          {
+            "node": "Stringify Posts Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get About Profile": {
+      "main": [
+        [
+          {
+            "node": "Clean Profile Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Profile Posts": {
+      "main": [
+        [
+          {
+            "node": "Clean Posts Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "get invalid email rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger2": {
+      "main": [
+        [
+          {
+            "node": "get_failed_profile_summary_rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger3": {
+      "main": [
+        [
+          {
+            "node": "get_failed_posts_summary_rows1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Profile Data": {
+      "main": [
+        [
+          {
+            "node": "Stringify Profile Data1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "update status to failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Generate Leads with Apollo.io1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Posts AI Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Update Posts Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stringify Posts Data": {
+      "main": [
+        [
+          {
+            "node": "Posts AI Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Profile Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Update Profile Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Pending Username Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Email Validity": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Get Pending Email Statuses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger3": {
+      "main": [
+        [
+          {
+            "node": "Get Pending About and Posts Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger4": {
+      "main": [
+        [
+          {
+            "node": "Get Pending About and Posts Rows1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger5": {
+      "main": [
+        [
+          {
+            "node": "Get Completely Enriched Profiles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get invalid email rows": {
+      "main": [
+        [
+          {
+            "node": "update_to_pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Email from Apollo11": {
+      "main": [
+        [
+          {
+            "node": "Confirm Email Validity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stringify Profile Data1": {
+      "main": [
+        [
+          {
+            "node": "AI Profile Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pending Username Row": {
+      "main": [
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pending Email Statuses": {
+      "main": [
+        [
+          {
+            "node": "Get Email from Apollo11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Leads with Apollo.io1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_failed_posts_summary_rows1": {
+      "main": [
+        [
+          {
+            "node": "update_to_unscraped",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_failed_profile_summary_rows": {
+      "main": [
+        [
+          {
+            "node": "update_to_pending1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Completely Enriched Profiles": {
+      "main": [
+        [
+          {
+            "node": "Append to Enriched Leads Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pending About and Posts Rows": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pending About and Posts Rows1": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e3c6805b-38fe-4917-b09d-27d38e03ced6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "32e39908afbcb49d79cc3b05576c030ecc2871395b7aec4e0fdc88778498f80e"
+  },
+  "id": "meHdcNMkXWyHq21a",
+  "tags": []
+}

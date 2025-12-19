@@ -1,0 +1,492 @@
+/* ===================================
+   MOTTIVME DESIGN SYSTEM v2.0
+   Portal de Experiência Imersiva
+   =================================== */
+
+/* ===================================
+   1. TIPOGRAFIA
+   Base: 16px | Escala: 1.25 (Major Third)
+   =================================== */
+
+:root {
+    /* Tamanhos de Fonte (Escala 1.25) */
+    --tipo-1: 12px;    /* 0.75rem - Small text, captions */
+    --tipo-2: 15px;    /* 0.9375rem - Body small */
+    --tipo-3: 18px;    /* 1.125rem - Body regular */
+    --tipo-4: 24px;    /* 1.5rem - H4, Large text */
+    --tipo-5: 30px;    /* 1.875rem - H3 */
+    --tipo-6: 37px;    /* 2.3125rem - H2 */
+    --tipo-7: 46px;    /* 2.875rem - H1 */
+    --tipo-8: 58px;    /* 3.625rem - Hero title */
+    --tipo-9: 72px;    /* 4.5rem - Display */
+
+    /* Pesos de Fonte */
+    --peso-light: 300;
+    --peso-regular: 400;
+    --peso-semibold: 600;
+    --peso-bold: 700;
+
+    /* Alturas de Linha */
+    --altura-titulo: 1.2;
+    --altura-ui: 1.4;
+    --altura-corpo: 1.5;
+    --altura-relaxado: 1.6;
+
+    /* Espaçamento de Letras */
+    --espacamento-apertado: -0.02em;  /* Display/Hero */
+    --espacamento-normal: 0;          /* Body */
+    --espacamento-largo: 0.05em;      /* Small caps/UI */
+    --espacamento-muito-largo: 0.1em; /* Uppercase labels */
+
+    /* ===================================
+       2. CORES - Sistema Completo
+       Base: Gold (#D4AF37) + Electric Blue (#58A6FF)
+       =================================== */
+
+    /* Cores Primárias - Gold (Exclusividade) */
+    --gold-50: #FFFDF7;
+    --gold-100: #FFF8E1;
+    --gold-200: #FFEDB3;
+    --gold-300: #FFE085;
+    --gold-400: #ECC94B;
+    --gold-500: #D4AF37;  /* Base */
+    --gold-600: #B8942F;
+    --gold-700: #9C7A27;
+    --gold-800: #7D621F;
+    --gold-900: #5E4917;
+
+    /* Cores Secundárias - Blue (Confiança) */
+    --blue-50: #F0F9FF;
+    --blue-100: #E0F2FE;
+    --blue-200: #B9E6FE;
+    --blue-300: #7DD3FC;
+    --blue-400: #58A6FF;  /* Base */
+    --blue-500: #3B82F6;
+    --blue-600: #2563EB;
+    --blue-700: #1D4ED8;
+    --blue-800: #1E40AF;
+    --blue-900: #1E3A8A;
+
+    /* Cores Semânticas */
+    --success-50: #F0FDF4;
+    --success-500: #3FB950;
+    --success-700: #15803D;
+
+    --error-50: #FEF2F2;
+    --error-500: #F85149;
+    --error-700: #DC2626;
+
+    --warning-50: #FFFBEB;
+    --warning-500: #D29922;
+    --warning-700: #B45309;
+
+    /* Cores Neutras - Dark Mode */
+    --neutral-0: #FFFFFF;
+    --neutral-50: #F9FAFB;
+    --neutral-100: #F3F4F6;
+    --neutral-200: #E5E7EB;
+    --neutral-300: #D1D5DB;
+    --neutral-400: #9CA3AF;
+    --neutral-500: #8B949E;  /* Text secondary */
+    --neutral-600: #6E7681;
+    --neutral-700: #4B5563;
+    --neutral-800: #30363D;  /* Border */
+    --neutral-900: #161B22;  /* Card background */
+    --neutral-950: #0D1117;  /* Primary background */
+    --neutral-1000: #000000;
+
+    /* Cores de Texto (WCAG AA Compliant) */
+    --text-primary: var(--neutral-0);      /* Contraste: 21:1 */
+    --text-secondary: var(--neutral-500);  /* Contraste: 7.5:1 */
+    --text-tertiary: var(--neutral-600);   /* Contraste: 4.5:1 */
+    --text-disabled: var(--neutral-700);   /* Contraste: 3:1 */
+    --text-inverse: var(--neutral-950);
+
+    /* Cores de Background */
+    --bg-primary: var(--neutral-1000);
+    --bg-secondary: var(--neutral-950);
+    --bg-tertiary: var(--neutral-900);
+    --bg-card: var(--neutral-900);
+    --bg-card-hover: rgba(255, 255, 255, 0.05);
+    --bg-overlay: rgba(0, 0, 0, 0.8);
+
+    /* Cores de Borda */
+    --border-primary: var(--neutral-800);
+    --border-secondary: rgba(255, 255, 255, 0.1);
+    --border-focus: var(--gold-500);
+
+    /* ===================================
+       3. ESPAÇAMENTO
+       Base: 4px/8px System
+       =================================== */
+
+    --space-0: 0;
+    --space-1: 4px;    /* 0.25rem */
+    --space-2: 8px;    /* 0.5rem */
+    --space-3: 12px;   /* 0.75rem */
+    --space-4: 16px;   /* 1rem */
+    --space-5: 20px;   /* 1.25rem */
+    --space-6: 24px;   /* 1.5rem */
+    --space-8: 32px;   /* 2rem */
+    --space-10: 40px;  /* 2.5rem */
+    --space-12: 48px;  /* 3rem */
+    --space-16: 64px;  /* 4rem */
+    --space-20: 80px;  /* 5rem */
+    --space-24: 96px;  /* 6rem */
+    --space-32: 128px; /* 8rem */
+
+    /* ===================================
+       4. RAIOS DE BORDA
+       =================================== */
+
+    --radius-none: 0;
+    --radius-sm: 2px;
+    --radius-base: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-full: 9999px;
+
+    /* ===================================
+       5. SOMBRAS
+       Elevação: 0 (flat) → 5 (floating)
+       =================================== */
+
+    --shadow-0: none;
+    --shadow-1: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-3: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-4: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-5: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+    /* Sombras Especiais */
+    --shadow-gold: 0 10px 40px rgba(212, 175, 55, 0.3);
+    --shadow-blue: 0 10px 40px rgba(88, 166, 255, 0.3);
+    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+    /* ===================================
+       6. TRANSIÇÕES
+       =================================== */
+
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* ===================================
+       7. Z-INDEX
+       Sistema de Camadas
+       =================================== */
+
+    --z-base: 0;
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+
+    /* ===================================
+       8. BREAKPOINTS
+       Mobile First
+       =================================== */
+
+    --bp-sm: 640px;
+    --bp-md: 768px;
+    --bp-lg: 1024px;
+    --bp-xl: 1280px;
+    --bp-2xl: 1536px;
+
+    /* ===================================
+       9. COMPONENTES - DIMENSÕES
+       =================================== */
+
+    /* Botões */
+    --btn-height-sm: 32px;
+    --btn-height-base: 40px;
+    --btn-height-lg: 48px;
+    --btn-height-xl: 56px;
+
+    --btn-padding-x-sm: var(--space-4);
+    --btn-padding-x-base: var(--space-6);
+    --btn-padding-x-lg: var(--space-8);
+
+    /* Inputs */
+    --input-height-sm: 32px;
+    --input-height-base: 40px;
+    --input-height-lg: 48px;
+
+    --input-padding-x: var(--space-4);
+    --input-padding-y: var(--space-3);
+
+    /* Ícones */
+    --icon-xs: 12px;
+    --icon-sm: 16px;
+    --icon-base: 20px;
+    --icon-md: 24px;
+    --icon-lg: 32px;
+    --icon-xl: 40px;
+
+    /* Cards */
+    --card-padding-sm: var(--space-4);
+    --card-padding-base: var(--space-6);
+    --card-padding-lg: var(--space-8);
+    --card-padding-xl: var(--space-12);
+
+    /* ===================================
+       10. GRADIENTES
+       =================================== */
+
+    --gradient-gold: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-400) 100%);
+    --gradient-blue: linear-gradient(135deg, var(--blue-500) 0%, var(--blue-400) 100%);
+    --gradient-premium: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-400) 50%, var(--blue-400) 100%);
+    --gradient-dark: linear-gradient(135deg, var(--neutral-1000) 0%, var(--neutral-950) 100%);
+    --gradient-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+}
+
+/* ===================================
+   CLASSES UTILITÁRIAS
+   =================================== */
+
+/* Tipografia */
+.tipo-1 { font-size: var(--tipo-1); }
+.tipo-2 { font-size: var(--tipo-2); }
+.tipo-3 { font-size: var(--tipo-3); }
+.tipo-4 { font-size: var(--tipo-4); }
+.tipo-5 { font-size: var(--tipo-5); }
+.tipo-6 { font-size: var(--tipo-6); }
+.tipo-7 { font-size: var(--tipo-7); }
+.tipo-8 { font-size: var(--tipo-8); }
+.tipo-9 { font-size: var(--tipo-9); }
+
+.peso-light { font-weight: var(--peso-light); }
+.peso-regular { font-weight: var(--peso-regular); }
+.peso-semibold { font-weight: var(--peso-semibold); }
+.peso-bold { font-weight: var(--peso-bold); }
+
+.altura-titulo { line-height: var(--altura-titulo); }
+.altura-ui { line-height: var(--altura-ui); }
+.altura-corpo { line-height: var(--altura-corpo); }
+
+/* Espaçamento */
+.p-0 { padding: var(--space-0); }
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+.p-8 { padding: var(--space-8); }
+.p-12 { padding: var(--space-12); }
+
+.m-0 { margin: var(--space-0); }
+.m-2 { margin: var(--space-2); }
+.m-4 { margin: var(--space-4); }
+.m-6 { margin: var(--space-6); }
+.m-8 { margin: var(--space-8); }
+
+/* Cores de Texto */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-gold { color: var(--gold-500); }
+.text-blue { color: var(--blue-400); }
+
+/* Backgrounds */
+.bg-primary { background: var(--bg-primary); }
+.bg-card { background: var(--bg-card); }
+.bg-gold { background: var(--gold-500); }
+
+/* Bordas */
+.border { border: 1px solid var(--border-primary); }
+.border-gold { border-color: var(--gold-500); }
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+/* Sombras */
+.shadow-1 { box-shadow: var(--shadow-1); }
+.shadow-2 { box-shadow: var(--shadow-2); }
+.shadow-3 { box-shadow: var(--shadow-3); }
+.shadow-gold { box-shadow: var(--shadow-gold); }
+
+/* Transições */
+.transition { transition: all var(--transition-base); }
+.transition-fast { transition: all var(--transition-fast); }
+
+/* ===================================
+   COMPONENTES BASE
+   =================================== */
+
+/* Botões Padronizados */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    height: var(--btn-height-base);
+    padding: 0 var(--btn-padding-x-base);
+    font-size: var(--tipo-3);
+    font-weight: var(--peso-semibold);
+    line-height: var(--altura-ui);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-sm {
+    height: var(--btn-height-sm);
+    padding: 0 var(--btn-padding-x-sm);
+    font-size: var(--tipo-2);
+}
+
+.btn-lg {
+    height: var(--btn-height-lg);
+    padding: 0 var(--btn-padding-x-lg);
+    font-size: var(--tipo-4);
+}
+
+.btn-xl {
+    height: var(--btn-height-xl);
+    padding: 0 var(--space-10);
+    font-size: var(--tipo-4);
+}
+
+.btn-primary {
+    background: var(--gradient-gold);
+    color: var(--text-inverse);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-gold);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--gold-500);
+    border: 2px solid var(--gold-500);
+}
+
+.btn-secondary:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* Inputs Padronizados */
+.input {
+    width: 100%;
+    height: var(--input-height-base);
+    padding: var(--input-padding-y) var(--input-padding-x);
+    font-size: var(--tipo-3);
+    font-weight: var(--peso-regular);
+    line-height: var(--altura-ui);
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--gold-500);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.input::placeholder {
+    color: var(--text-tertiary);
+}
+
+/* Cards Padronizados */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-xl);
+    padding: var(--card-padding-lg);
+    transition: all var(--transition-base);
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold-500);
+    box-shadow: var(--shadow-gold);
+}
+
+/* Labels */
+.label {
+    display: block;
+    font-size: var(--tipo-1);
+    font-weight: var(--peso-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--espacamento-muito-largo);
+    color: var(--gold-500);
+    margin-bottom: var(--space-2);
+}
+
+/* Badge */
+.badge {
+    display: inline-block;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--tipo-1);
+    font-weight: var(--peso-bold);
+    letter-spacing: var(--espacamento-largo);
+    text-transform: uppercase;
+    border-radius: var(--radius-full);
+    background: var(--gold-500);
+    color: var(--text-inverse);
+}
+
+/* ===================================
+   RESPONSIVE
+   =================================== */
+
+@media (max-width: 768px) {
+    :root {
+        --tipo-7: 37px;  /* H1 menor no mobile */
+        --tipo-8: 46px;  /* Hero menor */
+        --tipo-9: 58px;  /* Display menor */
+    }
+
+    .btn-lg {
+        height: var(--btn-height-base);
+        font-size: var(--tipo-3);
+    }
+}
+
+/* ===================================
+   ACESSIBILIDADE
+   =================================== */
+
+/* Focus visible para teclado */
+*:focus-visible {
+    outline: 2px solid var(--gold-500);
+    outline-offset: 2px;
+}
+
+/* Redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+    :root {
+        --text-secondary: var(--neutral-300);
+        --border-primary: var(--neutral-600);
+    }
+}

@@ -1,0 +1,201 @@
+{
+  "name": "[UTIL] Verificar Tabelas do Banco",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "id": "trigger",
+      "name": "Executar Verificação"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Verificação completa das tabelas\nSELECT \n  table_name,\n  (SELECT COUNT(*) FROM information_schema.columns WHERE columns.table_name = tables.table_name) as colunas\nFROM information_schema.tables \nWHERE table_schema = 'public' \nAND table_type = 'BASE TABLE'\nAND table_name IN (\n  'fin_clientes_fornecedores',\n  'fin_categorias', \n  'fin_centros_custo',\n  'fin_movimentacoes',\n  'parcelamentos',\n  'fin_recorrencias',\n  'fin_contas_bancarias',\n  'extrato_bancario',\n  'contratos',\n  'orcamentos'\n)\nORDER BY table_name;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [460, 200],
+      "id": "check-tabelas",
+      "name": "Verificar Tabelas",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-bpo",
+          "name": "Supabase - BPO Financeiro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Verificar views\nSELECT table_name as view_name\nFROM information_schema.views\nWHERE table_schema = 'public'\nAND table_name IN (\n  'vw_dashboard_kpis',\n  'vw_dre_mensal',\n  'vw_orcamento_realizado'\n)\nORDER BY table_name;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [460, 400],
+      "id": "check-views",
+      "name": "Verificar Views",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-bpo",
+          "name": "Supabase - BPO Financeiro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Contagem de registros\nSELECT 'fin_clientes_fornecedores' as tabela, COUNT(*)::text as registros FROM fin_clientes_fornecedores\nUNION ALL SELECT 'fin_categorias', COUNT(*)::text FROM fin_categorias\nUNION ALL SELECT 'fin_centros_custo', COUNT(*)::text FROM fin_centros_custo\nUNION ALL SELECT 'fin_movimentacoes', COUNT(*)::text FROM fin_movimentacoes\nORDER BY tabela;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [460, 600],
+      "id": "check-contagem",
+      "name": "Contar Registros",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-bpo",
+          "name": "Supabase - BPO Financeiro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Verificar colunas de fin_clientes_fornecedores\nSELECT column_name, data_type, is_nullable\nFROM information_schema.columns\nWHERE table_name = 'fin_clientes_fornecedores'\nORDER BY ordinal_position;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [680, 200],
+      "id": "check-colunas-clientes",
+      "name": "Colunas Clientes",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-bpo",
+          "name": "Supabase - BPO Financeiro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Verificar colunas de fin_movimentacoes\nSELECT column_name, data_type, is_nullable\nFROM information_schema.columns\nWHERE table_name = 'fin_movimentacoes'\nORDER BY ordinal_position;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [680, 400],
+      "id": "check-colunas-mov",
+      "name": "Colunas Movimentações",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-bpo",
+          "name": "Supabase - BPO Financeiro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Testar view dashboard\nSELECT * FROM vw_dashboard_kpis;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [680, 600],
+      "id": "test-view-dashboard",
+      "name": "Testar Dashboard KPIs",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-bpo",
+          "name": "Supabase - BPO Financeiro"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 6
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [900, 400],
+      "id": "merge",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Consolidar resultados da verificação\nconst items = $input.all();\n\n// Separar dados por tipo\nconst tabelas = items.filter(i => i.json.table_name && i.json.colunas);\nconst views = items.filter(i => i.json.view_name);\nconst contagens = items.filter(i => i.json.tabela && i.json.registros);\nconst colunasClientes = items.filter(i => i.json.column_name && !i.json.tabela);\nconst dashboard = items.find(i => i.json.receitas_mes_atual !== undefined);\n\n// Tabelas esperadas\nconst tabelasEsperadas = [\n  'fin_clientes_fornecedores',\n  'fin_categorias',\n  'fin_centros_custo',\n  'fin_movimentacoes',\n  'parcelamentos',\n  'fin_recorrencias',\n  'fin_contas_bancarias',\n  'extrato_bancario',\n  'contratos',\n  'orcamentos'\n];\n\nconst viewsEsperadas = [\n  'vw_dashboard_kpis',\n  'vw_dre_mensal',\n  'vw_orcamento_realizado'\n];\n\nconst tabelasEncontradas = tabelas.map(t => t.json.table_name);\nconst viewsEncontradas = views.map(v => v.json.view_name);\n\nconst tabelasFaltando = tabelasEsperadas.filter(t => !tabelasEncontradas.includes(t));\nconst viewsFaltando = viewsEsperadas.filter(v => !viewsEncontradas.includes(v));\n\n// Diagnóstico\nconst diagnostico = {\n  titulo: '📊 DIAGNÓSTICO DO BANCO DE DADOS',\n  data_verificacao: new Date().toLocaleString('pt-BR'),\n  \n  resumo: {\n    tabelas_ok: tabelasEncontradas.length,\n    tabelas_faltando: tabelasFaltando.length,\n    views_ok: viewsEncontradas.length,\n    views_faltando: viewsFaltando.length,\n    status_geral: tabelasFaltando.length === 0 && viewsFaltando.length === 0 \n      ? '✅ BANCO OK' \n      : '⚠️ REQUER ATENÇÃO'\n  },\n  \n  tabelas: {\n    encontradas: tabelas.map(t => ({\n      nome: t.json.table_name,\n      colunas: t.json.colunas,\n      status: '✅'\n    })),\n    faltando: tabelasFaltando.map(t => ({ nome: t, status: '❌' }))\n  },\n  \n  views: {\n    encontradas: viewsEncontradas.map(v => ({ nome: v, status: '✅' })),\n    faltando: viewsFaltando.map(v => ({ nome: v, status: '❌' }))\n  },\n  \n  contagem_registros: contagens.map(c => ({\n    tabela: c.json.tabela,\n    registros: c.json.registros\n  })),\n  \n  teste_dashboard: dashboard ? {\n    status: '✅ View funcionando',\n    dados: {\n      receitas_mes: dashboard.json.receitas_mes_atual,\n      despesas_mes: dashboard.json.despesas_mes_atual,\n      resultado_mes: dashboard.json.resultado_mes,\n      total_a_receber: dashboard.json.total_a_receber,\n      total_a_pagar: dashboard.json.total_a_pagar\n    }\n  } : {\n    status: '❌ View não retornou dados'\n  }\n};\n\n// Instruções se houver problemas\nif (tabelasFaltando.length > 0 || viewsFaltando.length > 0) {\n  diagnostico.instrucoes = {\n    mensagem: 'Execute o arquivo database-schema.sql no Supabase SQL Editor',\n    caminho: 'Fluxos n8n/BPO FinanceiroIA/database-schema.sql',\n    passos: [\n      '1. Acesse o Supabase Dashboard',\n      '2. Vá em SQL Editor',\n      '3. Cole o conteúdo do arquivo database-schema.sql',\n      '4. Execute o script',\n      '5. Rode esta verificação novamente'\n    ]\n  };\n}\n\nreturn { json: diagnostico };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 400],
+      "id": "consolidar",
+      "name": "Consolidar Diagnóstico"
+    }
+  ],
+  "connections": {
+    "Executar Verificação": {
+      "main": [
+        [
+          { "node": "Verificar Tabelas", "type": "main", "index": 0 },
+          { "node": "Verificar Views", "type": "main", "index": 0 },
+          { "node": "Contar Registros", "type": "main", "index": 0 },
+          { "node": "Colunas Clientes", "type": "main", "index": 0 },
+          { "node": "Colunas Movimentações", "type": "main", "index": 0 },
+          { "node": "Testar Dashboard KPIs", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Verificar Tabelas": {
+      "main": [
+        [{ "node": "Merge", "type": "main", "index": 0 }]
+      ]
+    },
+    "Verificar Views": {
+      "main": [
+        [{ "node": "Merge", "type": "main", "index": 1 }]
+      ]
+    },
+    "Contar Registros": {
+      "main": [
+        [{ "node": "Merge", "type": "main", "index": 2 }]
+      ]
+    },
+    "Colunas Clientes": {
+      "main": [
+        [{ "node": "Merge", "type": "main", "index": 3 }]
+      ]
+    },
+    "Colunas Movimentações": {
+      "main": [
+        [{ "node": "Merge", "type": "main", "index": 4 }]
+      ]
+    },
+    "Testar Dashboard KPIs": {
+      "main": [
+        [{ "node": "Merge", "type": "main", "index": 5 }]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [{ "node": "Consolidar Diagnóstico", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "v1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "n8n-bpo-financeiro"
+  },
+  "id": "util-verificar-tabelas",
+  "tags": []
+}

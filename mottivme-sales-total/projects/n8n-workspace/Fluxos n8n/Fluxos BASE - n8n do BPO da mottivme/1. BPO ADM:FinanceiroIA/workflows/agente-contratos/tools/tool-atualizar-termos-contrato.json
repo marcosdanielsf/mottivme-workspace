@@ -1,0 +1,130 @@
+{
+  "name": "[TOOL] Atualizar Termos Contrato",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "contrato_id"
+            },
+            {
+              "name": "valor_mensal"
+            },
+            {
+              "name": "num_parcelas"
+            },
+            {
+              "name": "valor_entrada"
+            },
+            {
+              "name": "data_inicio"
+            },
+            {
+              "name": "dia_vencimento"
+            },
+            {
+              "name": "produto"
+            },
+            {
+              "name": "pais"
+            },
+            {
+              "name": "nicho"
+            },
+            {
+              "name": "moeda"
+            },
+            {
+              "name": "budget_trafego"
+            },
+            {
+              "name": "dias_onboarding"
+            },
+            {
+              "name": "condicoes_especiais"
+            },
+            {
+              "name": "observacoes_negociacao"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [-144, -128],
+      "id": "trigger-input",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=-- Atualizar termos do contrato pendente\nUPDATE fin_contratos_pendentes\nSET \n  valor_mensal = COALESCE({{ $json.valor_mensal || 'NULL' }}, valor_mensal),\n  num_parcelas = COALESCE({{ $json.num_parcelas || 'NULL' }}, num_parcelas),\n  valor_entrada = COALESCE({{ $json.valor_entrada || 'NULL' }}, valor_entrada),\n  data_inicio = COALESCE({{ $json.data_inicio ? \"'\" + $json.data_inicio + \"'\" : 'NULL' }}, data_inicio),\n  dia_vencimento = COALESCE({{ $json.dia_vencimento || 'NULL' }}, dia_vencimento),\n  produto = COALESCE({{ $json.produto ? \"'\" + $json.produto + \"'\" : 'NULL' }}, produto),\n  pais = COALESCE({{ $json.pais ? \"'\" + $json.pais + \"'\" : 'NULL' }}, pais),\n  nicho = COALESCE({{ $json.nicho ? \"'\" + $json.nicho + \"'\" : 'NULL' }}, nicho),\n  moeda = CASE WHEN {{ $json.pais ? \"'\" + $json.pais + \"'\" : 'NULL' }} = 'EUA' THEN 'USD' WHEN {{ $json.pais ? \"'\" + $json.pais + \"'\" : 'NULL' }} = 'Brasil' THEN 'BRL' ELSE COALESCE({{ $json.moeda ? \"'\" + $json.moeda + \"'\" : 'NULL' }}, moeda) END,\n  budget_trafego = COALESCE({{ $json.budget_trafego || 'NULL' }}, budget_trafego),\n  dias_onboarding = COALESCE({{ $json.dias_onboarding || 'NULL' }}, dias_onboarding),\n  condicoes_especiais = COALESCE({{ $json.condicoes_especiais ? \"'\" + $json.condicoes_especiais.replace(/'/g, \"''\") + \"'\" : 'NULL' }}, condicoes_especiais),\n  observacoes_negociacao = COALESCE({{ $json.observacoes_negociacao ? \"'\" + $json.observacoes_negociacao.replace(/'/g, \"''\") + \"'\" : 'NULL' }}, observacoes_negociacao),\n  status = CASE \n    WHEN {{ $json.valor_mensal || 'NULL' }} IS NOT NULL \n         AND {{ $json.num_parcelas || 'NULL' }} IS NOT NULL \n         AND {{ $json.produto ? \"'\" + $json.produto + \"'\" : 'NULL' }} IS NOT NULL \n    THEN 'termos_informados'\n    ELSE status\n  END,\n  termos_recebidos_em = CASE \n    WHEN {{ $json.valor_mensal || 'NULL' }} IS NOT NULL THEN NOW()\n    ELSE termos_recebidos_em\n  END,\n  updated_at = NOW()\nWHERE id = '{{ $json.contrato_id }}'\nRETURNING \n  id, \n  nome, \n  valor_mensal, \n  num_parcelas, \n  valor_entrada,\n  data_inicio, \n  dia_vencimento,\n  produto,\n  pais,\n  nicho,\n  moeda,\n  budget_trafego,\n  dias_onboarding,\n  condicoes_especiais,\n  status;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [80, -128],
+      "id": "atualizar-contrato",
+      "name": "Atualizar Termos",
+      "credentials": {
+        "postgres": {
+          "id": "WsU3bciJm7aMyAoC",
+          "name": "postgress - financeiro - mottivme sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Formatar resposta da atualização\nconst resultado = $json;\n\nif (!resultado.id) {\n  return {\n    json: {\n      sucesso: false,\n      mensagem: 'Contrato não encontrado. Verifique o ID informado.'\n    }\n  };\n}\n\nconst formatarMoeda = (valor) => {\n  if (!valor) return null;\n  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(valor);\n};\n\nconst formatarData = (dataStr) => {\n  if (!dataStr) return null;\n  const data = new Date(dataStr);\n  return data.toLocaleDateString('pt-BR');\n};\n\n// Verificar se está pronto para gerar\nconst prontoParaGerar = resultado.valor_mensal && resultado.num_parcelas && resultado.dia_vencimento;\n\nreturn {\n  json: {\n    sucesso: true,\n    mensagem: prontoParaGerar \n      ? `Termos atualizados com sucesso! O contrato de ${resultado.nome} está pronto para ser gerado.`\n      : `Termos parcialmente atualizados. Ainda faltam informações para gerar o contrato.`,\n    contrato: {\n      id: resultado.id,\n      cliente: resultado.nome,\n      valor_mensal: formatarMoeda(resultado.valor_mensal),\n      num_parcelas: resultado.num_parcelas,\n      valor_entrada: formatarMoeda(resultado.valor_entrada),\n      data_inicio: formatarData(resultado.data_inicio),\n      dia_vencimento: resultado.dia_vencimento,\n      status: resultado.status\n    },\n    pronto_para_gerar: prontoParaGerar,\n    proxima_acao: prontoParaGerar \n      ? 'Use a ferramenta gerar_contrato para criar o contrato oficial.'\n      : 'Informe os dados faltantes: ' + [\n          !resultado.valor_mensal ? 'valor_mensal' : null,\n          !resultado.num_parcelas ? 'num_parcelas' : null,\n          !resultado.dia_vencimento ? 'dia_vencimento' : null\n        ].filter(Boolean).join(', ')\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [304, -128],
+      "id": "formatar-resposta",
+      "name": "Formatar Resposta"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Termos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar Termos": {
+      "main": [
+        [
+          {
+            "node": "Formatar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Resposta": {
+      "main": [[]]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "BPO Financeiro"
+    },
+    {
+      "name": "Tools"
+    }
+  ],
+  "triggerCount": 0
+}

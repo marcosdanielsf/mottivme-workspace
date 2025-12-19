@@ -1,0 +1,69 @@
+--- 
+name: analise-de-demonstracoes-financeiras 
+description: Esta skill calcula principais razões financeiras e métricas a partir de dados de demonstrações financeiras para análise de investimento 
+--- 
+ 
+ # Skill Calculadora de Razões Financeiras 
+ 
+ Esta skill fornece análise abrangente de razões financeiras para avaliar o desempenho, rentabilidade, liquidez e valoração da empresa. 
+ 
+ ## Capacidades 
+ 
+ Calcular e interpretar: 
+ - **Razões de Rentabilidade**: ROE, ROA, Margem Bruta, Margem Operacional, Margem Líquida 
+ - **Razões de Liquidez**: Razão Corrente, Razão Rápida, Razão de Caixa 
+ - **Razões de Alavancagem**: Dívida sobre Patrimônio, Cobertura de Juros, Cobertura de Serviço da Dívida 
+ - **Razões de Eficiência**: Giro de Ativos, Giro de Estoque, Giro de Contas a Receber 
+ - **Razões de Valoração**: P/E, P/B, P/S, EV/EBITDA, PEG 
+ - **Métricas por Ação**: EPS, Valor Patrimonial por Ação, Dividendo por Ação 
+ 
+ ## Como Usar 
+ 
+ 1. **Dados de Entrada**: Forneça dados de demonstrações financeiras (demonstração de resultados, balanço, fluxo de caixa) 
+ 2. **Selecionar Razões**: Especifique quais razões calcular ou use "todas" para análise abrangente 
+ 3. **Interpretação**: A skill calculará as razões e fornecerá interpretações padrão do setor 
+ 
+ ## Formato de Entrada 
+ 
+ Dados financeiros podem ser fornecidos como: 
+ - CSV com itens de linha financeira 
+ - JSON com demonstrações financeiras estruturadas 
+ - Descrição em texto dos principais números financeiros 
+ - Arquivos Excel com demonstrações financeiras 
+ 
+ ## Formato de Saída 
+ 
+ Resultados incluem: 
+ - Razões calculadas com valores 
+ - Comparações com benchmarks do setor (quando disponível) 
+ - Análise de tendência (se múltiplos períodos forem fornecidos) 
+ - Interpretação e insights 
+ - Relatório Excel com resultados formatados 
+ 
+ ## Exemplo de Uso 
+ 
+ "Calcule as principais razões financeiras para esta empresa com base nas demonstrações financeiras anexadas" 
+ 
+ "Qual é a razão P/E se o preço da ação é R$50 e os lucros anuais são R$2,50 por ação?" 
+ 
+ "Analise a posição de liquidez usando os dados do balanço" 
+ 
+ ## Scripts 
+ 
+ - `calcular_razoes.py`: Motor principal de cálculo para todas as razões financeiras 
+ - `interpretar_razoes.py`: Fornece interpretação e comparação com benchmarks 
+ 
+ ## Melhores Práticas 
+ 
+ 1. Sempre valide a completude dos dados antes dos cálculos 
+ 2. Trate valores ausentes apropriadamente (use médias do setor ou exclua) 
+ 3. Considere o contexto do setor ao interpretar razões 
+ 4. Inclua comparações de período para análise de tendência 
+ 5. Sinalize razões incomuns ou preocupantes 
+ 
+ ## Limitações 
+ 
+ - Requer dados financeiros precisos 
+ - Benchmarks de setor são diretrizes gerais 
+ - Algumas razões podem não se aplicar a todos os setores 
+ - Dados históricos não garantem desempenho futuro

@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sua jornada ao extraordinário - Da clínica ao império de mentorias">
+    <title>Sua Jornada ao Extraordinário | Carol & Luiz</title>
+
+    <!-- Design System -->
+    <link rel="stylesheet" href="design-system.css">
+
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <style>
+        body {
+            background: var(--bg-primary);
+            scroll-behavior: smooth;
+        }
+
+        /* Progress Bar (enhanced) */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 10000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--gradient-gold);
+            transition: width var(--transition-fast) ease;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Breadcrumb Navigation */
+        .breadcrumb {
+            position: fixed;
+            top: var(--space-4);
+            left: var(--space-4);
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            z-index: 9999;
+            font-size: var(--tipo-1);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .breadcrumb-item {
+            color: var(--text-tertiary);
+            transition: color var(--transition-fast) ease;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--gold-500);
+            font-weight: var(--peso-semibold);
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-tertiary);
+            font-size: 10px;
+        }
+
+        /* Logo Header */
+        .logo-header {
+            position: fixed;
+            top: var(--space-4);
+            right: var(--space-4);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-5);
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            border: 1px solid var(--gold-700);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+        }
+
+        .logo-icon {
+            font-size: var(--tipo-5);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-400), var(--gold-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text {
+            font-size: var(--tipo-2);
+            color: var(--neutral-400);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(135deg, #000 0%, #1a1a2e 100%);
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background:
+                radial-gradient(circle at 20% 50%, var(--gold-500) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, var(--blue-500) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.2; }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+            max-width: 900px;
+            padding: var(--space-12);
+        }
+
+        .hero-greeting {
+            font-size: var(--tipo-3);
+            color: var(--gold-500);
+            letter-spacing: 4px;
+            margin-bottom: var(--space-6);
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        .hero-title {
+            font-size: var(--tipo-9);
+            font-weight: var(--peso-bold);
+            line-height: var(--altura-titulo);
+            margin-bottom: var(--space-8);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--gold-500) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1s forwards;
+        }
+
+        .hero-subtitle {
+            font-size: var(--tipo-4);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+
+        /* Scroll Indicator (enhanced) */
+        .scroll-indicator {
+            position: absolute;
+            bottom: var(--space-12);
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 2s forwards, bounce 2s ease-in-out 3s infinite;
+        }
+
+        .scroll-text {
+            font-size: var(--tipo-1);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold-500);
+            margin-bottom: var(--space-3);
+        }
+
+        .scroll-icon {
+            font-size: var(--tipo-4);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 10px); }
+        }
+
+        /* Chapter Section (enhanced) */
+        .chapter {
+            min-height: 100vh;
+            padding: var(--space-24) var(--space-12);
+            position: relative;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .chapter.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chapter-number {
+            font-size: var(--tipo-2);
+            color: var(--gold-500);
+            letter-spacing: 4px;
+            margin-bottom: var(--space-6);
+            text-transform: uppercase;
+            font-weight: var(--peso-semibold);
+        }
+
+        .chapter-title {
+            font-size: var(--tipo-7);
+            font-weight: var(--peso-bold);
+            margin-bottom: var(--space-12);
+            line-height: var(--altura-titulo);
+            color: var(--text-primary);
+        }
+
+        .chapter-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Pillar Cards (enhanced with micro-interactions) */
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-12);
+            margin-top: var(--space-16);
+        }
+
+        .pillar-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-12);
+            cursor: pointer;
+            transition: all var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            min-height: 48px; /* Touch-friendly */
+        }
+
+        /* Gradient overlay on hover */
+        .pillar-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-gold);
+            opacity: 0;
+            transition: opacity var(--transition-base) ease;
+            border-radius: inherit;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--gold-500);
+            box-shadow: var(--shadow-5);
+        }
+
+        .pillar-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .pillar-card:active {
+            transform: translateY(-8px) scale(1);
+        }
+
+        .pillar-card:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 4px;
+        }
+
+        .pillar-icon {
+            font-size: var(--tipo-8);
+            margin-bottom: var(--space-6);
+            position: relative;
+            z-index: 1;
+        }
+
+        .pillar-title {
+            font-size: var(--tipo-5);
+            font-weight: var(--peso-semibold);
+            margin-bottom: var(--space-4);
+            position: relative;
+            z-index: 1;
+            color: var(--text-primary);
+        }
+
+        .pillar-description {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            position: relative;
+            z-index: 1;
+        }
+
+        .pillar-cta {
+            margin-top: var(--space-6);
+            font-size: var(--tipo-2);
+            color: var(--gold-500);
+            font-weight: var(--peso-semibold);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Expandable Content */
+        .pillar-expanded {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-base) ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pillar-card.expanded .pillar-expanded {
+            max-height: 2000px;
+            margin-top: var(--space-8);
+        }
+
+        .pillar-card.expanded {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+        }
+
+        .pillar-detail {
+            padding: var(--space-6);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-6);
+        }
+
+        .pillar-detail h4 {
+            color: var(--gold-500);
+            margin-bottom: var(--space-4);
+            font-size: var(--tipo-3);
+            font-weight: var(--peso-semibold);
+        }
+
+        .pillar-detail ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .pillar-detail li {
+            padding: var(--space-2) 0;
+            padding-left: var(--space-6);
+            position: relative;
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+        }
+
+        .pillar-detail li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--gold-500);
+        }
+
+        /* Investment Section */
+        .investment-showcase {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            padding: var(--space-24) var(--space-12);
+            position: relative;
+        }
+
+        .investment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--space-12);
+            max-width: 1400px;
+            margin: var(--space-16) auto 0;
+        }
+
+        /* Enhanced option cards */
+        .option-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid transparent;
+            border-radius: var(--radius-2xl);
+            padding: var(--space-12);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Animated gradient border */
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, var(--gold-500) 0%, var(--gold-300) 50%, var(--blue-500) 100%);
+            border-radius: var(--radius-2xl);
+            opacity: 0;
+            transition: opacity var(--transition-base) ease;
+            z-index: -1;
+        }
+
+        .option-card:hover::before {
+            opacity: 1;
+        }
+
+        .option-card:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-5);
+        }
+
+        .option-card:focus-within {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 4px;
+        }
+
+        .option-badge {
+            display: inline-block;
+            padding: var(--space-2) var(--space-6);
+            background: var(--gold-500);
+            color: var(--text-inverse);
+            font-size: var(--tipo-1);
+            font-weight: var(--peso-bold);
+            letter-spacing: 2px;
+            border-radius: var(--radius-full);
+            margin-bottom: var(--space-6);
+        }
+
+        .option-title {
+            font-size: var(--tipo-6);
+            font-weight: var(--peso-bold);
+            margin-bottom: var(--space-6);
+            color: var(--text-primary);
+        }
+
+        .option-price {
+            font-size: var(--tipo-7);
+            font-weight: var(--peso-bold);
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: var(--space-8) 0;
+        }
+
+        .option-economy {
+            background: rgba(63, 185, 80, 0.1);
+            border: 1px solid var(--green-500);
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            margin: var(--space-6) 0;
+            text-align: center;
+        }
+
+        .option-economy strong {
+            color: var(--green-500);
+            font-size: var(--tipo-4);
+            font-weight: var(--peso-bold);
+        }
+
+        .option-features {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-8) 0;
+        }
+
+        .option-features li {
+            padding: var(--space-3) 0;
+            padding-left: var(--space-8);
+            position: relative;
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+        }
+
+        .option-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--gold-500);
+            font-weight: var(--peso-bold);
+            font-size: var(--tipo-4);
+        }
+
+        /* Enhanced select button with ripple */
+        .select-option-btn {
+            width: 100%;
+            min-height: 56px; /* Touch-friendly */
+            padding: var(--space-6);
+            background: var(--gradient-gold);
+            color: var(--text-inverse);
+            border: none;
+            border-radius: var(--radius-full);
+            font-size: var(--tipo-3);
+            font-weight: var(--peso-bold);
+            cursor: pointer;
+            margin-top: var(--space-8);
+            transition: all var(--transition-fast) ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .select-option-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .select-option-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .select-option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .select-option-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .select-option-btn:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 4px;
+        }
+
+        /* Final CTA Section */
+        .final-cta {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #16213e 100%);
+            text-align: center;
+            padding: var(--space-16) var(--space-12);
+        }
+
+        .final-cta-content {
+            max-width: 700px;
+        }
+
+        .final-cta-title {
+            font-size: var(--tipo-8);
+            font-weight: var(--peso-bold);
+            margin-bottom: var(--space-8);
+            line-height: var(--altura-titulo);
+            color: var(--text-primary);
+        }
+
+        .final-cta-text {
+            font-size: var(--tipo-3);
+            color: var(--text-secondary);
+            line-height: var(--altura-corpo);
+            margin-bottom: var(--space-12);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: var(--space-6);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Enhanced CTA buttons */
+        .cta-btn-primary,
+        .cta-btn-secondary {
+            min-height: 56px; /* Touch-friendly */
+            padding: var(--space-6) var(--space-12);
+            font-size: var(--tipo-3);
+            font-weight: var(--peso-bold);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast) ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cta-btn-primary {
+            background: var(--gradient-gold);
+            color: var(--text-inverse);
+            border: none;
+        }
+
+        .cta-btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-gold);
+        }
+
+        .cta-btn-primary:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .cta-btn-secondary {
+            background: transparent;
+            color: var(--gold-500);
+            border: 2px solid var(--gold-500);
+        }
+
+        .cta-btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .cta-btn-secondary:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .cta-btn-primary:focus-visible,
+        .cta-btn-secondary:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 4px;
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: var(--space-8);
+            right: var(--space-8);
+            width: 56px;
+            height: 56px;
+            background: rgba(212, 175, 55, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-inverse);
+            font-size: var(--tipo-4);
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all var(--transition-fast) ease;
+            z-index: 9998;
+            box-shadow: var(--shadow-3);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: var(--shadow-5);
+        }
+
+        .back-to-top:active {
+            transform: translateY(-3px) scale(1);
+        }
+
+        .back-to-top:focus-visible {
+            outline: 2px solid var(--gold-500);
+            outline-offset: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: var(--tipo-7);
+            }
+
+            .chapter-title {
+                font-size: var(--tipo-6);
+            }
+
+            .pillars-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .investment-options {
+                grid-template-columns: 1fr;
+            }
+
+            .option-price {
+                font-size: var(--tipo-6);
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .breadcrumb {
+                font-size: 10px;
+                padding: var(--space-1) var(--space-3);
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .pillar-card:focus-visible,
+            .select-option-btn:focus-visible,
+            .cta-btn-primary:focus-visible,
+            .cta-btn-secondary:focus-visible,
+            .back-to-top:focus-visible {
+                outline-width: 3px;
+            }
+        }
+
+        /* Loading skeleton for images */
+        img {
+            background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+
+        img[src] {
+            animation: none;
+            background: none;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-bar" role="progressbar" aria-label="Progresso da leitura" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb" aria-label="Navegação estrutural">
+        <span class="breadcrumb-item active" id="current-chapter">Início</span>
+    </nav>
+
+    <!-- Logo Header -->
+    <div class="logo-header">
+        <div class="logo-icon">MOTTIVME</div>
+        <div class="logo-text">Sales</div>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero" id="hero" role="banner">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="hero-content">
+            <div class="hero-greeting">BEM-VINDOS</div>
+            <h1 class="hero-title">
+                Da Clínica ao<br>Império de Mentorias
+            </h1>
+            <p class="hero-subtitle">
+                Carol & Luiz, esta é a jornada de transformação<br>
+                que levará vocês de R$ 0 a R$ 150k/mês em mentorias médicas
+            </p>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-text">Deslize para iniciar</div>
+            <div class="scroll-icon" aria-hidden="true">↓</div>
+        </div>
+    </section>
+
+    <!-- Chapter 1: O Problema -->
+    <section class="chapter" id="chapter-1" data-chapter="Capítulo 1" role="region" aria-labelledby="chapter-1-title">
+        <div class="chapter-content">
+            <div class="chapter-number">CAPÍTULO 1</div>
+            <h2 class="chapter-title" id="chapter-1-title">O Que Está Faltando?</h2>
+            <p style="font-size: var(--tipo-3); color: var(--text-secondary); line-height: var(--altura-corpo); margin-bottom: var(--space-12);">
+                Vocês são médicos <strong style="color: var(--text-primary);">excepcionais</strong>.
+                Clínica indo bem. Pacientes satisfeitos.
+                <br><br>
+                Mas há algo que ainda não construíram:
+                <strong style="color: var(--gold-500);">uma mentoria médica que impacta milhares e fatura R$ 100k-150k/mês</strong>.
+                <br><br>
+                Não por falta de conhecimento. Mas por falta de <strong style="color: var(--gold-500);">estrutura</strong>.
+            </p>
+
+            <div class="pillars-grid" role="list">
+                <div
+                    class="pillar-card"
+                    onclick="togglePillar(this)"
+                    role="button"
+                    tabindex="0"
+                    aria-expanded="false"
+                    aria-label="Expandir detalhes sobre ICP"
+                    onkeydown="if(event.key==='Enter'||event.key===' ') togglePillar(this)"
+                >
+                    <div class="pillar-icon" aria-hidden="true">❌</div>
+                    <h3 class="pillar-title">Sem ICP Claro</h3>
+                    <p class="pillar-description">
+                        Qual médico é seu cliente ideal? Generalista ou especialista?
+                        Iniciante ou experiente?
+                    </p>
+                    <div class="pillar-cta">
+                        Clique para expandir <span aria-hidden="true">→</span>
+                    </div>
+                    <div class="pillar-expanded">
+                        <div class="pillar-detail">
+                            <h4>Por que isso te paralisa:</h4>
+                            <ul>
+                                <li>Mensagens genéricas que não convertem</li>
+                                <li>Anúncios que atraem o público errado</li>
+                                <li>Vendas difíceis (você fala com quem não deveria)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="pillar-card"
+                    onclick="togglePillar(this)"
+                    role="button"
+                    tabindex="0"
+                    aria-expanded="false"
+                    aria-label="Expandir detalhes sobre Oferta"
+                    onkeydown="if(event.key==='Enter'||event.key===' ') togglePillar(this)"
+                >
+                    <div class="pillar-icon" aria-hidden="true">❌</div>
+                    <h3 class="pillar-title">Oferta Indefinida</h3>
+                    <p class="pillar-description">
+                        Mentoria de quanto? 3 meses? 6 meses? O que exatamente está incluído?
+                    </p>
+                    <div class="pillar-cta">
+                        Clique para expandir <span aria-hidden="true">→</span>
+                    </div>
+                    <div class="pillar-expanded">
+                        <div class="pillar-detail">
+                            <h4>Consequência:</h4>
+                            <ul>
+                                <li>Leads perguntam "mas o que eu ganho?"</li>
+                                <li>Comparação com concorrentes (sempre mais barato)</li>
+                                <li>Taxa de fechamento baixa (&lt;15%)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="pillar-card"
+                    onclick="togglePillar(this)"
+                    role="button"
+                    tabindex="0"
+                    aria-expanded="false"
+                    aria-label="Expandir detalhes sobre Preço"
+                    onkeydown="if(event.key==='Enter'||event.key===' ') togglePillar(this)"
+                >
+                    <div class="pillar-icon" aria-hidden="true">❌</div>
+                    <h3 class="pillar-title">Preço Sem Estratégia</h3>
+                    <p class="pillar-description">
+                        R$ 8k? R$ 12k? R$ 15k? E as garantias? Parcelamento?
+                    </p>
+                    <div class="pillar-cta">
+                        Clique para expandir <span aria-hidden="true">→</span>
+                    </div>
+                    <div class="pillar-expanded">
+                        <div class="pillar-detail">
+                            <h4>Problema:</h4>
+                            <ul>
+                                <li>Você cobra menos do que vale</li>
+                                <li>Ou cobra caro mas não justifica</li>
+                                <li>Falta ancoragem de valor</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chapter 2: A Solução -->
+    <section class="chapter" id="chapter-2" data-chapter="Capítulo 2" role="region" aria-labelledby="chapter-2-title">
+        <div class="chapter-content">
+            <div class="chapter-number">CAPÍTULO 2</div>
+            <h2 class="chapter-title" id="chapter-2-title">A Solução: Estrutura + Execução</h2>
+            <p style="font-size: var(--tipo-3); color: var(--text-secondary); line-height: var(--altura-corpo); margin-bottom: var(--space-16);">
+                Não adianta estruturar sem executar.<br>
+                Não adianta executar sem estruturar antes.<br><br>
+                <strong style="color: var(--gold-500);">Precisa das duas coisas.</strong>
+            </p>
+
+            <div class="pillars-grid" role="list">
+                <div
+                    class="pillar-card"
+                    onclick="togglePillar(this)"
+                    role="button"
+                    tabindex="0"
+                    aria-expanded="false"
+                    aria-label="Expandir detalhes sobre Foundation Sprint"
+                    onkeydown="if(event.key==='Enter'||event.key===' ') togglePillar(this)"
+                >
+                    <div class="pillar-icon" aria-hidden="true">📘</div>
+                    <h3 class="pillar-title">Foundation Sprint</h3>
+                    <p class="pillar-description">
+                        30 dias para estruturar TUDO: ICP, Oferta, Funis, Scripts, CRM.
+                    </p>
+                    <div class="pillar-cta">
+                        Ver entregáveis <span aria-hidden="true">→</span>
+                    </div>
+                    <div class="pillar-expanded">
+                        <div class="pillar-detail">
+                            <h4>8 Entregáveis Completos:</h4>
+                            <ul>
+                                <li>Brand Book (40 páginas)</li>
+                                <li>Offer Stack estruturado</li>
+                                <li>3 funis completos</li>
+                                <li>20 scripts prontos</li>
+                                <li>90 dias de conteúdo</li>
+                                <li>3 lead magnets</li>
+                                <li>CRM Socialfy configurado</li>
+                                <li>Messaging Matrix</li>
+                            </ul>
+                        </div>
+                        <div class="pillar-detail">
+                            <h4>Valor: R$ 53.982</h4>
+                            <p style="margin-top: var(--space-4);">
+                                <a href="entregaveis-foundation.html" style="display: inline-block; padding: var(--space-3) var(--space-6); background: var(--gradient-gold); color: var(--neutral-900); border-radius: 8px; text-decoration: none; font-weight: 700; margin-top: var(--space-2);">
+                                    📘 Ver Detalhes Completos do Foundation
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="pillar-card"
+                    onclick="togglePillar(this)"
+                    role="button"
+                    tabindex="0"
+                    aria-expanded="false"
+                    aria-label="Expandir detalhes sobre Demand Stack"
+                    onkeydown="if(event.key==='Enter'||event.key===' ') togglePillar(this)"
+                >
+                    <div class="pillar-icon" aria-hidden="true">🚀</div>
+                    <h3 class="pillar-title">Demand Stack</h3>
+                    <p class="pillar-description">
+                        6 meses executando: Gestão 2 contas + Tráfego + SDR + 15-20 reuniões/mês.
+                    </p>
+                    <div class="pillar-cta">
+                        Ver detalhes <span aria-hidden="true">→</span>
+                    </div>
+                    <div class="pillar-expanded">
+                        <div class="pillar-detail">
+                            <h4>O que fazemos TODO mês:</h4>
+                            <ul>
+                                <li>Gestão 2 contas Instagram (Dr. Luiz + Dra. Carol)</li>
+                                <li>Criação de conteúdo (posts, stories, reels)</li>
+                                <li>Tráfego pago otimizado (Meta Ads)</li>
+                                <li>SDR Human+IA dedicado</li>
+                                <li>15-20 reuniões qualificadas/mês</li>
+                                <li>Show-Rate Guard 65%+</li>
+                                <li>Relatórios e otimizações</li>
+                            </ul>
+                        </div>
+                        <div class="pillar-detail">
+                            <h4>Investimento: R$ 66.000 (6 meses)</h4>
+                            <p style="margin-top: var(--space-4);">
+                                <a href="entregaveis-execucao.html" style="display: inline-block; padding: var(--space-3) var(--space-6); background: linear-gradient(135deg, var(--blue-600), var(--blue-500)); color: #fff; border-radius: 8px; text-decoration: none; font-weight: 700; margin-top: var(--space-2);">
+                                    🚀 Ver Detalhes Completos da Execução
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Investment Section -->
+    <section class="investment-showcase" id="chapter-3" data-chapter="Capítulo 3" role="region" aria-labelledby="chapter-3-title">
+        <div class="chapter-content">
+            <div class="chapter-number">CAPÍTULO 3</div>
+            <h2 class="chapter-title" id="chapter-3-title" style="text-align: center;">Escolha Sua Jornada</h2>
+        </div>
+
+        <div class="investment-options" role="list">
+            <!-- Opção A -->
+            <article class="option-card" role="listitem" aria-label="Opção A - Só Execução">
+                <span class="option-badge">✅ O QUE CONVERSAMOS</span>
+                <h3 class="option-title">Opção A<br>Só Execução</h3>
+                <div class="option-price">R$ 66.000</div>
+                <p style="color: var(--text-secondary); margin-bottom: var(--space-6); font-size: var(--tipo-3);">
+                    6 meses de gestão + tráfego<br>
+                    (Vocês estruturam internamente)
+                </p>
+                <ul class="option-features">
+                    <li>Gestão 2 contas Instagram (6 meses)</li>
+                    <li>Tráfego pago R$ 3.000/mês</li>
+                    <li>SDR Human+IA dedicado</li>
+                    <li>15-20 reuniões/mês</li>
+                    <li>Show-Rate Guard 65%+</li>
+                </ul>
+                <button
+                    class="select-option-btn"
+                    onclick="selectOption('A')"
+                    aria-label="Selecionar Opção A - Só Execução"
+                >
+                    SELECIONAR OPÇÃO A
+                </button>
+            </article>
+
+            <!-- Opção B -->
+            <article class="option-card" role="listitem" aria-label="Opção B - Completa (Recomendado)">
+                <span class="option-badge">⭐ RECOMENDADO</span>
+                <h3 class="option-title">Opção B<br>Completa</h3>
+                <div class="option-price">R$ 66.000</div>
+                <div class="option-economy">
+                    <p style="margin-bottom: var(--space-2); color: var(--text-secondary);">🎁 GANHE Foundation Sprint GRÁTIS!</p>
+                    <strong>ECONOMIA: R$ 53.982 (45%)</strong>
+                </div>
+                <ul class="option-features">
+                    <li><strong style="color: var(--gold-500);">Foundation Sprint GRÁTIS</strong> (30 dias)</li>
+                    <li>8 entregáveis completos</li>
+                    <li>+ TUDO da Opção A</li>
+                    <li>Gestão 2 contas (6 meses)</li>
+                    <li>Tráfego + SDR + Reuniões</li>
+                </ul>
+                <button
+                    class="select-option-btn"
+                    onclick="selectOption('B')"
+                    aria-label="Selecionar Opção B - Completa com Foundation Sprint grátis"
+                >
+                    SELECIONAR OPÇÃO B
+                </button>
+            </article>
+
+            <!-- Opção C -->
+            <article class="option-card" role="listitem" aria-label="Opção C - Só Foundation Sprint">
+                <span class="option-badge" style="background: var(--blue-500);">💡 SÓ ESTRUTURA</span>
+                <h3 class="option-title">Opção C<br>Foundation Sprint</h3>
+                <div class="option-price">R$ 53.982</div>
+                <p style="color: var(--text-secondary); margin-bottom: var(--space-6); font-size: var(--tipo-3);">
+                    30 dias de estruturação<br>
+                    (Vocês executam depois)
+                </p>
+                <ul class="option-features">
+                    <li>Foundation Sprint completo</li>
+                    <li>Brand Book (40 páginas)</li>
+                    <li>3 funis + 20 scripts</li>
+                    <li>90 dias de conteúdo</li>
+                    <li>CRM configurado</li>
+                </ul>
+                <button
+                    class="select-option-btn"
+                    onclick="selectOption('C')"
+                    aria-label="Selecionar Opção C - Só Foundation Sprint"
+                >
+                    SELECIONAR OPÇÃO C
+                </button>
+            </article>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta" role="region" aria-labelledby="final-cta-title">
+        <div class="final-cta-content">
+            <h2 class="final-cta-title" id="final-cta-title">
+                Prontos para Começar<br>Esta Jornada?
+            </h2>
+            <p class="final-cta-text">
+                Vocês chegaram até aqui. Viram a jornada completa.<br>
+                Agora só falta uma coisa: <strong style="color: var(--gold-500);">decidir começar</strong>.
+                <br><br>
+                Vamos marcar 15 minutos para alinhar a melhor opção para vocês?
+            </p>
+            <div class="cta-buttons">
+                <a
+                    href="https://calendly.com/mottivme/15min"
+                    class="cta-btn-primary"
+                    aria-label="Agendar reunião de 15 minutos"
+                >
+                    📅 AGENDAR 15 MINUTOS
+                </a>
+                <a
+                    href="mailto:marcos@mottivme.com"
+                    class="cta-btn-secondary"
+                    aria-label="Enviar email para Marcos"
+                >
+                    📧 ENVIAR EMAIL
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Back to Top Button -->
+    <button
+        class="back-to-top"
+        id="back-to-top"
+        onclick="scrollToTop()"
+        aria-label="Voltar ao topo"
+        title="Voltar ao topo"
+    >
+        ↑
+    </button>
+
+    <!-- Screen reader only status -->
+    <span class="sr-only" role="status" id="sr-status" aria-live="polite" aria-atomic="true"></span>
+
+    <script>
+        // Progress Bar
+        window.addEventListener('scroll', () => {
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight - windowHeight;
+            const scrolled = window.scrollY;
+            const progress = (scrolled / documentHeight) * 100;
+            const progressFill = document.getElementById('progress-fill');
+            progressFill.style.width = progress + '%';
+            progressFill.parentElement.setAttribute('aria-valuenow', Math.round(progress));
+
+            // Update breadcrumb
+            updateBreadcrumb();
+
+            // Show/hide back to top button
+            const backToTop = document.getElementById('back-to-top');
+            if (scrolled > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        // Update breadcrumb based on scroll position
+        function updateBreadcrumb() {
+            const chapters = document.querySelectorAll('.chapter, #hero');
+            const scrollPos = window.scrollY + window.innerHeight / 2;
+
+            let currentChapter = 'Início';
+
+            chapters.forEach(chapter => {
+                const chapterTop = chapter.offsetTop;
+                const chapterBottom = chapterTop + chapter.offsetHeight;
+
+                if (scrollPos >= chapterTop && scrollPos < chapterBottom) {
+                    currentChapter = chapter.dataset.chapter || 'Início';
+                }
+            });
+
+            document.getElementById('current-chapter').textContent = currentChapter;
+        }
+
+        // Scroll Reveal with Intersection Observer
+        const observerOptions = {
+            threshold: 0.2,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+
+                    // Narrate chapter (optional)
+                    narrateChapter(entry.target);
+
+                    // Update screen reader
+                    const chapterName = entry.target.dataset.chapter || entry.target.querySelector('.chapter-title')?.textContent;
+                    if (chapterName) {
+                        updateSRStatus(`Entrando em: ${chapterName}`);
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.chapter').forEach(chapter => {
+            observer.observe(chapter);
+        });
+
+        // Pillar Toggle
+        function togglePillar(element) {
+            const wasExpanded = element.classList.contains('expanded');
+
+            // Close all pillars
+            document.querySelectorAll('.pillar-card').forEach(card => {
+                card.classList.remove('expanded');
+                card.setAttribute('aria-expanded', 'false');
+            });
+
+            // Open clicked one if it wasn't expanded
+            if (!wasExpanded) {
+                element.classList.add('expanded');
+                element.setAttribute('aria-expanded', 'true');
+
+                // Play sound effect
+                playExpandSound();
+
+                // Update screen reader
+                const title = element.querySelector('.pillar-title').textContent;
+                updateSRStatus(`Expandido: ${title}`);
+            } else {
+                updateSRStatus('Fechado');
+            }
+        }
+
+        // Narrate Chapter (Web Speech API)
+        function narrateChapter(chapter) {
+            if (!('speechSynthesis' in window)) return;
+
+            const chapterId = chapter.id;
+            const texts = {
+                'chapter-1': 'Capítulo 1. O que está faltando? Vocês são médicos excepcionais, mas ainda falta estrutura para criar sua mentoria.',
+                'chapter-2': 'Capítulo 2. A Solução. Estrutura mais execução. Foundation Sprint para estruturar tudo, e Demand Stack para executar.',
+                'chapter-3': 'Capítulo 3. Escolha sua jornada. Três opções disponíveis.'
+            };
+
+            if (texts[chapterId] && !sessionStorage.getItem(`narrated-${chapterId}`)) {
+                const utterance = new SpeechSynthesisUtterance(texts[chapterId]);
+                utterance.lang = 'pt-BR';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 0.7;
+
+                // Only speak if not already speaking
+                if (!window.speechSynthesis.speaking) {
+                    window.speechSynthesis.speak(utterance);
+                    sessionStorage.setItem(`narrated-${chapterId}`, 'true');
+                }
+            }
+        }
+
+        // Sound Effects using Web Audio API
+        function playExpandSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = 400;
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                // Silently fail if audio context not supported
+            }
+        }
+
+        // Option Selection
+        function selectOption(option) {
+            updateSRStatus(`Navegando para página de escolha final - Opção ${option}`);
+            // Navigate to detailed choice page
+            window.location.href = 'escolha-final.html#opcao-' + option.toLowerCase();
+        }
+
+        // Back to Top
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            updateSRStatus('Voltando ao topo');
+        }
+
+        // Update Screen Reader Status
+        function updateSRStatus(message) {
+            const srStatus = document.getElementById('sr-status');
+            srStatus.textContent = message;
+        }
+
+        // Easter Egg: Konami Code
+        let konamiCode = [];
+        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+        document.addEventListener('keydown', (e) => {
+            konamiCode.push(e.key);
+            konamiCode.splice(-konamiSequence.length - 1, konamiCode.length - konamiSequence.length);
+
+            if (konamiCode.join('').includes(konamiSequence.join(''))) {
+                alert('🎉 Easter Egg Desbloqueado!\n\nDesconto extra de 5% revelado.\nCódigo: EXTRAORDINARIO2025');
+                updateSRStatus('Easter egg desbloqueado! Código de desconto revelado');
+            }
+
+            // Escape to close expanded pillars
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.pillar-card.expanded').forEach(card => {
+                    card.classList.remove('expanded');
+                    card.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+
+        // Keyboard Navigation Enhancement
+        document.addEventListener('keydown', (e) => {
+            // Home key - scroll to top
+            if (e.key === 'Home' && !e.ctrlKey) {
+                e.preventDefault();
+                scrollToTop();
+            }
+
+            // End key - scroll to bottom
+            if (e.key === 'End' && !e.ctrlKey) {
+                e.preventDefault();
+                window.scrollTo({
+                    top: document.documentElement.scrollHeight,
+                    behavior: 'smooth'
+                });
+                updateSRStatus('Indo para o final da página');
+            }
+        });
+
+        // Lazy Loading for Images
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            observer.unobserve(img);
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+
+        // Offline Detection
+        window.addEventListener('offline', () => {
+            updateSRStatus('Conexão perdida. Alguns recursos podem não funcionar.');
+        });
+
+        window.addEventListener('online', () => {
+            updateSRStatus('Conexão restaurada.');
+        });
+
+        // Session Tracking (Analytics placeholder)
+        const sessionStart = Date.now();
+        const sessionData = {
+            startTime: sessionStart,
+            chaptersViewed: new Set(),
+            pillarsExpanded: new Set(),
+            optionsViewed: new Set()
+        };
+
+        // Track chapter views
+        const chapterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const chapterId = entry.target.id;
+                    sessionData.chaptersViewed.add(chapterId);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.chapter').forEach(chapter => {
+            chapterObserver.observe(chapter);
+        });
+
+        // Log session data before unload (for analytics)
+        window.addEventListener('beforeunload', () => {
+            const sessionEnd = Date.now();
+            const timeSpent = Math.round((sessionEnd - sessionStart) / 1000);
+
+            console.log('Session Summary:', {
+                duration: `${timeSpent}s`,
+                chaptersViewed: Array.from(sessionData.chaptersViewed),
+                pillarsExpanded: Array.from(sessionData.pillarsExpanded),
+                optionsViewed: Array.from(sessionData.optionsViewed)
+            });
+        });
+
+        // Developer Console Easter Egg
+        console.log('%c🎬 Portal de Experiência Imersiva v2.0',
+                    'color: #D4AF37; font-size: 20px; font-weight: bold;');
+        console.log('%cDesign System implementado com padrões premium de UX',
+                    'color: #58A6FF; font-size: 14px;');
+        console.log('%cAtalhos de teclado:\n- Home: Topo\n- End: Final\n- Escape: Fechar pilares expandidos\n- ↑↑↓↓←→←→BA: Easter egg',
+                    'color: #8B949E; font-size: 12px;');
+    </script>
+</body>
+</html>

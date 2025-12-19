@@ -1,0 +1,2330 @@
+{
+  "name": "MIS - V3",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "7e69a5bc-1794-47fc-b59c-e229d999f94b",
+        "options": {}
+      },
+      "id": "24f459b0-041f-48ac-a2fb-319ca64dcda7",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        -720
+      ],
+      "webhookId": "7e69a5bc-1794-47fc-b59c-e229d999f94b"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// 🎯 MOTTIVME INTELLIGENCE SYSTEM v3.0\n// AGORA COM ANÁLISE DE GRUPOS!\n// ============================================\n\nconst inputData = $input.item.json;\nconst body = inputData.body || inputData;\n\n// ============================================\n// 👥 DATABASE DO TIME MOTTIVME\n// ============================================\n\nconst TEAM_MEMBERS = {\n  '36451974701117': {\n    name: 'Isabella Delduco',\n    role: 'SDR/Gestora IA/CS',\n    responsibilities: ['leads', 'ia-quality', 'customer-success'],\n    alert_keywords: ['erro ia', 'ia não', 'ajustar prompt', 'ia errou', 'bug'],\n    max_hours: '9-18',\n  },\n  '263152797282382': {\n    name: 'Allesson',\n    role: 'Gestor de Automações',\n    responsibilities: ['crm', 'integracoes', 'automacoes', 'supervisor-bdr'],\n    alert_keywords: ['como faço', 'qual processo', 'precisa aprovação', 'não sei'],\n    max_hours: '9-18',\n  },\n  '179100538937487': {\n    name: 'Hallen Naiane',\n    role: 'Sócia/Administrativa',\n    responsibilities: ['administrativo', 'financeiro'],\n    alert_keywords: ['urgente', 'precisa resolver'],\n    max_hours: '9-15',\n    special_note: 'Grávida + bebê 5 meses - NÃO SOBRECARREGAR'\n  },\n  '96525246058639': {\n    name: 'Arthur Santos',\n    role: 'Gestor de Tráfego',\n    responsibilities: ['ads', 'trafego', 'anuncios'],\n    alert_keywords: ['anúncio reprovado', 'cpa alto', 'budget', 'conversão baixa'],\n    max_hours: '9-18',\n  },\n  '23751840268424': {\n    name: 'Marcos Daniel',\n    role: 'CEO/Fundador',\n    responsibilities: ['everything'],\n    alert_keywords: [],\n    max_hours: 'always',\n    special_note: 'SOBRECARREGADO - precisa delegar mais'\n  }\n};\n\n// ============================================\n// 📱 FUNÇÕES DE ANÁLISE DE GRUPOS\n// ============================================\n\n/**\n * Detectar tipo de grupo pelo nome\n */\nfunction detectGroupType(fullName, locationName) {\n  if (!fullName) return null;\n  \n  const nameLower = fullName.toLowerCase();\n  \n  // Grupos internos Mottivme\n  if (nameLower.includes('mottivme |') || \n      nameLower.includes('mottivme|') ||\n      nameLower.includes('sdrs em treinamento')) {\n    return {\n      is_group: true,\n      group_type: 'internal',\n      group_name: fullName,\n      description: 'Grupo interno Mottivme (time/terceirizados)'\n    };\n  }\n  \n  // Grupos de clientes BPOSS\n  if (nameLower.includes('bposs') || \n      nameLower.includes('bpo ss')) {\n    return {\n      is_group: true,\n      group_type: 'client',\n      group_name: fullName,\n      description: 'Grupo de cliente BPOSS'\n    };\n  }\n  \n  // Outros grupos (pode ser cliente também)\n  if (fullName.includes('GRUPO') || \n      fullName.includes('Group') ||\n      fullName.includes('|')) {\n    return {\n      is_group: true,\n      group_type: 'unknown',\n      group_name: fullName,\n      description: 'Grupo não categorizado'\n    };\n  }\n  \n  return {\n    is_group: false,\n    group_type: null,\n    group_name: null,\n    description: 'Conversa individual'\n  };\n}\n\n/**\n * Extrair informações de mensagem de grupo\n * Formato: \"36451974701117 Isabella Delduco:\\n\\nokk\"\n */\nfunction parseGroupMessage(messageBody) {\n  if (!messageBody) {\n    return {\n      original_message: '',\n      clean_message: '',\n      group_sender_phone: null,\n      group_sender_name: null\n    };\n  }\n  \n  const msg = String(messageBody);\n  \n  // Checar se tem o padrão de grupo (número + nome + :\\n\\n)\n  const groupPattern = /^(\\d+)\\s+([^:]+):\\n\\n(.+)$/s;\n  const match = msg.match(groupPattern);\n  \n  if (match) {\n    return {\n      original_message: msg,\n      clean_message: match[3].trim(), // A mensagem real\n      group_sender_phone: match[1], // O número\n      group_sender_name: match[2].trim() // O nome\n    };\n  }\n  \n  // Se não tem o padrão, retorna a mensagem como está\n  return {\n    original_message: msg,\n    clean_message: msg,\n    group_sender_phone: null,\n    group_sender_name: null\n  };\n}\n\n/**\n * Identificar membro do time pelo número\n */\nfunction identifyTeamMember(phone, senderName) {\n  if (!phone) return null;\n  \n  const cleanPhone = phone.replace(/\\D/g, '');\n  \n  for (const [teamPhone, member] of Object.entries(TEAM_MEMBERS)) {\n    const cleanTeamPhone = teamPhone.replace(/\\D/g, '');\n    \n    if (cleanPhone.includes(cleanTeamPhone) || \n        cleanTeamPhone.includes(cleanPhone)) {\n      return { phone: teamPhone, ...member };\n    }\n  }\n  \n  if (senderName) {\n    const nameLower = senderName.toLowerCase();\n    for (const [teamPhone, member] of Object.entries(TEAM_MEMBERS)) {\n      if (nameLower.includes(member.name.toLowerCase().split(' ')[0])) {\n        return { phone: teamPhone, ...member };\n      }\n    }\n  }\n  \n  return null;\n}\n\n/**\n * Analisar comportamento/mensagem do time\n */\nfunction analyzeTeamBehavior(teamMember, messageBody, timestamp, groupInfo) {\n  if (!teamMember) return null;\n  \n  const analysis = {\n    is_team_member: true,\n    team_member_name: teamMember.name,\n    team_member_role: teamMember.role,\n    alert_flags: [],\n    severity: 'low',\n    context: groupInfo ? `Mensagem em grupo ${groupInfo.group_type}` : 'Mensagem direta'\n  };\n  \n  const msg = String(messageBody || '').toLowerCase();\n  const hour = new Date(timestamp).getHours();\n  \n  // 1. KEYWORDS DE ALERTA\n  for (const keyword of teamMember.alert_keywords) {\n    if (msg.includes(keyword.toLowerCase())) {\n      analysis.alert_flags.push({\n        type: 'keyword_match',\n        keyword: keyword,\n        category: getCategoryFromKeyword(keyword, teamMember.role)\n      });\n      analysis.severity = 'high';\n    }\n  }\n  \n  // 2. CHECAR HORÁRIO\n  if (teamMember.max_hours !== 'always') {\n    const [startHour, endHour] = teamMember.max_hours.split('-').map(h => parseInt(h));\n    if (hour < startHour || hour > endHour) {\n      analysis.alert_flags.push({\n        type: 'off_hours',\n        message: `${teamMember.name} trabalhando às ${hour}h (fora do horário)`\n      });\n      \n      if (teamMember.name === 'Hallen Naiane') {\n        analysis.severity = 'critical';\n        analysis.alert_flags.push({\n          type: 'special_concern',\n          message: 'Hallen trabalhando fora do horário (grávida + bebê)'\n        });\n      }\n    }\n  }\n  \n  // 3. ANÁLISE ESPECÍFICA POR GRUPO\n  if (groupInfo && groupInfo.is_group) {\n    // Em grupo INTERNO - atenção redobrada\n    if (groupInfo.group_type === 'internal') {\n      analysis.alert_flags.push({\n        type: 'internal_communication',\n        message: `${teamMember.name} comunicando em grupo interno`\n      });\n      \n      // Se for problema técnico em grupo interno = alta prioridade\n      if (msg.includes('erro') || msg.includes('problema') || msg.includes('bug')) {\n        analysis.severity = 'high';\n        analysis.alert_flags.push({\n          type: 'technical_issue_internal',\n          message: 'Problema técnico reportado em grupo interno'\n        });\n      }\n    }\n    \n    // Em grupo de CLIENTE - Isabella gerenciando\n    if (groupInfo.group_type === 'client' && teamMember.name === 'Isabella Delduco') {\n      analysis.alert_flags.push({\n        type: 'client_management',\n        message: 'Isabella gerenciando grupo de cliente'\n      });\n    }\n  }\n  \n  // 4. ANÁLISES ESPECÍFICAS POR ROLE\n  if (teamMember.role.includes('IA')) {\n    if (msg.includes('cliente') && msg.includes('reclamou')) {\n      analysis.alert_flags.push({\n        type: 'customer_issue',\n        message: 'Isabella reportando problema de cliente'\n      });\n      analysis.severity = 'high';\n    }\n  }\n  \n  if (teamMember.role.includes('Automações')) {\n    if (msg.includes('como') || msg.includes('processo') || msg.includes('qual')) {\n      analysis.alert_flags.push({\n        type: 'missing_process',\n        message: 'Allesson perguntando sobre processo - pode faltar documentação'\n      });\n      analysis.severity = 'medium';\n    }\n  }\n  \n  if (teamMember.name === 'Marcos Daniel') {\n    analysis.alert_flags.push({\n      type: 'ceo_activity',\n      message: 'Marcos respondendo mensagem - monitorar frequência'\n    });\n  }\n  \n  if (teamMember.role.includes('Tráfego')) {\n    if (msg.includes('reprovado') || msg.includes('cpa') || msg.includes('conversão')) {\n      analysis.alert_flags.push({\n        type: 'traffic_issue',\n        message: 'Arthur reportando problema de tráfego'\n      });\n      analysis.severity = 'high';\n    }\n  }\n  \n  return analysis;\n}\n\nfunction getCategoryFromKeyword(keyword, role) {\n  const keywordMap = {\n    'erro ia': 'ai_malfunction',\n    'ia não': 'ai_malfunction',\n    'ajustar prompt': 'ai_tuning_needed',\n    'como faço': 'missing_documentation',\n    'qual processo': 'missing_documentation',\n    'precisa aprovação': 'blocked_by_approval',\n    'anúncio reprovado': 'ads_rejected',\n    'cpa alto': 'performance_issue',\n    'conversão baixa': 'performance_issue'\n  };\n  \n  return keywordMap[keyword.toLowerCase()] || 'general_alert';\n}\n\n// ============================================\n// 🔍 FUNÇÕES AUXILIARES\n// ============================================\n\nfunction getSenderType(tags, locationName, contactType, teamMember, groupInfo) {\n  if (teamMember) return 'team';\n  \n  // Se é grupo de cliente, sender é 'client'\n  if (groupInfo && groupInfo.group_type === 'client') return 'client';\n  \n  if (!tags) return 'unknown';\n  \n  const tagStr = Array.isArray(tags) \n    ? tags.join(',').toLowerCase() \n    : String(tags).toLowerCase();\n  \n  if (tagStr.includes('team') || tagStr.includes('time') || tagStr.includes('sdr') || tagStr.includes('bdr')) {\n    return 'team';\n  }\n  \n  if (tagStr.includes('client') || tagStr.includes('cliente') || contactType === 'client') {\n    return 'client';\n  }\n  \n  if (tagStr.includes('prospect') || tagStr.includes('lead') || contactType === 'lead') {\n    return 'prospect';\n  }\n  \n  return 'unknown';\n}\n\nfunction getBasicSentiment(message) {\n  if (!message) return 'neutral';\n  \n  const msg = String(message).toLowerCase();\n  \n  const urgentWords = [\n    'urgente', 'agora', 'rápido', 'help', 'ajuda', \n    'problema', 'erro', 'emergency', 'emergência'\n  ];\n  \n  const negativeWords = [\n    'cancelar', 'insatisfeito', 'ruim', 'péssimo',\n    'não funciona', 'reclamação', 'decepcionado',\n    'frustrado', 'chateado', 'cancel', 'bad'\n  ];\n  \n  const positiveWords = [\n    'obrigado', 'perfeito', 'ótimo', 'excelente',\n    'adorei', 'amei', 'maravilhoso', 'thanks', 'great'\n  ];\n  \n  if (urgentWords.some(w => msg.includes(w))) return 'urgent';\n  if (negativeWords.some(w => msg.includes(w))) return 'negative';\n  if (positiveWords.some(w => msg.includes(w))) return 'positive';\n  \n  return 'neutral';\n}\n\nfunction needsAttention(messageBody, tags, sentiment, senderType, teamAnalysis, groupInfo) {\n  if (teamAnalysis && teamAnalysis.alert_flags.length > 0) {\n    return true;\n  }\n  \n  // Mensagens de cliente em grupo SEMPRE precisam atenção\n  if (groupInfo && groupInfo.group_type === 'client' && sentiment !== 'positive') {\n    return true;\n  }\n  \n  if (sentiment === 'urgent' || sentiment === 'negative') {\n    return true;\n  }\n  \n  if (senderType === 'client' && sentiment === 'negative') {\n    return true;\n  }\n  \n  const msg = String(messageBody || '').toLowerCase();\n  const tagStr = Array.isArray(tags) \n    ? tags.join(',').toLowerCase() \n    : String(tags || '').toLowerCase();\n  \n  if (msg.includes('marcos') || msg.includes('@marcos')) {\n    return true;\n  }\n  \n  if (tagStr.includes('ia-call') || \n      tagStr.includes('secretaria') ||\n      tagStr.includes('waiting-human') ||\n      tagStr.includes('escalated')) {\n    return true;\n  }\n  \n  const attentionKeywords = [\n    'como faço', 'preciso de ajuda', 'não entendi',\n    'aprovação', 'autorização', 'processo'\n  ];\n  \n  if (attentionKeywords.some(k => msg.includes(k))) {\n    return true;\n  }\n  \n  return false;\n}\n\nfunction extractKeywords(message) {\n  if (!message) return [];\n  \n  const msg = String(message).toLowerCase();\n  const keywords = [];\n  \n  const keywordPatterns = {\n    pricing: ['preço', 'valor', 'custo', 'quanto custa', 'price'],\n    contract: ['contrato', 'assinatura', 'renovação', 'contract'],\n    support: ['suporte', 'ajuda', 'problema', 'erro', 'support'],\n    sales: ['comprar', 'adquirir', 'contratar', 'buy'],\n    cancel: ['cancelar', 'desistir', 'parar', 'cancel'],\n    meeting: ['reunião', 'meeting', 'call', 'ligar', 'agendar'],\n    ai_issue: ['erro ia', 'ia não funciona', 'ia errou', 'bug ia'],\n    process: ['processo', 'como faço', 'qual o fluxo'],\n    approval: ['aprovação', 'autorização', 'liberar'],\n    traffic: ['anúncio', 'ads', 'tráfego', 'cpa', 'conversão']\n  };\n  \n  for (const [category, words] of Object.entries(keywordPatterns)) {\n    if (words.some(w => msg.includes(w))) {\n      keywords.push(category);\n    }\n  }\n  \n  return keywords;\n}\n\nfunction normalizeTags(tags) {\n  if (!tags) return [];\n  \n  if (Array.isArray(tags)) {\n    return tags.filter(t => t && t.trim());\n  }\n  \n  if (typeof tags === 'string') {\n    return tags\n      .split(',')\n      .map(t => t.trim())\n      .filter(t => t);\n  }\n  \n  return [];\n}\n\n// ============================================\n// 📥 EXTRAIR DADOS DO WEBHOOK\n// ============================================\n\n// Message body RAW (antes de limpar)\nconst rawMessageBody = \n  body.message?.body || \n  body.messageBody || \n  body.customData?.messagebody ||\n  body.customData?.message ||\n  body.message ||\n  '';\n\nconst contactId = body.contact_id || body.contactId || body.contact?.id || null;\nconst contactName = body.full_name || body.contact?.name || body.contactName || 'Unknown';\nconst contactPhone = body.phone || body.contact?.phone || null;\nconst contactType = body.contact_type || body.contact?.type || 'lead';\n\nconst rawTags = body.tags || body.contact?.tags || '';\nconst normalizedTags = normalizeTags(rawTags);\n\nconst locationName = body.location?.name || 'Mottivme Sales';\nconst workflowId = body.workflow?.id || null;\nconst workflowName = body.workflow?.name || null;\n\nconst attachmentUrl = body.customData?.attachments || \n                      body.attachments?.[0] || \n                      null;\n\nconst timestamp = new Date().toISOString();\n\n// ============================================\n// 🔍 DETECTAR GRUPO E LIMPAR MENSAGEM\n// ============================================\n\n// 1. Detectar se é grupo e qual tipo\nconst groupInfo = detectGroupType(contactName, locationName);\n\n// 2. Extrair info de mensagem de grupo (limpar mensagem)\nconst parsedMessage = parseGroupMessage(rawMessageBody);\n\n// 3. Usar mensagem limpa daqui pra frente\nconst messageBody = parsedMessage.clean_message;\n\n// 4. Identificar quem enviou (pode ser do grupo ou contato direto)\nconst actualSenderPhone = parsedMessage.group_sender_phone || contactPhone;\nconst actualSenderName = parsedMessage.group_sender_name || contactName;\n\n// 5. Message type\nconst isAudio = rawMessageBody.includes('Áudio') || \n                rawMessageBody.includes('Audio') || \n                rawMessageBody.includes('🎤');\n\nconst messageType = isAudio ? 'audio' : 'text';\n\nlet transcription = null;\nif (isAudio && rawMessageBody.includes('Transcrição:')) {\n  const parts = rawMessageBody.split('Transcrição:');\n  transcription = parts[1]?.trim() || null;\n}\n\n// ============================================\n// 🤖 ANÁLISE INTELIGENTE\n// ============================================\n\n// Identificar se quem enviou é do time (usando o número de dentro do grupo)\nconst teamMember = identifyTeamMember(actualSenderPhone, actualSenderName);\n\n// Analisar comportamento do time\nconst teamAnalysis = teamMember \n  ? analyzeTeamBehavior(teamMember, messageBody, timestamp, groupInfo)\n  : null;\n\n// Análises normais\nconst senderType = getSenderType(normalizedTags, locationName, contactType, teamMember, groupInfo);\nconst sentiment = getBasicSentiment(messageBody);\nconst needsHumanAttention = needsAttention(messageBody, normalizedTags, sentiment, senderType, teamAnalysis, groupInfo);\nconst keywords = extractKeywords(messageBody);\n\n// Calcular urgency\nlet urgencyScore = 3;\nif (teamAnalysis && teamAnalysis.severity === 'critical') urgencyScore = 10;\nelse if (teamAnalysis && teamAnalysis.severity === 'high') urgencyScore = 8;\nelse if (groupInfo.group_type === 'client' && sentiment === 'negative') urgencyScore = 9;\nelse if (sentiment === 'urgent') urgencyScore = 9;\nelse if (sentiment === 'negative') urgencyScore = 7;\nelse if (sentiment === 'positive') urgencyScore = 2;\nelse if (needsHumanAttention) urgencyScore = 6;\n\n// ============================================\n// 📦 MONTAR OBJETO PARA SUPABASE\n// ============================================\n\nconst messageData = {\n  // IDs\n  external_id: contactId,\n  contact_id: contactId,\n  \n  // Metadata\n  created_at: timestamp,\n  source: 'ghl',\n  \n  // Sender (o contato/grupo no GHL)\n  sender_name: contactName,\n  sender_phone: contactPhone,\n  sender_tags: normalizedTags,\n  sender_type: senderType,\n  \n  // Message (LIMPA - só a mensagem real)\n  message_type: messageType,\n  message_body: messageBody, // ✅ MENSAGEM LIMPA\n  message_transcription: transcription,\n  attachment_url: attachmentUrl,\n  \n  // Context\n  workflow_id: workflowId,\n  workflow_name: workflowName,\n  location_name: locationName,\n  \n  // AI Analysis\n  sentiment: sentiment,\n  category: teamAnalysis ? 'team_message' : (groupInfo.is_group ? 'group_message' : 'message'),\n  urgency_score: urgencyScore,\n  needs_attention: needsHumanAttention,\n  keywords: keywords,\n  \n  // Processing\n  processed_by_observer: false,\n  \n  // 🆕 GROUP INFO\n  is_group_message: groupInfo.is_group,\n  group_type: groupInfo.group_type,\n  group_name: groupInfo.group_name,\n  group_sender_phone: parsedMessage.group_sender_phone,\n  group_sender_name: parsedMessage.group_sender_name,\n  \n  // 🆕 TEAM ANALYSIS\n  team_analysis: teamAnalysis ? JSON.stringify(teamAnalysis) : null\n};\n\n// ============================================\n// 🚀 RETORNAR\n// ============================================\n\nreturn { json: messageData };"
+      },
+      "id": "715aa64e-648a-4eee-a8b2-580788faaa6e",
+      "name": "Processar Dados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        -720
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "mottivme_intelligence_system",
+          "mode": "list",
+          "cachedResultName": "mottivme_intelligence_system"
+        },
+        "table": {
+          "__rl": true,
+          "value": "messages",
+          "mode": "list",
+          "cachedResultName": "messages"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "needs_attention": false,
+            "processed_by_observer": false
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "external_id",
+              "displayName": "external_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sender_name",
+              "displayName": "sender_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sender_phone",
+              "displayName": "sender_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sender_tags",
+              "displayName": "sender_tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sender_type",
+              "displayName": "sender_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_type",
+              "displayName": "message_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_body",
+              "displayName": "message_body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message_transcription",
+              "displayName": "message_transcription",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "attachment_url",
+              "displayName": "attachment_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "location_name",
+              "displayName": "location_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "urgency_score",
+              "displayName": "urgency_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "needs_attention",
+              "displayName": "needs_attention",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "keywords",
+              "displayName": "keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "processed_by_observer",
+              "displayName": "processed_by_observer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "embedding",
+              "displayName": "embedding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "is_group_message",
+              "displayName": "is_group_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "group_type",
+              "displayName": "group_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "group_name",
+              "displayName": "group_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "group_sender_phone",
+              "displayName": "group_sender_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "group_sender_name",
+              "displayName": "group_sender_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "team_analysis",
+              "displayName": "team_analysis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "604c231c-244e-4fd5-b079-912c192c4f4b",
+      "name": "Salvar Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -464,
+        -720
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -16
+      ],
+      "id": "417e4a5e-1021-40bd-adfa-6d8824ce9f0a",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "WVbQ0d3w6cnLwPtX",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "5648a10f-e555-4384-a950-ba5b3af9b661",
+      "name": "Executar Manualmente",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        -1120
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Criar schema se não existir\nCREATE SCHEMA IF NOT EXISTS mottivme_intelligence_system;\n\n-- Ativar extensões\nCREATE EXTENSION IF NOT EXISTS \"uuid-ossp\" SCHEMA mottivme_intelligence_system;\nCREATE EXTENSION IF NOT EXISTS \"vector\" SCHEMA mottivme_intelligence_system;",
+        "options": {}
+      },
+      "id": "0a23ea68-8ae4-4186-a4c1-88b873ec5cff",
+      "name": "Criar Schema",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -704,
+        -1120
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Verificar se tabela messages existe\nSELECT EXISTS (\n  SELECT FROM information_schema.tables \n  WHERE table_schema = 'mottivme_intelligence_system'\n  AND table_name = 'messages'\n);",
+        "options": {}
+      },
+      "id": "259d6f45-4cb2-464a-87a3-4054f1a19448",
+      "name": "Verificar Messages",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -480,
+        -1120
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.exists }}"
+            }
+          ]
+        }
+      },
+      "id": "0a2345fc-f104-40df-95e6-a4b4fafb375d",
+      "name": "Não Existe?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -1120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Inserir mensagem de teste\nINSERT INTO mottivme_intelligence_system.messages (\n  external_id,\n  contact_id,\n  sender_name,\n  sender_phone,\n  sender_tags,\n  sender_type,\n  message_type,\n  message_body,\n  sentiment,\n  category,\n  urgency_score,\n  needs_attention,\n  processed_by_observer,\n  source\n) VALUES (\n  'test-setup-' || gen_random_uuid()::text,\n  'test-contact',\n  'Sistema Setup',\n  '+5511999999999',\n  ARRAY['test', 'setup'],\n  'team',\n  'text',\n  '✅ Setup completo! Tabelas criadas no schema mottivme_intelligence_system',\n  'positive',\n  'test',\n  2,\n  false,\n  false,\n  'setup'\n) RETURNING id, created_at;",
+        "options": {}
+      },
+      "id": "b942b7d3-7054-469f-800d-e1577620955d",
+      "name": "Inserir Teste",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        416,
+        -1216
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "exists",
+              "name": "resultado",
+              "value": "ℹ️ Tabelas já existem. Setup não necessário.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f8595e07-05ad-45ea-9425-1f05072d1680",
+      "name": "Já Existe",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        -1024
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- PASSO 1: Criar schema (se ainda não existe)\nCREATE SCHEMA IF NOT EXISTS mottivme_intelligence_system;\n\n-- PASSO 2: Habilitar extensão pgvector (OBRIGATÓRIO antes de usar vector)\nCREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA mottivme_intelligence_system;\n\n-- PASSO 3: Habilitar uuid (para gerar IDs automáticos)\nCREATE EXTENSION IF NOT EXISTS \"uuid-ossp\" WITH SCHEMA mottivme_intelligence_system;\n\n-- PASSO 4: Criar tabela messages\nCREATE TABLE mottivme_intelligence_system.messages (\n    id UUID PRIMARY KEY DEFAULT mottivme_intelligence_system.uuid_generate_v4(),\n    external_id VARCHAR(255) UNIQUE,\n    contact_id VARCHAR(255),\n    \n    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),\n    source VARCHAR(50) DEFAULT 'ghl',\n    \n    sender_name VARCHAR(255),\n    sender_phone VARCHAR(50),\n    sender_tags TEXT[],\n    sender_type VARCHAR(50),\n    \n    message_type VARCHAR(50),\n    message_body TEXT,\n    message_transcription TEXT,\n    attachment_url TEXT,\n    \n    workflow_id VARCHAR(255),\n    workflow_name VARCHAR(255),\n    location_name VARCHAR(255),\n    \n    sentiment VARCHAR(20),\n    category VARCHAR(50),\n    urgency_score INTEGER CHECK (urgency_score BETWEEN 0 AND 10),\n    needs_attention BOOLEAN DEFAULT FALSE,\n    keywords TEXT[],\n    \n    processed_by_observer BOOLEAN DEFAULT FALSE,\n    \n    -- CORREÇÃO: usar só \"vector\", não \"schema.vector\"\n    embedding vector(1536)\n);\n\n-- PASSO 5: Criar indexes\nCREATE INDEX idx_messages_created_at ON mottivme_intelligence_system.messages(created_at DESC);\nCREATE INDEX idx_messages_needs_attention ON mottivme_intelligence_system.messages(needs_attention) WHERE needs_attention = TRUE;\nCREATE INDEX idx_messages_sender_type ON mottivme_intelligence_system.messages(sender_type);\nCREATE INDEX idx_messages_processed ON mottivme_intelligence_system.messages(processed_by_observer);\n\n-- PASSO 6: Criar índice vetorial para similarity search\nCREATE INDEX idx_messages_embedding ON mottivme_intelligence_system.messages \nUSING ivfflat (embedding vector_cosine_ops)\nWITH (lists = 100);",
+        "options": {}
+      },
+      "id": "eec20ec0-b2d3-42cd-94a5-f19fe5ebbb50",
+      "name": "Criar Tabela Messages1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -32,
+        -1216
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Criar tabela alerts\nCREATE TABLE mottivme_intelligence_system.alerts (\n    id UUID PRIMARY KEY DEFAULT mottivme_intelligence_system.uuid_generate_v4(),\n    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),\n    \n    alert_type VARCHAR(50) NOT NULL,\n    severity VARCHAR(20) NOT NULL,\n    title VARCHAR(255) NOT NULL,\n    description TEXT NOT NULL,\n    \n    related_message_ids UUID[] NOT NULL,\n    pattern_detected VARCHAR(255),\n    \n    suggested_action TEXT,\n    \n    status VARCHAR(50) DEFAULT 'open',\n    sent_to_whatsapp BOOLEAN DEFAULT FALSE,\n    sent_at TIMESTAMPTZ,\n    \n    CONSTRAINT valid_severity CHECK (severity IN ('critical', 'high', 'medium', 'low')),\n    CONSTRAINT valid_status CHECK (status IN ('open', 'acknowledged', 'resolved', 'false_positive'))\n);\n\n-- Criar indexes\nCREATE INDEX idx_alerts_created_at ON mottivme_intelligence_system.alerts(created_at DESC);\nCREATE INDEX idx_alerts_status ON mottivme_intelligence_system.alerts(status);\nCREATE INDEX idx_alerts_severity ON mottivme_intelligence_system.alerts(severity);",
+        "options": {}
+      },
+      "id": "375a3b0e-339c-4bb0-805f-d17baea7054a",
+      "name": "Criar Tabela Alerts1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        -1216
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "success",
+              "name": "resultado",
+              "value": "=🎉 SETUP COMPLETO!\n\n✅ Schema: mottivme_intelligence_system\n✅ Tabela messages: criada\n✅ Tabela alerts: criada\n✅ Indexes: criados\n✅ Teste inserido: {{ $json.id }}\n\n📊 Verificar:\nSupabase > SQL Editor:\nSELECT * FROM mottivme_intelligence_system.messages;\n\n🚀 Próximos passos:\n1. Importar Workflow 1\n2. Importar Workflow 2\n3. Começar a usar!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "16a50217-f527-4bc0-aa22-36d80fd50850",
+      "name": "Sucesso1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        -1216
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Criar tabelas supabase",
+        "height": 416,
+        "width": 2192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -976,
+        -1248
+      ],
+      "typeVersion": 1,
+      "id": "f0ba7b3e-2a22-48d5-9bde-511b89d83c44",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "id": "2266c463-e1da-47ba-8fba-d6aab5bbd73c",
+      "name": "Run Every 5min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -784,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    id,\n    alert_type,\n    severity,\n    title,\n    description,\n    suggested_action,\n    affected_team_members,\n    related_messages,\n    created_at,\n    contact_id,\n    api_key\nFROM mottivme_intelligence_system.alerts\nWHERE status = 'pending'\n  AND sent_to_whatsapp = FALSE\n  AND contact_id IS NOT NULL\n  AND api_key IS NOT NULL\nORDER BY severity DESC, created_at DESC\nLIMIT 10;",
+        "options": {}
+      },
+      "id": "9fcf5625-096e-40f3-8f4d-3f8811a2f3e6",
+      "name": "Buscar Alertas Pendentes",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -560,
+        496
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE mottivme_intelligence_system.alerts\nSET \n    sent_to_whatsapp = TRUE,\n    sent_at = NOW(),\n    status = 'sent'\nWHERE id = '{{ $('Formatar Alerta WhatsApp1').item.json.alert_id }}';",
+        "options": {}
+      },
+      "id": "6b1e2183-390b-450e-baa4-cef5e06b539a",
+      "name": "Marcar como Enviado",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1120,
+        208
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-alerts",
+              "leftValue": "={{ $input.all().length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "57e8a35d-6fbc-4429-94f6-9abb26873a7f",
+      "name": "Tem Alertas?2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        -336,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Workflow 3 - Enviar Alertas WhatsApp",
+        "height": 512,
+        "width": 1616
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -976,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "b24a963c-c060-4e25-bfcc-fc710eda96bc",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "0cf711c9-a5a6-42c4-a8a1-559176224ef1",
+      "name": "Run Every 30min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -944,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    id,\n    created_at,\n    sender_name,\n    sender_phone,\n    sender_type,\n    message_body,\n    sentiment,\n    urgency_score,\n    needs_attention,\n    keywords,\n    is_group_message,\n    group_type,\n    group_name,\n    group_sender_phone,\n    group_sender_name,\n    team_analysis,\n    workflow_name,\n    location_name\nFROM mottivme_intelligence_system.messages\nWHERE processed_by_observer = FALSE\nORDER BY created_at DESC\nLIMIT 10;",
+        "options": {}
+      },
+      "id": "684c8b78-a7c9-4e29-9e7d-f1861573aae6",
+      "name": "Buscar Mensagens Não Processadas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -720,
+        -240
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-messages",
+              "leftValue": "={{ $input.all().length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cd3c88b7-01ea-4c21-aaa2-1c65e81edb28",
+      "name": "Tem Mensagens?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pegar todas as mensagens\nconst messages = $input.all();\n\n// Preparar resumo estruturado para o Claude/Groq\nconst summary = {\n  total_messages: messages.length,\n  time_range: {\n    start: messages[messages.length - 1]?.json.created_at,\n    end: messages[0]?.json.created_at\n  },\n  by_type: {},\n  by_sentiment: {},\n  by_urgency: {},\n  team_activity: {},\n  group_activity: {},\n  high_priority: []\n};\n\n// Processar mensagens\nmessages.forEach(item => {\n  const msg = item.json;\n  \n  // Contar por tipo\n  summary.by_type[msg.sender_type] = (summary.by_type[msg.sender_type] || 0) + 1;\n  \n  // Contar por sentimento\n  summary.by_sentiment[msg.sentiment] = (summary.by_sentiment[msg.sentiment] || 0) + 1;\n  \n  // Contar por urgência\n  const urgencyLevel = msg.urgency_score >= 7 ? 'high' : msg.urgency_score >= 4 ? 'medium' : 'low';\n  summary.by_urgency[urgencyLevel] = (summary.by_urgency[urgencyLevel] || 0) + 1;\n  \n  // Atividade do time\n  if (msg.sender_type === 'team' && msg.team_analysis) {\n    const analysis = typeof msg.team_analysis === 'string' \n      ? JSON.parse(msg.team_analysis) \n      : msg.team_analysis;\n    \n    const memberName = analysis.team_member_name || 'Unknown';\n    \n    if (!summary.team_activity[memberName]) {\n      summary.team_activity[memberName] = {\n        count: 0,\n        alerts: [],\n        off_hours_count: 0\n      };\n    }\n    \n    summary.team_activity[memberName].count++;\n    \n    if (analysis.alert_flags && analysis.alert_flags.length > 0) {\n      summary.team_activity[memberName].alerts.push(...analysis.alert_flags);\n      \n      if (analysis.alert_flags.some(a => a.type === 'off_hours')) {\n        summary.team_activity[memberName].off_hours_count++;\n      }\n    }\n  }\n  \n  // Atividade em grupos\n  if (msg.is_group_message) {\n    const groupKey = msg.group_type || 'unknown';\n    summary.group_activity[groupKey] = (summary.group_activity[groupKey] || 0) + 1;\n  }\n  \n  // Mensagens de alta prioridade\n  if (msg.needs_attention || msg.urgency_score >= 7) {\n    summary.high_priority.push({\n      id: msg.id,\n      sender: msg.sender_name,\n      group_sender: msg.group_sender_name,\n      message: msg.message_body,\n      urgency: msg.urgency_score,\n      sentiment: msg.sentiment,\n      team_analysis: msg.team_analysis\n    });\n  }\n});\n\n// Preparar prompt para Groq\nconst prompt = `Analise os seguintes dados de mensagens dos últimos 30 minutos da Mottivme:\n\n## 📊 RESUMO GERAL\n- Total de mensagens: ${summary.total_messages}\n- Período: ${summary.time_range.start} até ${summary.time_range.end}\n\n## 👥 POR TIPO DE SENDER\n${JSON.stringify(summary.by_type, null, 2)}\n\n## 😊 POR SENTIMENTO\n${JSON.stringify(summary.by_sentiment, null, 2)}\n\n## 🎯 POR URGÊNCIA\n${JSON.stringify(summary.by_urgency, null, 2)}\n\n## 👔 ATIVIDADE DO TIME\n${JSON.stringify(summary.team_activity, null, 2)}\n\n## 💬 ATIVIDADE EM GRUPOS\n${JSON.stringify(summary.group_activity, null, 2)}\n\n## 🚨 MENSAGENS DE ALTA PRIORIDADE\n${JSON.stringify(summary.high_priority, null, 2)}\n\n---\n\n## 🎯 SUA TAREFA:\n\nAnalise esses dados e identifique **ALERTAS CRÍTICOS** que o Marcos (CEO) precisa saber AGORA.\n\n**TIPOS DE ALERTAS IMPORTANTES:**\n\n1. **LEAD ESFRIANDO** 🔥→❄️\n   - Lead respondeu mas sem follow-up em 4h+\n   - Deal travado sem atividade\n\n2. **TIME SOBRECARREGADO** 🚧\n   - Membro trabalhando fora do horário (>3x no mesmo período)\n   - Marcos respondendo muito (>10 msgs)\n   - Allesson perguntando processo (falta doc)\n\n3. **CLIENTE EM RISCO** 😡\n   - Sentimento negativo em grupo de cliente\n   - Cliente VIP sem resposta\n   - Reclamação não atendida\n\n4. **PROBLEMA TÉCNICO** 🤖\n   - Isabella reportando erro de IA (>2x)\n   - Arthur reportando problema de tráfego\n\n**REGRAS CRÍTICAS:**\n- Só gere alerta se houver padrão preocupante (não alertar por 1 ocorrência isolada)\n- Para \"off_hours\": só alertar se >2 ocorrências no período\n- Seja objetivo e acionável\n- Use severidade: critical > high > medium > low\n\n**Você DEVE retornar APENAS um JSON válido no seguinte formato:**\n{\n  \"alerts\": [\n    {\n      \"alert_type\": \"team_overwork\",\n      \"severity\": \"high\",\n      \"title\": \"Título curto do alerta\",\n      \"description\": \"Descrição detalhada do problema\",\n      \"suggested_action\": \"O que fazer para resolver\",\n      \"affected_team_members\": [\"Nome 1\", \"Nome 2\"],\n      \"related_message_ids\": [\"uuid1\", \"uuid2\"]\n    }\n  ]\n}\n\nSe não houver alertas dignos de atenção, retorne: {\"alerts\": []}\n`;\n\nreturn {\n  json: {\n    prompt: prompt,\n    summary: summary,\n    messages: messages.map(m => m.json)\n  }\n};"
+      },
+      "id": "8578caa5-72d2-477e-ba50-06fa0c2a7b45",
+      "name": "Preparar Dados pro Claude",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.prompt }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Você é o MIS Observer da Mottivme - um sistema de inteligência que monitora operações comerciais e alerta o CEO sobre problemas críticos. Retorne APENAS JSON válido, sem markdown ou texto adicional."
+        }
+      },
+      "id": "e5c5f861-ae12-4627-98a4-f7db2cfca9c8",
+      "name": "Groq Observer Analysis",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -48,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// O AI Agent retorna o JSON parseado\nconst agentOutput = $input.item.json;\n\n// Extrair os alertas\nlet alerts = [];\n\nif (agentOutput.output) {\n  if (typeof agentOutput.output === 'string') {\n    try {\n      const parsed = JSON.parse(agentOutput.output);\n      alerts = parsed.alerts || [];\n    } catch (e) {\n      const jsonMatch = agentOutput.output.match(/\\{[\\s\\S]*\\}/);\n      if (jsonMatch) {\n        const parsed = JSON.parse(jsonMatch[0]);\n        alerts = parsed.alerts || [];\n      }\n    }\n  } \n  else if (typeof agentOutput.output === 'object') {\n    alerts = agentOutput.output.alerts || [];\n  }\n}\n\nif (!alerts || alerts.length === 0) {\n  return [];\n}\n\n// Enriquecer cada alerta com metadata\nconst enrichedAlerts = alerts.map(alert => {\n  return {\n    json: {\n      alert_type: alert.alert_type || 'unknown',\n      severity: alert.severity || 'medium',\n      title: alert.title || 'Alerta sem título',\n      description: alert.description || '',\n      suggested_action: alert.suggested_action || '',\n      affected_team_members: alert.affected_team_members || [],\n      related_message_ids: alert.related_message_ids || [],\n      context: {\n        observer_run_id: $execution.id,\n        analyzed_at: new Date().toISOString()\n      },\n      status: 'pending',\n      sent_to_whatsapp: false,\n      contact_id: null,\n      api_key: null\n    }\n  };\n});\n\nreturn enrichedAlerts;"
+      },
+      "id": "5d5db44d-183b-447a-92f2-c5df085e1a8b",
+      "name": "Parse Resposta",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-alerts",
+              "leftValue": "={{ $input.all().length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0dab9f05-25dc-4a50-9df1-bb1f4cc67414",
+      "name": "Tem Alertas?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "mottivme_intelligence_system",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "alerts",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "alert_type": "={{ $json.alert_type }}",
+            "severity": "={{ $json.severity }}",
+            "title": "={{ $json.title }}",
+            "description": "={{ $json.description }}",
+            "suggested_action": "={{ $json.suggested_action }}",
+            "affected_team_members": "={{ $json.affected_team_members }}",
+            "related_messages": "={{ $json.related_message_ids }}",
+            "context": "={{ JSON.stringify($json.context) }}",
+            "status": "={{ $json.status }}",
+            "sent_to_whatsapp": "={{ $json.sent_to_whatsapp }}",
+            "contact_id": "={{ $json.contact_id }}",
+            "api_key": "={{ $json.api_key }}",
+            "notification_type": "whatsapp"
+          }
+        },
+        "options": {
+          "outputColumns": "*"
+        }
+      },
+      "id": "b6aa2cfc-a1e8-46ab-ba52-111b528a3ac6",
+      "name": "Salvar Alertas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1200,
+        -304
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE mottivme_intelligence_system.messages\nSET processed_by_observer = TRUE\nWHERE processed_by_observer = FALSE\n  AND created_at >= NOW() - INTERVAL '30 minutes';",
+        "options": {}
+      },
+      "id": "c11eab6d-4cb6-49a6-a959-fda77376501c",
+      "name": "Marcar como Processadas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1424,
+        -240
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    contact_id,\n    api_key,\n    name\nFROM mottivme_intelligence_system.alert_recipients\nWHERE is_active = TRUE\n  AND (\n    '{{ $json.alert_type }}' = ANY(alert_types)\n    OR alert_types IS NULL\n  )\n  AND CASE \n    WHEN min_severity = 'low' THEN TRUE\n    WHEN min_severity = 'medium' THEN '{{ $json.severity }}' IN ('medium', 'high', 'critical')\n    WHEN min_severity = 'high' THEN '{{ $json.severity }}' IN ('high', 'critical')\n    WHEN min_severity = 'critical' THEN '{{ $json.severity }}' = 'critical'\n    ELSE TRUE\n  END\nLIMIT 1;",
+        "options": {}
+      },
+      "id": "827f3d84-16df-484b-bad3-03390fd481cd",
+      "name": "Buscar Destinatário1",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        528,
+        -240
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pegar alerta do Parse Resposta\nconst alert = $('Parse Resposta').item.json;\n\n// Pegar destinatário (pode não existir se não houver match)\nconst recipientItems = $input.all();\n\nif (recipientItems.length === 0) {\n  // Sem destinatário encontrado - usar padrão\n  return {\n    json: {\n      ...alert,\n      contact_id: null,\n      api_key: null,\n      recipient_name: 'No recipient found',\n      skip_notification: true\n    }\n  };\n}\n\n// Pegar primeiro destinatário\nconst recipient = recipientItems[0].json;\n\n// Merge alerta + destinatário\nreturn {\n  json: {\n    ...alert,\n    contact_id: recipient.contact_id,\n    api_key: recipient.api_key,\n    recipient_name: recipient.name,\n    skip_notification: false\n  }\n};"
+      },
+      "id": "565db74a-80de-43f9-9159-cb1a771f8a86",
+      "name": "Merge Destinatário1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "name": "contact_id",
+              "value": "=uLbvwl1z2gYRuYZfZIOe",
+              "type": "string",
+              "id": "91e07bb5-079a-401a-8275-7365fefd2df1"
+            },
+            {
+              "name": "api key v2",
+              "value": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "type": "string",
+              "id": "db91b92f-eea7-436a-952a-9e6202f717be"
+            },
+            {
+              "name": "telefone",
+              "value": "={{ $json.telefone || '+1203634024083840' }}",
+              "type": "string",
+              "id": "f4ab3af9-62dc-4381-8f60-e7f30f9d6508"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "string",
+              "id": "a0b4bbf6-84eb-4c0b-8135-d4959a9da49d"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        304
+      ],
+      "id": "033f2727-446b-4ded-aefa-84811471db93",
+      "name": "Info_marina"
+    },
+    {
+      "parameters": {
+        "content": "1- Inserir dados no Supa Base",
+        "height": 416,
+        "width": 2192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -976,
+        -800
+      ],
+      "typeVersion": 1,
+      "id": "25daf04d-ec69-4740-8d8b-f571d11a28b9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "ia de analise\n",
+        "height": 416,
+        "width": 2192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -976,
+        -320
+      ],
+      "typeVersion": 1,
+      "id": "872f85a2-ef7d-4cbb-a9b6-d35377b5eb27",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "is-critical",
+              "leftValue": "={{ $('Formatar Alerta WhatsApp1').item.json.severity }}",
+              "rightValue": "critical",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8053cf71-1bc5-4c33-8f36-05979ba1ac33",
+      "name": "É Crítico?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "mis@mottivme.com",
+        "toEmail": "marcos@mottivme.com",
+        "subject": "=🚨 ALERTA CRÍTICO MIS - {{ $('Formatar Alerta WhatsApp').item.json.severity.toUpperCase() }}",
+        "options": {}
+      },
+      "id": "ec7d13c7-9dfc-48bf-ae5f-abc981a38d5a",
+      "name": "Enviar Email Crítico",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1648,
+        160
+      ],
+      "webhookId": "f0b8d5f4-89a8-4ffe-8021-c20e7b87759c",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "success",
+              "name": "whatsapp_success",
+              "value": "={{ !$('Enviar WhatsApp CEO').item.json.error }}",
+              "type": "boolean"
+            },
+            {
+              "id": "email_success",
+              "name": "email_success",
+              "value": "={{ $json.severity === 'critical' ? !$('Enviar Email Crítico').item?.json?.error : true }}",
+              "type": "boolean"
+            },
+            {
+              "id": "alert_id",
+              "name": "alert_id",
+              "value": "={{ $('Formatar Alerta WhatsApp1').item.json.alert_id }}",
+              "type": "string"
+            },
+            {
+              "id": "sent_to",
+              "name": "sent_to",
+              "value": "={{ [$('Formatar Alerta WhatsApp1').item.json.phone, $json.severity === 'critical' ? 'marcos@mottivme.com' : null].filter(x => x) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7a570650-e2df-485e-b19b-a3256be19ddb",
+      "name": "Preparar Update",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE alerts\nSET \n  status = CASE \n    WHEN {{ $json.whatsapp_success }} THEN 'sent'\n    ELSE 'failed'\n  END,\n  sent_at = CASE \n    WHEN {{ $json.whatsapp_success }} THEN NOW()\n    ELSE sent_at\n  END,\n  sent_to = CASE \n    WHEN {{ $json.whatsapp_success }} THEN ARRAY{{ $json.sent_to }}::text[]\n    ELSE sent_to\n  END,\n  attempts = attempts + 1,\n  last_attempt_at = NOW(),\n  error_message = CASE \n    WHEN NOT {{ $json.whatsapp_success }} THEN 'WhatsApp send failed'\n    WHEN NOT {{ $json.email_success }} THEN 'Email send failed'\n    ELSE NULL\n  END\nWHERE id = '{{ $json.alert_id }}'::uuid;",
+        "options": {}
+      },
+      "id": "d53bbc38-718c-48fb-a60e-edc6d8849943",
+      "name": "Atualizar Status Alerta",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2096,
+        288
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "emoji",
+              "name": "emoji",
+              "value": "={{ $json.severity === 'critical' ? '🚨🚨🚨' : $json.severity === 'high' ? '🚨' : '⚠️' }}",
+              "type": "string"
+            },
+            {
+              "id": "message",
+              "name": "message",
+              "value": "={{ $json.emoji }} *ALERTA MIS - {{ $json.severity.toUpperCase() }}*\n\n*{{ $json.title }}*\n\n📝 *Resumo:*\n{{ $json.summary }}\n\n👤 *De:* {{ $json.sender_name }} ({{ $json.sender_type }})\n{{ $json.is_group_message ? '👥 *Grupo:* ' + $json.group_name : '' }}\n⏰ *Quando:* {{ $json.message_created_at }}\n\n💡 *Recomendação:*\n{{ $json.recommendation }}\n\n📊 *Métricas Afetadas:*\n{{ $json.affected_metrics?.join('\\n• ') || 'N/A' }}\n\n⏱️ *Urgência:* {{ $json.action_urgency || 'N/A' }}\n📈 *Impacto Estimado:* {{ $json.estimated_impact || 'N/A' }}\n\n---\n🔗 ID Alerta: {{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "phone",
+              "name": "phone",
+              "value": "+5511999999999",
+              "type": "string"
+            },
+            {
+              "id": "alert_id",
+              "name": "alert_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "severity",
+              "name": "severity",
+              "value": "={{ $json.severity }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dbb1785a-2df6-4c24-ba98-896ef03851c4",
+      "name": "Formatar Alerta WhatsApp1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json['api key v2'] }}"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.contact_id }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.telefone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "35df47ae-d8c2-4bab-9457-e0c47532f2a4",
+      "name": "Enviar WhatsApp CEO",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        784,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "eda222be-4c27-4788-8264-3104a3e1c25b",
+        "options": {}
+      },
+      "id": "503ab435-feb4-466c-951e-81bbb36b369c",
+      "name": "Webhook CRM",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        2608,
+        -624
+      ],
+      "webhookId": "eda222be-4c27-4788-8264-3104a3e1c25b"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ================================================\n// 🎯 CRM EVENT PROCESSOR v2.0\n// Processa eventos de CRM de TODOS os clientes BPO\n// ================================================\n\nconst input = $input.item.json;\nconst body = input.body || input;\n\n// ================================================\n// 📋 MAPA DE CLIENTES\n// Mapeia Location ID → Info do Cliente\n// ================================================\n\nconst CLIENTES = {\n  // Exemplo: GoHighLevel Location ID\n  'hNLr4VcTDl5LJokBr2zP': {\n    client_id: 'dr-joao-dentista',\n    client_name: 'Dr. João - Dentista',\n    client_crm: 'ghl'\n  },\n  'kM3p2VdUEl6MKplCs3aQ': {\n    client_id: 'clinica-saude-plus',\n    client_name: 'Clínica Saúde+',\n    client_crm: 'ghl'\n  },\n  // ⚠️ ADICIONE TODOS OS SEUS CLIENTES AQUI!\n  // Para descobrir o Location ID:\n  // 1. Vá no GHL do cliente\n  // 2. Settings → Business Profile → Location ID\n};\n\n// ================================================\n// 🔍 IDENTIFICAR CLIENTE\n// ================================================\n\nconst locationId = \n  body.location?.id || \n  body.locationId || \n  body.location_id || \n  body.companyId;\n\nconst cliente = CLIENTES[locationId];\n\nif (!cliente) {\n  // Cliente não mapeado - registrar mesmo assim\n  console.log('⚠️ Cliente não mapeado:', locationId);\n}\n\nconst clientInfo = cliente || {\n  client_id: 'desconhecido-' + (locationId || 'no-id'),\n  client_name: 'Cliente Não Mapeado',\n  client_crm: 'unknown'\n};\n\n// ================================================\n// 📊 EXTRAIR DADOS DO EVENTO\n// ================================================\n\nconst eventType = \n  body.type || \n  body.event_type || \n  body.eventType || \n  'unknown';\n\nconst timestamp = new Date().toISOString();\n\n// Extrair Lead/Opportunity\nconst opportunity = body.opportunity || body.lead || body.contact || {};\nconst contact = body.contact || opportunity.contact || {};\n\n// Pipeline/Stage\nconst pipeline = opportunity.pipeline || body.pipeline || {};\nconst stage = opportunity.stage || body.stage || {};\nconst previousStage = body.previousStage || body.previous_stage || {};\n\n// ================================================\n// 🏷️ CATEGORIZAR EVENTO\n// ================================================\n\nlet eventCategory = 'other';\n\nif (eventType.toLowerCase().includes('opportunity') || \n    eventType.toLowerCase().includes('lead')) {\n  eventCategory = 'lead';\n} else if (eventType.toLowerCase().includes('appointment') ||\n           eventType.toLowerCase().includes('calendar')) {\n  eventCategory = 'appointment';\n} else if (eventType.toLowerCase().includes('task')) {\n  eventCategory = 'task';\n} else if (eventType.toLowerCase().includes('call')) {\n  eventCategory = 'call';\n} else if (eventType.toLowerCase().includes('sale') || \n           eventType.toLowerCase().includes('won')) {\n  eventCategory = 'sale';\n} else if (eventType.toLowerCase().includes('note') ||\n           eventType.toLowerCase().includes('message')) {\n  eventCategory = 'interaction';\n}\n\n// ================================================\n// ✅ DETERMINAR OUTCOME\n// ================================================\n\nlet outcome = null;\n\nif (eventType.toLowerCase().includes('won') || \n    eventType.toLowerCase().includes('sale')) {\n  outcome = 'won';\n} else if (eventType.toLowerCase().includes('lost')) {\n  outcome = 'lost';\n} else if (eventType.toLowerCase().includes('no_show') || \n           eventType.toLowerCase().includes('noshow')) {\n  outcome = 'no_show';\n} else if (eventType.toLowerCase().includes('completed')) {\n  outcome = 'completed';\n} else if (eventType.toLowerCase().includes('cancelled') ||\n           eventType.toLowerCase().includes('canceled')) {\n  outcome = 'cancelled';\n}\n\n// ================================================\n// ⏱️ CALCULAR MÉTRICAS DE TEMPO\n// ================================================\n\n// Response Time (se lead foi contatado)\nlet responseTimeMinutes = null;\nif (opportunity.created_at && opportunity.first_contacted_at) {\n  const created = new Date(opportunity.created_at);\n  const contacted = new Date(opportunity.first_contacted_at);\n  responseTimeMinutes = Math.round((contacted - created) / (1000 * 60));\n}\n\n// Stage Duration (quanto tempo ficou no stage anterior)\nlet stageDurationHours = null;\nif (previousStage.entered_at && timestamp) {\n  const entered = new Date(previousStage.entered_at);\n  const moved = new Date(timestamp);\n  stageDurationHours = parseFloat(((moved - entered) / (1000 * 60 * 60)).toFixed(2));\n}\n\n// ================================================\n// 💰 EXTRAIR VALOR\n// ================================================\n\nconst leadValue = parseFloat(\n  opportunity.monetary_value || \n  opportunity.value || \n  opportunity.amount ||\n  body.value ||\n  0\n);\n\n// ================================================\n// 👤 INFORMAÇÕES DO LEAD\n// ================================================\n\nconst leadId = opportunity.id || contact.id || body.contact_id;\nconst leadName = \n  opportunity.name || \n  contact.name || \n  contact.full_name || \n  contact.firstName + ' ' + contact.lastName ||\n  'Lead sem nome';\n\nconst leadPhone = \n  opportunity.phone || \n  contact.phone || \n  contact.phoneNumber;\n\nconst leadEmail = \n  opportunity.email || \n  contact.email;\n\nconst leadSource = \n  opportunity.source || \n  contact.source || \n  body.source ||\n  null;\n\n// ================================================\n// 👥 INFORMAÇÕES DO TIME\n// ================================================\n\nconst assignedTo = opportunity.assigned_to || opportunity.assignedTo || {};\n\nconst assignedToName = \n  assignedTo.name || \n  assignedTo.fullName ||\n  opportunity.user_name ||\n  body.user?.name ||\n  null;\n\nconst assignedToRole = \n  assignedTo.role ||\n  (assignedToName?.toLowerCase().includes('sdr') ? 'sdr' : null) ||\n  (assignedToName?.toLowerCase().includes('closer') ? 'closer' : null) ||\n  'unknown';\n\n// ================================================\n// 📦 MONTAR OBJETO FINAL\n// ================================================\n\nconst evento = {\n  // Cliente\n  client_id: clientInfo.client_id,\n  client_name: clientInfo.client_name,\n  client_crm: clientInfo.client_crm,\n  location_id: locationId,\n  \n  // Evento\n  event_type: eventType,\n  event_category: eventCategory,\n  \n  // Lead\n  lead_id: leadId,\n  lead_name: leadName,\n  lead_phone: leadPhone,\n  lead_email: leadEmail,\n  lead_value: leadValue,\n  lead_source: leadSource,\n  \n  // Pipeline\n  pipeline_id: pipeline.id,\n  pipeline_name: pipeline.name,\n  stage_id: stage.id,\n  stage_name: stage.name,\n  previous_stage_id: previousStage.id || null,\n  previous_stage_name: previousStage.name || null,\n  \n  // Resultado\n  outcome: outcome,\n  outcome_reason: body.reason || opportunity.lost_reason || null,\n  \n  // Time\n  assigned_to_name: assignedToName,\n  assigned_to_role: assignedToRole,\n  \n  // Performance\n  response_time_minutes: responseTimeMinutes,\n  stage_duration_hours: stageDurationHours,\n  \n  // Raw (para debug)\n  raw_data: body,\n  \n  // Status\n  processed: false\n};\n\n// ================================================\n// 🎯 LOGGING\n// ================================================\n\nconsole.log('📊 CRM Event Captured:', {\n  client: evento.client_name,\n  event: evento.event_type,\n  lead: evento.lead_name,\n  value: evento.lead_value\n});\n\n// ================================================\n// ✅ RETORNAR\n// ================================================\n\nreturn { json: evento };"
+      },
+      "id": "efe92d6c-8571-4c8d-a512-1034e57f8bec",
+      "name": "Processar Evento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2832,
+        -624
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "mottivme_intelligence_system",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "crm_events",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "8ebe02fb-ad64-4b8c-bc09-2ccc87ecb365",
+      "name": "Salvar no Supabase",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        3056,
+        -624
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "w2mBaRwhZ3tM4FUw",
+          "name": "Postgres Marcos Daniels"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "is-important",
+              "leftValue": "={{ $json.event_category }}",
+              "rightValue": "sale",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cecf7e4d-9ce8-48a0-9cd3-d3ff5a46fa57",
+      "name": "É Venda?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3280,
+        -624
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "message",
+              "name": "notification",
+              "value": "=💰 *VENDA FECHADA!*\n\n*Cliente BPO:* {{ $('Processar Evento').item.json.client_name }}\n*Lead:* {{ $('Processar Evento').item.json.lead_name }}\n*Valor:* R$ {{ $('Processar Evento').item.json.lead_value.toFixed(2) }}\n*Pipeline:* {{ $('Processar Evento').item.json.pipeline_name }} → {{ $('Processar Evento').item.json.stage_name }}\n{{ $('Processar Evento').item.json.assigned_to_name ? '*SDR/Closer:* ' + $('Processar Evento').item.json.assigned_to_name : '' }}\n\n🎉 Parabéns ao time!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "17b4e825-4dea-4546-8a9d-215877fb9023",
+      "name": "Formatar Notificação",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3504,
+        -688
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.whatsapp.com/send",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"phone\": \"+5511999999999\",\n  \"message\": \"{{ $json.notification }}\"\n}",
+        "options": {}
+      },
+      "id": "abc2c2ea-5d42-4a6c-b7fc-30d0f84b33a8",
+      "name": "Notificar Venda (Opcional)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3728,
+        -688
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "HWXR7bwkc8xeWnqx",
+          "name": "Rapidly - marcos"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  status: 'success',\n  event_id: $('Salvar no Supabase').item.json.id,\n  client_id: $('Processar Evento').item.json.client_id,\n  event_type: $('Processar Evento').item.json.event_type\n} }}",
+        "options": {}
+      },
+      "id": "7c8b8cb9-27a3-427c-8059-87442c245906",
+      "name": "Resposta OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        3952,
+        -624
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📊 CRM EVENT COLLECTOR\n\n**Captura eventos de CRM:**\n• Lead criado/movido\n• Reunião marcada/faltou\n• Venda ganha/perdida\n• Tarefa completada\n• Ligação realizada\n\n**Salva no Supabase para:**\n• Dashboards em tempo real\n• Cálculo de métricas\n• Alertas de performance\n• ROI do BPO\n\n**Setup:**\n1. Editar CLIENTES no código\n2. Configurar webhooks no GHL\n3. Ativar workflow",
+        "height": 400,
+        "width": 300,
+        "color": 5
+      },
+      "id": "ac3c4483-e031-41b7-bef1-add85ba53ae0",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2512,
+        -864
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 * * *"
+            }
+          ]
+        }
+      },
+      "id": "328535d7-f80a-40b2-8e3a-326b567ee899",
+      "name": "Todo Dia 00:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        2608,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Calcular métricas do dia anterior\nSELECT mottivme_intelligence_system.calcular_metricas_diarias(CURRENT_DATE - 1) as clientes_processados;",
+        "options": {}
+      },
+      "id": "95716dc4-aa03-43bf-8710-234368b2240f",
+      "name": "Calcular Métricas Dia Anterior",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2832,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "log",
+              "name": "log_message",
+              "value": "=✅ Métricas calculadas: {{ $json.clientes_processados }} clientes processados para {{ $now.minus({days: 1}).toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "13cc8f28-5024-4ea0-be45-3c47587be40b",
+      "name": "Log Resultado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3056,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🧮 DAILY METRICS CALCULATOR\n\n**Roda todo dia às 00:00**\n\n**O que faz:**\n• Pega todos os eventos de ontem\n• Calcula métricas por cliente:\n  - Leads novos\n  - Reuniões\n  - Vendas\n  - Show rate\n  - Conversão\n  - Tempo resposta\n• Salva em client_metrics_daily\n\n**Resultado:**\n• Histórico consolidado\n• Base para gráficos\n• Comparações temporais",
+        "height": 360,
+        "width": 280,
+        "color": 6
+      },
+      "id": "a7a9443c-4a36-4cce-8e54-e28a8517a534",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2528,
+        -592
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "id": "a0266be5-e35a-4917-b1c6-3e84f24599f6",
+      "name": "A Cada 1 Hora",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        2608,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Verificar alertas de performance\nSELECT * FROM mottivme_intelligence_system.verificar_alertas_performance();",
+        "options": {}
+      },
+      "id": "27447b91-99e5-4ce5-87c1-a6343d56ffae",
+      "name": "Verificar Alertas Performance",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2832,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "mottivme_intelligence_system",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "alerts",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "severity": "={{ $json.severity }}",
+            "alert_type": "={{ $json.alert_type }}",
+            "title": "=Performance abaixo da meta - {{ $json.client_name }}",
+            "summary": "={{ $json.message }}",
+            "recommendation": "=Verificar operação do cliente {{ $json.client_name }} - {{ $json.alert_type.replace('_', ' ') }}",
+            "affected_metrics": "=[\"{{ $json.alert_type }}\"]"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "88aa46a7-ac77-4c04-90b7-5e5dca642b68",
+      "name": "Criar Alertas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        3280,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "count",
+              "name": "alertas_criados",
+              "value": "={{ $json.length }}",
+              "type": "number"
+            },
+            {
+              "id": "summary",
+              "name": "resumo",
+              "value": "=🚨 {{ $json.length }} alerta(s) de performance criado(s)",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "63d4018d-6c30-453e-a330-2a9dc2e84bbe",
+      "name": "Resumo Alertas",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3504,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-alerts",
+              "leftValue": "={{ $json.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5178f0fe-21cc-41f8-b016-413e22df475b",
+      "name": "Tem Alertas?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3056,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📈 PERFORMANCE MONITOR\n\n**Roda a cada 1 hora**\n\n**Verifica:**\n• Show rate abaixo da meta\n• Conversão abaixo da meta\n• Clientes sem vendas (após 15h)\n\n**Ação:**\n• Cria alerta na tabela alerts\n• Workflow 3 envia para CEO\n\n**Severidade:**\n• CRITICAL: >20% abaixo meta\n• HIGH: >10% abaixo meta\n• MEDIUM: abaixo da meta\n\n**Resultado:**\n• CEO sabe problemas antes do cliente reclamar!",
+        "height": 400,
+        "width": 300,
+        "color": 3
+      },
+      "id": "1cfe37d8-cc35-48ca-b5ec-bdfa77b2c490",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2512,
+        -416
+      ]
+    }
+  ],
+  "pinData": {
+    "Run Every 5min": [
+      {
+        "json": {
+          "timestamp": "2025-11-11T18:20:45.004-03:00",
+          "Readable date": "November 11th 2025, 6:20:45 pm",
+          "Readable time": "6:20:45 pm",
+          "Day of week": "Tuesday",
+          "Year": "2025",
+          "Month": "November",
+          "Day of month": "11",
+          "Hour": "18",
+          "Minute": "20",
+          "Second": "45",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "cliente-a1.mentorfy.io",
+            "user-agent": "axios/1.12.2",
+            "content-length": "5482",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "traceparent": "00-314ac98fa0b5695654a3358a9eb9d8d5-7c763bfa4105db21-00",
+            "x-forwarded-for": "136.115.214.231",
+            "x-forwarded-host": "cliente-a1.mentorfy.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "9e2d5292a02e",
+            "x-real-ip": "136.115.214.231"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "Products": "",
+            "Prospects Campaign": "",
+            "Clients Campaign": "",
+            "Policies": "",
+            "Agency Campaign": "",
+            "Start Date": "",
+            "Language": "",
+            "Upline Agent": "",
+            "Gender": "",
+            "Product Categories": "",
+            "Compensation Level": "",
+            "Recruiting Campaign": "",
+            "Agent Status": "",
+            "Product Types": "",
+            "ScoreContato": "",
+            "FUP_counter": "",
+            "Informações para AI": "",
+            "Resposta ia": "111669770461335 Marcos Daniel:\n\nTo estressado !!!",
+            "resp n8n": "",
+            "ativar/desativar IA": "",
+            "Funil": "",
+            "Are you looking for regular self-care routines or long-term treatments for specific needs?": "",
+            "Are you open to spa packages or memberships for ongoing self-care?": "",
+            "Call Overview": "",
+            "Resumo (AI Call)": "",
+            "¿Tienes conocimiento sobre en qué consiste un IUL o fondo de ahorro indexado?": "",
+            "Nombre": "",
+            "¿Tienes residencia legal en USA?": "",
+            "Teléfono": "",
+            "E-mail": "",
+            "E-mail2": "",
+            "tipo_agente_ia": "",
+            "Qual opção abaixo mais condiz com seu negócio hoje?": "",
+            "Qual o seu faturamento médio mensal?": "",
+            "Qual o seu cargo na empresa?": "",
+            "Profession (Profissão):": "",
+            "Marital Status (Estado Civil):": "",
+            "Social Security Number (SSN)/CPF:": "",
+            "Valor total contrato": "",
+            "Valor Mensal do Contrto": "",
+            "Forma de pagamento ": "",
+            "Data de Pagamento": "",
+            "workflow_type": "",
+            "content_type": "",
+            "tipo_workflow": "",
+            " tipo_conteudo": "",
+            "temperatura_trafego": "",
+            "nivel_urgencia": "",
+            "objetivo_campanha": "",
+            "status_producao": "",
+            "mercado_alvo": "",
+            "Qual o nome do produto ou serviço?": "",
+            "nicho_especifico": "",
+            "Qual é o seu nome ou nome da sua marca?": "",
+            "ai_processing_status": "",
+            "ai_workflow_id": "",
+            "ai_started_at": "",
+            "ai_processed_at": "",
+            "publico_alvo": "",
+            "idade_renda": "",
+            "comportamento_consumo": "",
+            "dores_principais": "",
+            "desejos_principais": "",
+            "objecoes_comuns": "",
+            "formacao_estilo_vida": "",
+            "descricao_oferta": "",
+            "mecanismo_unico": "",
+            "resultado_prometido": "",
+            "garantia": "",
+            "bonus_extras": "",
+            "diferencial_competitivo": "",
+            "referencias_concorrentes": "",
+            "Conte-nos sobre você e sua experiência": "",
+            "observacoes_internas": "",
+            "preco_produto": "",
+            "Valor Mensal": "",
+            "Duração (meses)": "",
+            "Formas de Pagamento": "",
+            "Data de Início": "",
+            "Data de Término": "",
+            "Status do Contrato": "",
+            "Dia de Vencimento": "",
+            "Última Invoice Enviada": "",
+            "Status de Pagamento": "",
+            "Próximo Vencimento": "",
+            "Data do Último Pagamento": "",
+            "Total de Invoices Enviadas": "",
+            "Total Pago (Lifetime)": "",
+            "Lembretes Enviados": "",
+            "Data da Última Renovação": "",
+            "Quantidade de Renovações": "",
+            "3. Qual foi aproximadamente o faturamento médio dos últimos 3 meses?": "",
+            "2. Hoje sua empresa utiliza algum sistema de CRM?": "",
+            "1. Qual é o nome da sua empresa e em que segmento você atua?": "",
+            "5. Você acompanha indicadores como taxa de conversão, ticket médio e origem dos leads?": "",
+            "7. Quais são os principais desafios que você enfrenta hoje para aumentar suas vendas?": "",
+            "9. Em uma escala de 0 a 10, quanto você diria que sua área comercial está organizada hoje?": "",
+            "4. Seu processo de vendas hoje é estruturado ou mais intuitivo?": "",
+            "6. Hoje você possui algum programa de indicação ou recomendação de clientes?": "",
+            "8. Qual é a meta de faturamento que você deseja atingir nos próximos 90 dias?": "",
+            "10. Você teria disponibilidade para participar de uma reunião diagnóstica gratuita com um especialista Vertex nos próximos dias?": "",
+            "Você consegue guardar pelo menos 10-20% da sua renda TODO MÊS para pagar a si mesmo PRIMEIRO (antes das contas)?": "",
+            "Você tem um plano de aposentadoria além do Social Security?": "",
+            "Você otimiza seus impostos ou conhece estratégias para pagar menos legalmente?": "",
+            "Você tem um fundo de emergência para 3-6 meses de despesas?": "",
+            "Qual sua situação com dívidas hoje?": "",
+            "Se algo grave acontecer com você amanhã, sua família fica protegida?": "",
+            "Com que frequência você busca aprender sobre finanças e investimentos?": "",
+            "Escolha Indivíduo 27ao5": "",
+            "DNA Extraido": "",
+            "Engenharia Reversa": "",
+            "Configuração do Clone": "",
+            "Clone": "",
+            "Gerar DNA": "",
+            "Anos de Experiência": "",
+            "Preferência áudio/texto": "",
+            "ID cliente - Asaas": "",
+            "ID cobrança - Asaas": "",
+            "Status cobrança - Asaas": "",
+            "Permitir chamadas WhatsApp": "",
+            "contact_id": "uLbvwl1z2gYRuYZfZIOe",
+            "first_name": "Mottivme",
+            "last_name": "Intelligence System GRUPO",
+            "full_name": "Mottivme Intelligence System GRUPO",
+            "email": "120363424085741274@g.us",
+            "phone": "+1203634240857412",
+            "tags": "grupobposs",
+            "country": "BR",
+            "date_created": "2025-11-11T20:31:22.138Z",
+            "full_address": "",
+            "contact_type": "lead",
+            "location": {
+              "name": "Mottivme Sales",
+              "address": "ALAMEDA RIO NEGRO, 503 – SALA 2005 BAIRRO: ALPHAVILLE CENTRO INDUSTRIAL E EMPRESARIAL/ALPHAV",
+              "city": "Barueri",
+              "state": "São Paulo",
+              "country": "BR",
+              "postalCode": "06454000",
+              "fullAddress": "ALAMEDA RIO NEGRO, 503 – SALA 2005 BAIRRO: ALPHAVILLE CENTRO INDUSTRIAL E EMPRESARIAL/ALPHAV, Barueri São Paulo 06454000",
+              "id": "cd1uyzpJox6XPt4Vct8Y"
+            },
+            "message": {
+              "type": 20,
+              "body": "111669770461335 Marcos Daniel:\n\nTo estressado !!!"
+            },
+            "workflow": {
+              "id": "023cbf71-3bd2-42f2-b874-a8bc947aa2f5",
+              "name": "1. AI Chat N8N - Terceiros"
+            },
+            "triggerData": {},
+            "customData": {
+              "ID": "uLbvwl1z2gYRuYZfZIOe",
+              "message": "111669770461335 Marcos Daniel:\n\nTo estressado !!!",
+              "name": "Mottivme",
+              "tipo": "msg",
+              "ghl_api_key": "pit-fe627027-b9cb-4ea3-aaa4-149459e66a03",
+              "preco": "",
+              "tempo": "",
+              "regiao": "",
+              "info": "",
+              "timezone": "America/New_York",
+              "calendarID": "wKmqH9QKzNzq134x82fs",
+              "phone": "+1 203634240857412",
+              "messagebody": "111669770461335 Marcos Daniel:\n\nTo estressado !!!",
+              "n8n_ativo": "",
+              "Funil": "",
+              "oportunidade": "",
+              "attachments": "",
+              "subject": ""
+            }
+          },
+          "webhookUrl": "https://cliente-a1.mentorfy.io/webhook/grupo-bposs",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Run Every 30min": [
+      {
+        "json": {
+          "timestamp": "2025-11-11T18:30:02.040-03:00",
+          "Readable date": "November 11th 2025, 6:30:02 pm",
+          "Readable time": "6:30:02 pm",
+          "Day of week": "Tuesday",
+          "Year": "2025",
+          "Month": "November",
+          "Day of month": "11",
+          "Hour": "18",
+          "Minute": "30",
+          "Second": "02",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Processar Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Dados": {
+      "main": [
+        [
+          {
+            "node": "Salvar Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Groq Observer Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Executar Manualmente": {
+      "main": [
+        [
+          {
+            "node": "Criar Schema",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Schema": {
+      "main": [
+        [
+          {
+            "node": "Verificar Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Messages": {
+      "main": [
+        [
+          {
+            "node": "Não Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Não Existe?": {
+      "main": [
+        [
+          {
+            "node": "Criar Tabela Messages1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Já Existe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inserir Teste": {
+      "main": [
+        [
+          {
+            "node": "Sucesso1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Tabela Messages1": {
+      "main": [
+        [
+          {
+            "node": "Criar Tabela Alerts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Tabela Alerts1": {
+      "main": [
+        [
+          {
+            "node": "Inserir Teste",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Every 5min": {
+      "main": [
+        [
+          {
+            "node": "Buscar Alertas Pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Alertas Pendentes": {
+      "main": [
+        [
+          {
+            "node": "Tem Alertas?2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Alertas?2": {
+      "main": [
+        [
+          {
+            "node": "Formatar Alerta WhatsApp1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Every 30min": {
+      "main": [
+        [
+          {
+            "node": "Buscar Mensagens Não Processadas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Mensagens Não Processadas": {
+      "main": [
+        [
+          {
+            "node": "Tem Mensagens?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Mensagens?": {
+      "main": [
+        [
+          {
+            "node": "Preparar Dados pro Claude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Dados pro Claude": {
+      "main": [
+        [
+          {
+            "node": "Groq Observer Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Observer Analysis": {
+      "main": [
+        [
+          {
+            "node": "Parse Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Resposta": {
+      "main": [
+        [
+          {
+            "node": "Buscar Destinatário1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Alertas?": {
+      "main": [
+        [
+          {
+            "node": "Salvar Alertas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Marcar como Processadas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Alertas": {
+      "main": [
+        [
+          {
+            "node": "Marcar como Processadas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Destinatário1": {
+      "main": [
+        [
+          {
+            "node": "Merge Destinatário1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Destinatário1": {
+      "main": [
+        [
+          {
+            "node": "Tem Alertas?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info_marina": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp CEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É Crítico?": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email Crítico",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Preparar Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Email Crítico": {
+      "main": [
+        [
+          {
+            "node": "Preparar Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Update": {
+      "main": [
+        [
+          {
+            "node": "Atualizar Status Alerta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Alerta WhatsApp1": {
+      "main": [
+        [
+          {
+            "node": "Info_marina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp CEO": {
+      "main": [
+        [
+          {
+            "node": "Marcar como Enviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook CRM": {
+      "main": [
+        [
+          {
+            "node": "Processar Evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Evento": {
+      "main": [
+        [
+          {
+            "node": "Salvar no Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar no Supabase": {
+      "main": [
+        [
+          {
+            "node": "É Venda?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É Venda?": {
+      "main": [
+        [
+          {
+            "node": "Formatar Notificação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resposta OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Notificação": {
+      "main": [
+        [
+          {
+            "node": "Notificar Venda (Opcional)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificar Venda (Opcional)": {
+      "main": [
+        [
+          {
+            "node": "Resposta OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Todo Dia 00:00": {
+      "main": [
+        [
+          {
+            "node": "Calcular Métricas Dia Anterior",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Métricas Dia Anterior": {
+      "main": [
+        [
+          {
+            "node": "Log Resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A Cada 1 Hora": {
+      "main": [
+        [
+          {
+            "node": "Verificar Alertas Performance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Alertas Performance": {
+      "main": [
+        [
+          {
+            "node": "Tem Alertas?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criar Alertas": {
+      "main": [
+        [
+          {
+            "node": "Resumo Alertas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Alertas?1": {
+      "main": [
+        [
+          {
+            "node": "Criar Alertas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "78209aa7-9e09-4754-8e5e-c72eee36085b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  },
+  "id": "CM8P2wYysWADUX6r",
+  "tags": []
+}

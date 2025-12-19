@@ -1,0 +1,670 @@
+﻿CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE BPO - SOCIAL SELLING MOTTIVME SALES POR PRAZO DETERMINADO
+	
+
+
+
+DAS PARTES:
+
+
+MOTTIVME SALES LTDA, pessoa jurídica de direito privado, inscrita no CNPJ sob o n° 32.408.090/0001-40, com sede na Alameda Rio Negro, 503 Conj 2005 - Alphaville Centro Industrial e Empresarial/Alphav, Barueri - SP, CEP: 06454-000.
+	
+
+Pelo presente contrato particular, a parte acima qualificada, doravante denominada apenas CONTRATADA, firmar o presente Contrato de Prestação de Serviço com: 
+
+
+{{CONTRATANTE}}, inscrito no {{DOCUMENTO}}, Address: {{ENDERECO}}, e-mail address: {{e-mail address}}, number: {{number}}.
+	
+
+Doravante denominada apenas CONTRATANTE, estando ciente de que as particularidades da Prestação de Serviços reger-se-ão mediante as seguintes condições:
+
+
+PRELIMINARES 
+
+
+1. A CONTRATADA desenvolveu uma metodologia especializada para otimizar e escalar encontros estratégicos com o público-alvo ideal do CONTRATANTE. Essa metodologia oferece estratégias e execução de prospecções ativa, utilizando de forma eficiente as redes sociais e plataformas digitais, com o objetivo de maximizar o alcance e a conversão de leads qualificados.
+
+
+2. Tendo em vista o objetivo do CONTRATANTE de aprimorar suas operações comerciais e escalar a prospecção de clientes através de estratégias desenvolvidas pela CONTRATADA, as partes celebram o presente contrato, fundamentando-se nos princípios de ética, boa-fé, e probidade, comprometendo-se a cumprir rigorosamente as disposições e condições estabelecidas neste contrato.
+
+
+3. A CONTRATADA, reconhece a relevância de resguardar preceitos da legislação consumerista, declara seu firme compromisso com a observância das normas estabelecidas pela legislação. 
+
+
+4. O CONTRATANTE reconhece e concorda que a CONTRATADA, no desempenho de suas obrigações contratuais, atuará de acordo com as melhores práticas. O CONTRATANTE se compromete a fornecer todas as informações e cooperar com a CONTRATADA de forma completa e tempestiva, conforme necessário para a execução dos serviços contratados.
+
+
+DO OBJETO CONTRATUAL
+	
+
+Cláusula 1ª. O presente contrato tem como objeto a contratação dos serviços da CONTRATADA para o desenvolvimento e execução do projeto “BPO - SOCIAL SELLING MOTTIVME SALES”. Este projeto abrange a gestão e operacionalização das atividades de Social Selling, conforme descrito e detalhado no escopo deste contrato, objetivo de maximizar o alcance e a conversão de leads qualificados.
+
+
+DA PRESTAÇÃO DE SERVIÇOS
+	
+
+Cláusula 2ª. O serviço a ser prestado pela CONTRATADA engloba a execução das atividades descritas a seguir. A CONTRATADA se compromete a realizar cada atividade com a máxima diligência e qualidade, seguindo as diretrizes estabelecidas neste contrato, conforme as especificações detalhadas abaixo:  
+
+
+PARTE 01 - ESTRUTURAÇÃO DE BASE DE DADOS:
+
+
+* Implantação e/ou ajustes para performance comercial com CRM: Implantação e/ou ajustes de um sistema CRM de acordo com as necessidades do cliente para a gestão de contatos, atividades de vendas, atendimento ao cliente e funil de vendas. 
+
+
+* Segmentação de Contatos: Definição e implementação de uma estratégia de segmentação de contatos para melhorar o direcionamento de mensagens e oportunidades de negócios. 
+
+
+* Implantação do Processo de Inteligência de Dados: Implementação de um processo para coleta, análise, compartilhamento e monitoramento de informações que oferecem suporte à gestão do negócio.
+ 
+PARTE 02 - IMPLANTAÇÃO DO MODUS OPERANDI: 
+
+
+* Definição dos Processos de Armazenagem e Curadoria dos Dados: Definição e implementação de processos que garantam a integridade, segurança, qualidade e acessibilidade dos dados. 
+
+
+* Estabelecimento de Hábitos Primários e Secundários: Definição e implementação de rotinas e procedimentos para as operações diárias e estratégicas do comercial. 
+
+
+PARTE 03 - IMPLANTAÇÃO DO MARKETING OPERACIONAL:
+
+
+* Canais de Comunicação: Implementação de canais adequados ao público-alvo, sendo neste contrato a plataforma Instagram o canal principal.
+
+
+* Definição das Estratégias Outbound (Social Selling): Desenvolvimento de estratégias de prospecção ativa baseadas em conexão genuína, rapport e técnicas de engajamento estruturadas.. 
+
+
+* Infraestrutura de Outbound: Estruturação completa da operação de prospecção ativa, com definição de processos, ferramentas e treinamento da equipe terceirizada designada.
+
+PARTE 04 -  IMPLANTAÇÃO E EXECUÇÃO DA OPERAÇÃO:
+
+
+   * Implantação de Funis e Modelos de Conversão: Implementação e acompanhamento dos funis validados pela CONTRATADA, com ajustes constantes para garantir performance e aderência ao mercado.
+
+
+FERRAMENTAS A SEREM UTILIZADAS:
+
+
+   * CRM: Utilizaremos a plataforma Kommo (https://www.socialfy.me). Essa ferramenta possibilita o gerenciamento de contatos, vendas e serviços ao cliente, além de permitir a visualização de funil de vendas. 
+   * Notificação de Clientes: O serviço Socialfy (https://socialfy.me/) será usado para notificar os clientes sobre compromissos, prazos e atualizações importantes, no caso da não utilização da plataforma indicada, não nos responsabilizamos por remarcações. (plataforma não inclusa no valor do contrato).
+
+
+A CONTRATADA reserva-se o direito de identificar e avaliar a necessidade de ferramentas adicionais que possam ser essenciais para a otimização das operações da empresa. Em consonância com o compromisso de garantir a máxima eficiência e eficácia nas atividades, a CONTRATADA se dedicará à busca e implementação das melhores soluções tecnológicas disponíveis. Qualquer ferramenta adicional necessária será proposta e justificada com base nas exigências operacionais específicas, com o objetivo de assegurar que as operações sejam realizadas com a mais alta qualidade e alinhadas às necessidades do CONTRATANTE.
+
+
+UTILIZAÇÃO DE FUNIS VALIDADOS:
+
+
+A CONTRATADA utilizará funis validados e eficaz para nichos comerciais que buscam otimizar e resolver as necessidades de outros negócios. Considerando que o Instagram do avatar fornece informações detalhadas sobre o modelo de negócio, essas informações são aproveitadas estrategicamente durante a abordagem. A CONTRATADA realizará a identificação e seleção de leads qualificados para abordagem, seguindo a hierarquia estabelecida abaixo:
+
+
+   1. Lead com interação direta em postagens (ou story).
+   2. Leads que seguem o perfil.
+   3. Público frio (desde que o Instagram indique que o lead seja um avatar do seu modelo de negócio).
+
+
+Ressalva-se que o ideal é:
+
+
+   1. Prospectar de 10 até 30 pessoas por dia.
+   2. Respeitar essa disciplina diária é o maior segredo para garantir um potencial lucro líquido de forma orgânica todos os meses. 
+   3. Recomenda-se que o próprio especialista em ocasiões estratégicas envie áudio ou vídeo para maior engajamento. 
+
+
+A CONTRATADA implementará estratégias de pré vendas eficazes por meio da aplicação de funis já validados, incluindo, mas não se limitando, ao funil de Social Selling. Essas estratégias são especialmente projetadas para serviços que apresentam uma demanda consolidada no mercado. A escolha e aplicação desses funis visam otimizar a abordagem de marketing, buscando que as ações sejam alinhadas com as melhores práticas do setor e que os resultados atendam às expectativas de eficiência e eficácia. 
+
+
+O PROCESSO DO FUNIL SERÁ ESTRUTURADO E EXECUTADO CONFORME AS ETAPAS A SEGUIR:
+
+
+1. Estrutura do Funil de Conversão
+O processo de vendas a ser executado pela CONTRATADA será estruturado com base na metodologia validada Mottivme Sales, composta pelas seguintes etapas, aplicadas tanto para leads originados via tráfego pago (inbound) quanto prospecção ativa (outbound) via redes sociais:
+1.1 Prospecção e Entrada de Leads
+   * Outbound (Social Selling):
+Abordagem ativa e estratégica em perfis qualificados nas redes sociais do CONTRATANTE ou da operação designada, com mensagens personalizadas e técnicas de conexão baseadas em rapport, efeito halo e reciprocidade.
+
+   * Inbound (Tráfego Pago):
+Leads provenientes de formulários captados por campanhas de tráfego pago serão abordados de forma direta e objetiva, com base nas informações já fornecidas pelo próprio lead.
+
+1.2 Qualificação
+A CONTRATADA realizará a qualificação dos LEADS interessados nos serviços oferecidos pela CONTRATANTE, tais como Soroterapia, Protocolos de Emagrecimento, Implante Hormonal e demais procedimentos estéticos e de saúde integrativa, com base em critérios objetivos previamente definidos entre as Partes, incluindo, mas não se limitando a:
+      * Localização geográfica: Confirmação de que o LEAD reside em área compatível com o atendimento da CONTRATANTE.
+      * Capacidade de investimento: Avaliação preliminar se o LEAD possui condições financeiras compatíveis com os serviços.
+      * Adequação ao perfil: Verificação de que o LEAD atende aos requisitos mínimos para os procedimentos de interesse.
+LEADS que não atenderem aos critérios mínimos de qualificação serão automaticamente classificados como "Não Qualificados" no sistema de CRM, podendo ser direcionados para fluxos de nutrição ou descarte definitivo.
+Esses critérios são essenciais para garantir a adequação do LEAD aos serviços oferecidos e otimizar a taxa de conversão em agendamentos qualificados. A CONTRATADA poderá utilizar ferramentas tecnológicas, sistemas de CRM e inteligência artificial para apoiar a triagem dos LEADS, sendo toda a supervisão e decisões finais de qualificação conduzidas por operadores humanos.
+
+
+
+1.3 Follow-Up Manual e Automatizado
+      * A CONTRATADA utilizará um processo de follow-up baseado em cadência validada, com abordagens personalizadas e disparos automatizados, respeitando os critérios de comunicação acordados entre as Partes.
+
+      * O objetivo do follow-up é maximizar o comparecimento às consultas de avaliação e a conversão de leads qualificados.
+
+________________
+
+
+2. Do Agendamento de consultas de avaliação
+         * A CONTRATADA se compromete a realizar o agendamento de consultas de avaliação entre o CONTRATANTE e os LEADS, com base na disponibilidade fornecida pelo CONTRATANTE.
+
+         * O objetivo principal da atuação da CONTRATADA é o agendamento efetivo e qualificado.
+
+         * Em caso de cancelamento ou ausência do LEAD, a CONTRATADA realizará tentativas de reagendamento utilizando os mesmos padrões de abordagem.
+
+         * Em caso de cancelamento ou ausência por parte do CONTRATANTE, especialmente em caráter emergencial ou de última hora, caberá ao próprio CONTRATANTE realizar nova tentativa de agendamento ou solicitação formal de reagendamento.
+
+         * A CONTRATADA não garante a presença do lead na consulta de avaliação , tampouco pode se responsabilizar por fatores externos ao processo de agendamento.
+
+________________
+
+
+
+
+
+Parágrafo 1º.Essa abordagem estruturada adotada pela CONTRATADA possibilita a geração e gestão eficiente de leads, otimizando as oportunidades de conversão em consultas de avaliação qualificadas. A estrutura apresentada tem como objetivo maximizar a eficácia do processo de prospecção, com propósito de tratar os leads de maneira a potencializar os resultados das interações subsequentes.
+
+
+Parágrafo 2º. Todos os conteúdos, programas, módulos, manuais, códigos, documentos, artes, vídeos e quaisquer outros materiais produzidos e fornecidos ao CONTRATANTE serão de propriedade exclusiva da CONTRATADA, conforme o Art. 5º, inciso XXVII, da Constituição Federal e a Lei nº 9.610/98 (Lei de Direitos Autorais). O CONTRATANTE se compromete a não comercializar, ceder, doar, transferir ou disponibilizar tais materiais a terceiros sem a prévia autorização por escrito do CONTRATANTE. A utilização dos materiais será restrita ao uso interno e conforme os termos deste contrato. O descumprimento das disposições estabelecidas neste parágrafo resultará na adoção das medidas legais cabíveis para a proteção dos direitos de propriedade intelectual, conforme previsto no Art. 102 da Lei nº 9.610/98.
+
+
+Parágrafo 3º. Os serviços objeto deste contrato serão executados exclusivamente por profissionais da CONTRATADA ou terceirizados por esta, os quais serão devidamente habilitados e treinados para a realização das atividades contratadas. 
+
+
+DAS CONDIÇÕES DA PRESTAÇÃO DOS SERVIÇOS
+	
+
+Cláusula 3ª. Para assegurar a eficácia e a qualidade na execução dos serviços objeto deste contrato, são estabelecidas as seguintes condições, que regerão a forma e os padrões de prestação dos serviços. 
+
+
+Item I - Obrigações da CONTRATANTE: 
+
+
+            1. Fornecer as informações, dados, índices, especificações, entre outros documentos, necessárias para a realização do projeto que será realizado pela CONTRATADA. 
+            2. Acompanhar e aprovar a qualidade na execução dos serviços prestados pela CONTRATADA em cada consultas de avaliação agendada no processo.
+            3. Fornece a CONTRATADA todas as informações e elementos necessários ao início e ao desenvolvimento do processo do BPO DO SOCIAL SELLING Prestar o auxílio necessário à CONTRATADA, visando o regular desenvolvimento da presente contratação. 
+            4. Efetuar o pagamento de forma pontual e assídua. 
+            5. Fica responsável em realizar a contratação e pagamento de softwares e serviços de terceiros listados pelo CONTRATADO em caso de NECESSIDADE. 
+            6. O CONTRATANTE compromete-se a respeitar rigorosamente as disposições relacionadas à proteção de dados, à propriedade intelectual e às informações estratégicas obtidas em decorrência deste contrato. É terminantemente proibida a divulgação, reprodução ou utilização não autorizada dessas informações. O descumprimento de qualquer uma das obrigações acima mencionadas implicará na rescisão do contrato e na responsabilização do CONTRATANTE pelos danos eventualmente causados.
+
+
+Item II - Obrigações da CONTRATADA:
+ 
+            1. A CONTRATADA executará o projeto observando todas as orientações, especificações técnicas indicadas pelo CONTRATANTE, de acordo com os cronogramas e termos descritos no ANEXO I, o qual é parte integrante do presente instrumento.
+            2. A CONTRATADA se compromete em manter sigilo sobre as informações trocadas e geradas durante a execução das atividades do presente contrato, não revelar nem transmitir direta ou indiretamente as informações trocadas a terceiros que não estejam envolvidos no desenvolvimento do objeto deste contrato.  
+            3. Responder, em relação aos seus empregados, por todas as despesas decorrentes da execução do serviço e por outras correlatas, tais como salários, tributos, indenizações, benefícios. 
+            4. Fiscalizar regularmente os seus empregados designados para a prestação do serviço para verificar as condições em que o serviço está sendo prestado. 
+            5. Providenciar a imediata substituição de qualquer profissional que não atenda às necessidades devidamente fundamentadas, inerentes à execução dos serviços ao CONTRATANTE. 
+            6. Planejar, desenvolver, implantar, executar e manter os serviços objetos do contrato dentro dos níveis de serviços estabelecidos. 
+            7. Comunicar quaisquer problemas que venham a comprometer o bom andamento dos serviços ou o alcance dos níveis estabelecidos deverão ser imediatamente comunicados. 
+            8. Atividade de prospecção ativa realizada por terceiros especializados, com o objetivo de identificar e abordar potenciais leads para promover o agendamento de agendamento de consultas de avaliação com o CONTRATANTE;
+            9. Abordagem ativa de seguidores e não seguidores das redes sociais do CONTRATANTE, conduzida por terceiros especializados, com o objetivo de qualificar leads e convidá-los para agendamento de consultas de avaliação com o CONTRATANTE;
+            10. Para clientes que já investem em tráfego pago e que alinharam previamente essa condição no contrato, a CONTRATADA também terceiriza o processo de qualificação e conversão desses leads.
+            11. Caso o CONTRATANTE deseje modificar qualquer um desses processos após a formalização do presente contrato, será necessária a realização de uma reunião de alinhamento e a formalização de novo instrumento contratual, contemplando as eventuais mudanças acordadas.
+            12. A CONTRATADA esclarece que não realiza ligações telefônicas para agendamento de agendamento de consultas de avaliação. Todo o processo de comunicação com leads é realizado exclusivamente por meio de mensagens diretas via redes sociais ou, caso o WhatsApp do CONTRATANTE esteja integrado ao CRM utilizado pela CONTRATADA, também por meio de mensagens via WhatsApp.
+            13. Proteger todos os dados pessoais existentes no sistema conforme o que estabelece na Lei 13.709/18. 
+
+
+Item III – NÃO CUMPRIMENTO DAS OBRIGAÇÕES: 
+
+
+Parágrafo 1º. O não cumprimento das obrigações acordadas neste contrato sujeitará a parte infratora ao pagamento de multa contratual equivalente a 10% (dez por cento) do valor total do contrato. Durante o período em que a irregularidade não for sanada ou o contrato não for rescindido, os prazos estabelecidos para a conclusão dos serviços permanecerão suspensos. 
+
+
+Parágrafo 2º. O não cumprimento das obrigações assumidas pelo CONTRATANTE será causa de rescisão do contrato, viabilizando a ambas a apuração de eventuais perdas e danos. 
+
+
+Parágrafo 3º.  No caso de comercialização do Método, estratégias ou know-how obtido em decorrência deste contrato para finalidades diversas das previstas, a parte infratora estará sujeita ao pagamento de multa no valor de R$ 3.000 (três mil reais) , conforme o disposto no artigo 389 do Código Civil. Além da multa, poderão ser aplicadas outras sanções cabíveis, incluindo, mas não se limitando a medidas de tutela inibitória para suspender a comercialização e outras ações legais pertinentes, conforme previsto no artigo 461 do Código de Processo Civil.
+
+
+Parágrafo 4º.  O presente contrato é bilateral, impondo obrigações mútuas. A CONTRATADA poderá rescindir unilateralmente este contrato após a ocorrência de três notificações formais à contratante por incidentes que comprometam o cumprimento do objeto. Após a terceira notificação, o contrato será encerrado sem custos adicionais à CONTRATADA, que ficará isenta de penalidades. Todavia, a CONTRATANTE continuará responsável pelo pagamento de quaisquer valores pendentes até a data da rescisão.
+
+
+
+
+DAS COMUNICAÇÕES
+	
+
+Cláusula 4ª. As partes concordam que as comunicações referentes a este contrato, incluindo reuniões, solicitações de informações e outros, deverão ocorrer por meios eletrônicos, como e-mail ou plataformas de videoconferência, com reconhecimento mútuo de sua validade.
+
+
+Parágrafo Único. Fica estipulado que todas as datas e prazos mencionados no contrato seguirão o horário oficial de Brasília (BR), salvo disposição expressa em contrário acordada entre as partes.
+
+
+DO CRONOGRAMA E PRAZOS
+	
+
+Cláusula 5ª. O presente contrato terá vigência pelo prazo de {{Meses de Contrato inicial}} {{Meses de Contrato inicial por escrito}}, compreendendo o período inicial em de {{início do contrato}}. O contrato poderá ser prorrogado por igual período, mediante notificação do CONTRATANTE por escrito via e-mail, com antecedência mínima de 30 (trinta) dias antes do término do prazo de vigência.
+
+
+
+
+DOS VALORES E FORMAS DE PAGAMENTO
+	
+
+Cláusula 6ª. Pelo serviço ora contratado, o CONTRATANTE pagará à CONTRATADA o valor mensal de R$ {{💵🇺🇸 Valor Mensal do Contrato em Dolar - make}},00 ({{Valor mensal em dolar por escrito - make}} reais), conforme forma de pagamento detalhada abaixo:
+
+
+Forma de pagamento:
+a) O pagamento será realizado em {{Parcelas numeral - make}} ({{Parcelas por escrito - make}}) parcelas mensais e consecutivas de R$ {{💵🇺🇸 Valor Mensal do Contrato em Dolar - make}},00 ({{Valor mensal em dolar por escrito - make}} reais) cada.
+
+
+b) A primeira parcela será devida no ato da assinatura do contrato, e as parcelas subsequentes vencerão no dia {{Data de Pagamento - subsequentes - make}} ({{Data por escrito de Pagamento - subsequentes - make}}) de cada mês subsequente.
+
+
+Todos os pagamentos deverão ser realizados por meio de PIX, transferência bancária ou criptomoeda.
+
+
+DADOS BANCÁRIOS
+	RAZÃO SOCIAL: MOTTIVME SALES LTDA
+	BANCO: BTG Pactual
+	TIPO DE CONTA: Corrente
+	AGÊNCIA: 0050
+	CONTA: 822601-4
+	PIX: financeiro@mottivme.com.br
+	
+
+Parágrafo 1°. Os pagamentos poderão ser realizados por meio de:
+
+
+a) Transferência bancária – aceita tanto de contas bancárias no Brasil quanto nos Estados Unidos;
+b) PIX – transferência instantânea disponível para contas bancárias no Brasil;
+c) Boleto bancário – sujeito à compensação bancária dentro do prazo estipulado pela instituição financeira;
+d) Criptomoedas – aceitas conforme cotação e rede blockchain previamente acordadas entre as partes.
+Fica expressamente acordado que o valor praticado nesta fase experimental é promocional e não reflete os valores comerciais padrão praticados pela CONTRATADA, os quais serão aplicados em caso de renovação conforme Cláusula 5ª.
+Parágrafo 2°. No caso de pagamento à vista, o início do plano ficará condicionado ao cumprimento integral da obrigação de pagamento.
+
+
+Parágrafo 3º. O atraso no pagamento de qualquer quantia devida por força do presente contrato acarretará a incidência sobre o valor devido de multa de 10% (dez por cento), juros moratórios de 1% (um por cento) ao mês, calculado "pro rata die" da data do vencimento até a data do efetivo pagamento, além de, para atrasos iguais ou superiores a 30 (trinta) dias, correção monetária calculada pela variação do IGPM/FGV desde a data do vencimento até a data do efetivo pagamento, mesmo que este se dê em Juízo. 
+
+
+Parágrafo 4°. Todos os valores mencionados neste contrato são expressos em REAIS Caso a CONTRATANTE opte por realizar o pagamento em reais Brasileiros (BRL), será utilizada a taxa de câmbio do dia do pagamento, conforme a cotação do Banco Central do Brasil. A conversão de valores e eventuais custos adicionais relacionados à transferência internacional serão de responsabilidade da CONTRATANTE, devendo haver expressa autorização da CONTRATADA para pagamento em moeda estrangeira.
+
+
+DO INADIMPLEMENTO
+	
+
+Cláusula 7ª. O não pagamento do serviço prestado, até a data do vencimento sujeitará o CONTRATANTE a imediata e independentemente de notificação ou interpelação judicial ou extrajudicial:
+
+
+            1. Ao pagamento, de uma só vez, do débito total composto pelas parcelas.
+            2. Paralisação imediata do desenvolvimento do projeto, até que o pagamento seja regularizado, sem nenhum prejuízo para a CONTRATADA.
+            3. Aplicação de multa e juros dispostos no parágrafo 3° da cláusula 6ª.
+
+
+Parágrafo 1º. As Partes expressamente concordam e reconhecem que todas as cláusulas que preveem a rescisão do presente instrumento como penalidade pelo seu inadimplemento, constituem cláusulas resolutivas expressas, nos exatos termos do Art. 474 do Código Civil, e operam de pleno direito, independentemente de qualquer interpelação ou declaração judicial. 
+
+
+Parágrafo 2º.  Fica acordado que não estão autorizados abatimentos das obrigações financeiras, por qualquer motivo, exceto casos especiais e que sejam previamente acordados pelas partes. 
+
+
+Parágrafo 3º. Correrão por conta do CONTRATANTE as despesas judiciais, assim como honorários advocatícios na base de 20% (vinte por cento) sobre o total do débito, se a cobrança se efetivar judicialmente ou com a intervenção de um advogado. Independentemente disso, a falta do pagamento de quaisquer valores devidos à CONTRATADA, por 10 dias consecutivos, ensejará a rescisão do presente Contrato. 
+
+
+Parágrafo 4º. Todas as multas previstas neste contrato sempre poderão ser aplicadas de forma cumulativa. 
+
+
+Parágrafo 5º. Todos os valores mencionados neste instrumento serão corrigidos dentro do prazo legal, considerando o índice IGPM da Fundação Getúlio Vargas. Caso este venha a ser substituído por outro, a atualização será efetuada dentro do prazo que vier a ser fixado por lei para sua aplicação. 
+
+
+Parágrafo 6º. Fica expressamente convencionado que as obrigações pecuniárias dispostas neste contrato constituirão dívidas líquidas, certas e exigíveis, passíveis de protesto, execução por título extrajudicial, com base neste contrato e nas notas fiscais emitidas em função da assistência prestada. Para a exigência de quaisquer das obrigações e valores alvo desta contratação, este instrumento terá força de título executivo extrajudicial, nos termos do art. 784, III, do CPC. 
+
+
+DA DESISTÊNCIA
+	
+
+Cláusula 8ª. Em caso de desistência dos serviços objeto deste contrato, o CONTRATANTE deverá notificar a CONTRATADA por escrito, apresentando um requerimento de desistência com pelo menos 30 (trinta) dias de antecedência.
+
+
+Parágrafo 1º. A CONTRATADA analisará o requerimento e os motivos apresentados pelo CONTRATANTE para a desistência, e decidirá se aplicará ou não a cláusula penal prevista.
+
+
+Parágrafo 2º. Em caso de aplicação da multa contratual (cláusula penal), esta será calculada e aplicada conforme disposto no artigo 409 do Código Civil. O pedido de desistência, feito no primeiro mês, mediante solicitação formal nos termos acima mencionados, não resultará na restituição dos valores pagos pelo CONTRATANTE, ficando sujeito ao pagamento de uma multa compensatória equivalente a 20% (vinte por cento) do valor restante do contrato, a título de compensação pelos custos operacionais que a CONTRATADA já tenha despendido para a preparação inicial do projeto, salvo em casos de força maior ou caso fortuito, devidamente comprovado.
+
+
+            1. Enquanto não for apresentado o pedido formal de cancelamento, o CONTRATANTE continuará obrigado a efetuar os pagamentos pelos serviços prestados, sem exceção. A CONTRATADA não efetuará reembolso de valores pagos anteriormente à data da comunicação da rescisão por desistência.
+            2. O CONTRATANTE reconhece que a CONTRATADA assume obrigação de meio, comprometendo-se a empregar técnicas, métodos e esforços profissionais adequados à execução do projeto, sem garantia de resultado específico. Assim, a mera insatisfação subjetiva com os resultados obtidos não constitui motivo legítimo para rescisão contratual nem para pleito de reembolso dos valores pagos, especialmente após a entrega dos serviços contratados. A eficácia do projeto depende também da adequada colaboração e do cumprimento das obrigações assumidas pelo CONTRATANTE.
+
+
+Cláusula 9ª. Os serviços serão interrompidos imediatamente em caso de desistência.
+
+
+Parágrafo 1º. Em caso de requerimento de retorno será analisado pela CONTRATADA, que se reserva o direito de aceitá-lo ou rejeitá-lo com base em sua avaliação.
+
+
+DA PROPRIEDADE E SIGILO
+	
+
+Cláusula 10ª. Todas as informações obtidas pela CONTRATADA quando da execução dos serviços deverão ser tratadas como confidenciais, sendo vedada qualquer reprodução, utilização ou divulgação a terceiros, devendo zelar por seus representantes, empregados e subcontratados pela manutenção do sigilo absoluto de dados, informações, documentos e especificações técnicas que tenham conhecimento em razão dos serviços executados. 
+
+
+Parágrafo 1º. A CONTRATADA não poderá utilizar os dados e informações, a não ser única e exclusivamente para execução deste contrato. 
+
+
+Parágrafo 2º. A CONTRATADA obriga-se a dar ciência imediata, por escrito, a CONTRATADA, sobre qualquer vazamento informações, dados, materiais e todos demais bens de propriedade industrial e intelectual prevista neste instrumento.
+
+
+Parágrafo 3º. O sigilo que se refere aos dados e informações do CONTRATANTE, permanecerá em vigor e vinculará legalmente o CONTRATADO, seus empregados, colaboradores, prestadores de serviços e prepostos por um período de 05 (cinco) ano após o término deste contrato. A violação desta cláusula implicará na responsabilização por danos patrimoniais e morais, podendo resultar em indenização à parte prejudicada por concorrência desleal e outros prejuízos decorrentes previstos neste instrumento.
+
+
+Parágrafo 4º. Todas as informações, imagens e documentos manuseados e utilizados são de propriedade do CONTRANTE, não podendo ser repassadas, copiadas, alteradas ou absorvidas pela CONTRATADA sem expressa autorização do CONTRANTE. 
+
+
+Parágrafo 5º. A CONTRATADA que atuará nos serviços previstos receberão acesso privativo e individualizados para as tarefas que lhe são confiadas, não podendo repassá-los a terceiros, sob pena de responder criminalmente pelos atos e pelos fatos que decorrentes deste ilícito. 
+
+
+Parágrafo 6º. É ilícita a divulgação, o repasse ou a utilização indevida de informações, bem como de documentos, imagens e gravações utilizados durante a prestação dos serviços. 
+
+
+Parágrafo 7º. A CONTRATADA obriga-se a dar ciência imediata, por escrito, ao CONTRATADO, sobre qualquer anormalidade que verificar na prestação dos serviços. 
+
+
+Parágrafo 8º. A CONTRATADA garante que a propriedade intelectual referente aos códigos, marcas e produções autorais não poderá sofrer qualquer cópia, reprodução ou utilização indevida.
+
+
+DAS OBSERVÂNCIA À LEI GERAL DE PROTEÇÃO DE DADOS
+	
+
+Cláusula 11ª. As Partes se comprometem a observar integralmente as disposições da Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais - LGPD) e da Lei nº 12.965/2014 (Marco Civil da Internet), garantindo que o tratamento de dados pessoais realizado no âmbito deste contrato será feito de forma adequada, transparente e segura.
+
+
+Parágrafo 1º. A CONTRATADA se compromete a adotar todas as medidas técnicas e administrativas necessárias para proteger os dados pessoais contra acessos não autorizados, vazamentos, perdas, destruição ou qualquer forma de tratamento inadequado ou ilícito, conforme previsto na LGPD.
+
+
+Parágrafo 2º. A coleta, tratamento, armazenamento e compartilhamento de dados pessoais realizados no âmbito deste contrato serão limitados ao estritamente necessário para o cumprimento das finalidades contratuais, respeitando os princípios da minimização de dados, adequação e necessidade.
+
+
+Parágrafo 3º. O CONTRATANTE autoriza expressamente a CONTRATADA a coletar, tratar e compartilhar os dados pessoais fornecidos, desde que tais atividades sejam necessárias para a execução do presente contrato, sempre em conformidade com as legislações vigentes.
+
+
+Parágrafo 4º. Em caso de incidentes de segurança que possam implicar risco ou dano relevante aos titulares dos dados pessoais, a CONTRATADA deverá comunicar o fato ao CONTRATANTE e à Autoridade Nacional de Proteção de Dados (ANPD) dentro dos prazos legais, além de adotar as medidas necessárias para mitigar os danos.
+
+
+Parágrafo 5º. A não observância de qualquer disposição da LGPD ou do Marco Civil da Internet por qualquer das Partes implicará na responsabilidade exclusiva da parte infratora, que deverá arcar com todas as sanções e penalidades aplicáveis, incluindo a reparação de danos causados a terceiros.
+
+
+
+
+
+
+
+
+DA NÃO CONCORRÊNCIA (NON-COMPETE)
+	
+
+Cláusula 12ª. O CONTRATANTE se compromete, durante a vigência deste contrato e por um período de 03 (três) anos após o seu término ou rescisão, a não realizar, direta ou indiretamente, atividades que possam concorrer com os negócios da CONTRATADA. Esta obrigação inclui, mas não se limita a, não contratar, negociar ou estabelecer qualquer tipo de parceria comercial com clientes, fornecedores, empregados, sócios ou diretores que tenham vínculo com a CONTRATADA, com o objetivo de desenvolver atividades similares ou concorrentes. 
+
+
+Parágrafo 1º. O CONTRATANTE também se obriga a não utilizar, explorar ou divulgar, por si ou por terceiros, qualquer informação confidencial, método, know-how ou material fornecido pela CONTRATADA durante a execução deste contrato, seja no Brasil ou em qualquer outro país, visando obter vantagem comercial ou qualquer outro benefício.
+
+
+Parágrafo 2º. Em caso de violação da presente cláusula, o CONTRATANTE estará sujeito ao pagamento de uma multa compensatória no valor de R$3.000,00 (três mil reais), sem prejuízo de outras medidas judiciais cabíveis, como a tutela inibitória para cessação imediata da prática ilícita e a reparação de eventuais danos causados a CONTRATADA.
+
+
+Parágrafo 3º. As obrigações de não concorrência previstas nesta cláusula não impedem o CONTRATANTE de realizar atividades em outros segmentos de mercado, desde que tais atividades não sejam concorrentes diretas dos negócios da CONTRATADA ou utilizem informações ou recursos obtidos através da relação contratual entre as partes.
+
+
+Parágrafo 4º. A presente cláusula de não concorrência é essencial para a proteção dos interesses comerciais da CONTRATADA e subsistirá mesmo após o término deste contrato, conforme estipulado na Cláusula 12ª.
+
+
+DA EXEQUIBILIDADE ESPECÍFICA
+	
+
+Cláusula 13ª. O presente contrato constitui título executivo extrajudicial, nos termos do art. 784, inciso III, do Código de Processo Civil, sendo plenamente exequível em caso de inadimplemento ou descumprimento de qualquer de suas disposições, independentemente de prévia notificação ou interpelação judicial.
+
+
+Parágrafo 1º. Na hipótese de qualquer das Partes deixar de cumprir rigorosamente qualquer das obrigações assumidas neste contrato, a Parte inocente poderá, a seu exclusivo critério, exigir o cumprimento específico da obrigação, conforme previsto nos artigos 497 e 536 do Código de Processo Civil, sem prejuízo da aplicação das penalidades contratuais previstas, incluindo multa, indenização por perdas e danos, e outras sanções cabíveis.
+
+
+Parágrafo 2º. A Parte que optar pelo cumprimento específico poderá, cumulativamente, requerer a aplicação de medidas judiciais coercitivas, como a imposição de multa diária (astreintes), penhora de bens ou outras medidas necessárias para assegurar o cumprimento da obrigação. 
+
+
+Parágrafo 3º. As Partes reconhecem e concordam que o cumprimento específico das obrigações previstas neste contrato é essencial para garantir a integridade dos negócios, a proteção dos interesses comerciais e a preservação dos direitos adquiridos, de modo que a rescisão contratual somente será admitida em situações extremas, após a devida tentativa de cumprimento específico.
+
+
+Parágrafo 4º. Qualquer tolerância ou concessão de prazo pela Parte inocente não será interpretada como renúncia ao direito de exigir o cumprimento específico, nem como alteração ou novação das obrigações contratuais.
+
+
+DA RESCISÃO DE CONTRATO
+	
+
+Cláusula 14ª. Este contrato é irrevogável e irretratável. A CONTRATANTE poderá rescindi-lo mediante aviso prévio de 30 (trinta) dias, sujeitando-se ao pagamento de multa rescisória equivalente a 1 (uma) parcela mensal vigente. 
+
+
+Parágrafo 1º. Os valores já pagos em decorrência deste contrato não serão objeto de restituição, independentemente do motivo que enseje a solicitação, ficando desde já acordado que ambas as partes renunciam a qualquer direito de reivindicação futura a esse respeito. 
+
+
+Parágrafo 2º. A CONTRATADA pode rescindir o contrato com 14 dias de aviso prévio. Na rescisão, entregará ao CONTRATANTE todo o material desenvolvido até a data, com especificações técnicas e esclarecimentos necessários.
+
+
+Parágrafo 3º. Este contrato será imediatamente rescindido pelas partes, independentemente de qualquer aviso, notificação ou interpelação, judicial ou extrajudicial, se ocorrer qualquer dos seguintes eventos: 
+
+
+            1. O não pagamento nos termos da cláusula 6ª e parágrafos. 
+            2. A realização de qualquer ato contrário e irregular a CONTRATADA. 
+            3. Violação da propriedade intelectual e know how da CONTRATADA. 
+            4. Violação da cláusula de non compete, confidencialidade e proteção de dados. 
+            5. Não entrega do serviço contratado no prazo avançado. 
+
+
+Parágrafo 4º. No caso de rescisão ficam estipuladas as seguintes condições: 
+
+
+            1. A rescisão deste contrato, seja por qualquer motivo de violação ou descumprimento das suas cláusulas e condições, acarretará a aplicação de multa de R$ 3.000 (três mil reais) e demais medidas pertinentes.
+            2. A rescisão deste contrato não liberará nenhuma das partes do pagamento de qualquer quantia devida em decorrência de operações realizadas até a data da rescisão. 
+            3. Todas as responsabilidades e obrigações por pagamentos a serem efetuados na forma deste contrato ou relacionados com a venda do produto vencerão de acordo com os vencimentos constantes nas respectivas faturas. 
+            4. A rescisão por desistência sujeitará a parte desistente à multa prevista nos parágrafos da cláusula 8ª deste instrumento.
+
+
+DAS DISPOSIÇÕES GERAIS
+	
+
+Cláusula 15ª. A presente relação comercial não configura vínculo empregatício entre o CONTRATANTE e a CONTRATADA, tampouco entre a primeira e os empregados e/ou prepostos do segundo envolvido na relação, devendo ambas responder pelos ônus trabalhistas, tributários, previdenciários e fiscais daí decorrentes, bem como indenizar a outra parte por eventuais valores que esta venha a despender no atendimento de tais ônus, judicial ou extrajudicialmente. 
+
+
+Parágrafo 1º. As partes estipulam que a presente contratação é obrigação de meio, não de resultado, pois não há promessa de ganhos financeiros ou rentabilidade fixa de acordo com a prestação dos serviços. 
+ 
+Parágrafo 2º. Este contrato será regido e interpretado de acordo com as disposições do Código Civil.
+
+
+Parágrafo 3º. A CONTRATADA poderá transferir ou delegar a terceiros, sob sua responsabilidade, as atribuições e responsabilidades assumidas por força deste contrato.
+
+
+Parágrafo 4º. O não exercício, por qualquer das partes, de direitos ou faculdades que lhes assistem em decorrência deste contrato, assim como a tolerância com eventuais atrasos no cumprimento das obrigações pela outra parte, não implicará renúncia a tais direitos ou faculdades, que poderão ser exercidos a qualquer tempo, a exclusivo critério da parte interessada, sem que isso altere as condições estipuladas neste instrumento.
+
+
+Parágrafo 5º. A CONTRATADA não se responsabiliza por resultados ou perdas. 
+
+
+Parágrafo 6º. Outros serviços que não estejam expressamente indicados neste contrato deverão ser objeto de novo acordo entre as partes. 
+
+
+Parágrafo 7º. A responsabilidade das partes em virtude do presente contrato limita-se aos danos diretos, com expressa exclusão de responsabilidade por quaisquer danos emergentes, lucros cessantes e/ou insucessos comerciais eventualmente advindos do descumprimento do presente contrato. 
+
+
+Parágrafo 8º. O CONTRATANTE autoriza o CONTRATADO a fazer publicações nas redes sociais de suas empresas, conforme material previamente desenvolvido e autorizado pelo CONTRATANTE. 
+
+
+Parágrafo 9º. Qualquer falha ou vício na prestação do presente serviço deverá ser imediatamente comunicado a CONTRATADA para que este tome as providências cabíveis para correção no prazo de 30 (trinta) dias. 
+
+
+Parágrafo 10º. Não será devida nenhuma restituição, caso não ocorra a comunicação formal, por meio de notificação extrajudicial, no prazo de 01 (um) dia após a ciência da falha/vício. 
+
+
+Parágrafo 11º. A CONTRATADA não se responsabiliza por eventuais atrasos ou descumprimentos das obrigações estabelecidas neste contrato que sejam decorrentes de caso fortuito ou força maior, conforme previsto no artigo 393 do Código Civil. Nesses casos, as obrigações afetadas serão suspensas enquanto perdurarem os efeitos do evento, sem que isso implique em rescisão contratual ou penalidades às partes.
+
+
+Parágrafo 12º. Qualquer novo acordo ou modificação das disposições deste contrato deverá ser formalizado por meio de termo aditivo, devidamente assinado por ambas as partes.
+
+
+Parágrafo 13º. O CONTRATANTE declara estar de acordo com assinatura digital feita por plataforma online, bem como não se opõe e confirma a veracidade da assinatura inserida.
+
+
+
+
+
+
+
+
+DA VALIDADE JURÍDICA INTERNACIONAL
+	
+
+Cláusula 16ª. As partes reconhecem que este contrato tem força vinculante internacional, sendo a sua execução plenamente válida, tanto no Brasil quanto nos Estados Unidos. Caso seja necessário, as partes poderão registrar o presente instrumento em cartórios ou órgãos equivalentes nos EUA para garantir sua plena validade local.
+
+
+DA LEGISLAÇÃO APLICÁVEL E FORO
+	
+
+Cláusula 17ª. O presente contrato será regido pelas leis da República Federativa do Brasil, em especial o Código Civil Brasileiro e a Lei Geral de Proteção de Dados (Lei 13.709/2018). Em caso de qualquer divergência ou disputa decorrente deste contrato, as partes comprometem-se a buscar uma solução amigável. Caso não seja possível, elegem o foro da Comarca de Barueri - SP, com renúncia expressa a qualquer outro, por mais privilegiado que seja, para dirimir quaisquer controvérsias oriundas deste instrumento.
+
+
+Justo e acordado o presente instrumento, CONTRATANTE e CONTRATADA assinam por assinatura digital o presente instrumento em 02 (duas) vias de igual teor e forma perante as testemunhas (02) abaixo subscritas. 
+
+
+
+
+Barueri - SP, {{Data do envio do documento por escrito - make}}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Assinaturas: 
+
+
+
+
+
+
+_________________________________________________ 
+CONTRATANTE: {{CONTRATANTE}}
+{{Documento que será utilizado para contrato - make}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+________________________________________ 
+CONTRATADA:  MOTTIVME SALES LTDA
+CNPJ n° 32.408.090/0001-40
+
+
+
+
+
+
+
+
+
+
+Testemunhas:
+
+
+
+
+
+
+Nome: Marcos Daniel Alves da Silva
+
+
+
+
+
+
+
+
+______________________ 
+CPF: 105.197.974-93 
+
+
+
+
+
+
+
+
+Nome: Lucas Adley Santos
+
+
+
+
+
+
+
+
+
+
+
+
+______________________ 
+CPF: 706.278.344-77
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALAMEDA RIO NEGRO, 503 CONJ 2005 - ALPHAVILLE CENTRO INDUSTRIAL E EMPRESARIAL/ALPHAV, BARUERI - SP, CEP: 06454-000.

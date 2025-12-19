@@ -1,0 +1,246 @@
+{
+  "name": "Assembly Line - Follow-up Automático CS",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            },
+            {
+              "triggerAtHour": 14
+            },
+            {
+              "triggerAtHour": 19
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger-001",
+      "name": "⏰ Verificar 3x ao dia",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  fu.id as follow_up_id,\n  fu.tipo,\n  fu.mensagem,\n  fu.mensagem_alternativa,\n  fu.tentativa_numero,\n  fu.max_tentativas,\n  fu.canal,\n  ai.id as action_item_id,\n  ai.titulo as acao_titulo,\n  ai.descricao as acao_descricao,\n  ai.instrucao_passo_a_passo,\n  ai.ferramenta_sugerida,\n  ai.pontos_conclusao,\n  ai.data_limite,\n  p.id as user_id,\n  p.name as user_name,\n  p.email as user_email,\n  p.phone as user_phone,\n  cp.arquetipo_primario,\n  cp.tom_preferido,\n  cp.termos_frequentes,\n  cp.emojis_frequentes,\n  gs.pontos_totais,\n  gs.nivel_nome,\n  gs.streak_dias_consecutivos,\n  gs.posicao_ranking_geral,\n  proj.name as project_name\nFROM follow_ups fu\nJOIN action_items ai ON fu.action_item_id = ai.id\nJOIN profiles p ON fu.user_id = p.id\nLEFT JOIN client_profiles cp ON cp.user_id = p.id\nLEFT JOIN gamification_scores gs ON gs.user_id = p.id\nLEFT JOIN projects proj ON ai.project_id = proj.id\nWHERE fu.status = 'agendado'\n  AND fu.agendado_para <= NOW()\n  AND fu.tentativa_numero <= fu.max_tentativas\nORDER BY fu.agendado_para ASC\nLIMIT 50;",
+        "options": {}
+      },
+      "id": "get-pending-followups-001",
+      "name": "📋 Buscar Follow-ups Pendentes",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [420, 300],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.follow_up_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "filter-has-followups-001",
+      "name": "🔍 Tem Follow-ups?",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [640, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Personaliza a mensagem baseado no perfil do cliente\nconst item = $input.first().json;\n\nconst arquetipo = item.arquetipo_primario || 'influente';\nconst nome = item.user_name?.split(' ')[0] || 'Parceiro';\nconst termos = item.termos_frequentes || [];\nconst emojis = item.emojis_frequentes || ['🔥', '💪'];\nconst acao = item.acao_titulo;\nconst pontos = item.pontos_conclusao || 10;\nconst nivel = item.nivel_nome || 'Iniciante';\nconst ranking = item.posicao_ranking_geral || '?';\nconst streak = item.streak_dias_consecutivos || 0;\nconst tipo = item.tipo;\nconst tentativa = item.tentativa_numero || 1;\nconst data_limite = item.data_limite;\n\n// Calcula dias até o prazo\nlet diasAtraso = 0;\nif (data_limite) {\n  const hoje = new Date();\n  const prazo = new Date(data_limite);\n  diasAtraso = Math.floor((hoje - prazo) / (1000 * 60 * 60 * 24));\n}\n\n// Seleciona emoji baseado no perfil\nconst emoji = emojis[0] || '🔥';\n\n// Monta mensagem personalizada por arquétipo e tipo\nlet mensagem = '';\n\nswitch(arquetipo) {\n  case 'dominante':\n    // Direto ao ponto, foco em resultados\n    switch(tipo) {\n      case 'lembrete':\n        mensagem = `${nome}, ação pendente: ${acao}. Quando terminar me avisa. ${pontos} pontos te esperando.`;\n        break;\n      case 'cobranca':\n        mensagem = `${nome}, ${acao} precisa ser feita. Cada dia de atraso é dinheiro na mesa. Bora resolver?`;\n        break;\n      case 'ajuda':\n        mensagem = `${nome}, vi que ${acao} travou. Me fala onde tá o bloqueio que a gente destrava agora.`;\n        break;\n      case 'reengajamento':\n        mensagem = `${nome}, faz ${diasAtraso} dias. Tá perdendo ${pontos * diasAtraso} pontos potenciais. Vamos retomar?`;\n        break;\n    }\n    break;\n    \n  case 'influente':\n    // Entusiasmado mas puxando para ação\n    switch(tipo) {\n      case 'lembrete':\n        mensagem = `E aíí ${nome}! ${emoji} Lembra daquela missão top? \"${acao}\" - bora fazer em 15 min? Tem ${pontos} pontos te esperando! Você tá no nível ${nivel} ${emoji}`;\n        break;\n      case 'cobranca':\n        mensagem = `${nome}! ${emoji} Cara, sei que a vida tá corrida mas \"${acao}\" tá pedindo atenção! Que tal a gente resolver isso AGORA juntos? Me manda um oi que te guio!`;\n        break;\n      case 'ajuda':\n        mensagem = `Eiiii ${nome}! ${emoji} Percebi que \"${acao}\" pode ter travado. Tá precisando de uma força? Conta comigo! Bora destravar isso!`;\n        break;\n      case 'reengajamento':\n        mensagem = `${nome}! ${emoji} Saudades de te ver por aqui! Seu streak era de ${streak} dias - bora retomar? Só uma açãozinha rápida pra voltar pro jogo! ${emoji}`;\n        break;\n    }\n    break;\n    \n  case 'estavel':\n    // Paciente, seguro, passo a passo\n    switch(tipo) {\n      case 'lembrete':\n        mensagem = `Olá ${nome}! Tudo bem? Só passando pra lembrar da ação \"${acao}\". Sem pressa, mas quando puder me conta como está. Estou aqui pra ajudar no que precisar.`;\n        break;\n      case 'cobranca':\n        mensagem = `${nome}, sei que cada um tem seu ritmo e tá tudo bem. Mas queria saber se precisa de ajuda com \"${acao}\"? Posso explicar passo a passo se quiser.`;\n        break;\n      case 'ajuda':\n        mensagem = `${nome}, percebi que \"${acao}\" pode estar gerando alguma dúvida. Quer que eu explique com mais calma? Podemos fazer juntos, sem correria.`;\n        break;\n      case 'reengajamento':\n        mensagem = `Olá ${nome}! Faz um tempinho que não nos falamos. Tá tudo bem? Quando quiser retomar, estou aqui. Podemos ir no seu ritmo.`;\n        break;\n    }\n    break;\n    \n  case 'conforme':\n    // Detalhado, técnico, com dados\n    switch(tipo) {\n      case 'lembrete':\n        mensagem = `${nome}, lembrete sobre a ação \"${acao}\". Prazo: ${data_limite || 'flexível'}. Pontuação: ${pontos} pts. Status atual: pendente. Precisa de mais informações sobre o processo?`;\n        break;\n      case 'cobranca':\n        mensagem = `${nome}, análise da ação \"${acao}\": ${diasAtraso > 0 ? `${diasAtraso} dias após o prazo` : 'dentro do prazo'}. Impacto no ranking: posição atual #${ranking}. Recomendação: priorizar conclusão. Posso detalhar o passo a passo?`;\n        break;\n      case 'ajuda':\n        mensagem = `${nome}, identifiquei que \"${acao}\" está pendente há mais tempo que o usual. Possíveis bloqueios: 1) Falta de clareza no processo, 2) Dependência de ferramenta, 3) Dúvida técnica. Qual se aplica? Posso fornecer documentação detalhada.`;\n        break;\n      case 'reengajamento':\n        mensagem = `${nome}, relatório de atividade: ${diasAtraso} dias desde última interação. Streak perdido: ${streak} dias. Ações pendentes: ${acao}. Para retomar, recomendo começar por [ação mais simples]. Deseja um plano de recuperação detalhado?`;\n        break;\n    }\n    break;\n    \n  default:\n    mensagem = item.mensagem || `${nome}, lembre-se de completar: ${acao}. Qualquer dúvida, estou aqui!`;\n}\n\n// Se for tentativa > 1, usa mensagem alternativa mais direta\nif (tentativa > 1 && item.mensagem_alternativa) {\n  mensagem = item.mensagem_alternativa\n    .replace('{{nome}}', nome)\n    .replace('{{acao}}', acao)\n    .replace('{{pontos}}', pontos);\n}\n\nreturn [{\n  json: {\n    ...item,\n    mensagem_personalizada: mensagem,\n    primeiro_nome: nome,\n    dias_atraso: diasAtraso\n  }\n}];"
+      },
+      "id": "personalize-message-001",
+      "name": "🎨 Personalizar Mensagem por Arquétipo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [860, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.canal }}",
+              "operation": "equals",
+              "value2": "whatsapp"
+            }
+          ]
+        }
+      },
+      "id": "route-by-channel-001",
+      "name": "📱 Rotear por Canal",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [1080, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v18.0/{{$env.WHATSAPP_PHONE_ID}}/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $json.user_phone }}\",\n  \"type\": \"text\",\n  \"text\": {\n    \"body\": \"{{ $json.mensagem_personalizada }}\"\n  }\n}"
+      },
+      "id": "send-whatsapp-001",
+      "name": "📲 Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1300, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.user_email }}",
+        "subject": "=🎯 {{ $json.primeiro_nome }}, você tem uma missão pendente!",
+        "emailType": "html",
+        "html": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\n  <h2 style=\"color: #6366f1;\">Olá {{ $json.primeiro_nome }}! 👋</h2>\n  \n  <p style=\"font-size: 16px; line-height: 1.6;\">{{ $json.mensagem_personalizada }}</p>\n  \n  <div style=\"background: #f3f4f6; padding: 20px; border-radius: 10px; margin: 20px 0;\">\n    <h3 style=\"margin-top: 0;\">📋 Ação Pendente:</h3>\n    <p><strong>{{ $json.acao_titulo }}</strong></p>\n    <p>{{ $json.acao_descricao }}</p>\n    <p>🏆 Pontos: <strong>{{ $json.pontos_conclusao }}</strong></p>\n  </div>\n  \n  <a href=\"{{ $env.APP_URL }}/dashboard\" style=\"display: inline-block; background: #6366f1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;\">Acessar Assembly Line</a>\n  \n  <p style=\"margin-top: 30px; color: #6b7280; font-size: 14px;\">Seu nível atual: {{ $json.nivel_nome }} | Ranking: #{{ $json.posicao_ranking_geral }}</p>\n</div>",
+        "options": {}
+      },
+      "id": "send-email-001",
+      "name": "📧 Enviar Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1300, 400]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE follow_ups SET\n  status = 'enviado',\n  enviado_em = NOW(),\n  tentativa_numero = tentativa_numero + 1\nWHERE id = '{{ $json.follow_up_id }}'::uuid;\n\n-- Agenda próxima tentativa se não atingiu máximo\nINSERT INTO follow_ups (\n  action_item_id, user_id, tipo, mensagem, mensagem_alternativa,\n  agendado_para, tentativa_numero, max_tentativas, canal, status\n)\nSELECT \n  action_item_id, user_id, tipo, mensagem, mensagem_alternativa,\n  NOW() + INTERVAL '1 day', tentativa_numero + 1, max_tentativas, canal, 'agendado'\nFROM follow_ups\nWHERE id = '{{ $json.follow_up_id }}'::uuid\n  AND tentativa_numero < max_tentativas\nON CONFLICT DO NOTHING;",
+        "options": {}
+      },
+      "id": "update-followup-status-001",
+      "name": "✅ Atualizar Status do Follow-up",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1520, 300],
+      "credentials": {
+        "postgres": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Supabase Postgres"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "⏰ Verificar 3x ao dia": {
+      "main": [
+        [
+          {
+            "node": "📋 Buscar Follow-ups Pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Buscar Follow-ups Pendentes": {
+      "main": [
+        [
+          {
+            "node": "🔍 Tem Follow-ups?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Tem Follow-ups?": {
+      "main": [
+        [
+          {
+            "node": "🎨 Personalizar Mensagem por Arquétipo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🎨 Personalizar Mensagem por Arquétipo": {
+      "main": [
+        [
+          {
+            "node": "📱 Rotear por Canal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📱 Rotear por Canal": {
+      "main": [
+        [
+          {
+            "node": "📲 Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📧 Enviar Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📲 Enviar WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "✅ Atualizar Status do Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📧 Enviar Email": {
+      "main": [
+        [
+          {
+            "node": "✅ Atualizar Status do Follow-up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

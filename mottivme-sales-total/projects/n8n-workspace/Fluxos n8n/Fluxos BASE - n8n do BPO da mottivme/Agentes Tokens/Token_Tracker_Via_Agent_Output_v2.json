@@ -1,0 +1,197 @@
+{
+  "name": "Token Tracker - Via Agent Output v2",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Token Tracker v2 - Funcionando!\n\nEsta versao:\n1. Captura output do Agent\n2. Estima tokens baseado em chars (chars/4)\n3. Calcula custo USD\n4. Envia para Supabase via HTTP Request\n\nUsa HTTP Request separado (mais confiavel que fetch)",
+        "height": 240,
+        "width": 350,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-100, 0],
+      "id": "note-001",
+      "name": "Info"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [100, 200],
+      "id": "trigger-001",
+      "name": "Trigger Manual"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    location_id: 'loc_teste_123',\n    location_name: 'Empresa Teste',\n    contact_id: 'cont_teste_456',\n    contact_name: 'Joao Silva',\n    canal: 'whatsapp',\n    tipo_acao: 'teste_token_tracking',\n    historico_mensagens: 'Lead interessado em consultoria empresarial. Perguntou sobre valores e disponibilidade para reuniao.'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [300, 200],
+      "id": "contexto-001",
+      "name": "Simular Contexto"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Responda de forma curta e amigavel: Oi, tudo bem por ai?",
+        "options": {
+          "systemMessage": "Voce e um assistente amigavel. Responda sempre de forma curta e casual, como se fosse uma conversa de WhatsApp."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [500, 200],
+      "id": "agent-001",
+      "name": "Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [500, 420],
+      "id": "gemini-001",
+      "name": "Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "4ut0CD80SN7lbITM",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ========================================\n// TOKEN TRACKER v2 - Prepara dados para envio\n// ========================================\n\n// Precos por modelo (USD por 1M tokens)\nconst PRECOS = {\n  'gemini-2.0-flash': { input: 0.10, output: 0.40 },\n  'gemini-2.5-flash': { input: 0.075, output: 0.30 },\n  'gemini-2.5-pro': { input: 1.25, output: 10.00 },\n  'gemini-1.5-flash': { input: 0.075, output: 0.30 },\n  'gpt-4o': { input: 2.50, output: 10.00 },\n  'gpt-4o-mini': { input: 0.15, output: 0.60 },\n  'llama-3.3-70b-versatile': { input: 0.59, output: 0.79 },\n  'default': { input: 0.10, output: 0.40 }\n};\n\nfunction calcularCusto(modelo, tokensInput, tokensOutput) {\n  const modeloLower = (modelo || '').toLowerCase();\n  let preco = PRECOS['default'];\n  for (const [key, value] of Object.entries(PRECOS)) {\n    if (modeloLower.includes(key)) {\n      preco = value;\n      break;\n    }\n  }\n  return parseFloat(((tokensInput / 1000000) * preco.input + (tokensOutput / 1000000) * preco.output).toFixed(8));\n}\n\n// Estimativa de tokens (1 token ~ 4 chars em portugues)\nfunction estimarTokens(texto) {\n  if (!texto) return 0;\n  return Math.ceil(texto.length / 4);\n}\n\n// Pega output do Agent\nconst agentOutput = $input.first().json;\n\n// Estima tokens baseado no tamanho do texto\nlet inputText = '';\ntry {\n  const ctx = $('Simular Contexto').first()?.json;\n  inputText = JSON.stringify(ctx || {});\n} catch(e) {}\n\nconst tokensInput = estimarTokens(inputText) + 100; // +100 para system prompt\nconst tokensOutput = estimarTokens(agentOutput.output || '');\n\n// Pega contexto\nlet contextData = {\n  location_id: '',\n  location_name: '',\n  contact_id: '',\n  contact_name: '',\n  canal: 'whatsapp',\n  tipo_acao: 'ia_generica',\n  mensagem_entrada: ''\n};\n\ntry {\n  const ctx = $('Simular Contexto').first()?.json;\n  if (ctx) {\n    contextData.location_id = ctx.location_id || '';\n    contextData.location_name = ctx.location_name || '';\n    contextData.contact_id = ctx.contact_id || '';\n    contextData.contact_name = ctx.contact_name || '';\n    contextData.canal = ctx.canal || 'whatsapp';\n    contextData.tipo_acao = ctx.tipo_acao || 'ia_generica';\n    contextData.mensagem_entrada = ctx.historico_mensagens || '';\n  }\n} catch(e) {}\n\n// Calcula custo\nconst modelo = 'gemini-2.0-flash';\nconst custoUsd = calcularCusto(modelo, tokensInput, tokensOutput);\n\n// Retorna dados para o proximo no (HTTP Request)\nreturn {\n  json: {\n    // Dados para Supabase\n    supabase_payload: {\n      workflow_id: $workflow.id,\n      workflow_name: $workflow.name,\n      execution_id: $execution.id,\n      location_id: contextData.location_id,\n      location_name: contextData.location_name,\n      contact_id: contextData.contact_id,\n      contact_name: contextData.contact_name,\n      canal: contextData.canal,\n      tipo_acao: contextData.tipo_acao,\n      modelo_ia: modelo,\n      tokens_input: tokensInput,\n      tokens_output: tokensOutput,\n      custo_usd: custoUsd,\n      mensagem_entrada: contextData.mensagem_entrada.substring(0, 1000),\n      mensagem_saida: (agentOutput.output || '').substring(0, 1000)\n    },\n    // Dados para exibicao\n    resposta_agent: agentOutput.output,\n    token_tracking: {\n      tokens_input: tokensInput,\n      tokens_output: tokensOutput,\n      tokens_total: tokensInput + tokensOutput,\n      fonte: 'estimativa_chars',\n      custo_usd: custoUsd,\n      modelo: modelo\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 200],
+      "id": "tracker-001",
+      "name": "Calcular Tokens e Custo"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://bfumywvwubvernvhjehk.supabase.co/rest/v1/n8n_custos_execucao",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdW15d3Z3dWJ2ZXJudmhqZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0MDM3OTksImV4cCI6MjA2Njk3OTc5OX0.60VyeZ8XaD6kz7Eh5Ov_nEeDtu5woMwMJYgUM-Sruao"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.supabase_payload) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [940, 200],
+      "id": "supabase-001",
+      "name": "Enviar para Supabase",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega resultado do calculo de tokens\nconst trackingData = $('Calcular Tokens e Custo').first().json;\n\n// Pega resultado do envio ao Supabase\nconst supabaseResult = $input.first().json;\n\n// Verifica se enviou com sucesso (retorno vazio = sucesso com return=minimal)\nconst supabaseOk = !supabaseResult.error && !supabaseResult.message;\n\nreturn {\n  json: {\n    resposta_agent: trackingData.resposta_agent,\n    token_tracking: trackingData.token_tracking,\n    supabase: supabaseOk ? 'sucesso' : `erro: ${JSON.stringify(supabaseResult)}`\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1160, 200],
+      "id": "resultado-001",
+      "name": "Resultado Final"
+    }
+  ],
+  "connections": {
+    "Trigger Manual": {
+      "main": [
+        [
+          {
+            "node": "Simular Contexto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simular Contexto": {
+      "main": [
+        [
+          {
+            "node": "Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent": {
+      "main": [
+        [
+          {
+            "node": "Calcular Tokens e Custo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Tokens e Custo": {
+      "main": [
+        [
+          {
+            "node": "Enviar para Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar para Supabase": {
+      "main": [
+        [
+          {
+            "node": "Resultado Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {}
+}

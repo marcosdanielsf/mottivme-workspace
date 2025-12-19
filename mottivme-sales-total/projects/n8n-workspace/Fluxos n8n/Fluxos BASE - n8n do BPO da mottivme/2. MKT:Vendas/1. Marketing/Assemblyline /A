@@ -1,0 +1,181 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "GWKl5KuXAdeu4BLr",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/GWKl5KuXAdeu4BLr",
+          "cachedResultName": "Registrar Custo IA"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "location_id": "={{ $('Info').first().json.location_id }}",
+            "location_name": "={{ $('Info').first().json.body.location.name }}",
+            "contact_id": "={{{ $('Info').first().json.contact_id }}",
+            "contact_name": "={{ $('Info').first().json.nome }}",
+            "modelo_ia": "gemini-2.5-flash",
+            "tokens_input": "={{ $('Info').first().json.tokenUsage?.promptTokens ?? $('IA Gerador Mensagem').first().json.usage?.promptTokens ?? 0 }}",
+            "tokens_output": "={{ $('Info').first().json.tokenUsage?.completionTokens ?? $('IA Gerador Mensagem').first().json.usage?.completionTokens ?? 0 }}",
+            "canal": "={{ $('Code in JavaScript').first().json.source }}",
+            "tipo_acao": "reagendamento",
+            "mensagem_entrada": "TAG reagendar adicionada",
+            "mensagem_saida": "={{ $('Validar e Limpar Mensagem').first().json.mensagem_final }}",
+            "parent_workflow_id": "={{ $workflow.id }}",
+            "parent_workflow_name": "={{ $workflow.name }}",
+            "parent_execution_id": "={{ $execution.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "location_id",
+              "displayName": "location_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "location_name",
+              "displayName": "location_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "contact_id",
+              "displayName": "contact_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "contact_name",
+              "displayName": "contact_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "modelo_ia",
+              "displayName": "modelo_ia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "tokens_input",
+              "displayName": "tokens_input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "tokens_output",
+              "displayName": "tokens_output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number"
+            },
+            {
+              "id": "canal",
+              "displayName": "canal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "tipo_acao",
+              "displayName": "tipo_acao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "mensagem_entrada",
+              "displayName": "mensagem_entrada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "mensagem_saida",
+              "displayName": "mensagem_saida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "parent_workflow_id",
+              "displayName": "parent_workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "parent_workflow_name",
+              "displayName": "parent_workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "parent_execution_id",
+              "displayName": "parent_execution_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        5968,
+        64
+      ],
+      "id": "69c684e3-a10d-47d4-94c9-3f125438df6f",
+      "name": "Call Track AI Cost",
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {},
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d65e6caa0e89e696b77790e020391d74468b15f71b3dcdb63aad81f090f5e69"
+  }
+}
