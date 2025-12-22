@@ -3,7 +3,7 @@
 > **IMPORTANTE**: Este documento serve como contexto UNICO para todas as conversas com IA.
 > Ao iniciar uma nova conversa, forneca este arquivo para evitar repetir contextos.
 >
-> **Ultima atualizacao**: 2025-12-19 - 11:00h (v3.0)
+> **Ultima atualizacao**: 2025-12-20 - (v3.1)
 >
 > **ESCOPO**: Este documento cobre a vertical de Clinicas e Consultorios High Ticket da Mottivme.
 
@@ -2694,6 +2694,7 @@ Lead → SDR IA → Call Diagnostico → Head Vendas IA (scores) → Fechamento
 | **Propostal** | ✅ Pronto | Propostas interativas + score |
 | **Secretaria Base** | ✅ Pronto | 14 workflows atendimento WhatsApp |
 | **Assistente IA Executiva** | 🔨 Documentado | Accountability CEO via WhatsApp + Monday |
+| **Agent Watchdog** | 🔨 v1.0 | Detecta falhas silenciosas, gera relatórios |
 | QA Analyst | ⏳ P0 | Analise automatica qualidade conversas |
 | Custom Object Objecoes | ⏳ P0 | Rastreamento de objecoes |
 | Feedback Loop Oportunidade | ⏳ P0 | Calibracao IA com resultados reais |
@@ -2766,5 +2767,902 @@ Prefixo do nome determina destino e workflow:
 - Glossario de termos → Secao 14
 
 ---
-**Ultima atualizacao resumo**: 2025-12-18
-**Versao documento**: 2.2
+
+## 15. AGENT WATCHDOG - ENGENHEIRO DE OBSERVABILIDADE
+
+> **STATUS**: 🔨 Em desenvolvimento (v1.0)
+> **Criado em**: 2025-12-20
+
+### 15.1 O Que É
+
+O **Agent Watchdog** é um sistema de monitoramento que detecta **falhas silenciosas** dos agentes IA. Quando um webhook chega mas o agente não consegue completar o fluxo (não salva no banco, não responde, não atualiza CRM), o Watchdog:
+
+1. **Detecta a inconsistência** (webhook recebido vs dados ausentes)
+2. **Diagnostica o problema** (em qual etapa falhou, por quê)
+3. **Gera relatório automático** (incidente documentado)
+4. **Alerta imediatamente** (notifica CS/Marcos via WhatsApp)
+5. **Tenta recuperação automática** (quando possível)
+
+### 15.2 Por Que É Crítico
+
+```
+PROBLEMA ATUAL:
+┌──────────────────────────────────────────────────────────────┐
+│  Lead envia mensagem                                          │
+│       ↓                                                       │
+│  Webhook chega no n8n                                        │
+│       ↓                                                       │
+│  Agente IA FALHA (timeout, erro de API, loop, etc)           │
+│       ↓                                                       │
+│  ❌ NINGUÉM SABE que o lead não foi respondido               │
+│       ↓                                                       │
+│  Lead desiste → RECEITA PERDIDA                              │
+└──────────────────────────────────────────────────────────────┘
+
+COM WATCHDOG:
+┌──────────────────────────────────────────────────────────────┐
+│  Lead envia mensagem                                          │
+│       ↓                                                       │
+│  Webhook chega no n8n                                        │
+│       ↓                                                       │
+│  Watchdog registra: "Webhook X recebido às 14:35"            │
+│       ↓                                                       │
+│  Agente IA FALHA                                             │
+│       ↓                                                       │
+│  Watchdog detecta: "Nenhuma resposta salva em 2 min"         │
+│       ↓                                                       │
+│  ✅ ALERTA IMEDIATO → CS responde manualmente                │
+│       ↓                                                       │
+│  ✅ RELATÓRIO → Problema documentado para correção           │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### 15.3 Tipos de Falhas Detectadas
+
+| Tipo | Detecção | Ação |
+|------|----------|------|
+| **Agente não respondeu** | Webhook recebido, `agent_conversations` vazio após timeout | Alerta + relatório |
+| **Agente travou em loop** | 3+ respostas idênticas | Escala para humano + relatório |
+| **API externa falhou** | Erro em tool (Busca_disponibilidade, Agendar) | Retry + alerta se persistir |
+| **Timeout de IA** | Claude/OpenAI não respondeu em 30s | Fallback + alerta |
+| **Custom Object não criado** | Call analisada mas `anlises_de_call` ausente | Retry + alerta |
+| **Agendamento fantasma** | Agente confirmou mas calendário vazio | Alerta URGENTE + fix |
+| **Token expirado** | GHL/Supabase retornou 401 | Alerta + pausa automações |
+
+### 15.4 Arquitetura
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           AGENT WATCHDOG v1.0                            │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐             │
+│  │   WEBHOOK    │────▶│   LOGGER     │────▶│   MONITOR    │             │
+│  │   GATEWAY    │     │  (registra   │     │   (cron 2m)  │             │
+│  │              │     │   chegada)   │     │              │             │
+│  └──────────────┘     └──────────────┘     └──────────────┘             │
+│         │                    │                    │                      │
+│         │                    ▼                    ▼                      │
+│         │            ┌──────────────┐     ┌──────────────┐              │
+│         │            │   SUPABASE   │◀────│   DETECTOR   │              │
+│         │            │ webhook_logs │     │  (compara    │              │
+│         │            │              │     │   logs vs    │              │
+│         │            └──────────────┘     │   results)   │              │
+│         │                    ▲            └──────────────┘              │
+│         │                    │                    │                      │
+│         │                    │                    ▼                      │
+│         │            ┌──────────────┐     ┌──────────────┐              │
+│         │            │   INCIDENT   │◀────│  ANALYZER    │              │
+│         └───────────▶│   REPORT     │     │  (Claude IA) │              │
+│                      │              │     │              │              │
+│                      └──────────────┘     └──────────────┘              │
+│                             │                                            │
+│                             ▼                                            │
+│                      ┌──────────────┐                                   │
+│                      │   ALERTER    │                                   │
+│                      │  (WhatsApp)  │                                   │
+│                      └──────────────┘                                   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### 15.5 Schema SQL
+
+```sql
+-- Tabela de logs de webhooks recebidos
+CREATE TABLE webhook_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  webhook_type VARCHAR(50) NOT NULL,        -- 'mensagem', 'agendamento', 'call_trigger'
+  source VARCHAR(50) NOT NULL,              -- 'ghl', 'evolution', 'drive'
+  location_id VARCHAR(50),
+  contact_id VARCHAR(100),
+  payload JSONB NOT NULL,                   -- Payload completo do webhook
+  received_at TIMESTAMP DEFAULT NOW(),
+  expected_result VARCHAR(50),              -- 'agent_response', 'analise_call', 'agendamento_criado'
+  result_verified BOOLEAN DEFAULT FALSE,
+  result_verified_at TIMESTAMP,
+  result_status VARCHAR(20),                -- 'success', 'failed', 'timeout', 'partial'
+  incident_id UUID REFERENCES incidents(id)
+);
+
+-- Tabela de incidentes detectados
+CREATE TABLE incidents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+  -- Contexto
+  incident_type VARCHAR(50) NOT NULL,       -- 'agent_no_response', 'api_failure', 'loop_detected', 'timeout'
+  severity VARCHAR(20) NOT NULL,            -- 'critical', 'high', 'medium', 'low'
+  location_id VARCHAR(50),
+  contact_id VARCHAR(100),
+  agent_version_id UUID REFERENCES agent_versions(id),
+
+  -- O que aconteceu
+  webhook_log_id UUID REFERENCES webhook_logs(id),
+  error_message TEXT,
+  error_stack TEXT,
+  failure_point VARCHAR(100),               -- 'ai_call', 'tool_execution', 'db_save', 'ghl_update'
+
+  -- Análise IA
+  ai_diagnosis TEXT,                        -- Claude analisa e explica o problema
+  ai_suggested_fix TEXT,                    -- Claude sugere correção
+  root_cause VARCHAR(100),                  -- 'token_expired', 'rate_limit', 'bug_code', 'external_service'
+
+  -- Status
+  status VARCHAR(20) DEFAULT 'open',        -- 'open', 'investigating', 'resolved', 'wont_fix'
+  resolved_at TIMESTAMP,
+  resolved_by VARCHAR(100),
+  resolution_notes TEXT,
+
+  -- Recovery
+  auto_recovery_attempted BOOLEAN DEFAULT FALSE,
+  auto_recovery_success BOOLEAN,
+  manual_intervention_required BOOLEAN DEFAULT FALSE,
+
+  -- Metadados
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  notified_at TIMESTAMP,
+  notification_channel VARCHAR(50)          -- 'whatsapp', 'slack', 'email'
+);
+
+-- Índices para performance
+CREATE INDEX idx_webhook_logs_unverified ON webhook_logs(result_verified) WHERE result_verified = FALSE;
+CREATE INDEX idx_webhook_logs_received ON webhook_logs(received_at DESC);
+CREATE INDEX idx_incidents_open ON incidents(status) WHERE status = 'open';
+CREATE INDEX idx_incidents_severity ON incidents(severity, created_at DESC);
+
+-- View de incidentes pendentes
+CREATE VIEW v_pending_incidents AS
+SELECT
+  i.*,
+  w.webhook_type,
+  w.source,
+  w.received_at as webhook_received_at,
+  av.versao as agent_version,
+  c.nome as client_name
+FROM incidents i
+LEFT JOIN webhook_logs w ON i.webhook_log_id = w.id
+LEFT JOIN agent_versions av ON i.agent_version_id = av.id
+LEFT JOIN clients c ON av.client_id = c.id
+WHERE i.status IN ('open', 'investigating')
+ORDER BY
+  CASE i.severity
+    WHEN 'critical' THEN 1
+    WHEN 'high' THEN 2
+    WHEN 'medium' THEN 3
+    ELSE 4
+  END,
+  i.created_at DESC;
+
+-- View de métricas de saúde
+CREATE VIEW v_agent_health_metrics AS
+SELECT
+  av.id as agent_version_id,
+  av.versao,
+  c.nome as client_name,
+  COUNT(DISTINCT w.id) as total_webhooks_24h,
+  COUNT(DISTINCT CASE WHEN w.result_status = 'success' THEN w.id END) as success_count,
+  COUNT(DISTINCT CASE WHEN w.result_status = 'failed' THEN w.id END) as failure_count,
+  COUNT(DISTINCT i.id) as incidents_24h,
+  ROUND(
+    COUNT(DISTINCT CASE WHEN w.result_status = 'success' THEN w.id END)::numeric /
+    NULLIF(COUNT(DISTINCT w.id), 0) * 100, 2
+  ) as success_rate_percent
+FROM agent_versions av
+LEFT JOIN clients c ON av.client_id = c.id
+LEFT JOIN webhook_logs w ON w.location_id = av.location_id
+  AND w.received_at > NOW() - INTERVAL '24 hours'
+LEFT JOIN incidents i ON i.agent_version_id = av.id
+  AND i.created_at > NOW() - INTERVAL '24 hours'
+WHERE av.is_active = TRUE
+GROUP BY av.id, av.versao, c.nome;
+```
+
+### 15.6 Workflow n8n: Agent Watchdog
+
+**Arquivo**: `workflows/agent-watchdog.json`
+
+```yaml
+Workflow 1: Webhook Logger (executa em TODOS os webhooks)
+  Trigger: Webhook (recebe de todos os agentes)
+
+  1. Log Recebimento:
+     - Salva em webhook_logs com result_verified = FALSE
+     - Define expected_result baseado no tipo
+
+  2. Passa para Agente:
+     - Chama o workflow do agente normalmente
+     - (não bloqueia o fluxo)
+
+---
+
+Workflow 2: Watchdog Monitor (cron a cada 2 minutos)
+  Trigger: Cron (*/2 * * * *)
+
+  1. Buscar Webhooks Pendentes:
+     SELECT * FROM webhook_logs
+     WHERE result_verified = FALSE
+     AND received_at < NOW() - INTERVAL '2 minutes'
+
+  2. Para cada webhook pendente:
+
+     2a. Verificar se resultado existe:
+         - mensagem → agent_conversations tem resposta?
+         - call_trigger → anlises_de_call existe?
+         - agendamento → appointment existe no GHL?
+
+     2b. Se existe:
+         - UPDATE webhook_logs SET result_verified = TRUE, result_status = 'success'
+
+     2c. Se NÃO existe:
+         - UPDATE webhook_logs SET result_verified = TRUE, result_status = 'failed'
+         - Criar incident
+
+  3. Para cada incident novo:
+
+     3a. Claude Analyzer:
+         "Analise este incidente e explique:
+          1. O que provavelmente causou a falha
+          2. Em qual ponto do fluxo falhou
+          3. Sugestão de correção
+          4. Severidade (critical/high/medium/low)"
+
+     3b. Salvar análise no incident
+
+     3c. Se severity = critical ou high:
+         - Enviar WhatsApp para Marcos/CS
+         - Incluir: tipo, cliente, hora, diagnóstico IA
+
+     3d. Se auto-recovery possível:
+         - Tentar novamente a operação
+         - Atualizar incident com resultado
+
+---
+
+Workflow 3: Incident Dashboard Update (cron a cada hora)
+  Trigger: Cron (0 * * * *)
+
+  1. Calcular métricas:
+     - Total de incidentes por severidade (24h)
+     - Taxa de sucesso por agente
+     - Top 5 tipos de falha
+
+  2. Atualizar dashboard (se existir)
+
+  3. Se taxa de sucesso < 90%:
+     - Alerta de degradação do sistema
+```
+
+### 15.7 Template de Relatório de Incidente
+
+```markdown
+🚨 **INCIDENTE DETECTADO** 🚨
+
+**ID**: {{ incident.id }}
+**Tipo**: {{ incident.incident_type }}
+**Severidade**: {{ incident.severity }}
+**Hora**: {{ incident.created_at }}
+
+---
+
+**📋 CONTEXTO**
+- Cliente: {{ client_name }}
+- Agente: {{ agent_version }}
+- Location: {{ location_id }}
+- Contato: {{ contact_id }}
+
+**🔍 O QUE ACONTECEU**
+{{ ai_diagnosis }}
+
+**💡 PONTO DE FALHA**
+{{ failure_point }}
+
+**🔧 SUGESTÃO DE CORREÇÃO**
+{{ ai_suggested_fix }}
+
+---
+
+**STATUS**: {{ status }}
+{% if auto_recovery_attempted %}
+🔄 Recuperação automática {{ auto_recovery_success ? 'SUCESSO' : 'FALHOU' }}
+{% endif %}
+{% if manual_intervention_required %}
+⚠️ REQUER INTERVENÇÃO MANUAL
+{% endif %}
+
+---
+Link para investigar: [Supabase](https://supabase.com/dashboard/project/bfumywvwubvernvhjehk/editor)
+```
+
+### 15.8 Níveis de Severidade
+
+| Severidade | Critério | Ação | SLA |
+|------------|----------|------|-----|
+| **CRITICAL** | Lead não recebeu NENHUMA resposta | Alerta imediato + escala humano | < 5 min |
+| **HIGH** | Agendamento não criado após confirmação | Alerta + retry automático | < 15 min |
+| **MEDIUM** | Dados não salvos no CRM | Alerta diferido + batch fix | < 1 hora |
+| **LOW** | Métricas não registradas | Log para análise posterior | < 24h |
+
+### 15.9 Fluxo de Recovery Automático
+
+```
+1. Incident detectado
+       │
+       ▼
+2. É recuperável automaticamente?
+   ├── SIM: Token expirado → Refresh token → Retry
+   ├── SIM: Rate limit → Esperar 60s → Retry
+   ├── SIM: Tool falhou → Retry com backoff
+   │        │
+   │        ▼
+   │   Retry funcionou?
+   │   ├── SIM → Marcar resolved + notificar sucesso
+   │   └── NÃO → Escalar para humano
+   │
+   └── NÃO: Bug no código, erro de lógica
+            │
+            ▼
+       Escalar para humano + criar ticket
+```
+
+### 15.10 Próximos Passos de Implementação
+
+```yaml
+Fase 1 - Core (4h):
+  - [ ] Criar tabelas webhook_logs e incidents no Supabase
+  - [ ] Criar workflow Webhook Logger
+  - [ ] Criar workflow Watchdog Monitor (cron 2min)
+
+Fase 2 - Diagnóstico IA (2h):
+  - [ ] Integrar Claude para análise de incidentes
+  - [ ] Criar prompts de diagnóstico
+  - [ ] Template de relatório
+
+Fase 3 - Alertas (1h):
+  - [ ] Integrar com WhatsApp (Evolution API)
+  - [ ] Definir rotas de escalação
+  - [ ] Configurar níveis de alerta
+
+Fase 4 - Recovery (2h):
+  - [ ] Implementar retry com backoff
+  - [ ] Token refresh automático
+  - [ ] Fallback para humano
+
+Fase 5 - Dashboard (3h):
+  - [ ] Criar view de métricas
+  - [ ] Widget de saúde no dashboard existente
+  - [ ] Histórico de incidentes
+```
+
+### 15.11 Métricas de Sucesso
+
+| Métrica | Meta | Medição |
+|---------|------|---------|
+| MTTR (Mean Time to Recovery) | < 5 min para critical | Timestamp incident → resolved |
+| Taxa de detecção | > 99% | Incidentes detectados / falhas reais |
+| Falsos positivos | < 5% | Incidents fechados como 'wont_fix' |
+| Auto-recovery rate | > 60% | Incidents resolvidos automaticamente |
+| Lead recovery | > 80% | Leads que receberam resposta após falha |
+
+---
+
+## 15.12 MAPEAMENTO DETALHADO: GHL - Mottivme - EUA (Agente Principal)
+
+> **Arquivo**: `/n8n-workspace/Fluxos n8n/AI-Factory- Mottivme Sales/GHL - Mottivme - EUA.json`
+> **Webhook**: `POST /webhook/742766a1-1f96-4420-877b-ac3035ef5e3c`
+> **Objetivo**: Agente SDR que qualifica leads, agenda reuniões, e gerencia conversas via WhatsApp/Instagram
+
+### 15.12.1 Fluxo Geral do Workflow
+
+```
+ENTRADA (Webhook: Mensagem recebida)
+       │
+       ▼
+┌──────────────────────────────────────────────────────────────────┐
+│ FASE 1: NORMALIZAÇÃO DE DADOS                                     │
+├──────────────────────────────────────────────────────────────────┤
+│ 1. Contexto UTM → Extrai tipo_lead, utm_content, work_permit      │
+│ 2. Normalizar Nome1 → Separa first_name, last_name, valida        │
+│ 3. Normalizar Dados1 → Define objetivo_do_lead, agente_ia, ativar_ia │
+│ 4. Code1 → Calcula timestamps para busca de disponibilidade       │
+│ 5. Info → Consolida TODOS os dados em um único objeto             │
+└──────────────────────────────────────────────────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────────────────────────────────┐
+│ FASE 2: VALIDAÇÕES E RASTREAMENTO                                 │
+├──────────────────────────────────────────────────────────────────┤
+│ 1. IA Ativa? → Verifica se ativar_ia = "sim" ou tag "assistente"  │
+│ 2. GetInfo → Prepara dados para métricas                          │
+│ 3. Postgres (execution_metrics) → Registra início da execução     │
+│ 4. Postgres (ops_schedule_tracking) → Rastreia estado da sessão   │
+│ 5. Conversa Ativa → Verifica se já existe conversa em andamento   │
+│ 6. Ação Planejada → Switch: Iniciar/Ignorar/Aguardar              │
+└──────────────────────────────────────────────────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────────────────────────────────┐
+│ FASE 3: PREPARAÇÃO PARA IA                                        │
+├──────────────────────────────────────────────────────────────────┤
+│ 1. Tipo de mensagem → Detecta: texto, audio, imagem               │
+│ 2. Download áudio → Se audio, baixa arquivo                       │
+│ 3. Transcrever audio → OpenAI Whisper                             │
+│ 4. Set mensagens → Prepara contexto + histórico                   │
+│ 5. Switch → Seleciona prompt baseado em agente_ia                 │
+└──────────────────────────────────────────────────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────────────────────────────────┐
+│ FASE 4: EXECUÇÃO DA IA                                            │
+├──────────────────────────────────────────────────────────────────┤
+│ Agents disponíveis:                                               │
+│   • SDR (Prompt F2 - Funil Tráfego Direto)                        │
+│   • SDR Milton (Prompt F2 variante)                               │
+│   • AI Agent - Modular (Dinâmico via Supabase)                    │
+│   • Concierge (Pós-agendamento)                                   │
+│   • Prompt F3 - followuper (Follow-up)                            │
+│   • Reagendamento - No Show (Recuperação)                         │
+│                                                                   │
+│ Tools disponíveis:                                                │
+│   • Busca_disponibilidade → Busca horários no calendário          │
+│   • Agendar_reuniao → Cria agendamento no GHL                     │
+│   • Adicionar_tag_perdido → Desqualifica lead                     │
+│   • Atualizar Work Permit → Atualiza campo customizado            │
+│   • Atualizar Profissão → Atualiza campo customizado              │
+│   • Atualizar Estado → Atualiza campo customizado                 │
+│   • Scratchpad → Raciocínio interno (não visível)                 │
+│   • MCP - Historias Clientes → Casos de sucesso                   │
+└──────────────────────────────────────────────────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────────────────────────────────┐
+│ FASE 5: ENVIO DE RESPOSTA                                         │
+├──────────────────────────────────────────────────────────────────┤
+│ 1. Tudo certo? → Valida se resposta foi gerada                    │
+│ 2. Mensagem encavalada? → Verifica se lead mandou msg durante IA  │
+│ 3. Parser Chain → Prepara mensagem para envio                     │
+│ 4. Loop Over Items → Itera mensagens (se múltiplas)               │
+│ 5. Canal (Switch) → Roteia para WhatsApp ou Instagram             │
+│ 6. HTTP Request → Envia via GHL API                               │
+└──────────────────────────────────────────────────────────────────┘
+       │
+       ▼
+┌──────────────────────────────────────────────────────────────────┐
+│ FASE 6: REGISTRO E MÉTRICAS                                       │
+├──────────────────────────────────────────────────────────────────┤
+│ 1. Calcular Custo LLM → Tokens input/output, custo em USD         │
+│ 2. [TOOL] Registrar Custo IA → Salva métricas de consumo          │
+│ 3. Histórico mensagens → Salva em n8n_historico_mensagens         │
+│ 4. crm_historico_mensagens → Backup do histórico                  │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### 15.12.2 Campos do Node "Info" (Dados Centrais)
+
+| Campo | Origem | Descrição | Crítico? |
+|-------|--------|-----------|----------|
+| `lead_id` | webhook.body.contact_id | ID do contato no GHL | ✅ SIM |
+| `mensagem` | webhook.body.message.body | Mensagem do lead | ✅ SIM |
+| `mensagem_id` | webhook.body.messageId | ID único da mensagem | ✅ SIM |
+| `source` | webhook.body.type | Canal: whatsapp, instagram, sms | ✅ SIM |
+| `first_name` | Normalizado | Nome do lead | ✅ SIM |
+| `last_name` | Normalizado | Sobrenome do lead | - |
+| `telefone` | webhook.body.phone | Telefone do lead | ✅ SIM |
+| `email` | webhook.body.email | Email do lead | - |
+| `location_id` | webhook.body.locationId | ID da location GHL | ✅ SIM |
+| `location_name` | webhook.body.location.name | Nome da location | - |
+| `api_key` | webhook.body.customData.ghl_api_key | API key da location | ✅ SIM |
+| `etapa_funil` | webhook.body.customData | Etapa atual do lead | - |
+| `n8n_ativo` | webhook.body.customData | Se IA está ativa | ✅ SIM |
+| `objetivo_do_lead` | Normalizado | carreira, consultoria, indefinido | ✅ SIM |
+| `agente_ia` | Normalizado | sdrcarreira, sdrconsultoria, closer, followuper | ✅ SIM |
+| `ativar_ia` | Normalizado | sim, nao | ✅ SIM |
+| `utm_content` | webhook.body.contact.attributionSource | UTM do lead | - |
+| `is_primeira_mensagem` | Calculado | Se é primeiro contato | - |
+| `tipo_lead` | Calculado | CARREIRA, CONSULTORIA, etc | - |
+| `mensagem_contexto` | Calculado | Contexto para IA | - |
+| `tipo_mensagem_original` | Calculado | texto, audio, imagem | - |
+| `work_permit` | webhook.body.customData | Status de work permit | - |
+| `estado` | webhook.body.customData | Estado onde mora | - |
+
+### 15.12.3 Tabelas PostgreSQL Preenchidas
+
+| Tabela | Campos Inseridos | Quando | Verificar? |
+|--------|------------------|--------|------------|
+| `execution_metrics` | execution_id, workflow_id, workflow_name, status, started_at, owner_id | Início da execução | ✅ |
+| `ops_schedule_tracking` | field, value, execution_id, unique_id, ativo, chat_id, api_key, location_id, source | Início da execução | ✅ |
+| `n8n_active_conversation` | lead_id, workflow_id, status, waiting_process_id, retries | Durante execução | ✅ |
+| `n8n_historico_mensagens` | lead_id, mensagem, timestamp, source, full_name | Após receber mensagem | ✅ |
+| `crm_historico_mensagens` | lead_id, mensagem, datetime, source, full_name | Backup do histórico | ✅ |
+| `[via tool] Registrar Custo IA` | location_id, contact_id, canal, tipo_acao, tokens, model, custo | Após IA responder | ✅ |
+
+### 15.12.4 Chamadas API GHL (Custom Fields)
+
+| Endpoint | Método | O que atualiza | Quando |
+|----------|--------|----------------|--------|
+| `/contacts/{contact_id}` | PUT | tags: ["perdido"] | Tool Adicionar_tag_perdido |
+| `/contacts/{contact_id}` | PUT | customFields: ativar_ia = "sim" | Após detectar objetivo |
+| `/contacts/{contact_id}` | PUT | customFields: especialista_motive, objetivo_lead | Após detectar objetivo |
+| `/contacts/{contact_id}` | PUT | customFields: work_permit | Tool Atualizar Work Permit |
+| `/contacts/{contact_id}` | PUT | customFields: profissao | Tool Atualizar Profissão |
+| `/contacts/{contact_id}` | PUT | customFields: estado_onde_mora | Tool Atualizar Estado |
+| `/conversations/messages` | POST | Envia mensagem de resposta | Após IA gerar resposta |
+| `/locations/{id}/customFields` | GET | Lista campos customizados | Configuração inicial |
+
+### 15.12.5 Pontos de Falha Silenciosa (CRÍTICO PARA WATCHDOG)
+
+```yaml
+FALHA 1 - IA não respondeu:
+  Sintoma: Webhook recebido, mas mensagem não enviada
+  Verificar:
+    - n8n_historico_mensagens: Existe registro da mensagem recebida?
+    - execution_metrics: Existe registro com status != "error"?
+    - GHL conversations/messages: Houve POST de resposta?
+  Timeout: 2 minutos após webhook
+
+FALHA 2 - Tool falhou silenciosamente:
+  Sintoma: IA decidiu agendar, mas agendamento não existe
+  Verificar:
+    - Tool Agendar_reuniao foi chamada? (logs do n8n)
+    - GHL appointments: Existe appointment para o contato?
+    - Se IA disse "agendei para X", conferir no calendário
+  Timeout: 5 minutos após resposta com "agendei"
+
+FALHA 3 - Custom Field não atualizado:
+  Sintoma: Lead deveria estar com objetivo_lead preenchido
+  Verificar:
+    - GHL contact: Custom field objetivo_lead está vazio?
+    - GHL contact: Custom field ativar_ia está "nao" quando deveria ser "sim"?
+  Timeout: 1 minuto após resposta
+
+FALHA 4 - Histórico não salvo:
+  Sintoma: Conversa aconteceu mas não está no banco
+  Verificar:
+    - n8n_historico_mensagens: Registro existe?
+    - crm_historico_mensagens: Backup existe?
+  Timeout: 30 segundos após envio
+
+FALHA 5 - Loop de conversa:
+  Sintoma: Lead recebe mesma resposta 3+ vezes
+  Verificar:
+    - Últimas 5 mensagens do agente são idênticas?
+    - n8n_active_conversation: retries > 10?
+  Ação: Escalar para humano imediatamente
+
+FALHA 6 - Timeout de IA:
+  Sintoma: IA demorou mais de 30 segundos
+  Verificar:
+    - execution_metrics: tempo entre started_at e completed_at
+    - Se > 30s, lead pode ter desistido
+  Ação: Enviar mensagem de fallback "Obrigado pela paciência..."
+
+FALHA 7 - API Key inválida:
+  Sintoma: Todas as chamadas GHL retornam 401
+  Verificar:
+    - Erro nos logs do n8n
+    - Último sucesso de chamada GHL
+  Ação: Alerta URGENTE + pausar workflow
+```
+
+### 15.12.6 Checklist de Verificação do Watchdog
+
+Para cada webhook recebido, o Watchdog deve verificar:
+
+```sql
+-- Query para verificar execução completa
+WITH webhook_check AS (
+  SELECT
+    wl.id as webhook_id,
+    wl.contact_id,
+    wl.received_at,
+
+    -- 1. Mensagem foi registrada?
+    EXISTS (
+      SELECT 1 FROM n8n_historico_mensagens h
+      WHERE h.lead_id = wl.contact_id
+      AND h.datetime > wl.received_at - INTERVAL '1 minute'
+    ) as mensagem_registrada,
+
+    -- 2. Execução iniciou?
+    EXISTS (
+      SELECT 1 FROM execution_metrics e
+      WHERE e.started_at > wl.received_at - INTERVAL '1 minute'
+      AND e.started_at < wl.received_at + INTERVAL '5 minutes'
+    ) as execucao_iniciada,
+
+    -- 3. Resposta foi enviada? (via log de custo)
+    EXISTS (
+      SELECT 1 FROM custo_ia_logs c
+      WHERE c.contact_id = wl.contact_id
+      AND c.created_at > wl.received_at
+    ) as resposta_enviada
+
+  FROM webhook_logs wl
+  WHERE wl.result_verified = FALSE
+  AND wl.received_at < NOW() - INTERVAL '2 minutes'
+)
+SELECT * FROM webhook_check
+WHERE NOT (mensagem_registrada AND execucao_iniciada AND resposta_enviada);
+```
+
+### 15.12.7 Mapeamento de agente_ia para Prompts
+
+| Valor agente_ia | Prompt Node | Descrição |
+|-----------------|-------------|-----------|
+| `sdrcarreira` | Prompt F2 - Funil Tráfego Direto | SDR para leads de carreira |
+| `sdrconsultoria` | Prompt F2 - Funil Tráfego Direto | SDR para leads de consultoria |
+| `followuper` | Prompt F3 - FUP | Follow-up de leads frios |
+| `closer` | Customer Success | Fechamento pós-call |
+| `concierge` | Concierge | Pós-agendamento, reduz no-show |
+| `reagendamento` | Prompt Reagendamento - No Show | Recuperação de no-show |
+| `assistente_admin` | AI Agent - Modular | Agente dinâmico do Supabase |
+| `indefinido` | Fallback | Lead não classificado → escalar |
+
+### 15.12.8 Subworkflows Chamados (Tools)
+
+| Tool | Workflow ID | O que faz | Retorno esperado |
+|------|-------------|-----------|------------------|
+| Busca_disponibilidade | (toolWorkflow) | Busca slots no calendário GHL | Lista de horários disponíveis |
+| Agendar_reuniao | u1UsmjNNpaEiwIsp | Cria appointment no GHL + atualiza Kommo | Confirmação do agendamento |
+| Atualizar Work Permit | 3Dd8d5AnpD4iLPwG | Atualiza custom field work_permit | Success/Error |
+| Atualizar Profissão | (similar) | Atualiza custom field profissao | Success/Error |
+| Atualizar Estado | (similar) | Atualiza custom field estado_onde_mora | Success/Error |
+| Registrar Custo IA | GWKl5KuXAdeu4BLr | Salva métricas de consumo de tokens | Success |
+| MCP - Historias Clientes | (toolWorkflow) | Busca casos de sucesso para rapport | Histórias formatadas |
+
+---
+
+## 15.13 ANÁLISE CONSOLIDADA: VISÃO 360° DO FLUXO SDR
+
+> **Fontes**: Análise do JSON do workflow + Documento "Analise fluxo principal"
+> **Objetivo**: Visão unificada para implementação do Watchdog
+
+### 15.13.1 Arquitetura em 11 Fases
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                    FLUXO COMPLETO: GHL - Mottivme - EUA                          │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                  │
+│  FASE 1          FASE 2         FASE 3        FASE 4         FASE 5            │
+│  ENTRADA    →    CONTROLES  →   MÍDIA     →   FILA      →    MEMÓRIA           │
+│  ─────────       ─────────      ─────       ─────          ───────             │
+│  • Webhook       • IA Ativa?    • Audio     • Enfileirar   • Histórico         │
+│  • UTM           • Tipo Msg     • Whisper   • Wait         • Mensagens         │
+│  • Normaliza     • Conversa     • Imagem    • Deduplica    • Contexto          │
+│  • Info          • Permitido?                                                   │
+│                                                                                  │
+│       │               │              │            │              │              │
+│       ▼               ▼              ▼            ▼              ▼              │
+│                                                                                  │
+│  FASE 6          FASE 7         FASE 8        FASE 9         FASE 10           │
+│  SELEÇÃO    →    PROMPTS    →   AI AGENT  →  PÓS-PROC   →   ENVIO             │
+│  ─────────       ─────────      ────────     ─────────      ─────             │
+│  • Switch        • F2 Tráfego   • SDR        • Valida       • Canal            │
+│  • agente_ia     • F3 FUP       • Milton     • Parser       • WhatsApp         │
+│  • Versionado    • Concierge    • Modular    • Tokens       • Instagram        │
+│                  • NoShow       • +8 Tools   • Format       • Loop             │
+│                                                                                  │
+│       │               │              │            │              │              │
+│       ▼               ▼              ▼            ▼              ▼              │
+│                                                                                  │
+│  FASE 11         FASE AUX                                                       │
+│  RASTREIO        OBJETIVO INDEFINIDO                                            │
+│  ─────────       ──────────────────                                            │
+│  • Custo LLM     • Listar campos                                               │
+│  • Métricas      • Detectar objetivo                                           │
+│  • Postgres      • Atualizar GHL                                               │
+│                  • Perguntar                                                    │
+│                                                                                  │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 15.13.2 Tabelas PostgreSQL Completas
+
+| Tabela | Campos | Uso | Watchdog? |
+|--------|--------|-----|-----------|
+| `n8n_active_conversation` | id, lead_id, workflow_id, status, waiting_process_id, retries, created_at | Controle de concorrência | ✅ retries > 10 = loop |
+| `n8n_historico_mensagens` | id, lead_id, mensagem, timestamp, source, full_name, role | Memória conversacional | ✅ Deve existir após webhook |
+| `ops_fila_mensagens` | id, lead_id, mensagem, timestamp, status, processed | Fila de mensagens pendentes | ✅ Msg não processada |
+| `execution_metrics` | execution_id, workflow_id, workflow_name, status, started_at, owner_id | Telemetria de execuções | ✅ Status != running após 5min |
+| `ops_schedule_tracking` | field, value, execution_id, unique_id, ativo, chat_id, api_key, location_id, source | Rastreamento de sessões | - |
+| `crm_historico_mensagens` | lead_id, mensagem, datetime, source, full_name | Backup do histórico | - |
+| `custo_ia_logs` (via tool) | location_id, contact_id, canal, tipo_acao, tokens, model, custo | Consumo de tokens | ✅ IA respondeu se existir |
+
+### 15.13.3 Gates e Switches (Pontos de Decisão)
+
+```yaml
+GATE 1 - IA Ativa?:
+  Condição: ativar_ia = "sim" OU tag contém "assistente-admin"
+  Se FALSE: Fluxo para (não processa)
+  Verificar: Lead com ativar_ia = "nao" não deve ter resposta
+
+GATE 2 - Tipo de Mensagem:
+  Switch 6 saídas:
+    1. texto → Processa normal
+    2. primeira_msg → Adiciona contexto UTM
+    3. enfileirar → Vai para fila (msg chegou durante processamento)
+    4. imagem → Analyze image
+    5. áudio → Download + Whisper
+    6. outro → Ignora
+
+GATE 3 - Conversa Ativa:
+  Consulta: n8n_active_conversation WHERE lead_id AND workflow_id
+  Switch 3 saídas:
+    1. Iniciar Conversa → (vazio OU status=inactive OU timeout 1min)
+    2. Ignorar → (retries > 10 OU outro processo ativo)
+    3. Aguardar → (status=active)
+  Verificar: retries > 10 = LOOP DETECTADO
+
+GATE 4 - Permitido AI?:
+  Condição: n8n_ativo != "disparo realizado" AND mensagem != "ok"
+  Se FALSE: Não processa
+
+GATE 5 - Mensagem Encavalada?:
+  Detecta: Lead mandou msg enquanto IA pensava
+  Ação: Salva resposta atual, processa nova msg primeiro
+  Verificar: Múltiplas mensagens do lead sem resposta
+
+GATE 6 - Tudo Certo?:
+  Valida output:
+    - Não contém "<ctrl"
+    - Não está vazio
+    - output.length > 2
+  Se FALSE: Não envia, possível erro
+
+GATE 7 - Canal:
+  Switch: source = "whatsapp" OU "instagram"
+  Envio: POST /conversations/messages com type=SMS ou type=IG
+```
+
+### 15.13.4 AI Agents e Modelos
+
+| Agent | Modelo Principal | Fallback | Tools |
+|-------|-----------------|----------|-------|
+| **SDR** | Gemini 2.5 Pro | GPT-4 | 8 tools |
+| **SDR Milton** | Gemini 2.5 Pro | GPT-4 | 8 tools (disabled) |
+| **AI Agent - Modular** | Dinâmico (Supabase) | - | 8 tools |
+
+**8 Tools Disponíveis:**
+1. `Think1` (Scratchpad) - Raciocínio interno não visível
+2. `Busca_disponibilidade` - API GHL calendário
+3. `Agendar_reuniao` - Criar agendamento
+4. `Atualizar_work_permit` - Salvar work permit
+5. `Atualizar_estado` - Salvar estado
+6. `Atualizar_profissao` - Salvar profissão
+7. `Adicionar_tag_perdido` - Desqualificar lead
+8. `Busca_historias` - Histórias do responsável (MCP)
+
+### 15.13.5 Prompts por Contexto
+
+| Prompt | Trigger | Objetivo |
+|--------|---------|----------|
+| **Prompt F2 - Funil Tráfego Carreira** | agente_ia = sdrcarreira, lead novo | Qualifica work permit → agenda |
+| **Prompt F2 - Funil Tráfego Consultoria** | agente_ia = sdrconsultoria | Qualifica para consultoria financeira |
+| **Prompt F3 - followuper** | agente_ia = followuper, tag | Reativa leads frios |
+| **Prompt Reagendamento - No Show** | tag no-show | Recupera empático |
+| **Concierge** | agente_ia = concierge | Suporte geral, reduz no-show |
+| **Customer Success** | agente_ia = closer | Pós-venda, fechamento |
+
+### 15.13.6 Fluxo de Objetivo Indefinido (Fase Auxiliar)
+
+```
+Lead com objetivo_do_lead = "indefinido"
+       │
+       ▼
+1️⃣ Listar campos customizados (GET /locations/{id}/customFields)
+       │
+       ▼
+2️⃣ Buscar Conversa (GET /conversations)
+       │
+       ▼
+3️⃣ Detectar Objetivo (LLM analisa histórico)
+       │
+       ├── "carreira" → 5️⃣ Atualizar customFields → objetivo_lead=carreira
+       ├── "consultoria" → 5️⃣ Atualizar customFields → objetivo_lead=consultoria
+       └── "indefinido" → 5️⃣ Perguntar Objetivo (msg perguntando)
+```
+
+### 15.13.7 Pós-Processamento e Formatação
+
+| Nó | Função | Validação |
+|----|--------|-----------|
+| **Tudo certo?3/4** | Valida output não vazio, sem erros | Se falhar → não envia |
+| **Filter** | output.length > 2 | Evita msgs muito curtas |
+| **Code in JavaScript2** | Estima tokens (input + output) | Métrica de custo |
+| **Parser Chain** | LLM formata para WhatsApp/IG | Remove #, **, quebras excessivas |
+| **Structured Output Parser** | Extrai JSON `{messages: [...]}` | Permite múltiplas msgs |
+| **If1** | Valida não contém "parsed", "split" | Evita expor internals |
+
+### 15.13.8 Métricas de Rastreio
+
+| Métrica | Como Calcular | Onde Salva |
+|---------|---------------|------------|
+| **Tokens Input** | custo_pro.tokens_input + custo_flash.tokens_input | custo_ia_logs |
+| **Tokens Output** | custo_pro.tokens_output + custo_flash.tokens_output | custo_ia_logs |
+| **Modelo** | "gemini-2.5-pro+flash" | custo_ia_logs |
+| **Custo USD** | (tokens * rate) | custo_ia_logs |
+| **Execution Time** | completed_at - started_at | execution_metrics |
+| **Retries** | n8n_active_conversation.retries | Postgres |
+
+### 15.13.9 Checklist Completo do Watchdog
+
+```yaml
+VERIFICAÇÃO APÓS WEBHOOK (timeout 2 min):
+
+1. ENTRADA REGISTRADA?
+   □ execution_metrics: Existe registro com execution_id?
+   □ n8n_historico_mensagens: Mensagem do lead foi salva?
+
+2. FLUXO INICIOU?
+   □ n8n_active_conversation: Status mudou para "active"?
+   □ Se status = "inactive" após 2min → FALHA
+
+3. IA RESPONDEU?
+   □ custo_ia_logs: Existe registro de custo para este contact_id?
+   □ n8n_historico_mensagens: Existe registro com role = "assistant"?
+   □ Se não → ALERTA: IA não gerou resposta
+
+4. MENSAGEM ENVIADA?
+   □ GHL API: POST /conversations/messages retornou 200?
+   □ Execution Data1: a_lead_response foi salvo?
+   □ Se não → ALERTA CRÍTICO: Lead sem resposta
+
+5. LOOP DETECTADO?
+   □ n8n_active_conversation.retries > 10?
+   □ Últimas 3 msgs do agente são idênticas?
+   □ Se sim → ESCALAR PARA HUMANO
+
+6. OBJETIVO DEFINIDO?
+   □ GHL contact: objetivo_lead está preenchido?
+   □ Se indefinido após 3 interações → ALERTA
+
+7. AGENDAMENTO (se aplicável)?
+   □ Resposta contém "agendei", "confirmado", "horário"?
+   □ GHL appointments: Existe appointment para contact_id?
+   □ Se não existir → ALERTA: Agendamento fantasma
+
+8. CUSTOM FIELDS ATUALIZADOS?
+   □ work_permit foi atualizado se lead informou?
+   □ estado_onde_mora foi atualizado se lead informou?
+   □ profissao foi atualizado se lead informou?
+```
+
+### 15.13.10 Alertas por Severidade (Consolidado)
+
+| Severidade | Condição | Ação | SLA |
+|------------|----------|------|-----|
+| **CRITICAL** | Lead sem resposta após 2 min | WhatsApp imediato + escalar humano | < 5 min |
+| **CRITICAL** | Agendamento fantasma confirmado | WhatsApp + criar agendamento manual | < 10 min |
+| **CRITICAL** | API Key 401 (todas chamadas falham) | WhatsApp + pausar workflow | < 5 min |
+| **HIGH** | Loop detectado (retries > 10) | Escalar para humano + relatório | < 15 min |
+| **HIGH** | Timeout IA > 30s | Enviar fallback + alertar | < 15 min |
+| **MEDIUM** | Histórico não salvo | Retry + log | < 1 hora |
+| **MEDIUM** | Custom field não atualizado | Retry + log | < 1 hora |
+| **LOW** | Custo não registrado | Log para análise | < 24h |
+| **LOW** | Objetivo indefinido após 3 msgs | Sugerir pergunta direta | < 24h |
+
+---
+
+**Ultima atualizacao resumo**: 2025-12-20
+**Versao documento**: 3.3
